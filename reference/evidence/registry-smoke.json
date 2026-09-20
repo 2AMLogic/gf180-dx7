@@ -1,0 +1,743 @@
+{
+  "schema": "gf180-dx7.registry-smoke/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/13",
+  "registry": "spec/compatibility-registry-v1.json",
+  "registry_sha256": "39c79f71618cf7ea32f231d990ce5d4671561b8fe6dc87a52673542c407e6693",
+  "oracle": {
+    "identity_path": "reference/oracle-identity.json",
+    "binary_path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+    "pinned_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+    "observed_sha256_match": true
+  },
+  "sample_rate": 48000,
+  "summary": {
+    "cases_total": 108,
+    "short_subset": 28,
+    "n_rendered": 28,
+    "n_run": 26,
+    "n_pass": 26,
+    "n_fail": 0,
+    "n_manual": 2,
+    "n_blocked": 3,
+    "n_not_run": 3
+  },
+  "cases": [
+    {
+      "id": "alg4-fb0",
+      "property": "non_silent_after_onset",
+      "description": "Algorithm 4 with feedback 0 renders audibly (feedback chain live).",
+      "input_fingerprint": "a64ba46828d598fdae3916218dec7ae056ddc299189bb608855a2241a9ab8213",
+      "voice_sha256": "c0915fc3739bbaba6312f743397e4ac7cca315ccc0ccb98803aaf3575df47823",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "f58ab7e4dbba987884b452bc33f704b6e672eae198cbc15cdf457e60dfe9cd28",
+      "peak_abs": 0.304473876953125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.209412"
+        }
+      ]
+    },
+    {
+      "id": "alg4-fb3",
+      "property": "distinct_hash_vs:alg4-fb0",
+      "description": "Algorithm 4 mid feedback (3) changes the render versus feedback 0.",
+      "input_fingerprint": "4f348d948749d486cf089ca8e7647404fbb8bf9a9af0949882dcfa01e762c790",
+      "voice_sha256": "e36232e1cf6f314a6d3f32d132a6eff55eb63cd48f1dc1e19d506589a2d4239d",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "ecdcca478a8e92b4ce3a2f8fac88e377b79c460f69941775b34d08017d6b2e8d",
+      "peak_abs": 0.302520751953125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:alg4-fb0",
+          "passed": true,
+          "detail": "ecdcca478a8e vs alg4-fb0:f58ab7e4dbba"
+        }
+      ]
+    },
+    {
+      "id": "alg4-fb7",
+      "property": "distinct_hash_vs:alg4-fb0",
+      "description": "Algorithm 4 maximum feedback (7) differs from both feedback 0 and 3.",
+      "input_fingerprint": "442caf3f49d99c8f66522f0a8a704acdad62555ab94b57a23d0b1082afee0922",
+      "voice_sha256": "6f1e2404ef7b07129a38cd4693ceea35e81b58d54f4dc1b4911e3d924b9d1664",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "7bc7bde8641873e46ebcc7ef206303d72c9278d0ac879a2451f82f50198a15ca",
+      "peak_abs": 0.296478271484375,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:alg4-fb0",
+          "passed": true,
+          "detail": "7bc7bde86418 vs alg4-fb0:f58ab7e4dbba"
+        },
+        {
+          "predicate": "distinct_hash_vs:alg4-fb3",
+          "passed": true,
+          "detail": "7bc7bde86418 vs alg4-fb3:ecdcca478a8e"
+        }
+      ]
+    },
+    {
+      "id": "alg6-fb0",
+      "property": "non_silent_after_onset",
+      "description": "Algorithm 6 with feedback 0 renders audibly (feedback chain live).",
+      "input_fingerprint": "2a565732901b4f6830b9b561dbade58a70a00605d75e9c5219c73b22242050c9",
+      "voice_sha256": "d92b04503450763677913562f94e74674df7ca0c91c4c9fa3f71924ff44b9e96",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "452cc5f39cae2a20648b0f7c39914e5ea514cb1e7a2e30e71a68cb24cfd74cf9",
+      "peak_abs": 0.230255126953125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.11264"
+        }
+      ]
+    },
+    {
+      "id": "alg6-fb3",
+      "property": "distinct_hash_vs:alg6-fb0",
+      "description": "Algorithm 6 mid feedback (3) changes the render versus feedback 0.",
+      "input_fingerprint": "ad6c84da4d72594ff10e372169dd94a668c700464555d2031bd2444227ea45f5",
+      "voice_sha256": "f9577bb47db1cee34b6d0520272be259db6daf7a7de9ae835dc28cfad2fa419c",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "b32b33c480343d18d29afdb6031a44daeaa80241113413bd921e7ef71ecea251",
+      "peak_abs": 0.210723876953125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:alg6-fb0",
+          "passed": true,
+          "detail": "b32b33c48034 vs alg6-fb0:452cc5f39cae"
+        }
+      ]
+    },
+    {
+      "id": "alg6-fb7",
+      "property": "distinct_hash_vs:alg6-fb0",
+      "description": "Algorithm 6 maximum feedback (7) differs from both feedback 0 and 3.",
+      "input_fingerprint": "e86299e7999f8a11df5c347b0d7d93035026a1e9d80492a347f946435c08ad3e",
+      "voice_sha256": "c135de08388a991bd4050aa7e7a820eda667d42f65a1f8dbe4268a80ab1d4370",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "be5003661d2e120563e31b3a7a3415b21e22ebd7438550609edd51b5041adabd",
+      "peak_abs": 0.229766845703125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:alg6-fb0",
+          "passed": true,
+          "detail": "be5003661d2e vs alg6-fb0:452cc5f39cae"
+        },
+        {
+          "predicate": "distinct_hash_vs:alg6-fb3",
+          "passed": true,
+          "detail": "be5003661d2e vs alg6-fb3:b32b33c48034"
+        }
+      ]
+    },
+    {
+      "id": "bd-coarse0",
+      "property": "distinct_hash_vs:dir-base",
+      "description": "Coarse frequency 0 (0.5x ratio) renders differently from coarse 1 (base).",
+      "input_fingerprint": "248aad924fd117d64024963782cc3682aae3d9f9f27d496cbf52dc43739240eb",
+      "voice_sha256": "5c4de4262aafc1932967b800993790d54390ca63479286e83b7367c35d4e34c3",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "6b54762362e47e4ff80a5ea73d808df7ed3b12f6732e42fde46150bd08878d7f",
+      "peak_abs": 0.24468994140625,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:dir-base",
+          "passed": true,
+          "detail": "6b54762362e4 vs dir-base:e43ca3fe4de4"
+        }
+      ]
+    },
+    {
+      "id": "bd-coarse31",
+      "property": "distinct_hash_vs:dir-base",
+      "description": "Coarse frequency 31 (maximum) renders differently from coarse 1 and stays audible.",
+      "input_fingerprint": "bd82c784badf6f1d8e8fb8bc7b7dccd0093467d9e1b0515bf1d062e2563c9d8e",
+      "voice_sha256": "433f720a168da2794451bcf4f023209da07a18392e4a37e931fc3c5c9a902b7b",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "9ac3590a8bbe55dd279644390a8d9c097b21ebfbb40c6523fe9c6521c7440f20",
+      "peak_abs": 0.24322509765625,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:dir-base",
+          "passed": true,
+          "detail": "9ac3590a8bbe vs dir-base:e43ca3fe4de4"
+        },
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.168976"
+        }
+      ]
+    },
+    {
+      "id": "bd-detune0",
+      "property": "distinct_hash_vs:bd-detune14",
+      "description": "Detune 0 (lower extreme) renders differently from detune 14.",
+      "input_fingerprint": "7a0b685f992a15ebdf791eabf3703aa62696810ef18a4406e0afec29fd369c3b",
+      "voice_sha256": "540717d9f8635a9be9d2c78c66390dd098f87f96d1823430fd54113bf9c39cdb",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "acffd154a08fb39b0a5a5bdca99082330bce3cd2c5341d5910eea90f65b8b07c",
+      "peak_abs": 0.2440185546875,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:bd-detune14",
+          "passed": true,
+          "detail": "acffd154a08f vs bd-detune14:29896e0c8a59"
+        }
+      ]
+    },
+    {
+      "id": "bd-detune14",
+      "property": "manual:audible-pitch-differs",
+      "description": "Detune extremes must be audibly different in pitch (human judgment; never guessed from a hash). Hash-distinctness is asserted mechanically as a precondition.",
+      "input_fingerprint": "88700e2c6999ac189bcc02ee25650864a4b8a9986ae1dee64ea908ab7a72447b",
+      "voice_sha256": "4a1e12a35bc64e671b6567d28aa7160c46a46f156694baedde5c52dad29e537a",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "29896e0c8a59f99f76efa8b336cce1b53a772989d6d885ea98929838c037e69d",
+      "peak_abs": 0.244598388671875,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "NO_VERDICT",
+      "manual": true,
+      "method": "manual-listening",
+      "manual_properties": [
+        "manual:audible-pitch-differs"
+      ],
+      "note": "manual expectation requires a human listening record; machine preconditions passed and are never treated as the judgment",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.167786"
+        },
+        {
+          "predicate": "distinct_hash_vs:bd-detune0",
+          "passed": true,
+          "detail": "29896e0c8a59 vs bd-detune0:acffd154a08f"
+        }
+      ]
+    },
+    {
+      "id": "codec-name-a",
+      "property": "identical_hash_vs:codec-name-b",
+      "description": "Display name changes must not affect the render (name bytes are identity, not synthesis).",
+      "input_fingerprint": "e507dcad976fc64c30fb00561717e4104fd32b50248df6ec4852c8e31923278e",
+      "voice_sha256": "fc20e382508515c082409325ff4f0646905159b4235c242f620f4e512f28816c",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.0,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "identical_hash_vs:codec-name-b",
+          "passed": true,
+          "detail": "f6a79b92c38b == codec-name-b:f6a79b92c38b"
+        }
+      ]
+    },
+    {
+      "id": "codec-name-b",
+      "property": "non_silent_after_onset",
+      "description": "Same patch under a different display name renders audibly.",
+      "input_fingerprint": "6a710feb9951fed3858148ce7fc51d8bd9bc93563639506f0ab846495cc03ec8",
+      "voice_sha256": "61b0fb54c6b5499b96a9d1a24f66063016903d3085b49a4ceeb4cd68a1d8c06c",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.0,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.0s)=0.16626"
+        }
+      ]
+    },
+    {
+      "id": "corpus-alg4-oocuter",
+      "verdict": "NOT_RUN",
+      "manual": true,
+      "property": "manual:corpus-render-agreement",
+      "reason": "corpus voice bytes resolve from the pinned archive at challenge gates, not in the smoke",
+      "input_fingerprint": "3482a7007d9a3edf4dcdbe11c2084ef7e9d019ebc1062f6f36fe4292b52c9882",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "corpus-alg6-belandbiwa",
+      "verdict": "NOT_RUN",
+      "manual": true,
+      "property": "manual:corpus-render-agreement",
+      "reason": "corpus voice bytes resolve from the pinned archive at challenge gates, not in the smoke",
+      "input_fingerprint": "c76edf82d45fe33193d1e4fb04bfe8e436a64b0594e26b7ba7a06fcf74814aa7",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "corpus-highfb-mellowsolo",
+      "verdict": "NOT_RUN",
+      "manual": true,
+      "property": "manual:corpus-render-agreement",
+      "reason": "corpus voice bytes resolve from the pinned archive at challenge gates, not in the smoke",
+      "input_fingerprint": "4124c4c28a89b6606ec5bd0217dd8d59e47eda65e0f41fc30e6c6e1bc15f8d14",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "dir-base",
+      "property": "non_silent_after_onset",
+      "description": "Synthetic base (fixture-like Mark I patch, algorithm 0): a held note yields a non-silent, sustained render. Anchor case for hash-distinct comparisons.",
+      "input_fingerprint": "ca194d4e5dc895309f58485a1a7d1ab53455116039d82b951d7b5e277ca1ea54",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.16626"
+        }
+      ]
+    },
+    {
+      "id": "ev-aftertouch",
+      "verdict": "BLOCKED",
+      "manual": true,
+      "property": "manual:aftertouch-response",
+      "reason": "the pinned oracle exposes no aftertouch event command (events.txt supports note_on/note_off/cc/pb only), so no executable reference render exists; recorded per the issue stop/escalate rule instead of inventing a substitute",
+      "input_fingerprint": "bfa2835ef8b0422ab2466c94672ea3afc3407c61e5daa98bbe99f86ec0f7601a",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "ev-all-notes-off",
+      "property": "late_peak_lt_case:dir-base",
+      "description": "All-notes-off (CC 123) releases (does not kill): the post-event window is quieter than the held base.",
+      "input_fingerprint": "5869b56adfaa6ace440c055ca3e9323c453764eb40801f637a1ac13ee33a1b7e",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "812f073889634610122ddaf307003e2b623bc57132ef5b638436570765238b3f",
+      "pcm_sha256": "20197a1310e5c2e8dabece2d305e8a958eb2cbbf22f4828056f0c758dc77434a",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.5,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "late_peak_lt_case:dir-base",
+          "passed": true,
+          "detail": "0.100525 < dir-base:0.128998"
+        }
+      ]
+    },
+    {
+      "id": "ev-all-sound-off",
+      "property": "silent_after_cc120",
+      "description": "All-sound-off (CC 120) kills the sounding voice: audible before, exactly silent after the event block.",
+      "input_fingerprint": "c100694024049f83720960dcefa2bf95870aa0eedb5752ac8b5b8409f24a2add",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "b64be3d405f92daeac9e31295b87fcfae2d0f905e7407934c6758876a2520230",
+      "pcm_sha256": "70c9c153d8cc8ee462168f9b606f48c2190827fe1f36d87e496422e2b4d9b6e7",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.5,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "silent_after_cc120",
+          "passed": true,
+          "detail": "before=0.16626 after(0.60s-)=0"
+        },
+        {
+          "predicate": "events_applied_count:2",
+          "passed": true,
+          "detail": "events_applied=2 want=2"
+        }
+      ]
+    },
+    {
+      "id": "ev-modwheel-0",
+      "property": "non_silent_after_onset",
+      "description": "Mod wheel at 0 renders audibly.",
+      "input_fingerprint": "1425585f330117c1433765f19250cce3bdd13762f1d8ba59126388d135633290",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "95c24e61d129a01dbe635487d31806b30dff019fba6f5740ddc8c15533299d96",
+      "pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 0.8,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-0.8s)=0.16626"
+        }
+      ]
+    },
+    {
+      "id": "ev-modwheel-127",
+      "property": "identical_hash_vs:ev-modwheel-0",
+      "description": "OBSERVED on the pinned oracle: mod-wheel CC 1 does not change the render because the pinned controller-modifier defaults leave the wheel inert (manifest mod_wheel_default_modifiers: range=0). Recorded as a bounded finding; the case stays directed for the frozen model (DEC-006 modwheel response).",
+      "input_fingerprint": "3989a500c8682ce683f2c2b4d5ba89fe92d6f9b65134495bc335add5d159d789",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "4b32a5c1f13e267d8a22703ce5c5f9c15061d5511ebd392d2597a709ecf1524a",
+      "pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 0.8,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "identical_hash_vs:ev-modwheel-0",
+          "passed": true,
+          "detail": "460d3972dd08 == ev-modwheel-0:460d3972dd08"
+        }
+      ]
+    },
+    {
+      "id": "ev-patch-change-held",
+      "verdict": "BLOCKED",
+      "manual": true,
+      "property": "manual:held-note-patch-change",
+      "reason": "the pinned oracle takes exactly one voice file per render and has no mid-render program-change event; the two-voice case needs the N07 polyphonic state/event manager (plan section 8)",
+      "input_fingerprint": "37cc3a9d53717e8d92b4b064973b11f2747dc242a891396ad0f441c2203b7dda",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "ev-pitch-bend-center",
+      "property": "non_silent_after_onset",
+      "description": "Centered pitch bend renders audibly (no bend).",
+      "input_fingerprint": "83a241e2dc0968cabc17dec39c8da2139d528f485106f317f1c28068ea3f680e",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "51c7ee97a85bd6a4365c0098ab21300cdfa9ce6c39011b09dcbc47a0f8b9a42f",
+      "pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 0.8,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-0.8s)=0.16626"
+        }
+      ]
+    },
+    {
+      "id": "ev-pitch-bend-down",
+      "property": "manual:audible-pitch-differs",
+      "description": "Full-down pitch bend must be audibly lower (human judgment); mechanically it differs from both the centered and full-up renders.",
+      "input_fingerprint": "50a85507ef1f1782feee20629c40b721c00b8bf669a5d612d3fdfecb739d3ff9",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "f835d3cdd4e54d3e45038c4a7838a4263832cf5c706fb27a5eccb96f6029332a",
+      "pcm_sha256": "ade84a083f80a5f20ad2273bd9579c5776417c0e1ac0fe4e64e947a09c9ce47c",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 0.8,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "NO_VERDICT",
+      "manual": true,
+      "method": "manual-listening",
+      "manual_properties": [
+        "manual:audible-pitch-differs"
+      ],
+      "note": "manual expectation requires a human listening record; machine preconditions passed and are never treated as the judgment",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-0.8s)=0.16626"
+        },
+        {
+          "predicate": "distinct_hash_vs:ev-pitch-bend-center",
+          "passed": true,
+          "detail": "ade84a083f80 vs ev-pitch-bend-center:460d3972dd08"
+        },
+        {
+          "predicate": "distinct_hash_vs:ev-pitch-bend-up",
+          "passed": true,
+          "detail": "ade84a083f80 vs ev-pitch-bend-up:ad741f854c82"
+        }
+      ]
+    },
+    {
+      "id": "ev-pitch-bend-up",
+      "property": "distinct_hash_vs:ev-pitch-bend-center",
+      "description": "Full-up pitch bend changes the render versus centered bend.",
+      "input_fingerprint": "70054c62effe2a501a3ef37eb3a392a6a67a0fbe4d428367466d0a61b6745af4",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "499a6d19f59f495d5713f8afaced4f5d83d7236e91cf78bad7bc8c02efeabc61",
+      "pcm_sha256": "ad741f854c824d8ffdeef91663c095613a630bbed986209bf5ec8aaaf89688c9",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 0.8,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:ev-pitch-bend-center",
+          "passed": true,
+          "detail": "ad741f854c82 vs ev-pitch-bend-center:460d3972dd08"
+        }
+      ]
+    },
+    {
+      "id": "ev-repeated-note",
+      "property": "distinct_hash_vs:dir-base",
+      "description": "Repeated same-pitch note while held retriggers the envelope (render differs from the single-attack base).",
+      "input_fingerprint": "03275eedffc4741304c540fa5138285951ff2b0256fb0861801e23a2ac35301e",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "185ff82b6f8b15a965a5c808f598cf6cac5bba63fa9e4f8d91d649a9dbc6f390",
+      "pcm_sha256": "72057d03bbcbfb54734494efcf24a68e25f8ec4f7fd54803eb9f265f5b963493",
+      "peak_abs": 0.309783935546875,
+      "render_seconds": 1.5,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:dir-base",
+          "passed": true,
+          "detail": "72057d03bbcb vs dir-base:e43ca3fe4de4"
+        },
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.309784"
+        }
+      ]
+    },
+    {
+      "id": "ev-retrigger",
+      "property": "distinct_hash_vs:dir-base",
+      "description": "Rekeying during release retriggers a fresh attack (differs from the held base).",
+      "input_fingerprint": "05292b3387f48f53fd4da04cb7f7b6c5e2284592657381b4fd45efd99008a738",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "a3945c17b3d605c90697ac99909ab396b242759e51615adbdb8ac2844791ce0d",
+      "pcm_sha256": "f18effc2030e59b8a39874474631115ea0d5cc72478ca36fa084f05d866903d7",
+      "peak_abs": 0.287506103515625,
+      "render_seconds": 1.5,
+      "events_applied": 3,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:dir-base",
+          "passed": true,
+          "detail": "f18effc2030e vs dir-base:e43ca3fe4de4"
+        },
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.287506"
+        }
+      ]
+    },
+    {
+      "id": "ev-steal-16",
+      "property": "finite_peak",
+      "description": "Maximum voice summation: sixteen notes stay finite and bounded (peak <= 16 per-voice clip bound) while held.",
+      "input_fingerprint": "2e5291bbb1adb499aceaa05a11a566fa834c389fcc51f84ea8b967a3f4147372",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "a67d90ebbe173be9716148074ee0e4fa25df312c0dd881d9c59ec47bf4f55e35",
+      "pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+      "peak_abs": 1.344940185546875,
+      "render_seconds": 2.0,
+      "events_applied": 32,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "finite_peak",
+          "passed": true,
+          "detail": "finite=True peak=1.34494"
+        },
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-2.0s)=1.34494"
+        }
+      ]
+    },
+    {
+      "id": "ev-steal-17",
+      "property": "identical_hash_vs:ev-steal-16",
+      "description": "OBSERVED on the pinned oracle: the 17th note is dropped (16-voice allocator finds no free voice and does not steal). Recorded as observed reference allocation behavior for N07; no inaudible substitution is possible because the render is byte-identical to the 16-note case.",
+      "input_fingerprint": "239beb3806a2cbaf5c30a61c26b220bd4f2950d6bd38be2519988ec38d66fee5",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "6fc8a9580727fbaf0d0dd1083870c2ba4bff321d5ba05164e141095165258cfe",
+      "pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+      "peak_abs": 1.344940185546875,
+      "render_seconds": 2.0,
+      "events_applied": 34,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "identical_hash_vs:ev-steal-16",
+          "passed": true,
+          "detail": "8112af3ac005 == ev-steal-16:8112af3ac005"
+        }
+      ]
+    },
+    {
+      "id": "ev-sum-15",
+      "property": "non_silent_after_onset",
+      "description": "Fifteen simultaneous notes sum audibly (voice-summation anchor).",
+      "input_fingerprint": "71986652a0ec01df724a3b0c5508ac4648ed5f1ae6f40583272b4efa11950c42",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "856cfd64e8bccab49b2164e651e617c0bf9c8f48b201a216892e0851823770e4",
+      "pcm_sha256": "aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a",
+      "peak_abs": 1.317626953125,
+      "render_seconds": 2.0,
+      "events_applied": 30,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-2.0s)=1.31763"
+        }
+      ]
+    },
+    {
+      "id": "ev-sustain-no-pedal",
+      "property": "non_silent_after_onset",
+      "description": "Note-off without the pedal releases immediately (comparison anchor for the sustain-pedal case).",
+      "input_fingerprint": "1b769f94ac085f86d6f4f447bbacb165a4bdb073d1a5dbdfb4f92a2ba6379cfc",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "aeebc9c6f2a29a8f37fdc40101e3cf0de922b1f77440da314ae31480e0d52d82",
+      "pcm_sha256": "74226b8489929f6b626cb9df8072a45a7d8aad656843e608ea288b0da340a733",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.5,
+      "events_applied": 2,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "non_silent_after_onset",
+          "passed": true,
+          "detail": "peak(0.06-1.5s)=0.244293"
+        }
+      ]
+    },
+    {
+      "id": "ev-sustain-pedal",
+      "property": "late_peak_gt_case:ev-sustain-no-pedal",
+      "description": "Sustain pedal holds the voice past note-off: later window is louder than the no-pedal variant; pedal-up at 1.0 s starts a release that decays.",
+      "input_fingerprint": "b020bb5ff1697fc77c8b896f6b537f8a090bb1e60e02d4bbdbca33316851e194",
+      "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+      "events_sha256": "1432421eb7c18376e8ceabb8ecfba3cd4febe33db3547876cb83ae7aa4d553c9",
+      "pcm_sha256": "b8125d1089a2b1bec7e3da5b8b1b204372d99b7747a3666e3296992548954592",
+      "peak_abs": 0.244293212890625,
+      "render_seconds": 1.5,
+      "events_applied": 4,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "late_peak_gt_case:ev-sustain-no-pedal",
+          "passed": true,
+          "detail": "0.050354 > ev-sustain-no-pedal:0.00500488"
+        },
+        {
+          "predicate": "tail_decays",
+          "passed": true,
+          "detail": "peak(1.4-1.5)=0.0201416 < peak(0.8-1.0)=0.128998"
+        },
+        {
+          "predicate": "distinct_hash_vs:ev-sustain-no-pedal",
+          "passed": true,
+          "detail": "b8125d1089a2 vs ev-sustain-no-pedal:74226b848992"
+        }
+      ]
+    },
+    {
+      "id": "ev-volume-cc7",
+      "verdict": "BLOCKED",
+      "manual": true,
+      "property": "manual:volume-response",
+      "reason": "the pinned oracle CC subset is 1/2/4/64/120/123 and exposes no volume (CC 7) event; recorded per the issue stop/escalate rule",
+      "input_fingerprint": "7e1a84ea994307d76ce7ec4d6d6c65d233dc8d368b0e67653c6d977c9a2eea9f",
+      "oracle_identity_sha256_ok": true
+    },
+    {
+      "id": "osc-fixed-carrier",
+      "property": "distinct_hash_vs:dir-base",
+      "description": "Operator 1 in fixed-frequency mode renders differently from ratio mode (base).",
+      "input_fingerprint": "4ec7765388e9695d54f722a09b68b52bc00b9904f48553520a24208c4f677047",
+      "voice_sha256": "9c9cc58155a7bfce72a76bc862d3dbb5c5d5938fed70e6f610c99f4d740fcd59",
+      "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+      "pcm_sha256": "88921b5dbd1a2335c0a305369e3307f02c06a15ad195d0d8b75209c6b7e26275",
+      "peak_abs": 0.25616455078125,
+      "render_seconds": 1.5,
+      "events_applied": 1,
+      "oracle_identity_sha256_ok": true,
+      "verdict": "PASS",
+      "checks": [
+        {
+          "predicate": "distinct_hash_vs:dir-base",
+          "passed": true,
+          "detail": "88921b5dbd1a vs dir-base:e43ca3fe4de4"
+        }
+      ]
+    }
+  ],
+  "fidelity_note": "Software-reference agreement only (pinned Dexed Mark I oracle); not original-DX7 fidelity and not a musical-quality claim (DEC-001).",
+  "determinism_note": "single render per case; LFO-active renders are instance-dependent across oracle processes (reference/trace-registry.json), so cross-case hash claims are one-sided difference claims and identity claims only pair LFO-inert renders",
+  "stale_rule": "an evidence row whose input_fingerprint differs from the current case fingerprint is STALE (see docs/REGISTRY-POLICY.md)"
+}

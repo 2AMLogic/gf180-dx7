@@ -288,7 +288,7 @@
     },
     {
       "component": "capability-dag-compiler",
-      "ruling": "adapt",
+      "ruling": "reference-only",
       "upstream": {
         "repo": "2AMLogic/gf180-torchsynth",
         "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
@@ -311,28 +311,14 @@
         "path": "LICENSE",
         "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
       },
-      "destination": [
-        "src/gf180_dx7/capabilities.py",
-        "tools/compile_capabilities.py"
-      ],
+      "destination": [],
       "maintainer": "loom-builder + owner review",
       "requalification": {
-        "check": "tests/test_capabilities.py (states, refusals, stamping, views) green; bash tools/check_all.sh green; python3 tools/compile_capabilities.py --check green; DR-0004 records the adoption",
-        "result": "PASS"
+        "check": "none required (no bytes imported)",
+        "result": "NOT_RUN"
       },
-      "negative_control": "tests/test_capabilities.py: fabricated pass-evidence without controls yields NO_VERDICT (never PASS); a doctored covered byte yields STALE; a non-whitelisted check is refused by evaluation and by --stamp; a control recorded detected=false yields NO_VERDICT",
-      "notes": "Re-ruled reference-only -> adapt at C01 (issue #45, DR-0004): pattern adopted as locally authored stdlib code with NO upstream bytes (trace-capture precedent). The audit's required fixes are implemented: stamps only from the CHECKS whitelist, content-hash coverage on every stamp (dirty/untracked bytes included), missing or undetected negative controls yield NO_VERDICT, and file existence never qualifies. Upstream hashes retain reference provenance; adapted bytes are pinned below.",
-      "adaptations": [
-        "state machine re-targeted to this repo's vocabulary and precedence: NO_VERDICT for missing/refused evidence and undetected controls, STALE on any covered byte change, BLOCKED on non-PASS prerequisites with local state retained",
-        "evidence record schema gf180-dx7.capability-evidence/1 (check, argv, result, exit_code, coverage, controls, recorded_by) replaces the sibling's schema trio",
-        "--stamp producer path added: the only mode that executes commands; refuses unregistered checks; records actual exit codes and control detection",
-        "judge self-coverage (EVALUATOR_INPUTS: module, compiler, graph spec) so editing the DAG or compiler stales all recorded verdicts",
-        "views: docs/CAPABILITIES.md + docs/capabilities.json + README CAPABILITIES block placed after the ISSUEDAG block, with render_issue_dag-style mermaid lint (no '#' in labels)"
-      ],
-      "adapted_sha256": {
-        "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-        "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
-      }
+      "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
+      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
     },
     {
       "component": "spi-reg-control",
@@ -1177,8 +1163,8 @@
     },
     {
       "path": "tools/check_all.sh",
-      "sha256": "4350db24151b91c938417e9296ccbe614375422c8057207defaaa8842272e7e9",
-      "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7)"
+      "sha256": "c19d3b6d0fd2010d0e4704a59ff5aa9f2f699f5a98c90daafb5fd1231c31fe61",
+      "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge"
     },
     {
       "path": "src/gf180_dx7/sysex.py",
@@ -1274,6 +1260,31 @@
       "path": "spec/audition-phrases-v1.json",
       "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
       "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
+    },
+    {
+      "path": "tools/r07_compare.py",
+      "sha256": "b80bd15bb5e489bde962b71a6a2feb38ae39285eb288ab2a081360cfefeaa8e3",
+      "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported"
+    },
+    {
+      "path": "tools/check_numeric_profile.py",
+      "sha256": "11129ee06a919a5dfcfc8f1eaa39cbcaa80cdc42c9c9552093647cdac4b4345d",
+      "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1)"
+    },
+    {
+      "path": "tools/registry_coverage.py",
+      "sha256": "1ffec3d675647922851787a009be23493fb2f74a703f8b198f6bc37c452a57eb",
+      "reason": "locally authored R06 coverage validator (issue #13); reflects the P01 supported-field list, emits machine-readable coverage holes, --check gate and --selftest-negative resolution proof, no upstream bytes"
+    },
+    {
+      "path": "tools/registry_smoke.py",
+      "sha256": "6759e6c2a5bd45d6672885d0c05a9fb74772cbe37e09d1562644a29b25eb2e2a",
+      "reason": "locally authored R06 short-subset smoke executor (issue #13); builds patches via the P01 codec and drives the external GPL oracle as comparison evidence, no upstream bytes"
+    },
+    {
+      "path": "tools/check_registry.py",
+      "sha256": "ff78d51851a6d782b2f399a04adb9356d926606400075ff8767c49cf46bcf564",
+      "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
     },
     {
       "path": "tests/test_capabilities.py",

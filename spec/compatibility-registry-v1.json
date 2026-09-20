@@ -1,0 +1,3052 @@
+{
+  "schema": "gf180-dx7.compatibility-registry/1",
+  "registry_version": 1,
+  "id": "R06-compatibility-registry",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/13",
+  "plan_id": "R06",
+  "plan_source": "docs/dx7-chip-plan-v0.1-2026-09-20.md sections 7-8 (R06 row)",
+  "inputs": {
+    "codec": "src/gf180_dx7/sysex.py (P01 canonical supported-field list)",
+    "traces": "reference/trace-registry.json (R05 available-tap registry)",
+    "oracle": "reference/oracle-identity.json (pinned external render oracle)",
+    "corpus": "corpus/archive-catalogs/alltheweb-catalog.json (canonical hashes)"
+  },
+  "sample_rate": 48000,
+  "commitments": [
+    "Every decodable voice parameter (reflection over the P01 Voice/Operator dataclasses) has at least one directed or boundary case; codec bookkeeping fields (operators container, channel_byte, anomalies, raw_bytes) are excluded and owned by the P01 test suite.",
+    "All 32 algorithms (codec indices 0-31) have at least one case; algorithms 4 and 6 have feedback-specific cases at feedback 0, 3 (mid) and 7.",
+    "Expectations are property-level (machine predicates or explicitly manual); no numeric comparison vectors arrive before N08.",
+    "Properties verified mechanically against the pinned oracle in reference/evidence/registry-smoke.json; manual rows are never guessed.",
+    "Corpus-selector cases reuse committed canonical hashes; voice bytes are not redistributed and resolve from the pinned archive at challenge gates."
+  ],
+  "synthetic_base": {
+    "note": "Fixture-like Mark I patch: loud sustained six-operator stack, algorithm 0, feedback 3. Cases override named fields on top of this base; overrides use op.<field> (all six operators), opN.<field> (operator N), <common field>, or the display name.",
+    "common": {
+      "algorithm": 0,
+      "feedback": 3,
+      "osc_key_sync": 0,
+      "lfo_speed": 35,
+      "lfo_delay": 0,
+      "lfo_pitch_mod_depth": 0,
+      "lfo_amp_mod_depth": 0,
+      "lfo_key_sync": 1,
+      "lfo_wave": 0,
+      "lfo_pitch_mod_sensitivity": 0,
+      "transpose": 24,
+      "pitch_eg_rate_1": 99,
+      "pitch_eg_rate_2": 99,
+      "pitch_eg_rate_3": 99,
+      "pitch_eg_rate_4": 99,
+      "pitch_eg_level_1": 50,
+      "pitch_eg_level_2": 50,
+      "pitch_eg_level_3": 50,
+      "pitch_eg_level_4": 50
+    },
+    "operator": {
+      "rate_1": 99,
+      "rate_2": 71,
+      "rate_3": 53,
+      "rate_4": 42,
+      "level_1": 99,
+      "level_2": 95,
+      "level_3": 90,
+      "level_4": 0,
+      "break_point": 0,
+      "scale_left_depth": 0,
+      "scale_right_depth": 0,
+      "scale_left_curve": 0,
+      "scale_right_curve": 0,
+      "rate_scaling": 2,
+      "amp_mod_sensitivity": 0,
+      "key_velocity_sensitivity": 2,
+      "output_level": 90,
+      "osc_mode": 0,
+      "osc_freq_coarse": 1,
+      "osc_freq_fine": 0,
+      "osc_detune": 7
+    },
+    "operator_output_levels": {
+      "1": 99,
+      "2": 90,
+      "3": 99,
+      "4": 90,
+      "5": 90,
+      "6": 90
+    }
+  },
+  "holdout": {
+    "sealed": false,
+    "policy": "docs/REGISTRY-POLICY.md#holdout-seal",
+    "reason": "acceptance thresholds are not frozen (N08); the holdout subset stays empty until the seal, and challenge runs must not draw from cases marked holdout before then",
+    "challenge_subset": []
+  },
+  "fields": [
+    {
+      "field": "rate_1",
+      "kind": "op",
+      "directed_cases": [
+        "bd-delayed-attack"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "rate_2",
+      "kind": "op",
+      "directed_cases": [
+        "bd-delayed-attack",
+        "bd-rising-env"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "rate_3",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "bd-slow-rate3",
+        "bd-fast-rate3"
+      ]
+    },
+    {
+      "field": "rate_4",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "bd-nonzero-final",
+        "bd-fast-release"
+      ]
+    },
+    {
+      "field": "level_1",
+      "kind": "op",
+      "directed_cases": [
+        "bd-rising-env"
+      ],
+      "boundary_cases": [
+        "bd-delayed-attack"
+      ]
+    },
+    {
+      "field": "level_2",
+      "kind": "op",
+      "directed_cases": [
+        "bd-rising-env"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "level_3",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "bd-slow-rate3",
+        "bd-fast-rate3"
+      ]
+    },
+    {
+      "field": "level_4",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "bd-nonzero-final",
+        "bd-fast-release"
+      ]
+    },
+    {
+      "field": "break_point",
+      "kind": "op",
+      "directed_cases": [
+        "kbd-left-c1"
+      ],
+      "boundary_cases": [
+        "kbd-bp1"
+      ]
+    },
+    {
+      "field": "scale_left_depth",
+      "kind": "op",
+      "directed_cases": [
+        "kbd-left-c1"
+      ],
+      "boundary_cases": [
+        "kbd-left-depth0"
+      ]
+    },
+    {
+      "field": "scale_right_depth",
+      "kind": "op",
+      "directed_cases": [
+        "kbd-right-c3"
+      ],
+      "boundary_cases": [
+        "kbd-right-depth0"
+      ]
+    },
+    {
+      "field": "scale_left_curve",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "kbd-left-c0",
+        "kbd-left-c1",
+        "kbd-left-c2",
+        "kbd-left-c3"
+      ]
+    },
+    {
+      "field": "scale_right_curve",
+      "kind": "op",
+      "directed_cases": [
+        "kbd-right-c3"
+      ],
+      "boundary_cases": [
+        "kbd-right-c0",
+        "kbd-right-depth0"
+      ]
+    },
+    {
+      "field": "rate_scaling",
+      "kind": "op",
+      "directed_cases": [],
+      "boundary_cases": [
+        "bd-rs0",
+        "bd-rs3"
+      ]
+    },
+    {
+      "field": "amp_mod_sensitivity",
+      "kind": "op",
+      "directed_cases": [
+        "ampmod-ams3"
+      ],
+      "boundary_cases": [
+        "ampmod-ams0",
+        "ampmod-depth0"
+      ]
+    },
+    {
+      "field": "key_velocity_sensitivity",
+      "kind": "op",
+      "directed_cases": [
+        "vel-kvs7-127"
+      ],
+      "boundary_cases": [
+        "vel-kvs0-30",
+        "vel-kvs0-127",
+        "vel-kvs7-30"
+      ]
+    },
+    {
+      "field": "output_level",
+      "kind": "op",
+      "directed_cases": [
+        "dir-base"
+      ],
+      "boundary_cases": [
+        "kbd-left-c0",
+        "kbd-right-c0"
+      ]
+    },
+    {
+      "field": "osc_mode",
+      "kind": "op",
+      "directed_cases": [
+        "osc-fixed-carrier"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "osc_freq_coarse",
+      "kind": "op",
+      "directed_cases": [
+        "bd-coarse0",
+        "bd-coarse31"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "osc_freq_fine",
+      "kind": "op",
+      "directed_cases": [
+        "bd-fine99"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "osc_detune",
+      "kind": "op",
+      "directed_cases": [
+        "bd-detune0",
+        "bd-detune14"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_rate_1",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_rate_2",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_rate_3",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_rate_4",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_level_1",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_level_2",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_level_3",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "pitch_eg_level_4",
+      "kind": "common",
+      "directed_cases": [
+        "peg-up",
+        "peg-down"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "algorithm",
+      "kind": "common",
+      "directed_cases": [
+        "dir-base",
+        "corpus-alg4-oocuter"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "feedback",
+      "kind": "common",
+      "directed_cases": [
+        "alg4-fb0",
+        "alg4-fb3",
+        "alg4-fb7",
+        "alg6-fb0",
+        "alg6-fb3",
+        "alg6-fb7",
+        "corpus-highfb-mellowsolo"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "osc_key_sync",
+      "kind": "common",
+      "directed_cases": [
+        "osc-keysync0",
+        "osc-keysync1"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "lfo_speed",
+      "kind": "common",
+      "directed_cases": [
+        "lfo-speed0",
+        "lfo-speed99"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "lfo_delay",
+      "kind": "common",
+      "directed_cases": [],
+      "boundary_cases": [
+        "lfo-delay99"
+      ]
+    },
+    {
+      "field": "lfo_pitch_mod_depth",
+      "kind": "common",
+      "directed_cases": [
+        "lfo-pm-depth99"
+      ],
+      "boundary_cases": [
+        "lfo-pm-depth0"
+      ]
+    },
+    {
+      "field": "lfo_amp_mod_depth",
+      "kind": "common",
+      "directed_cases": [
+        "ampmod-ams3"
+      ],
+      "boundary_cases": [
+        "ampmod-depth0"
+      ]
+    },
+    {
+      "field": "lfo_key_sync",
+      "kind": "common",
+      "directed_cases": [
+        "lfo-keysync0",
+        "lfo-keysync1"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "lfo_wave",
+      "kind": "common",
+      "directed_cases": [],
+      "boundary_cases": [
+        "lfo-wave0",
+        "lfo-wave1",
+        "lfo-wave2",
+        "lfo-wave3",
+        "lfo-wave4",
+        "lfo-wave5"
+      ]
+    },
+    {
+      "field": "lfo_pitch_mod_sensitivity",
+      "kind": "common",
+      "directed_cases": [
+        "lfo-pm-sens7"
+      ],
+      "boundary_cases": [
+        "lfo-pm-sens0"
+      ]
+    },
+    {
+      "field": "transpose",
+      "kind": "common",
+      "directed_cases": [
+        "perf-transpose-12"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "name",
+      "kind": "common",
+      "directed_cases": [
+        "codec-name-a",
+        "codec-name-b"
+      ],
+      "boundary_cases": []
+    },
+    {
+      "field": "name_bytes",
+      "kind": "common",
+      "directed_cases": [
+        "codec-name-a",
+        "codec-name-b"
+      ],
+      "boundary_cases": []
+    }
+  ],
+  "algorithms": [
+    {
+      "algorithm": 0,
+      "cases": [
+        "dir-base"
+      ]
+    },
+    {
+      "algorithm": 1,
+      "cases": [
+        "alg-01"
+      ]
+    },
+    {
+      "algorithm": 2,
+      "cases": [
+        "alg-02"
+      ]
+    },
+    {
+      "algorithm": 3,
+      "cases": [
+        "alg-03"
+      ]
+    },
+    {
+      "algorithm": 4,
+      "cases": [
+        "alg4-fb0",
+        "alg4-fb3",
+        "alg4-fb7",
+        "corpus-alg4-oocuter"
+      ]
+    },
+    {
+      "algorithm": 5,
+      "cases": [
+        "alg-05"
+      ]
+    },
+    {
+      "algorithm": 6,
+      "cases": [
+        "alg6-fb0",
+        "alg6-fb3",
+        "alg6-fb7",
+        "corpus-alg6-belandbiwa"
+      ]
+    },
+    {
+      "algorithm": 7,
+      "cases": [
+        "alg-07"
+      ]
+    },
+    {
+      "algorithm": 8,
+      "cases": [
+        "alg-08"
+      ]
+    },
+    {
+      "algorithm": 9,
+      "cases": [
+        "alg-09"
+      ]
+    },
+    {
+      "algorithm": 10,
+      "cases": [
+        "alg-10"
+      ]
+    },
+    {
+      "algorithm": 11,
+      "cases": [
+        "alg-11"
+      ]
+    },
+    {
+      "algorithm": 12,
+      "cases": [
+        "alg-12"
+      ]
+    },
+    {
+      "algorithm": 13,
+      "cases": [
+        "alg-13"
+      ]
+    },
+    {
+      "algorithm": 14,
+      "cases": [
+        "alg-14"
+      ]
+    },
+    {
+      "algorithm": 15,
+      "cases": [
+        "alg-15"
+      ]
+    },
+    {
+      "algorithm": 16,
+      "cases": [
+        "alg-16"
+      ]
+    },
+    {
+      "algorithm": 17,
+      "cases": [
+        "alg-17"
+      ]
+    },
+    {
+      "algorithm": 18,
+      "cases": [
+        "alg-18"
+      ]
+    },
+    {
+      "algorithm": 19,
+      "cases": [
+        "alg-19"
+      ]
+    },
+    {
+      "algorithm": 20,
+      "cases": [
+        "alg-20"
+      ]
+    },
+    {
+      "algorithm": 21,
+      "cases": [
+        "alg-21"
+      ]
+    },
+    {
+      "algorithm": 22,
+      "cases": [
+        "alg-22"
+      ]
+    },
+    {
+      "algorithm": 23,
+      "cases": [
+        "alg-23"
+      ]
+    },
+    {
+      "algorithm": 24,
+      "cases": [
+        "alg-24"
+      ]
+    },
+    {
+      "algorithm": 25,
+      "cases": [
+        "alg-25"
+      ]
+    },
+    {
+      "algorithm": 26,
+      "cases": [
+        "alg-26"
+      ]
+    },
+    {
+      "algorithm": 27,
+      "cases": [
+        "alg-27"
+      ]
+    },
+    {
+      "algorithm": 28,
+      "cases": [
+        "alg-28"
+      ]
+    },
+    {
+      "algorithm": 29,
+      "cases": [
+        "alg-29"
+      ]
+    },
+    {
+      "algorithm": 30,
+      "cases": [
+        "alg-30"
+      ]
+    },
+    {
+      "algorithm": 31,
+      "cases": [
+        "alg-31"
+      ]
+    }
+  ],
+  "event_interactions": [
+    {
+      "interaction": "repeated_notes",
+      "cases": [
+        "ev-repeated-note"
+      ]
+    },
+    {
+      "interaction": "retrigger",
+      "cases": [
+        "ev-retrigger"
+      ]
+    },
+    {
+      "interaction": "sustain",
+      "cases": [
+        "ev-sustain-pedal",
+        "ev-sustain-no-pedal"
+      ]
+    },
+    {
+      "interaction": "stealing",
+      "cases": [
+        "ev-steal-16",
+        "ev-steal-17",
+        "ev-sum-15"
+      ]
+    },
+    {
+      "interaction": "patch_change_while_held",
+      "cases": [
+        "ev-patch-change-held"
+      ]
+    },
+    {
+      "interaction": "all_sound_off",
+      "cases": [
+        "ev-all-sound-off",
+        "ev-all-notes-off"
+      ]
+    },
+    {
+      "interaction": "pitch_bend_range",
+      "cases": [
+        "ev-pitch-bend-up",
+        "ev-pitch-bend-down",
+        "ev-pitch-bend-center"
+      ]
+    },
+    {
+      "interaction": "modwheel_sweep",
+      "cases": [
+        "ev-modwheel-127",
+        "ev-modwheel-0"
+      ]
+    },
+    {
+      "interaction": "aftertouch",
+      "cases": [
+        "ev-aftertouch"
+      ]
+    }
+  ],
+  "boundary": [
+    {
+      "boundary": "ratio_fixed_switch",
+      "cases": [
+        "osc-fixed-carrier",
+        "dir-base"
+      ]
+    },
+    {
+      "boundary": "coarse_zero",
+      "cases": [
+        "bd-coarse0"
+      ]
+    },
+    {
+      "boundary": "coarse_extremes",
+      "cases": [
+        "bd-coarse31"
+      ]
+    },
+    {
+      "boundary": "detune_extremes",
+      "cases": [
+        "bd-detune0",
+        "bd-detune14"
+      ]
+    },
+    {
+      "boundary": "lfo_waveforms",
+      "cases": [
+        "lfo-wave0",
+        "lfo-wave1",
+        "lfo-wave2",
+        "lfo-wave3",
+        "lfo-wave4",
+        "lfo-wave5"
+      ]
+    },
+    {
+      "boundary": "lfo_sync_modes",
+      "cases": [
+        "lfo-keysync0",
+        "lfo-keysync1"
+      ]
+    },
+    {
+      "boundary": "osc_sync_modes",
+      "cases": [
+        "osc-keysync0",
+        "osc-keysync1"
+      ]
+    },
+    {
+      "boundary": "lfo_delay_max",
+      "cases": [
+        "lfo-delay99"
+      ]
+    },
+    {
+      "boundary": "slow_rates",
+      "cases": [
+        "bd-slow-rate3",
+        "bd-delayed-attack"
+      ]
+    },
+    {
+      "boundary": "fast_rates",
+      "cases": [
+        "bd-fast-rate3",
+        "bd-fast-release"
+      ]
+    },
+    {
+      "boundary": "rising_envelope_segments",
+      "cases": [
+        "bd-rising-env"
+      ]
+    },
+    {
+      "boundary": "delayed_attack",
+      "cases": [
+        "bd-delayed-attack"
+      ]
+    },
+    {
+      "boundary": "nonzero_final_level",
+      "cases": [
+        "bd-nonzero-final"
+      ]
+    },
+    {
+      "boundary": "pitch_eg_up_down",
+      "cases": [
+        "peg-up",
+        "peg-down"
+      ]
+    },
+    {
+      "boundary": "keyboard_scaling_curves",
+      "cases": [
+        "kbd-left-c0",
+        "kbd-left-c1",
+        "kbd-left-c2",
+        "kbd-left-c3",
+        "kbd-left-depth0",
+        "kbd-bp1",
+        "kbd-right-c0",
+        "kbd-right-c3",
+        "kbd-right-depth0"
+      ]
+    },
+    {
+      "boundary": "velocity_sensitivity",
+      "cases": [
+        "vel-kvs0-30",
+        "vel-kvs0-127",
+        "vel-kvs7-30",
+        "vel-kvs7-127"
+      ]
+    },
+    {
+      "boundary": "rate_scaling",
+      "cases": [
+        "bd-rs0",
+        "bd-rs3"
+      ]
+    },
+    {
+      "boundary": "max_voice_summation",
+      "cases": [
+        "ev-sum-15",
+        "ev-steal-16",
+        "ev-steal-17"
+      ]
+    },
+    {
+      "boundary": "name_identity",
+      "cases": [
+        "codec-name-a",
+        "codec-name-b"
+      ]
+    }
+  ],
+  "performance_controls": [
+    {
+      "control": "note_on_off",
+      "cases": [
+        "dir-base",
+        "ev-repeated-note",
+        "ev-retrigger"
+      ],
+      "status": "covered"
+    },
+    {
+      "control": "velocity",
+      "cases": [
+        "vel-kvs0-30",
+        "vel-kvs7-127"
+      ],
+      "status": "covered"
+    },
+    {
+      "control": "sustain",
+      "cases": [
+        "ev-sustain-pedal",
+        "ev-sustain-no-pedal"
+      ],
+      "status": "covered"
+    },
+    {
+      "control": "pitch_bend",
+      "cases": [
+        "ev-pitch-bend-up",
+        "ev-pitch-bend-down",
+        "ev-pitch-bend-center"
+      ],
+      "status": "covered"
+    },
+    {
+      "control": "modwheel",
+      "cases": [
+        "ev-modwheel-127",
+        "ev-modwheel-0"
+      ],
+      "status": "covered-observed-inert"
+    },
+    {
+      "control": "aftertouch",
+      "cases": [
+        "ev-aftertouch"
+      ],
+      "status": "blocked"
+    },
+    {
+      "control": "volume",
+      "cases": [
+        "ev-volume-cc7"
+      ],
+      "status": "blocked"
+    },
+    {
+      "control": "all_sound_off",
+      "cases": [
+        "ev-all-sound-off",
+        "ev-all-notes-off"
+      ],
+      "status": "covered"
+    }
+  ],
+  "cases": [
+    {
+      "id": "dir-base",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Synthetic base (fixture-like Mark I patch, algorithm 0): a held note yields a non-silent, sustained render. Anchor case for hash-distinct comparisons."
+      }
+    },
+    {
+      "id": "osc-fixed-carrier",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_mode": 1
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Operator 1 in fixed-frequency mode renders differently from ratio mode (base)."
+      }
+    },
+    {
+      "id": "bd-coarse0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_freq_coarse": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Coarse frequency 0 (0.5x ratio) renders differently from coarse 1 (base)."
+      }
+    },
+    {
+      "id": "bd-coarse31",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_freq_coarse": 31
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Coarse frequency 31 (maximum) renders differently from coarse 1 and stays audible.",
+        "also": [
+          "non_silent_after_onset"
+        ]
+      }
+    },
+    {
+      "id": "bd-fine99",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_freq_fine": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Fine frequency 99 renders differently from fine 0 (base)."
+      }
+    },
+    {
+      "id": "bd-detune0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_detune": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:bd-detune14",
+        "description": "Detune 0 (lower extreme) renders differently from detune 14."
+      }
+    },
+    {
+      "id": "bd-detune14",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.osc_detune": 14
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:audible-pitch-differs",
+        "description": "Detune extremes must be audibly different in pitch (human judgment; never guessed from a hash). Hash-distinctness is asserted mechanically as a precondition.",
+        "also": [
+          "non_silent_after_onset",
+          "distinct_hash_vs:bd-detune0"
+        ]
+      }
+    },
+    {
+      "id": "alg-01",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 1
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 1 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-02",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 2
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 2 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-03",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 3
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 3 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-05",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 5
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 5 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-07",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 7 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-08",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 8
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 8 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-09",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 9
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 9 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-10",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 10
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 10 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-11",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 11
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 11 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-12",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 12
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 12 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-13",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 13
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 13 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-14",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 14
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 14 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-15",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 15
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 15 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-16",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 16
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 16 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-17",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 17
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 17 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-18",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 18
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 18 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-19",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 19
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 19 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-20",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 20
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 20 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-21",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 21
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 21 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-22",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 22
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 22 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-23",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 23
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 23 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-24",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 24
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 24 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-25",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 25
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 25 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-26",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 26
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 26 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-27",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 27
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 27 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-28",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 28
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 28 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-29",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 29
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 29 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-30",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 30
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 30 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg-31",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 31
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 31 routes the six live operators to an audible output."
+      }
+    },
+    {
+      "id": "alg4-fb0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 4,
+          "feedback": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 4 with feedback 0 renders audibly (feedback chain live)."
+      }
+    },
+    {
+      "id": "alg4-fb3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 4,
+          "feedback": 3
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:alg4-fb0",
+        "description": "Algorithm 4 mid feedback (3) changes the render versus feedback 0."
+      }
+    },
+    {
+      "id": "alg4-fb7",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 4,
+          "feedback": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:alg4-fb0",
+        "description": "Algorithm 4 maximum feedback (7) differs from both feedback 0 and 3.",
+        "also": [
+          "distinct_hash_vs:alg4-fb3"
+        ]
+      }
+    },
+    {
+      "id": "alg6-fb0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 6,
+          "feedback": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Algorithm 6 with feedback 0 renders audibly (feedback chain live)."
+      }
+    },
+    {
+      "id": "alg6-fb3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 6,
+          "feedback": 3
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:alg6-fb0",
+        "description": "Algorithm 6 mid feedback (3) changes the render versus feedback 0."
+      }
+    },
+    {
+      "id": "alg6-fb7",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "algorithm": 6,
+          "feedback": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:alg6-fb0",
+        "description": "Algorithm 6 maximum feedback (7) differs from both feedback 0 and 3.",
+        "also": [
+          "distinct_hash_vs:alg6-fb3"
+        ]
+      }
+    },
+    {
+      "id": "corpus-alg4-oocuter",
+      "patch": {
+        "selector": "corpus",
+        "canonical_hash": "2a8396365292503f3844be133be78c05b8fabf8e45cf931385e6de9c6ba40d8d",
+        "corpus_note": "alltheweb catalog instance OO-CUTER (dev32 index 4); voice bytes are not redistributed and resolve from the pinned archive"
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:corpus-render-agreement",
+        "description": "Corpus reuse: algorithm 4 patch from the committed catalog (feedback 0, low feedback feature) rendered with the standard phrase; agreement evidence is captured at challenge gates, not in the smoke."
+      }
+    },
+    {
+      "id": "corpus-alg6-belandbiwa",
+      "patch": {
+        "selector": "corpus",
+        "canonical_hash": "65a17a76bdbf0c5302835e43952e840c1df3a6839d6a7345a50be3dc6d683f7f",
+        "corpus_note": "alltheweb catalog instance belandBIWA (dev32 index 6); bytes resolve from the pinned archive"
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:corpus-render-agreement",
+        "description": "Corpus reuse: algorithm 6 patch from the committed catalog (feedback 2)."
+      }
+    },
+    {
+      "id": "corpus-highfb-mellowsolo",
+      "patch": {
+        "selector": "corpus",
+        "canonical_hash": "879763e98c6c03c839c674d436cc8f9a08c561120023ae46bf6af5b51bb1dc6a",
+        "corpus_note": "alltheweb catalog instance MELLOWSOLO (dev32 index 1); bytes resolve from the pinned archive"
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:corpus-render-agreement",
+        "description": "Corpus reuse: high-feedback patch from the committed catalog (algorithm 1, feedback 7)."
+      }
+    },
+    {
+      "id": "lfo-wave0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 0,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 0 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-wave1",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 1,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 1 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-wave2",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 2,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 2 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-wave3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 3,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 3 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-wave4",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 4,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 4 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-wave5",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_wave": 5,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO waveform 5 with full pitch modulation renders audibly (waveform shape itself is a listening property)."
+      }
+    },
+    {
+      "id": "lfo-speed0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_speed": 0,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:lfo-speed99",
+        "description": "LFO speed 0 renders differently from speed 99 (one-sided difference claim; LFO-active renders are instance-dependent, see docs/REGISTRY-POLICY.md)."
+      }
+    },
+    {
+      "id": "lfo-speed99",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_speed": 99,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Fast LFO with full pitch modulation renders audibly."
+      }
+    },
+    {
+      "id": "lfo-keysync0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_key_sync": 0,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO key sync off renders audibly; sync-phase behavior is instance-dependent and is a listening property (see docs/REGISTRY-POLICY.md)."
+      }
+    },
+    {
+      "id": "lfo-keysync1",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_key_sync": 1,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "LFO key sync on (restart at keydown) renders audibly."
+      }
+    },
+    {
+      "id": "lfo-delay99",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_delay": 99,
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:delayed-lfo-ramp",
+        "description": "Maximum LFO delay must produce an audible delayed ramp-in of the modulation (human judgment). Render must stay audible.",
+        "also": [
+          "non_silent_after_onset"
+        ]
+      }
+    },
+    {
+      "id": "lfo-pm-depth0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_pitch_mod_depth": 0,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Zero pitch-mod depth leaves the note audible (unmodulated)."
+      }
+    },
+    {
+      "id": "lfo-pm-depth99",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:lfo-pm-depth0",
+        "description": "Full pitch-mod depth changes the render versus zero depth."
+      }
+    },
+    {
+      "id": "lfo-pm-sens0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 0,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Pitch-mod sensitivity 0 renders audibly (unmodulated)."
+      }
+    },
+    {
+      "id": "lfo-pm-sens7",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_pitch_mod_depth": 99,
+          "lfo_pitch_mod_sensitivity": 7,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:lfo-pm-sens0",
+        "description": "Pitch-mod sensitivity 7 changes the render versus sensitivity 0."
+      }
+    },
+    {
+      "id": "ampmod-depth0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_amp_mod_depth": 0,
+          "op1.amp_mod_sensitivity": 3,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Zero amp-mod depth with AMS 3 renders audibly."
+      }
+    },
+    {
+      "id": "ampmod-ams3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_amp_mod_depth": 99,
+          "op1.amp_mod_sensitivity": 3,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:ampmod-depth0",
+        "description": "Amp-mod depth 99 with carrier AMS 3 changes the render (tremolo present)."
+      }
+    },
+    {
+      "id": "ampmod-ams0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "lfo_amp_mod_depth": 99,
+          "op1.amp_mod_sensitivity": 0,
+          "lfo_speed": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:ampmod-ams3",
+        "description": "Carrier amp-mod sensitivity 0 suppresses the tremolo the depth alone would give."
+      }
+    },
+    {
+      "id": "osc-keysync0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "osc_key_sync": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "36000 note_off 60",
+        "48000 note_on 60 100"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "identical_hash_vs:osc-keysync1",
+        "description": "OBSERVED on the pinned oracle: oscillator key sync off and on render identically for repeated same-pitch notes (per-note phase is re-initialized at keydown regardless of data[136]). Recorded as observed reference behavior; the case stays directed for the frozen model (DEC-020 sync semantics)."
+      }
+    },
+    {
+      "id": "osc-keysync1",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "osc_key_sync": 1
+        }
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "36000 note_off 60",
+        "48000 note_on 60 100"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Oscillator key sync on renders audibly (two-note phrase)."
+      }
+    },
+    {
+      "id": "bd-slow-rate3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.rate_3": 1,
+          "op.level_3": 20
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "fades_to_quiet",
+        "description": "Slow segment-3 rate toward a low sustain level: the held note fades (rate=1 slowness is audible as a decay time)."
+      }
+    },
+    {
+      "id": "bd-fast-rate3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.rate_3": 99,
+          "op.level_3": 20
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "sustains",
+        "description": "Fast segment-3 rate reaches the low sustain level quickly; renders differently from the slow variant.",
+        "also": [
+          "distinct_hash_vs:bd-slow-rate3"
+        ]
+      }
+    },
+    {
+      "id": "bd-delayed-attack",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.rate_1": 1,
+          "op.level_1": 0,
+          "op.rate_2": 45
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "onset_absent_early",
+        "description": "Delayed attack: with rate 1 into level 0 and a moderate rise rate, the note is silent through the early window and audible later.",
+        "also": [
+          "rises_later",
+          "distinct_hash_vs:dir-base"
+        ]
+      }
+    },
+    {
+      "id": "bd-rising-env",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.level_1": 20,
+          "op1.level_2": 99,
+          "op1.rate_2": 15,
+          "op1.rate_3": 99,
+          "op1.level_3": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "rms_rises",
+        "description": "Rising envelope segment: the carrier level rises from a low first target toward full output (rms grows over the first half second).",
+        "also": [
+          "distinct_hash_vs:dir-base"
+        ]
+      }
+    },
+    {
+      "id": "bd-nonzero-final",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.level_4": 99,
+          "op.rate_4": 1
+        }
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "24000 note_off 60"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "tail_present_at_end",
+        "description": "Nonzero final level with a slow release: the note-off tail is still audible at the end of the render window.",
+        "also": [
+          "distinct_hash_vs:bd-fast-release"
+        ]
+      }
+    },
+    {
+      "id": "bd-fast-release",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.level_4": 0,
+          "op.rate_4": 99
+        }
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "24000 note_off 60"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "silent_at_end",
+        "description": "Fast release to a zero final level: the tail is fully gone by the end of the render."
+      }
+    },
+    {
+      "id": "kbd-left-c0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 99,
+          "op1.break_point": 72,
+          "op1.scale_left_curve": 0
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Left scaling curve 0 at 32 semitones below the break point renders audibly."
+      }
+    },
+    {
+      "id": "kbd-left-c1",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 99,
+          "op1.break_point": 72,
+          "op1.scale_left_curve": 1
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-left-c0",
+        "description": "Left scaling curve 1 at 32 semitones below the break point renders audibly; adjacent curves differ (curves 0-3 mutually distinct)."
+      }
+    },
+    {
+      "id": "kbd-left-c2",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 99,
+          "op1.break_point": 72,
+          "op1.scale_left_curve": 2
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-left-c1",
+        "description": "Left scaling curve 2 at 32 semitones below the break point renders audibly; adjacent curves differ (curves 0-3 mutually distinct)."
+      }
+    },
+    {
+      "id": "kbd-left-c3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 99,
+          "op1.break_point": 72,
+          "op1.scale_left_curve": 3
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-left-c2",
+        "description": "Left scaling curve 3 at 32 semitones below the break point renders audibly; adjacent curves differ (curves 0-3 mutually distinct)."
+      }
+    },
+    {
+      "id": "kbd-left-depth0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 0,
+          "op1.scale_left_curve": 1,
+          "op1.break_point": 72
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-left-c1",
+        "description": "Zero left depth suppresses the curve-1 scaling the depth-99 variant applies."
+      }
+    },
+    {
+      "id": "kbd-bp1",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_left_depth": 99,
+          "op1.scale_left_curve": 1,
+          "op1.break_point": 1
+        }
+      },
+      "events": [
+        "2400 note_on 40 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-left-c1",
+        "description": "Break point 1 puts note 40 right of the break, removing the left scaling."
+      }
+    },
+    {
+      "id": "kbd-right-c0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_right_depth": 99,
+          "op1.break_point": 48,
+          "op1.scale_left_depth": 0,
+          "op1.scale_right_curve": 0
+        }
+      },
+      "events": [
+        "2400 note_on 84 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Right scaling curve 0 above the break point renders audibly."
+      }
+    },
+    {
+      "id": "kbd-right-c3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_right_depth": 99,
+          "op1.break_point": 48,
+          "op1.scale_left_depth": 0,
+          "op1.scale_right_curve": 3
+        }
+      },
+      "events": [
+        "2400 note_on 84 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-right-c0",
+        "description": "Right curve 3 at 36 semitones above the break point differs from curve 0."
+      }
+    },
+    {
+      "id": "kbd-right-depth0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.output_level": 60,
+          "op1.scale_right_depth": 0,
+          "op1.scale_right_curve": 3,
+          "op1.break_point": 48
+        }
+      },
+      "events": [
+        "2400 note_on 84 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:kbd-right-c3",
+        "description": "Zero right depth suppresses the curve-3 scaling above the break point."
+      }
+    },
+    {
+      "id": "bd-rs0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.rate_scaling": 0,
+          "op1.rate_1": 60
+        }
+      },
+      "events": [
+        "2400 note_on 36 100"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Rate scaling 0 at a low key renders audibly."
+      }
+    },
+    {
+      "id": "bd-rs3",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op1.rate_scaling": 3,
+          "op1.rate_1": 60
+        }
+      },
+      "events": [
+        "2400 note_on 36 100"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "distinct_hash_vs:bd-rs0",
+        "description": "Rate scaling 3 speeds the same envelope at the low key versus scaling 0."
+      }
+    },
+    {
+      "id": "vel-kvs0-30",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.key_velocity_sensitivity": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 30"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "identical_hash_vs:vel-kvs0-127",
+        "description": "With carrier+modulator velocity sensitivity 0, velocities 30 and 127 render byte-identically (velocity must not leak into level)."
+      }
+    },
+    {
+      "id": "vel-kvs0-127",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.key_velocity_sensitivity": 0
+        }
+      },
+      "events": [
+        "2400 note_on 60 127"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Velocity 127 with sensitivity 0 renders audibly."
+      }
+    },
+    {
+      "id": "vel-kvs7-30",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.key_velocity_sensitivity": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 30"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Velocity 30 with maximum velocity sensitivity renders audibly."
+      }
+    },
+    {
+      "id": "vel-kvs7-127",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "op.key_velocity_sensitivity": 7
+        }
+      },
+      "events": [
+        "2400 note_on 60 127"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:vel-kvs7-30",
+        "description": "With velocity sensitivity 7, velocities 30 and 127 render differently."
+      }
+    },
+    {
+      "id": "peg-up",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "pitch_eg_rate_1": 99,
+          "pitch_eg_rate_2": 30,
+          "pitch_eg_rate_3": 99,
+          "pitch_eg_rate_4": 99,
+          "pitch_eg_level_1": 90,
+          "pitch_eg_level_2": 20,
+          "pitch_eg_level_3": 50,
+          "pitch_eg_level_4": 50
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:peg-down",
+        "description": "Pitch EG starting above center and falling renders differently from the mirrored rising shape."
+      }
+    },
+    {
+      "id": "peg-down",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "pitch_eg_rate_1": 99,
+          "pitch_eg_rate_2": 30,
+          "pitch_eg_rate_3": 99,
+          "pitch_eg_rate_4": 99,
+          "pitch_eg_level_1": 10,
+          "pitch_eg_level_2": 80,
+          "pitch_eg_level_3": 50,
+          "pitch_eg_level_4": 50
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Pitch EG starting below center and rising differs from the flat pitch EG base."
+      }
+    },
+    {
+      "id": "perf-transpose-12",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {
+          "transpose": 12
+        }
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "identical_hash_vs:dir-base",
+        "description": "OBSERVED on the pinned oracle: the patch transpose (data[144]) does not shift rendered pitch (the wrapper keydown omits the data[144]-24 shift that upstream Dexed applies). Recorded as a bounded R06 finding; the case stays directed for the frozen model (DEC-023 requires the patch transpose to be preserved)."
+      }
+    },
+    {
+      "id": "codec-name-a",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {},
+        "name": "CASE-A"
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "identical_hash_vs:codec-name-b",
+        "description": "Display name changes must not affect the render (name bytes are identity, not synthesis)."
+      }
+    },
+    {
+      "id": "codec-name-b",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {},
+        "name": "CASE-B"
+      },
+      "events": [
+        "2400 note_on 60 100"
+      ],
+      "render_seconds": 1.0,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Same patch under a different display name renders audibly."
+      }
+    },
+    {
+      "id": "ev-repeated-note",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "24000 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Repeated same-pitch note while held retriggers the envelope (render differs from the single-attack base).",
+        "also": [
+          "non_silent_after_onset"
+        ]
+      }
+    },
+    {
+      "id": "ev-retrigger",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "12000 note_off 60",
+        "14400 note_on 60 100"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "distinct_hash_vs:dir-base",
+        "description": "Rekeying during release retriggers a fresh attack (differs from the held base).",
+        "also": [
+          "non_silent_after_onset"
+        ]
+      }
+    },
+    {
+      "id": "ev-sustain-no-pedal",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "4800 note_on 60 100",
+        "24000 note_off 60"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Note-off without the pedal releases immediately (comparison anchor for the sustain-pedal case)."
+      }
+    },
+    {
+      "id": "ev-sustain-pedal",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "0 cc 64 127",
+        "4800 note_on 60 100",
+        "24000 note_off 60",
+        "48000 cc 64 0"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "late_peak_gt_case:ev-sustain-no-pedal",
+        "description": "Sustain pedal holds the voice past note-off: later window is louder than the no-pedal variant; pedal-up at 1.0 s starts a release that decays.",
+        "also": [
+          "tail_decays",
+          "distinct_hash_vs:ev-sustain-no-pedal"
+        ]
+      }
+    },
+    {
+      "id": "ev-sum-15",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "2500 note_on 61 100",
+        "2600 note_on 62 100",
+        "2700 note_on 63 100",
+        "2800 note_on 64 100",
+        "2900 note_on 65 100",
+        "3000 note_on 66 100",
+        "3100 note_on 67 100",
+        "3200 note_on 68 100",
+        "3300 note_on 69 100",
+        "3400 note_on 70 100",
+        "3500 note_on 71 100",
+        "3600 note_on 72 100",
+        "3700 note_on 73 100",
+        "3800 note_on 74 100",
+        "72000 note_off 60",
+        "72000 note_off 61",
+        "72000 note_off 62",
+        "72000 note_off 63",
+        "72000 note_off 64",
+        "72000 note_off 65",
+        "72000 note_off 66",
+        "72000 note_off 67",
+        "72000 note_off 68",
+        "72000 note_off 69",
+        "72000 note_off 70",
+        "72000 note_off 71",
+        "72000 note_off 72",
+        "72000 note_off 73",
+        "72000 note_off 74"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Fifteen simultaneous notes sum audibly (voice-summation anchor)."
+      }
+    },
+    {
+      "id": "ev-steal-16",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "2500 note_on 61 100",
+        "2600 note_on 62 100",
+        "2700 note_on 63 100",
+        "2800 note_on 64 100",
+        "2900 note_on 65 100",
+        "3000 note_on 66 100",
+        "3100 note_on 67 100",
+        "3200 note_on 68 100",
+        "3300 note_on 69 100",
+        "3400 note_on 70 100",
+        "3500 note_on 71 100",
+        "3600 note_on 72 100",
+        "3700 note_on 73 100",
+        "3800 note_on 74 100",
+        "3900 note_on 75 100",
+        "72000 note_off 60",
+        "72000 note_off 61",
+        "72000 note_off 62",
+        "72000 note_off 63",
+        "72000 note_off 64",
+        "72000 note_off 65",
+        "72000 note_off 66",
+        "72000 note_off 67",
+        "72000 note_off 68",
+        "72000 note_off 69",
+        "72000 note_off 70",
+        "72000 note_off 71",
+        "72000 note_off 72",
+        "72000 note_off 73",
+        "72000 note_off 74",
+        "72000 note_off 75"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "finite_peak",
+        "description": "Maximum voice summation: sixteen notes stay finite and bounded (peak <= 16 per-voice clip bound) while held.",
+        "also": [
+          "non_silent_after_onset"
+        ]
+      }
+    },
+    {
+      "id": "ev-steal-17",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "2500 note_on 61 100",
+        "2600 note_on 62 100",
+        "2700 note_on 63 100",
+        "2800 note_on 64 100",
+        "2900 note_on 65 100",
+        "3000 note_on 66 100",
+        "3100 note_on 67 100",
+        "3200 note_on 68 100",
+        "3300 note_on 69 100",
+        "3400 note_on 70 100",
+        "3500 note_on 71 100",
+        "3600 note_on 72 100",
+        "3700 note_on 73 100",
+        "3800 note_on 74 100",
+        "3900 note_on 75 100",
+        "4000 note_on 76 100",
+        "72000 note_off 60",
+        "72000 note_off 61",
+        "72000 note_off 62",
+        "72000 note_off 63",
+        "72000 note_off 64",
+        "72000 note_off 65",
+        "72000 note_off 66",
+        "72000 note_off 67",
+        "72000 note_off 68",
+        "72000 note_off 69",
+        "72000 note_off 70",
+        "72000 note_off 71",
+        "72000 note_off 72",
+        "72000 note_off 73",
+        "72000 note_off 74",
+        "72000 note_off 75",
+        "72000 note_off 76"
+      ],
+      "render_seconds": 2.0,
+      "expect": {
+        "property": "identical_hash_vs:ev-steal-16",
+        "description": "OBSERVED on the pinned oracle: the 17th note is dropped (16-voice allocator finds no free voice and does not steal). Recorded as observed reference allocation behavior for N07; no inaudible substitution is possible because the render is byte-identical to the 16-note case."
+      }
+    },
+    {
+      "id": "ev-all-sound-off",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "24000 cc 120 0"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "silent_after_cc120",
+        "description": "All-sound-off (CC 120) kills the sounding voice: audible before, exactly silent after the event block.",
+        "also": [
+          "events_applied_count:2"
+        ]
+      }
+    },
+    {
+      "id": "ev-all-notes-off",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "24000 cc 123 0"
+      ],
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "late_peak_lt_case:dir-base",
+        "description": "All-notes-off (CC 123) releases (does not kill): the post-event window is quieter than the held base."
+      }
+    },
+    {
+      "id": "ev-pitch-bend-up",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "4800 pb 127 127"
+      ],
+      "render_seconds": 0.8,
+      "expect": {
+        "property": "distinct_hash_vs:ev-pitch-bend-center",
+        "description": "Full-up pitch bend changes the render versus centered bend."
+      }
+    },
+    {
+      "id": "ev-pitch-bend-down",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "4800 pb 0 0"
+      ],
+      "render_seconds": 0.8,
+      "expect": {
+        "property": "manual:audible-pitch-differs",
+        "description": "Full-down pitch bend must be audibly lower (human judgment); mechanically it differs from both the centered and full-up renders.",
+        "also": [
+          "non_silent_after_onset",
+          "distinct_hash_vs:ev-pitch-bend-center",
+          "distinct_hash_vs:ev-pitch-bend-up"
+        ]
+      }
+    },
+    {
+      "id": "ev-pitch-bend-center",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "4800 pb 0 64"
+      ],
+      "render_seconds": 0.8,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Centered pitch bend renders audibly (no bend)."
+      }
+    },
+    {
+      "id": "ev-modwheel-127",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "4800 cc 1 127"
+      ],
+      "render_seconds": 0.8,
+      "expect": {
+        "property": "identical_hash_vs:ev-modwheel-0",
+        "description": "OBSERVED on the pinned oracle: mod-wheel CC 1 does not change the render because the pinned controller-modifier defaults leave the wheel inert (manifest mod_wheel_default_modifiers: range=0). Recorded as a bounded finding; the case stays directed for the frozen model (DEC-006 modwheel response)."
+      }
+    },
+    {
+      "id": "ev-modwheel-0",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [
+        "2400 note_on 60 100",
+        "4800 cc 1 0"
+      ],
+      "render_seconds": 0.8,
+      "expect": {
+        "property": "non_silent_after_onset",
+        "description": "Mod wheel at 0 renders audibly."
+      }
+    },
+    {
+      "id": "ev-aftertouch",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [],
+      "blocked": true,
+      "blocked_reason": "the pinned oracle exposes no aftertouch event command (events.txt supports note_on/note_off/cc/pb only), so no executable reference render exists; recorded per the issue stop/escalate rule instead of inventing a substitute",
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:aftertouch-response",
+        "description": "Channel aftertouch sweep while a note sustains (DEC-006 control)."
+      }
+    },
+    {
+      "id": "ev-patch-change-held",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [],
+      "blocked": true,
+      "blocked_reason": "the pinned oracle takes exactly one voice file per render and has no mid-render program-change event; the two-voice case needs the N07 polyphonic state/event manager (plan section 8)",
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:held-note-patch-change",
+        "description": "Patch change while a note is held (two-voice case): the held voice keeps its envelope per DEC-019 and new notes use the new patch."
+      }
+    },
+    {
+      "id": "ev-volume-cc7",
+      "patch": {
+        "selector": "synthetic",
+        "overrides": {}
+      },
+      "events": [],
+      "blocked": true,
+      "blocked_reason": "the pinned oracle CC subset is 1/2/4/64/120/123 and exposes no volume (CC 7) event; recorded per the issue stop/escalate rule",
+      "render_seconds": 1.5,
+      "expect": {
+        "property": "manual:volume-response",
+        "description": "Volume (CC 7) response while a note sustains (DEC-006 control)."
+      }
+    }
+  ],
+  "short_subset": [
+    "dir-base",
+    "osc-fixed-carrier",
+    "bd-coarse0",
+    "bd-coarse31",
+    "bd-detune0",
+    "bd-detune14",
+    "alg4-fb0",
+    "alg4-fb3",
+    "alg4-fb7",
+    "alg6-fb0",
+    "alg6-fb3",
+    "alg6-fb7",
+    "codec-name-a",
+    "codec-name-b",
+    "ev-repeated-note",
+    "ev-retrigger",
+    "ev-sustain-no-pedal",
+    "ev-sustain-pedal",
+    "ev-sum-15",
+    "ev-steal-16",
+    "ev-steal-17",
+    "ev-all-sound-off",
+    "ev-all-notes-off",
+    "ev-pitch-bend-up",
+    "ev-pitch-bend-down",
+    "ev-pitch-bend-center",
+    "ev-modwheel-127",
+    "ev-modwheel-0"
+  ]
+}

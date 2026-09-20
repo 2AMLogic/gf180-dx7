@@ -1260,6 +1260,21 @@
       "path": "spec/audition-phrases-v1.json",
       "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
       "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
+    },
+    {
+      "path": "tools/registry_coverage.py",
+      "sha256": "1ffec3d675647922851787a009be23493fb2f74a703f8b198f6bc37c452a57eb",
+      "reason": "locally authored R06 coverage validator (issue #13); reflects the P01 supported-field list, emits machine-readable coverage holes, --check gate and --selftest-negative resolution proof, no upstream bytes"
+    },
+    {
+      "path": "tools/registry_smoke.py",
+      "sha256": "6759e6c2a5bd45d6672885d0c05a9fb74772cbe37e09d1562644a29b25eb2e2a",
+      "reason": "locally authored R06 short-subset smoke executor (issue #13); builds patches via the P01 codec and drives the external GPL oracle as comparison evidence, no upstream bytes"
+    },
+    {
+      "path": "tools/check_registry.py",
+      "sha256": "ff78d51851a6d782b2f399a04adb9356d926606400075ff8767c49cf46bcf564",
+      "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
     }
   ]
 }

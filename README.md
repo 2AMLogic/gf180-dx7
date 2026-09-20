@@ -21,12 +21,12 @@ strategy, verification contract, and starter briefs are defined in
 
 Epics:
 
-- **E1 — Reference and playable software**: pinned reference renderer, SysEx
+- **E1 — Reference and playable software** (#1): pinned reference renderer, SysEx
   codec, catalog, comparator, traces, compatibility registry.
-- **E2 — Verified core and physical feasibility**: integer models, operator
+- **E2 — Verified core and physical feasibility** (#2): integer models, operator
   and storage synthesis probes, fixed-model release, exact RTL, pin-level
   integration, FPGA capture, gf180 mapping.
-- **E3 — Curated instrument**: audition/recall tool, reviewed 32-patch bank,
+- **E3 — Curated instrument** (#3): audition/recall tool, reviewed 32-patch bank,
   curated 128-patch bank, embedded host, end-to-end demonstration.
 
 ## Ground rules

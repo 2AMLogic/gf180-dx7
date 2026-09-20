@@ -24,6 +24,26 @@
     {
       "path": "tools/check_all.sh",
       "reason": "locally authored CI entry point"
+    },
+    {
+      "path": "src/gf180_dx7/cli.py",
+      "reason": "locally authored CLI wrapper (P01, issue #8); no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/sysex.py",
+      "reason": "locally authored DX7 SysEx codec (P01, issue #8); written from the DX7 format facts and D00 rulings, no upstream bytes"
+    },
+    {
+      "path": "tools/make_test_fixtures.py",
+      "reason": "locally authored fixture assembler (P01, issue #8); no upstream bytes"
+    },
+    {
+      "path": "tools/sysex_probe.py",
+      "reason": "locally authored sysex inspection tool (P01, issue #8); no upstream bytes"
+    },
+    {
+      "path": "tools/verify_reference.py",
+      "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes"
     }
   ],
   "components": [

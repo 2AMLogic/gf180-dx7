@@ -28,8 +28,9 @@ pitch/amp modulation — chosen so the oracle render is guaranteed
 non-silent, which the renderer's silent-output guard relies on. Generation
 is byte-deterministic: same generator, same bytes.
 
-voice.syx sha256 at generation:
-`5aa2103b71828c867684bd1c6444f4a823fe34dc5dcac89da59f1c0fc2cee293`
+voice.syx sha256 (generation and committed bytes are byte-identical;
+hash corrected per judge review on PR #47):
+`076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d`
 
 ## Provenance and licensing
 

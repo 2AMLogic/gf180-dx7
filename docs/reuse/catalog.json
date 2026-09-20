@@ -1308,8 +1308,8 @@
     },
     {
       "path": "src/gf180_dx7/model/__init__.py",
-      "sha256": "a218edd989b6196b186698d5f84230fa92bd8dcfcae3c7cdda5bcb1002a9f4ef",
-      "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge"
+      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+      "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge; conflict-marker regression repaired after #57 squash (orchestrator)"
     },
     {
       "path": "src/gf180_dx7/model/tables.py",

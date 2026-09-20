@@ -1295,6 +1295,66 @@
       "path": "spec/capabilities-v1.json",
       "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+    },
+    {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "e5bcb2a9676aebe0adc53b7964319bb6c5de52b302a4153d499d2497007ae945",
+      "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import"
+    },
+    {
+      "path": "src/gf180_dx7/model/tables.py",
+      "sha256": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+      "reason": "locally authored N02 table generator (issue #16); formulas adopted as facts from the pinned trees with citations, zero upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/model/operator.py",
+      "sha256": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+      "reason": "locally authored N02 integer operator model (issue #16); Mark I semantics re-implemented from cited facts (EngineMkI.cpp is external-oracle-only), no GPL/MSFA bytes"
+    },
+    {
+      "path": "tools/gen_tables.py",
+      "sha256": "36caa180ce476e69a83b3947a06779ac5264a38e7cd8dc8ac4ad21ee19775224",
+      "reason": "locally authored N02 regenerate-and-hash CLI (issue #16); parasynth --check discipline re-expressed, no upstream bytes"
+    },
+    {
+      "path": "tests/test_operator.py",
+      "sha256": "5a7bb873383fe2ba0fe408730b2ef7762757443e4959cd9f28dfe26b996aafd4",
+      "reason": "locally authored N02 probe suite (issue #16); analytic probes, negative controls, and the pinned-oracle reference probe"
+    },
+    {
+      "path": "reference/tables/sinlog_table.hex",
+      "sha256": "91182672af773c5df0ba41b76bc89b74b6268cc233f5b2659eb3e3c6ac836ea3",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/sinexp_table.hex",
+      "sha256": "dc3b3a93db54df5c7d41ca1ad38e6c67e6ba7b8a891c5c2e0be4cba7856794f7",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/freqlut_table.hex",
+      "sha256": "f1b080824a8286e307c8febcacca96c25eb501f0c482296062c3ff22f15d9c7b",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/manifest.json",
+      "sha256": "7dff9a64852bb701a07662c9bee6689a8804e60c8791bac856564547c7ef4e81",
+      "reason": "generated N02 table manifest (issue #16): sha256/entries/bits/formula citations per table"
+    },
+    {
+      "path": "reference/evidence/n02-operator/reference-probe.json",
+      "sha256": "cd306c4e7d1613ac3da341b58f185062c8e7eaa3431853704336cfe4cfbfe08a",
+      "reason": "N02 reference-probe evidence record (issue #16); liveness re-verified by tests/test_operator.py"
+    },
+    {
+      "path": "src/gf180_dx7/capabilities.py",
+      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+      "reason": "locally authored C01 capability-DAG library (PR #54, issue #45); catalog entry completed at N02 after check_reuse flagged the omission"
+    },
+    {
+      "path": "tools/compile_capabilities.py",
+      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+      "reason": "locally authored C01 capability-view compiler (PR #54, issue #45); catalog entry completed at N02 after check_reuse flagged the omission"
     }
   ]
 }

@@ -63,3 +63,152 @@ repositories, each adoption with a provenance record and requalification:
 
 Apache License 2.0 (repo-level, per 2AMLogic convention). See
 [LICENSE](LICENSE).
+
+<!-- ISSUEDAG:BEGIN -->
+## Backlog progress (issue DAG)
+
+Generated from [spec/issue-dag-v1.json](spec/issue-dag-v1.json) by `tools/render_issue_dag.py` — do not hand-edit.
+
+| CLOSED | OPEN | UNKNOWN | TOTAL |
+| ---: | ---: | ---: | ---: |
+| 4 | 32 | 0 | 36 |
+
+These are issue states, not verification verdicts: a closed issue is not a capability claim, and no numeric PASS/coverage status is shown here. Evidence-derived capability status arrives with the fixed model and comparator (plan section 7).
+
+```mermaid
+graph TD
+  E1["E1: epic #1"]:::epic
+  E2["E2: epic #2"]:::epic
+  E3["E3: epic #3"]:::epic
+  A01["A01 #39"]::closed
+  D00["D00 #4"]::closed
+  D01["D01 #5"]::closed
+  H01["H01 #20"]::open
+  H02["H02 #21"]::open
+  H03["H03 #25"]::open
+  H04["H04 #26"]::open
+  H05["H05 #27"]::open
+  H06["H06 #28"]::open
+  H07["H07 #29"]::open
+  H08["H08 #30"]::open
+  H09["H09 #31"]::open
+  H10["H10 #32"]::open
+  H11["H11 #33"]::open
+  N01["N01 #15"]::open
+  N02["N02 #16"]::open
+  N03["N03 #17"]::open
+  N04["N04 #18"]::open
+  N05["N05 #19"]::open
+  N06["N06 #22"]::open
+  N07["N07 #23"]::open
+  N08["N08 #24"]::open
+  P01["P01 #8"]::closed
+  P02["P02 #9"]::open
+  R01["R01 #6"]::open
+  R02["R02 #7"]::open
+  R03["R03 #10"]::open
+  R04["R04 #11"]::open
+  R05["R05 #12"]::open
+  R06["R06 #13"]::open
+  R07["R07 #14"]::open
+  U01["U01 #34"]::open
+  U02["U02 #35"]::open
+  U03["U03 #36"]::open
+  U04["U04 #37"]::open
+  U05["U05 #38"]::open
+  E1 -.-> A01
+  E1 -.-> D00
+  E1 -.-> D01
+  E2 -.-> H01
+  N02 --> H01
+  E2 -.-> H02
+  N01 --> H02
+  D01 --> H02
+  E2 -.-> H03
+  N08 --> H03
+  H01 --> H03
+  H02 --> H03
+  E2 -.-> H04
+  H03 --> H04
+  E2 -.-> H05
+  H03 --> H05
+  E2 -.-> H06
+  H03 --> H06
+  E2 -.-> H07
+  H04 --> H07
+  H05 --> H07
+  H06 --> H07
+  H01 --> H07
+  E2 -.-> H08
+  H07 --> H08
+  E2 -.-> H09
+  H08 --> H09
+  D01 --> H09
+  E2 -.-> H10
+  H07 --> H10
+  D01 --> H10
+  E2 -.-> H11
+  H10 --> H11
+  E2 -.-> N01
+  R04 --> N01
+  R05 --> N01
+  D01 --> N01
+  E2 -.-> N02
+  N01 --> N02
+  E2 -.-> N03
+  N01 --> N03
+  E2 -.-> N04
+  N02 --> N04
+  E2 -.-> N05
+  N01 --> N05
+  E2 -.-> N06
+  N03 --> N06
+  N04 --> N06
+  N05 --> N06
+  E2 -.-> N07
+  N06 --> N07
+  E2 -.-> N08
+  N07 --> N08
+  R06 --> N08
+  E1 -.-> P01
+  D00 --> P01
+  E1 -.-> P02
+  P01 --> P02
+  E1 -.-> R01
+  D00 --> R01
+  E1 -.-> R02
+  R01 --> R02
+  E1 -.-> R03
+  P02 --> R03
+  R02 --> R03
+  E1 -.-> R04
+  R02 --> R04
+  E1 -.-> R05
+  R02 --> R05
+  E1 -.-> R06
+  P01 --> R06
+  R05 --> R06
+  E1 -.-> R07
+  R03 --> R07
+  R04 --> R07
+  E3 -.-> U01
+  R02 --> U01
+  P02 --> U01
+  E3 -.-> U02
+  U01 --> U02
+  R03 --> U02
+  E3 -.-> U03
+  U02 --> U03
+  E3 -.-> U04
+  P01 --> U04
+  H03 --> U04
+  E3 -.-> U05
+  U04 --> U05
+  H09 --> U05
+  U02 --> U05
+  classDef epic fill:#7C3AED,color:#fff;
+  classDef closed fill:#0E8A16,color:#fff;
+  classDef open fill:#9CA3AF,color:#000;
+```
+
+<!-- ISSUEDAG:END -->

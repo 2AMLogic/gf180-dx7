@@ -1,0 +1,431 @@
+{
+  "generated_by": "tools/compile_capabilities.py",
+  "nodes": [
+    {
+      "check": "contract-tests-v1",
+      "claim": "Frozen v1 product contract: spec/contract-v1.json and docs/DECISIONS-v1.md are in bidirectional lockstep (every DEC id present in both, claim language and omissions guarded) with recorded change control (D00, issue #4).",
+      "covered_inputs": [
+        "docs/DECISIONS-v1.md",
+        "spec/contract-v1.json"
+      ],
+      "engine": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_contract_v1",
+        "-v"
+      ],
+      "evidence": "evidence/capabilities/contract.json",
+      "exclusions": [
+        "No fidelity or hardware claim; contract text is not evidence of behavior",
+        "Drift guards (claim-language, omissions, bidirectional DEC ids) are embedded in the registered check itself; any covered-byte change is STALE"
+      ],
+      "id": "contract",
+      "local_state": "PASS",
+      "prereqs": [],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [],
+      "state": "PASS"
+    },
+    {
+      "check": "reference-pin-v1",
+      "claim": "The pinned Dexed Mark I reference is exactly at the pinned commit with every pinned file hash and the toolchain matching, and drift is refused (R01, issue #6). Dexed agreement is never original-DX7 fidelity.",
+      "covered_inputs": [
+        "reference/manifest.json",
+        "reference/oracle-identity.json"
+      ],
+      "engine": [
+        "python3",
+        "tools/verify_reference.py"
+      ],
+      "evidence": "evidence/capabilities/reference-pin.json",
+      "exclusions": [
+        "No claim that Dexed equals an original DX7",
+        "No engine execution or audio claim; this is the pin, not a render",
+        "Environment-bound: requires the local clone; CI evaluates recorded evidence only"
+      ],
+      "id": "reference-pin",
+      "local_state": "PASS",
+      "prereqs": [
+        "contract"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "one mutated pinned byte and a wrong clone HEAD are both refused by the verifier",
+          "id": "pin-drift-refused"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": "render-selfcheck-v1",
+      "claim": "The smoke fixture decodes via the P01 codec with the expected non-silent parameter set, and the external oracle binary matches its identity pin; an absent binary is a guarded NOT_RUN, never a pass (R02, issue #7).",
+      "covered_inputs": [
+        "reference/fixtures/smoke/events.txt",
+        "reference/fixtures/smoke/voice.syx",
+        "reference/oracle-identity.json"
+      ],
+      "engine": [
+        "python3",
+        "tools/render_selfcheck.py"
+      ],
+      "evidence": "evidence/capabilities/oracle-identity.json",
+      "exclusions": [
+        "No render reproducibility claim (renderer node owns that)",
+        "No fidelity, listening, or hardware claim"
+      ],
+      "id": "oracle-identity",
+      "local_state": "PASS",
+      "prereqs": [
+        "reference-pin"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "a silent render is rejected with no evidence written and a tampered oracle binary aborts identity verification",
+          "id": "silent-substitution-refused"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": "compare-evidence-v1",
+      "claim": "The R01-gated harness re-renders the smoke fixture deterministically and the committed dry render cross-checks field-by-field (fixture, rates, counts, hashes, oracle pin) with the exact paired comparator verdict PASS (R02+R04, issues #7 and #11).",
+      "covered_inputs": [
+        "reference/evidence/compare/reproducibility-r04.json",
+        "reference/evidence/smoke/render.f32",
+        "reference/evidence/smoke/render.json",
+        "reference/evidence/smoke/render.wav"
+      ],
+      "engine": [
+        "python3",
+        "tools/compare_evidence.py"
+      ],
+      "evidence": "evidence/capabilities/renderer.json",
+      "exclusions": [
+        "Reference-vs-reference repeatability only; never model-vs-reference fidelity",
+        "Dry renders; no normalization or time-warping anywhere in the chain",
+        "No listening or musical-usefulness claim"
+      ],
+      "id": "renderer",
+      "local_state": "PASS",
+      "prereqs": [
+        "oracle-identity"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "a silent render is rejected with no evidence written and a tampered oracle binary aborts identity verification",
+          "id": "silent-substitution-refused"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": "comparator-qualification-v1",
+      "claim": "The exact paired comparator and its apparatus are qualified: analytic fixtures pass, every known-bad mutation class is caught with the right exit code, and invalid inputs (NaN, length, odd bytes) are never a match (R04, issue #11; committed qualification evidence).",
+      "covered_inputs": [
+        "reference/evidence/compare/qualification-r04.json",
+        "reference/evidence/compare/reproducibility-r04.json"
+      ],
+      "engine": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_compare",
+        "-v"
+      ],
+      "evidence": "evidence/capabilities/comparator.json",
+      "exclusions": [
+        "Measurement discipline only; no fidelity verdict about any engine",
+        "No averaging of unlike units into a quality score; coverage stays separate from agreement"
+      ],
+      "id": "comparator",
+      "local_state": "PASS",
+      "prereqs": [
+        "renderer"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "every injected mutation class (gain, shift, truncate, byte flip, NaN) is caught with the correct exit code by the CLI",
+          "id": "mutation-battery-caught"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": "dev32-validation-v1",
+      "claim": "The 32-patch development manifest validates against the archive catalog (identity features, unique canonical hashes, render settings) and the committed render proof pins this manifest and catalog with non-silent sampled renders (R03, issue #10).",
+      "covered_inputs": [
+        "corpus/archive-catalogs/alltheweb-catalog.json",
+        "corpus/dev32-renderproof.json",
+        "corpus/dev32.json"
+      ],
+      "engine": [
+        "python3",
+        "tools/validate_dev32.py",
+        "--out",
+        "build/capabilities/dev32-renderproof.json"
+      ],
+      "evidence": "evidence/capabilities/corpus-dev32.json",
+      "exclusions": [
+        "Catalog rights: archive bytes are never redistributed; selection only",
+        "No preset-quality or musical-usefulness claim",
+        "Full-32 render gate is recorded NOT_RUN in the proof (sampled proof only)"
+      ],
+      "id": "corpus-dev32",
+      "local_state": "PASS",
+      "prereqs": [
+        "comparator"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "a mutated manifest (foreign hash, duplicate, missing events/settings) is rejected by validation",
+          "id": "mutated-manifest-rejected"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": null,
+      "claim": "Frozen numeric profile: integer formats, rounding, LUT and phase choices fixed in a machine-readable contract with content hashes (plan section 7, N-nodes).",
+      "covered_inputs": [],
+      "engine": "planned: numeric-profile qualification check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/numeric-profile.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until the profile exists, is registered, and is stamped",
+        "No float-vs-fixed agreement claim exists today"
+      ],
+      "id": "numeric-profile",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "comparator",
+        "contract"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: numeric-profile qualification check; no registered check may stamp this node yet)"
+      ],
+      "required_negative_controls": [],
+      "state": "NO_VERDICT"
+    },
+    {
+      "check": "trace-capture-v1",
+      "claim": "Non-invasive trace capture from the pinned external oracle: traced and untraced renders are byte-identical, the versioned tap registry validates, and the trace gate holds per 64-sample block (R05, issue #12).",
+      "covered_inputs": [
+        "reference/fixtures/smoke/events.txt",
+        "reference/fixtures/smoke/voice.syx",
+        "reference/oracle-identity.json",
+        "reference/trace-registry.json"
+      ],
+      "engine": [
+        "python3",
+        "tools/capture_trace.py",
+        "--traces-dir",
+        "build/capabilities/traces"
+      ],
+      "evidence": "evidence/capabilities/traces.json",
+      "exclusions": [
+        "Proves non-perturbation of the oracle, not correctness of captured values",
+        "No model equivalence or RTL claim",
+        "Fresh traces are written to build/ (untracked); committed inputs are what coverage pins"
+      ],
+      "id": "traces",
+      "local_state": "PASS",
+      "prereqs": [
+        "renderer"
+      ],
+      "reasons": [
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+      ],
+      "required_negative_controls": [
+        {
+          "detects": "a stub oracle whose trace perturbs the PCM is rejected with no artifacts written",
+          "id": "perturbing-stub-rejected"
+        }
+      ],
+      "state": "PASS"
+    },
+    {
+      "check": null,
+      "claim": "Frozen integer model reproduces the pinned software reference within declared error budgets, case coverage reported separately from agreement (plan section 7).",
+      "covered_inputs": [],
+      "engine": "planned: fixed-model qualification check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/fixed-model.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until the model lands and is stamped",
+        "Budgets are never inferred from RTL or reference self-agreement"
+      ],
+      "id": "fixed-model",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "comparator",
+        "numeric-profile",
+        "traces"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: fixed-model qualification check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: numeric-profile=NO_VERDICT"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    },
+    {
+      "check": null,
+      "claim": "Per-module RTL is sample-exact with the frozen integer model in simulation (plan section 7).",
+      "covered_inputs": [],
+      "engine": "planned: RTL module bench check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/rtl-core.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until RTL exists and is stamped",
+        "No physical timing claim"
+      ],
+      "id": "rtl-core",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "fixed-model"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: RTL module bench check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: fixed-model=BLOCKED"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    },
+    {
+      "check": null,
+      "claim": "Integrated RTL is sample-exact (bit-exact) with the frozen integer model end to end at 48 kHz (plan section 7).",
+      "covered_inputs": [],
+      "engine": "planned: integrated RTL exactness check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/rtl-exact.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until integration lands and is stamped",
+        "No FPGA or silicon execution claim"
+      ],
+      "id": "rtl-exact",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "rtl-core"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: integrated RTL exactness check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: rtl-core=BLOCKED"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    },
+    {
+      "check": null,
+      "claim": "FPGA digital captures match the integrated model on the chosen board with alignment/calibration evidence (plan section 7).",
+      "covered_inputs": [],
+      "engine": "planned: FPGA capture check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/fpga.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until board capture evidence is stamped",
+        "No board decision yet; analog audio out of scope for this node"
+      ],
+      "id": "fpga",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "rtl-exact"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: FPGA capture check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: rtl-exact=BLOCKED"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    },
+    {
+      "check": null,
+      "claim": "gf180mcu synthesis/place-and-route with committed stage evidence from the pinned flow (plan section 7).",
+      "covered_inputs": [],
+      "engine": "planned: gf180 flow stage-evidence check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/gf180.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until ASIC work starts",
+        "No synthesis, P&R, signoff, or silicon claim exists today"
+      ],
+      "id": "gf180",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "rtl-exact"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: gf180 flow stage-evidence check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: rtl-exact=BLOCKED"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    },
+    {
+      "check": null,
+      "claim": "Complete directed compatibility registry over the corpus with per-patch codec/render outcomes (R06, issue #13).",
+      "covered_inputs": [],
+      "engine": "planned: registry qualification check (R06); no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/registry.json",
+      "exclusions": [
+        "Declared, not evidenced: stays NO_VERDICT until R06 registers and stamps a check",
+        "No per-patch verdict exists today"
+      ],
+      "id": "registry",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "traces"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: registry qualification check (R06); no registered check may stamp this node yet)"
+      ],
+      "required_negative_controls": [],
+      "state": "NO_VERDICT"
+    },
+    {
+      "check": null,
+      "claim": "The instrument is musically useful: audition/recall protocol over the curated bank with listening records (plan section 7; E3).",
+      "covered_inputs": [],
+      "engine": "planned: listening-protocol check; no registered check may stamp this node yet",
+      "evidence": "evidence/capabilities/instrument.json",
+      "exclusions": [
+        "Declared, not evidenced: numeric agreement never establishes musical usefulness; listening records do",
+        "Stays NO_VERDICT until a listening protocol is registered and stamped"
+      ],
+      "id": "instrument",
+      "local_state": "NO_VERDICT",
+      "prereqs": [
+        "corpus-dev32",
+        "registry"
+      ],
+      "reasons": [
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: listening-protocol check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: registry=NO_VERDICT"
+      ],
+      "required_negative_controls": [],
+      "state": "BLOCKED"
+    }
+  ],
+  "note": "Generated view. States are evidence-derived; issue closure, file existence, and prose never establish a capability. Coverage is reported separately from agreement.",
+  "schema": "gf180-dx7.capabilities-view/1",
+  "source": "spec/capabilities-v1.json",
+  "summary": {
+    "BLOCKED": 6,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "NO_VERDICT": 2,
+    "PASS": 7,
+    "STALE": 0
+  }
+}

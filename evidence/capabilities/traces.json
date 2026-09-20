@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "python3",
+    "tools/capture_trace.py",
+    "--traces-dir",
+    "build/capabilities/traces"
+  ],
+  "check": "trace-capture-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_trace_capture.TestStubGate"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "reference/fixtures/smoke/events.txt": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb",
+    "reference/fixtures/smoke/voice.syx": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d",
+    "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
+    "reference/trace-registry.json": "27504c9871091678371c2c9e73ad35f5c81d9203beb57f564328d2128c67e055",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "tools/capture_trace.py": "e83a0a20504ae43682d166577a9cad1a66e171ce8e22a7c53ff3e51312255bee",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
+  },
+  "exit_code": 0,
+  "node_id": "traces",
+  "recorded_at": "2026-09-20T11:50:27Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

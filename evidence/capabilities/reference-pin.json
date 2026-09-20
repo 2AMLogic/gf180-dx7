@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "python3",
+    "tools/verify_reference.py"
+  ],
+  "check": "reference-pin-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_reference_manifest.TestPinnedTree"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "reference/manifest.json": "d5471aea82e677c77fa94a23a03e74df246ccb63b92ef4973555804ac41d3ef5",
+    "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+    "tools/verify_reference.py": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa"
+  },
+  "exit_code": 0,
+  "node_id": "reference-pin",
+  "recorded_at": "2026-09-20T11:50:23Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

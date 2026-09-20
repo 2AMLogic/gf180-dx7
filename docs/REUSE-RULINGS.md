@@ -35,7 +35,7 @@ to `d47483eb…` (Apache-2.0, same org text); klayout-tools LICENSE is MIT
 | fixedpoint-library | adopt | torchsynth @ 6532ec08 | src/gf180_dx7/fixedpoint/ | Generic fixed-point primitives (formats/rounding/LUT/phase); not present at 36bdc67, pinned at first-appearance commit. |
 | reference-manifest-pattern | adapt | torchsynth @ 36bdc67 | spec/reference/upstream.json | Manifest shape only; R01 fills the Dexed pin (commit, engine mode, sample rate, runtime). |
 | protocol-specs | adapt | torchsynth @ 36bdc67 | spec/protocol/ | Framing/patch-load/session docs retargeted to DX7 patches at 48 kHz. |
-| capability-dag-compiler | reference-only | torchsynth @ 36bdc67 | — | Engine-agnostic, but inherits the accepts-any-existing-file defect (below); fixes required before any adoption. |
+| capability-dag-compiler | adapt | torchsynth @ 36bdc67 | src/gf180_dx7/capabilities.py, tools/compile_capabilities.py | Re-ruled at C01 (issue #45, DR-0004): pattern adopted as locally authored stdlib code with no upstream bytes; the required fixes below are implemented and negative-controlled. |
 | spi-reg-control | adapt | parasynth @ cbcc8b9e | rtl/spi_ctl.v, tb/verify_ctl.py | Mode-0 48-bit transport + queue + drain kept; sibling register pages replaced by a DX7 protocol. |
 | i2s-transmitter | adapt | parasynth @ cbcc8b9e | rtl/i2s_tx.v | 16-bit serializer pattern; width/strobe/latency decisions re-derived; decode bench is the proof. |
 | synth-top-chassis | adapt | parasynth @ cbcc8b9e | rtl/synth_top.v, tb/ | Single-clock 256-cycle frame chassis (tick/go, overrun); DSP instances replaced by the FM engine. |
@@ -86,10 +86,11 @@ torchsynth audit (2026-09-18) against the sibling sources:
 
 ## What is *not* claimed
 
-- No component has been imported yet; every `adopt`/`adapt` requalification
-  above is NOT_RUN until its import PR runs it. `shared-substrate-dr` is the
-  only adaptation already landed (DR-0002) and its requalification is the
-  checker + unittest suite in this repository.
+- Except for the already-landed `shared-substrate-dr` (DR-0002) and the
+  C01 `capability-dag-compiler` adaptation (DR-0004, requalified by
+  `tests/test_capabilities.py` + `tools/check_reuse.py` in its import PR),
+  every `adopt`/`adapt` requalification above is NOT_RUN until its import PR
+  runs it.
 - Hash equality establishes byte identity only. Nothing here claims Dexed,
   original-DX7, or sibling fidelity; nothing here claims synthesis, P&R,
   signoff, FPGA playback, or preset quality.

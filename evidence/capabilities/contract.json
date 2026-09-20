@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "tests.test_contract_v1",
+    "-v"
+  ],
+  "check": "contract-tests-v1",
+  "controls": [],
+  "coverage": {
+    "docs/DECISIONS-v1.md": "fcb55f2b5610c5f9109edbc322eda02a3ae70df5a252842652fd66591ec27a79",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "tests/test_contract_v1.py": "28b537c12fffd89be2c00747ccf30dd5f851cb0034d4749546ef6d1c23db4290",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
+  },
+  "exit_code": 0,
+  "node_id": "contract",
+  "recorded_at": "2026-09-20T11:50:22Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

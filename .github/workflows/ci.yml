@@ -73,3 +73,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 tools/render_issue_dag.py --check
+
+  capabilities-fresh:
+    # C01 (issue #45): generated capability views must equal a fresh compile
+    # from the committed graph + evidence. Evaluation never executes checks;
+    # a covered-byte change or a hand-edited view fails here. (--strict, the
+    # every-node-PASS release gate, is deliberately NOT run yet: most nodes
+    # are honestly NO_VERDICT until their claims are evidenced.)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Capability views are fresh (compile_capabilities --check)
+        run: python3 tools/compile_capabilities.py --check

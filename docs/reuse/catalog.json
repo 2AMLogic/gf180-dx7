@@ -288,7 +288,7 @@
     },
     {
       "component": "capability-dag-compiler",
-      "ruling": "reference-only",
+      "ruling": "adapt",
       "upstream": {
         "repo": "2AMLogic/gf180-torchsynth",
         "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
@@ -311,14 +311,28 @@
         "path": "LICENSE",
         "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
       },
-      "destination": [],
+      "destination": [
+        "src/gf180_dx7/capabilities.py",
+        "tools/compile_capabilities.py"
+      ],
       "maintainer": "loom-builder + owner review",
       "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
+        "check": "tests/test_capabilities.py (states, refusals, stamping, views) green; bash tools/check_all.sh green; python3 tools/compile_capabilities.py --check green; DR-0004 records the adoption",
+        "result": "PASS"
       },
-      "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
-      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
+      "negative_control": "tests/test_capabilities.py: fabricated pass-evidence without controls yields NO_VERDICT (never PASS); a doctored covered byte yields STALE; a non-whitelisted check is refused by evaluation and by --stamp; a control recorded detected=false yields NO_VERDICT",
+      "notes": "Re-ruled reference-only -> adapt at C01 (issue #45, DR-0004): pattern adopted as locally authored stdlib code with NO upstream bytes (trace-capture precedent). The audit's required fixes are implemented: stamps only from the CHECKS whitelist, content-hash coverage on every stamp (dirty/untracked bytes included), missing or undetected negative controls yield NO_VERDICT, and file existence never qualifies. Upstream hashes retain reference provenance; adapted bytes are pinned below.",
+      "adaptations": [
+        "state machine re-targeted to this repo's vocabulary and precedence: NO_VERDICT for missing/refused evidence and undetected controls, STALE on any covered byte change, BLOCKED on non-PASS prerequisites with local state retained",
+        "evidence record schema gf180-dx7.capability-evidence/1 (check, argv, result, exit_code, coverage, controls, recorded_by) replaces the sibling's schema trio",
+        "--stamp producer path added: the only mode that executes commands; refuses unregistered checks; records actual exit codes and control detection",
+        "judge self-coverage (EVALUATOR_INPUTS: module, compiler, graph spec) so editing the DAG or compiler stales all recorded verdicts",
+        "views: docs/CAPABILITIES.md + docs/capabilities.json + README CAPABILITIES block placed after the ISSUEDAG block, with render_issue_dag-style mermaid lint (no '#' in labels)"
+      ],
+      "adapted_sha256": {
+        "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+        "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
+      }
     },
     {
       "component": "spi-reg-control",
@@ -1260,6 +1274,16 @@
       "path": "spec/audition-phrases-v1.json",
       "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
       "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "sha256": "8044685347e4a20dcee98139fb4e344cf527d47c5fbbbe1a3a32dd6ddb10d5fb",
+      "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted"
+    },
+    {
+      "path": "spec/capabilities-v1.json",
+      "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+      "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
     }
   ]
 }

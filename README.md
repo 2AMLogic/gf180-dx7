@@ -71,7 +71,7 @@ Generated from [spec/issue-dag-v1.json](spec/issue-dag-v1.json) by `tools/render
 
 | CLOSED | OPEN | UNKNOWN | TOTAL |
 | ---: | ---: | ---: | ---: |
-| 10 | 26 | 0 | 36 |
+| 11 | 25 | 0 | 36 |
 
 These are issue states, not verification verdicts: a closed issue is not a capability claim, and no numeric PASS/coverage status is shown here. Evidence-derived capability status arrives with the fixed model and comparator (plan section 7).
 
@@ -111,7 +111,7 @@ graph TD
   R05["R05 (issue 12) CLOSED"]:::closed
   R06["R06 (issue 13) OPEN"]:::open
   R07["R07 (issue 14) OPEN"]:::open
-  U01["U01 (issue 34) OPEN"]:::open
+  U01["U01 (issue 34) CLOSED"]:::closed
   U02["U02 (issue 35) OPEN"]:::open
   U03["U03 (issue 36) OPEN"]:::open
   U04["U04 (issue 37) OPEN"]:::open
@@ -213,3 +213,51 @@ graph TD
 ```
 
 <!-- ISSUEDAG:END -->
+
+<!-- CAPABILITIES:BEGIN -->
+## Capability status (evidence-derived)
+
+Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by `tools/compile_capabilities.py` — do not hand-edit. Evidence-derived node states; issue closure, file existence, and prose never establish a capability claim. Per-node claims, coverage, and controls: [docs/CAPABILITIES.md](docs/CAPABILITIES.md).
+
+| PASS | FAIL | NOT_RUN | BLOCKED | NO_VERDICT | STALE |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 7 | 0 | 0 | 6 | 2 | 0 |
+
+```mermaid
+graph TD
+  n0["comparator: PASS"]
+  n1["contract: PASS"]
+  n2["corpus-dev32: PASS"]
+  n3["fixed-model: BLOCKED"]
+  n4["fpga: BLOCKED"]
+  n5["gf180: BLOCKED"]
+  n6["instrument: BLOCKED"]
+  n7["numeric-profile: NO_VERDICT"]
+  n8["oracle-identity: PASS"]
+  n9["reference-pin: PASS"]
+  n10["registry: NO_VERDICT"]
+  n11["renderer: PASS"]
+  n12["rtl-core: BLOCKED"]
+  n13["rtl-exact: BLOCKED"]
+  n14["traces: PASS"]
+  n11 --> n0
+  n0 --> n2
+  n0 --> n3
+  n7 --> n3
+  n14 --> n3
+  n13 --> n4
+  n13 --> n5
+  n2 --> n6
+  n10 --> n6
+  n0 --> n7
+  n1 --> n7
+  n9 --> n8
+  n1 --> n9
+  n14 --> n10
+  n8 --> n11
+  n3 --> n12
+  n12 --> n13
+  n11 --> n14
+```
+
+<!-- CAPABILITIES:END -->

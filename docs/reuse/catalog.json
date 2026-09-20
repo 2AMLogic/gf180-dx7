@@ -1295,6 +1295,36 @@
       "path": "spec/capabilities-v1.json",
       "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+    },
+    {
+      "path": "rtl/storage_probe.v",
+      "sha256": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
+      "reason": "locally authored H02 full-state storage probe RTL (issue #21); state image widths mirrored from spec/numeric-profile-v1.json as facts, no upstream bytes"
+    },
+    {
+      "path": "rtl/storage_probe_tb.v",
+      "sha256": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6",
+      "reason": "locally authored H02 iverilog smoke bench (issue #21); write/readback of all 113 banks, no upstream bytes"
+    },
+    {
+      "path": "tools/storage_probe_synth.py",
+      "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
+      "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tests/test_storage_probe.py",
+      "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
+      "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/capabilities.py",
+      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+      "reason": "locally authored C01 capability model (issue #45, DR-0004); re-expressed locally with no upstream bytes, left unpinned at the C01 merge - governance gap repair on H02 (issue #21)"
+    },
+    {
+      "path": "tools/compile_capabilities.py",
+      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+      "reason": "locally authored C01 view compiler (issue #45, DR-0004); re-expressed locally with no upstream bytes, left unpinned at the C01 merge - governance gap repair on H02 (issue #21)"
     }
   ]
 }

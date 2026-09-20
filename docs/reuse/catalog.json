@@ -318,7 +318,7 @@
         "result": "NOT_RUN"
       },
       "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
-      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
+      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption. | Adopted as a pattern re-implementation (DR-0004) with the REUSE-RULINGS fixes; implementation files are local_originals, upstream code not copied."
     },
     {
       "component": "spi-reg-control",
@@ -1295,6 +1295,16 @@
       "path": "spec/capabilities-v1.json",
       "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+    },
+    {
+      "path": "src/gf180_dx7/capabilities.py",
+      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md"
+    },
+    {
+      "path": "tools/compile_capabilities.py",
+      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+      "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes"
     }
   ]
 }

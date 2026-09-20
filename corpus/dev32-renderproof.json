@@ -1,0 +1,202 @@
+{
+  "schema": "gf180-dx7.dev32-renderproof/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/10",
+  "generated_utc": "2026-09-20T09:46:00Z",
+  "manifest": {
+    "path": "/private/tmp/opencode/wt-r03-dev32/corpus/dev32.json",
+    "sha256": "ad0a30ac43801af3f86a466c5a8d498c7425d0ac2bfc813e512b480a81a7f3c0"
+  },
+  "catalog": {
+    "path": "/private/tmp/opencode/wt-r03-dev32/corpus/archive-catalogs/alltheweb-catalog.json",
+    "sha256": "9bfe25ca706f15f603fc5ca22c13bb1b22697eae0830e71939181622e00af216"
+  },
+  "validated": true,
+  "validation_problems": [],
+  "render_sample_size": 3,
+  "selection_rule": "first N entries in manifest order",
+  "full_32_gate": {
+    "run": false,
+    "note": "full-32 rendering is a later gate; this proof samples the manifest only"
+  },
+  "oracle_identity": {
+    "identity_version": 1,
+    "id": "R02-oracle-identity",
+    "issue": "https://github.com/2AMLogic/gf180-dx7/issues/7",
+    "purpose": "Pin the external GPL render oracle consumed by tools/render_reference.py, so every render is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository.",
+    "source": {
+      "path": "/Users/joseph/dx7-oracle-marki",
+      "git_commit": "82325d80bc7903603ab1e23d9ecb1baf7cc6edca",
+      "git_commit_short": "82325d8",
+      "license": "GPL-3.0-or-later",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)"
+    },
+    "binary": {
+      "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+      "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f"
+    },
+    "upstream": {
+      "project": "Dexed",
+      "repo_url": "https://github.com/asb2m10/dexed",
+      "commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "pinned_by": "reference/manifest.json (R01, issue #6)"
+    },
+    "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--rate 48000] [--seconds 4]",
+    "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
+    "boundary": "external-oracle-only; outputs are comparison evidence",
+    "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",
+    "pinned_at": "2026-09-20"
+  },
+  "scope": "renderability proof: non-silent output through the pinned oracle using each entry's own events and render settings; not a comparison, agreement, or musical-quality claim (R02/R04 own those)",
+  "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",
+  "renders": [
+    {
+      "index": 0,
+      "path": "DX7_AllTheWeb/Aminet/105.syx",
+      "slot": 3,
+      "name": "SHRPSYNTH ",
+      "canonical_hash": "e619786fe3cc7b6be694470709f054aa129abd042d852efaba54b413aefbec6d",
+      "voice_message_sha256": "525bb19419cdd4f39d3e3e02d21e65a28a448b0c3f33675daa3eb6692cbc53ef",
+      "events_text_sha256": "4eb840ab3be95311f26b385e36e4cb41f5aaaa060af08b4874969afa1fba6bc6",
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      },
+      "output": {
+        "format": "pcm_f32le mono (raw, headerless)",
+        "samples": 288000,
+        "sha256": "ed7b06678ce5afb963b9800095469c4651179011e23fc5a6513fbdd0f3fcef68",
+        "peak_abs": 0.09295654296875,
+        "rms": 0.015339790021342612
+      },
+      "non_silent_guard": {
+        "threshold_max_abs": 1e-06,
+        "triggered": false,
+        "observed_peak_abs": 0.09295654296875
+      },
+      "executed_binary": {
+        "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+        "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f",
+        "note": "hash-verified against the pinned identity before rendering"
+      }
+    },
+    {
+      "index": 1,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 18,
+      "name": "MELLOWSOLO",
+      "canonical_hash": "879763e98c6c03c839c674d436cc8f9a08c561120023ae46bf6af5b51bb1dc6a",
+      "voice_message_sha256": "d45c26df6faae6892da8bf619357bfa570c3693af20cdcad148cd80b460b1277",
+      "events_text_sha256": "4eb840ab3be95311f26b385e36e4cb41f5aaaa060af08b4874969afa1fba6bc6",
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      },
+      "output": {
+        "format": "pcm_f32le mono (raw, headerless)",
+        "samples": 288000,
+        "sha256": "277c1178e64148b43d76d62c27a0b256afe48f49e559b816e9af73ccc6c6afb3",
+        "peak_abs": 0.181427001953125,
+        "rms": 0.04967165501362902
+      },
+      "non_silent_guard": {
+        "threshold_max_abs": 1e-06,
+        "triggered": false,
+        "observed_peak_abs": 0.181427001953125
+      },
+      "executed_binary": {
+        "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+        "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f",
+        "note": "hash-verified against the pinned identity before rendering"
+      }
+    },
+    {
+      "index": 2,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 0,
+      "name": "SIZLECYMB.",
+      "canonical_hash": "cd758bbe33f6fbab3c571eaf889a8a5b7ce36cc3e9a61946f08f07f66cbfc495",
+      "voice_message_sha256": "cb3d4bf53c0bd9f478eaa70042dd5f3c5020c4f989512c9e26642a29a8b793c8",
+      "events_text_sha256": "4eb840ab3be95311f26b385e36e4cb41f5aaaa060af08b4874969afa1fba6bc6",
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      },
+      "output": {
+        "format": "pcm_f32le mono (raw, headerless)",
+        "samples": 288000,
+        "sha256": "095fda74c5359a1c8696720b1d1e103f08e895afbddbd3a40a1e512a4a67e149",
+        "peak_abs": 0.04638671875,
+        "rms": 0.012551914695728361
+      },
+      "non_silent_guard": {
+        "threshold_max_abs": 1e-06,
+        "triggered": false,
+        "observed_peak_abs": 0.04638671875
+      },
+      "executed_binary": {
+        "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+        "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f",
+        "note": "hash-verified against the pinned identity before rendering"
+      }
+    }
+  ]
+}

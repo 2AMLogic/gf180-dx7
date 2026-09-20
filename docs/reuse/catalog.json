@@ -1240,6 +1240,16 @@
       "path": "tools/qualify_compare.py",
       "sha256": "c1a2a1583f1f9a9a1d54fe1e51933fe7b87255d304cf252f2dec9cc7fc3977ae",
       "reason": "locally authored R04 comparator qualification report generator (issue #11); analytic fixtures + mutation battery, no upstream bytes"
+    },
+    {
+      "path": "tools/select_dev32.py",
+      "sha256": "4a049248a659a016095978df15b56ce6a86b19d178ec8abce27d7359869ed6e0",
+      "reason": "locally authored R03 tool (issue #10); not a reuse import"
+    },
+    {
+      "path": "tools/validate_dev32.py",
+      "sha256": "25a88e84dac936f5d4e75fef001b028fc3d73ade8c722734ef4510949660da92",
+      "reason": "locally authored R03 tool (issue #10); not a reuse import"
     }
   ]
 }

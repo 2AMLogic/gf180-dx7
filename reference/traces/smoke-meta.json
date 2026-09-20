@@ -1,0 +1,136 @@
+{
+  "byte_identity": {
+    "identical": true,
+    "protocol": "same fixture rendered twice by one oracle binary (fresh subprocess each): once without --trace and once with; f32 bytes compared exactly",
+    "status": "PASS"
+  },
+  "capture": "tools/capture_trace.py",
+  "fixture": "smoke",
+  "identity_verified": true,
+  "inputs": {
+    "events": {
+      "path": "/private/tmp/opencode/wt-r05-traces/reference/fixtures/smoke/events.txt",
+      "sha256": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb"
+    },
+    "voice": {
+      "path": "/private/tmp/opencode/wt-r05-traces/reference/fixtures/smoke/voice.syx",
+      "sha256": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d"
+    }
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/12",
+  "non_invasiveness": "PASS (gate enforced before artifact write)",
+  "oracle_binary": {
+    "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+    "sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42"
+  },
+  "oracle_identity": {
+    "binary": {
+      "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+      "sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42"
+    },
+    "boundary": "external-oracle-only; outputs are comparison evidence",
+    "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
+    "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",
+    "id": "R02-oracle-identity",
+    "identity_version": 1,
+    "issue": "https://github.com/2AMLogic/gf180-dx7/issues/7",
+    "pinned_at": "2026-09-20",
+    "purpose": "Pin the external GPL render oracle consumed by tools/render_reference.py, so every render is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository.",
+    "source": {
+      "git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "git_commit_short": "0047c3f",
+      "license": "GPL-3.0-or-later",
+      "path": "/Users/joseph/dx7-oracle-marki",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)"
+    },
+    "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "trace_extension": {
+      "added_by": "R05 (issue #12), oracle commit 0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "flag": "--trace <file.jsonl>",
+      "granularity": "one JSON line per 64-sample block",
+      "non_invasiveness": "wrapper-level reads only; traced and untraced PCM verified byte-identical by tools/capture_trace.py before any trace artifact is written",
+      "taps": [
+        "lfo_value",
+        "lfo_delay",
+        "live_mask",
+        "keydown_mask",
+        "active_notes"
+      ],
+      "unavailable_taps": "per-operator phase, envelope stage/level, feedback history, per-operator output live inside the Dexed msfa engine and are documented-unavailable (reference/trace-registry.json)"
+    },
+    "upstream": {
+      "commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "pinned_by": "reference/manifest.json (R01, issue #6)",
+      "project": "Dexed",
+      "repo_url": "https://github.com/asb2m10/dexed"
+    },
+    "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--trace trace.jsonl] [--rate 48000] [--seconds 4]"
+  },
+  "pcm": {
+    "traced": {
+      "bytes": 768000,
+      "sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a"
+    },
+    "untraced": {
+      "bytes": 768000,
+      "format": "pcm_f32le mono (raw, headerless)",
+      "samples": 192000,
+      "sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a"
+    }
+  },
+  "registry": {
+    "available_taps": [
+      "events_applied",
+      "lfo_value",
+      "lfo_delay",
+      "live_mask",
+      "keydown_mask",
+      "active_notes",
+      "final_pcm"
+    ],
+    "path": "/private/tmp/opencode/wt-r05-traces/reference/trace-registry.json",
+    "registry_version": 1,
+    "sha256": "27504c9871091678371c2c9e73ad35f5c81d9203beb57f564328d2128c67e055",
+    "unavailable_taps": [
+      "op_phase",
+      "op_env_stage",
+      "op_env_level",
+      "feedback_history",
+      "op_output"
+    ]
+  },
+  "sample_rate": 48000,
+  "samples": 192000,
+  "seconds": 4.0,
+  "trace": {
+    "block_size": 64,
+    "blocks": 3000,
+    "fields": [
+      "block",
+      "lfo_value",
+      "lfo_delay",
+      "live_mask",
+      "keydown_mask",
+      "active_notes"
+    ],
+    "file": "smoke.jsonl",
+    "first_live_block": 37,
+    "live_blocks": 2963,
+    "sha256": "1eacce34bd2133c585ac80fa54973845cbf5d0105e418b98d21cb1317213ac61",
+    "stability": {
+      "deterministic_columns": [
+        "block",
+        "live_mask",
+        "keydown_mask",
+        "active_notes"
+      ],
+      "deterministic_columns_sha256": "c211e4d46fa31b9d3f08d339d092a6d2c07082c6f71ec30060990a1b11557b1a",
+      "instance_dependent_columns": [
+        "lfo_value",
+        "lfo_delay"
+      ],
+      "note": "lfo_value/lfo_delay read the upstream msfa LFO, whose start state is uninitialized (see reference/trace-registry.json); they are comparable within this captured render only"
+    }
+  }
+}

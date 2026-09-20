@@ -1295,6 +1295,31 @@
       "path": "spec/capabilities-v1.json",
       "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+    },
+    {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "0ffea4e9e05b3205539491871fe371e1b4faf4f54f51deb67cc2a7e060a74cf5",
+      "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import"
+    },
+    {
+      "path": "src/gf180_dx7/model/envelope.py",
+      "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+      "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
+    },
+    {
+      "path": "tests/test_envelope.py",
+      "sha256": "ae8f2358bc97bc435f37bb0dc72c4792ad742c5583bd70cdf5cca635a58646b8",
+      "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes"
+    },
+    {
+      "path": "src/gf180_dx7/capabilities.py",
+      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+      "reason": "pre-existing C01 locally-authored capability model (issue #45, DR-0004: locally authored, no upstream bytes) that was missing its local_originals byte-pin; pinned here to restore the check_reuse coverage gate, bytes unchanged"
+    },
+    {
+      "path": "tools/compile_capabilities.py",
+      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+      "reason": "pre-existing C01 locally-authored capability view compiler (issue #45, DR-0004: locally authored, no upstream bytes) that was missing its local_originals byte-pin; pinned here to restore the check_reuse coverage gate, bytes unchanged"
     }
   ]
 }

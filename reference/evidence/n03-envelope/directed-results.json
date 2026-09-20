@@ -1,0 +1,353 @@
+{
+  "schema": "gf180-dx7.n03-directed/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/17",
+  "claim": "integer envelope model reproduces the pinned oracle's operator-envelope behavior within the declared probe budgets (docs/N03-ENVELOPE-MODEL.md section 5); software-reference agreement only, not original-DX7 fidelity",
+  "tolerances": {
+    "value_probe_db": 0.6,
+    "time_probe_blocks": 4,
+    "onset_blocks": 1,
+    "ratio_probe_db": 0.4,
+    "silence_probe_blocks": 0
+  },
+  "cases": [
+    {
+      "case": "attack_fast",
+      "verdict": "PASS",
+      "probes": 4,
+      "notes": {
+        "rates": [
+          99,
+          60,
+          50,
+          60
+        ],
+        "levels": [
+          99,
+          99,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "base",
+      "verdict": "PASS",
+      "probes": 9,
+      "notes": {
+        "rates": [
+          99,
+          60,
+          40,
+          50
+        ],
+        "levels": [
+          99,
+          70,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "attack_slow",
+      "verdict": "PASS",
+      "probes": 8,
+      "notes": {
+        "rates": [
+          20,
+          50,
+          50,
+          50
+        ],
+        "levels": [
+          99,
+          99,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "keylevel",
+      "verdict": "PASS",
+      "probes": 1,
+      "notes": {
+        "outlevel_n96": 3648,
+        "outlevel_n108": 3904,
+        "predicted_db": 6.021,
+        "measured_db": 6.083
+      }
+    },
+    {
+      "case": "keyrate_low",
+      "verdict": "PASS",
+      "probes": 3,
+      "notes": {
+        "rates": [
+          70,
+          50,
+          50,
+          50
+        ],
+        "levels": [
+          99,
+          99,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 9
+      }
+    },
+    {
+      "case": "keyrate_high",
+      "verdict": "PASS",
+      "probes": 3,
+      "notes": {
+        "rates": [
+          70,
+          50,
+          50,
+          50
+        ],
+        "levels": [
+          99,
+          99,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 10
+      }
+    },
+    {
+      "case": "release_middecay",
+      "verdict": "PASS",
+      "probes": 6,
+      "notes": {
+        "rates": [
+          99,
+          30,
+          40,
+          60
+        ],
+        "levels": [
+          99,
+          80,
+          60,
+          0
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "attack_rate1",
+      "verdict": "PASS",
+      "probes": 6,
+      "notes": {
+        "rates": [
+          1,
+          50,
+          50,
+          50
+        ],
+        "levels": [
+          99,
+          99,
+          60,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "sustain_hold",
+      "verdict": "PASS",
+      "probes": 7,
+      "notes": {
+        "rates": [
+          99,
+          99,
+          99,
+          60
+        ],
+        "levels": [
+          99,
+          99,
+          99,
+          40
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "sustain_pedal",
+      "verdict": "PASS",
+      "probes": 5,
+      "notes": {
+        "rates": [
+          99,
+          40,
+          50,
+          60
+        ],
+        "levels": [
+          99,
+          80,
+          70,
+          30
+        ],
+        "outlevel": 4064,
+        "rate_scaling": 0
+      }
+    },
+    {
+      "case": "velocity_off",
+      "verdict": "PASS",
+      "probes": 1,
+      "notes": "kvs=0: velocity must not enter the render at all (dx7note.cc:176 consumes it only via ScaleVelocity)"
+    },
+    {
+      "case": "velocity",
+      "verdict": "PASS",
+      "probes": 1,
+      "notes": {
+        "outlevel_v20": 3488,
+        "outlevel_v127": 4160,
+        "predicted_db": 15.804,
+        "measured_db": 15.81
+      }
+    }
+  ],
+  "renders": [
+    {
+      "voice_sha256": "4d0e26bea1725f410cf82a596822a336fcd0a318cf84a40147611053734f1d32",
+      "events_sha256": "63de1a3f51650c9898f39fed9fe918d669fe34a5db85d6e5e47903ad2ac4a32e",
+      "seconds": 1.6,
+      "pcm_sha256": "442c3f09e430f2f330ed72a24a6192b7c85f60fab00962d88777c17f0d161a28"
+    },
+    {
+      "voice_sha256": "078e4cdf53c6db6e013a508d5a542fe0d6fb2f45f855841b16aa4029e6ee7105",
+      "events_sha256": "4bb39abe424d503219e6f72124b218f2c484d43add2d6a9a198d6594612bae89",
+      "seconds": 1.5,
+      "pcm_sha256": "fd1d7f6fd450fafe6f52965d4d092ac69e0bf179a9607312bdbbfcdec701e284"
+    },
+    {
+      "voice_sha256": "4c8f552f411e161dfc861c3609263b85824d2e4cfc6957cc7cad5e2b725f39f4",
+      "events_sha256": "b27ffe9462af8cb0f82bc2e664a1799e1b6288eb310b1c25d1acbc9f68429603",
+      "seconds": 4.0,
+      "pcm_sha256": "b22d408eb36ae86b0562209e88de04b5506f943582032cffd30d9d2a14d9aefb"
+    },
+    {
+      "voice_sha256": "4f8e5c13b87ecde6d09089de6e41908c79c00d0f3cf8426cd638330b82f99b9c",
+      "events_sha256": "4cdab3420e8293d026c15a158984bb4aae839502fc4c2ff4123ea6d76df2e047",
+      "seconds": 1.0,
+      "pcm_sha256": "a6835a39432f59d41d38182ea546a8c59dc34606c13488a41616eff88f63cfcc"
+    },
+    {
+      "voice_sha256": "4f8e5c13b87ecde6d09089de6e41908c79c00d0f3cf8426cd638330b82f99b9c",
+      "events_sha256": "858dcf2db02e57e20128c53f2330986fd8a919c378b54099907602023bc3f7fc",
+      "seconds": 1.0,
+      "pcm_sha256": "c404686a32f6c34b98eb43f2fe582041f849492853c542905dc12befdd3c5dc9"
+    },
+    {
+      "voice_sha256": "93be3cca42bb0cb7f50bb1bfdb56d545763bb1a22e0a2a4fdcfbdeab6a453ed9",
+      "events_sha256": "4cdab3420e8293d026c15a158984bb4aae839502fc4c2ff4123ea6d76df2e047",
+      "seconds": 1.0,
+      "pcm_sha256": "889b3f6d374c39012bc574629716bf291a4e39df20851c98ab30e24c02a4f93a"
+    },
+    {
+      "voice_sha256": "93be3cca42bb0cb7f50bb1bfdb56d545763bb1a22e0a2a4fdcfbdeab6a453ed9",
+      "events_sha256": "858dcf2db02e57e20128c53f2330986fd8a919c378b54099907602023bc3f7fc",
+      "seconds": 1.0,
+      "pcm_sha256": "65874338aa346cffbd581768017738d0e31b6d19868a4e9a9321f166a596bb1c"
+    },
+    {
+      "voice_sha256": "35c1e58d9397caa26f31409ddf41633fac2f80d4d91387805a44f1591a03a1df",
+      "events_sha256": "ff32dd158ac18a236a2380fde811c0eea31b6e46cdb3032e86a719847b51d043",
+      "seconds": 2.0,
+      "pcm_sha256": "9e1e706b8fa36eb51ef42f208d69b13c14d5c3c7d6a8722d647f99846801ff79"
+    },
+    {
+      "voice_sha256": "2359a98ff1b387815b10d236018959020c5b7503beb0e57332c6969bdf9386d5",
+      "events_sha256": "858dcf2db02e57e20128c53f2330986fd8a919c378b54099907602023bc3f7fc",
+      "seconds": 3.2,
+      "pcm_sha256": "383c2eeae6603950f0bb7bdcb5b18c8288a073631f91794a7c71b65f817fa9da"
+    },
+    {
+      "voice_sha256": "3b8e444c147825bdacda922148aa9efa9ea2c2d5f1331fdf1d1381e518c75799",
+      "events_sha256": "2b1e32c6fc6e430050b13d210937963abcc11263fd1be73578ed16fe3d24c893",
+      "seconds": 3.0,
+      "pcm_sha256": "c26892c764d1396574798d03bc7a2aaeb9f452cf1a5e09d4cd24ae36b9831fe0"
+    },
+    {
+      "voice_sha256": "63ea58311a5aada7bf939f6f9617578d1ed22ba8c7c5810ba7b4d71fdebaaa10",
+      "events_sha256": "be18018baf735e3747837fad713f7b7543dbad1532fcf4f1449a34aff5d012b2",
+      "seconds": 2.0,
+      "pcm_sha256": "618d18ccc3a2cdd036f91f3c7ef0cf64af97053d670c3a174d5892db475f4670"
+    },
+    {
+      "voice_sha256": "4d0e26bea1725f410cf82a596822a336fcd0a318cf84a40147611053734f1d32",
+      "events_sha256": "87c440605baa05336f9404cf3155a9047b7e3d3f8c03ee1b42638d7959f6e14e",
+      "seconds": 0.6,
+      "pcm_sha256": "9ca532d46b113123f675cc67d546c9cf591456bde3d6af4c5f80ca6233ac9f29"
+    },
+    {
+      "voice_sha256": "4d0e26bea1725f410cf82a596822a336fcd0a318cf84a40147611053734f1d32",
+      "events_sha256": "5f52aaca2f5725338b22b10635b7e71e9731e60ea59f1c05462eae7d5d56cae5",
+      "seconds": 0.6,
+      "pcm_sha256": "9ca532d46b113123f675cc67d546c9cf591456bde3d6af4c5f80ca6233ac9f29"
+    },
+    {
+      "voice_sha256": "402674d3c7f600324879d24e18948fcc6ff215bcdd62cbacb8b893c3a82a290d",
+      "events_sha256": "87c440605baa05336f9404cf3155a9047b7e3d3f8c03ee1b42638d7959f6e14e",
+      "seconds": 1.0,
+      "pcm_sha256": "2e15fa7c5d770e2ab273a14ee6f85994a73588a010a9df807c3fef2a8e6e6631"
+    },
+    {
+      "voice_sha256": "402674d3c7f600324879d24e18948fcc6ff215bcdd62cbacb8b893c3a82a290d",
+      "events_sha256": "5f52aaca2f5725338b22b10635b7e71e9731e60ea59f1c05462eae7d5d56cae5",
+      "seconds": 1.0,
+      "pcm_sha256": "6e626b367688221eb7c421b305e546d1d526540cbed5ae349e117875d3dea60e"
+    }
+  ],
+  "controls": [
+    {
+      "control": "linear_adsr_substitution",
+      "verdict": "FAIL_DETECTED",
+      "divergent_stages": [
+        "decay",
+        "release"
+      ],
+      "detail": [
+        "[decay] value@block175: predicted 4.848, measured 7.196, delta +2.348 exceeds budget 0.6",
+        "[decay] value@block475: predicted 1.498, measured 0.047, delta -1.451 exceeds budget 0.6",
+        "[release] value@block715: predicted -4.100, measured -3.334, delta +0.766 exceeds budget 0.6",
+        "[release] value@block775: predicted -9.290, measured -8.561, delta +0.729 exceeds budget 0.6"
+      ]
+    },
+    {
+      "control": "swapped_rate_level_arrays",
+      "verdict": "FAIL_DETECTED",
+      "divergent_stages": [
+        "decay",
+        "release"
+      ],
+      "detail": [
+        "[decay] value@block175: predicted 0.658, measured 7.196, delta +6.538 exceeds budget 0.6",
+        "[decay] value@block325: predicted 0.000, measured 3.101, delta +3.101 exceeds budget 0.6",
+        "[release] value@block715: predicted 7.511, measured -3.334, delta -10.845 exceeds budget 0.6",
+        "[release] value@block775: predicted 7.526, measured -8.561, delta -16.086 exceeds budget 0.6"
+      ]
+    }
+  ]
+}

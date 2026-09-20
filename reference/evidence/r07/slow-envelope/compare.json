@@ -1,0 +1,166 @@
+{
+  "case": "slow-envelope",
+  "diagnosis": {
+    "divergence_class": "on_note_on_block",
+    "magnitude_class": "signal_scale",
+    "note": "diagnosis rows are triage aids (compare.py SECONDARY role applies to onset/envelope/ZCR); the FAIL verdict is expected for cross-engine comparison and is the finding",
+    "rms_reference": 0.0008313911741153877,
+    "rms_second": 0.00264972862704377
+  },
+  "engines": {
+    "reference": {
+      "binary_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "identity_id": "R02-oracle-identity",
+      "source_git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "upstream": "Dexed"
+    },
+    "second": {
+      "binary_sha256": "4f1cde37cadab4a33a99ed0b8d4839be776ea0fdfb45450f379de5a55e6b1732",
+      "engine_mode": "hexter fixed-point (HEXTER_USE_FLOATING_POINT undefined; upstream configure default)",
+      "identity_id": "R07-second-oracle-identity",
+      "source_git_commit": "a0fe615a906197b40588a704c7ef932d7b6461d8",
+      "upstream": "hexter (DSSI software synthesizer)"
+    }
+  },
+  "expected_verdict": "FAIL (cross-engine exactness failure is the expected result; exactness PASS applies only within one implementation)",
+  "hypothesis": {
+    "expect_if_confirmed": "Small-to-moderate rms_error class with envelope-shape proxy showing growing window RMS relative difference over time; onset identical (both start at the note-on block).",
+    "hypothesis": "With all rates = 1 and a nonzero final level (level[3]=50/60), the near-zero-slew end of the envelope coefficient tables is exercised: dexed msfa env.cc interpolates a 4-phase keyframe table per 64-sample block, hexter derives frame durations from dx7_voice_eg_rate_rise/decay_duration tables with pre/post compensation (dx7_voice.c dx7_op_eg_set_rate). Tiny coefficient differences accumulate over seconds, so first divergence may be late and rms error small relative to peak.",
+    "seam": "envelope rate/level coefficient fit at rate=1 extremes",
+    "status": "HYPOTHESIS"
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/14",
+  "non_claims": [
+    "No engine is adjudicated as physically correct. These are two software implementations; cross-implementation disagreement is recorded as localized findings (hypotheses), and any claim about original DX7 hardware would require hardware evidence this investigation does not have."
+  ],
+  "rationale": "slow envelope: all rates 1, nonzero final levels",
+  "render_config": {
+    "event_policy": "positions are exact 64-sample block multiples; identical effective times for both engines",
+    "events": [
+      {
+        "args": [
+          60,
+          100
+        ],
+        "cmd": "note_on",
+        "pos": 4800
+      },
+      {
+        "args": [
+          60
+        ],
+        "cmd": "note_off",
+        "pos": 96000
+      }
+    ],
+    "sample_rate": 48000,
+    "seconds": 3.0
+  },
+  "render_run_logs": {
+    "reference": {
+      "bytes": 576000,
+      "exit": 0,
+      "peak_abs": 0.001556396484375,
+      "stderr": ""
+    },
+    "second": {
+      "bytes": 576000,
+      "exit": 0,
+      "peak_abs": 0.004238699562847614,
+      "stderr": ""
+    }
+  },
+  "renders": {
+    "reference": {
+      "bytes": 576000,
+      "path": "render-ref.f32",
+      "peak_abs": 0.001556396484375,
+      "sha256": "ef2222ad5f1140f7cc2eeaa35bfc07fc9ce92c748414d8a7b219f1a9db6ce6bd"
+    },
+    "second": {
+      "bytes": 576000,
+      "path": "render-second.f32",
+      "peak_abs": 0.004238699562847614,
+      "sha256": "0aa54917a02862f49c05e87e019c5af95be95d2bd1b84b352474b98ef1ee4480"
+    }
+  },
+  "report": {
+    "byte_identical": false,
+    "estimator": {
+      "name": "exact-time-locked-paired",
+      "version": "1"
+    },
+    "exact_mode": true,
+    "failure_class": null,
+    "failure_detail": null,
+    "inputs": {
+      "format": "pcm_f32le mono (raw, headerless)",
+      "sample_count_a": 144000,
+      "sample_count_b": 144000,
+      "sample_rate": 48000,
+      "sha256_a": "ef2222ad5f1140f7cc2eeaa35bfc07fc9ce92c748414d8a7b219f1a9db6ce6bd",
+      "sha256_b": "0aa54917a02862f49c05e87e019c5af95be95d2bd1b84b352474b98ef1ee4480"
+    },
+    "primary": {
+      "error_sign": "candidate_minus_reference",
+      "exact_equal": false,
+      "first_divergent_sample": 4800,
+      "max_abs_error": 0.005549185443669558,
+      "max_abs_error_index": 143463,
+      "mean_bias": 2.630296192858418e-05,
+      "mismatch_count": 139165,
+      "rms_error": 0.0027767183624376485,
+      "snr_db": -10.474528449273288,
+      "snr_reason": "measured"
+    },
+    "primary_not_computed_reason": null,
+    "primary_role": "PRIMARY - time-locked; no alignment, trimming, resampling, or normalization",
+    "schema": "paired-comparison-report",
+    "schema_version": 1,
+    "secondary": {
+      "envelope_shape_proxy": {
+        "argmax_window_start": 4800,
+        "max_relative_rms_diff": 0.7428946309808556,
+        "n_windows": 60,
+        "window_samples": 2400,
+        "window_seconds": 0.05
+      },
+      "onset_time": {
+        "delta_samples": -30,
+        "sample_a": 4830,
+        "sample_b": 4800,
+        "threshold_abs": 1e-05
+      },
+      "role": "SECONDARY - triage only; never sufficient for PASS",
+      "spectral_character_proxy": {
+        "abs_diff": 0.007902832658560129,
+        "metric": "zero_crossing_rate",
+        "rate_a": 0.010534795380523475,
+        "rate_b": 0.002631962721963347
+      }
+    },
+    "secondary_not_computed_reason": null,
+    "secondary_role": "SECONDARY - triage only; never sufficient for PASS",
+    "stream_stats": {
+      "a": {
+        "dc_offset": -2.9375500149197048e-05,
+        "peak_abs": 0.001556396484375,
+        "peak_index": 141441,
+        "rms": 0.0008313911741153877,
+        "sample_count": 144000
+      },
+      "b": {
+        "dc_offset": -3.072538220612868e-06,
+        "peak_abs": 0.004238699562847614,
+        "peak_index": 96189,
+        "rms": 0.00264972862704377,
+        "sample_count": 144000
+      },
+      "not_computed_reason": null
+    },
+    "verdict": "FAIL",
+    "verdict_reason": "samples_differ"
+  },
+  "schema": "r07-disagreement-case/1"
+}

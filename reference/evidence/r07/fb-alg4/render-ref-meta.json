@@ -1,0 +1,13 @@
+{
+  "oracle": "dx7-oracle-marki",
+  "engine": "marki",
+  "sample_rate": 48000,
+  "samples": 144000,
+  "block_size": 64,
+  "event_to_block": "apply_events_with_pos_in_block_before_block",
+  "mts_esp": "disabled (standard tuning)",
+  "normalize_dx_velocity": false,
+  "mono_mode": false,
+  "events_applied": 2,
+  "events": [{"pos":4800,"cmd":"note_on","block":75},{"pos":96000,"cmd":"note_off","block":1500}]
+}

@@ -1,0 +1,53 @@
+{
+  "identity_version": 1,
+  "id": "R07-second-oracle-identity",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/14",
+  "purpose": "Pin the SECOND external GPL render oracle (hexter) consumed by tools/r07_compare.py for the R07 targeted oracle-disagreement investigation, so every cross-implementation comparison is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository. This is an independent implementation: hexter shares no engine code with Dexed/msfa.",
+  "source": {
+    "path": "/Users/joseph/hexter-oracle",
+    "git_commit": "a0fe615a906197b40588a704c7ef932d7b6461d8",
+    "git_commit_short": "a0fe615",
+    "license": "GPL-2.0-or-later (inherited from hexter)",
+    "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)",
+    "description": "Harness repository containing main.c (render loop + event dispatch mirrored from hexter.c, cited per function), type-only ladspa.h/dssi.h stubs, an empty autoconf config.h stub, and build.sh. The hexter engine files are compiled UNMODIFIED from the pinned upstream tree at build time (build reads it read-only); no hexter bytes are committed in either repository."
+  },
+  "binary": {
+    "path": "/Users/joseph/hexter-oracle/hexter-oracle",
+    "sha256": "4f1cde37cadab4a33a99ed0b8d4839be776ea0fdfb45450f379de5a55e6b1732"
+  },
+  "upstream": {
+    "project": "hexter (DSSI software synthesizer)",
+    "repo_url": "https://github.com/theabolton/hexter",
+    "commit": "1cf1bfea5962f7c9726e0cf809b762b3b2655225",
+    "release": "version 1.1.1",
+    "local_clone": "/Users/joseph/dev/hexter",
+    "local_head_at_pin_time": "1cf1bfea5962f7c9726e0cf809b762b3b2655225",
+    "license": "GPL-2.0-or-later",
+    "note": "hexter models the DX7 Mark I voice architecture independently of Dexed; upstream describes its envelope/output-level mapping as fitted to a TX7 (dx7_voice.c dx7_voice_recalculate_volume comment)."
+  },
+  "engine": {
+    "mode": "hexter fixed-point (HEXTER_USE_FLOATING_POINT undefined; upstream configure default)",
+    "sample_rate": 48000,
+    "sample_rate_source": "docs/DECISIONS-v1.md DEC-009 (project pin); applied via the harness instance->sample_rate and dx7_eg_init_constants.",
+    "nugget_size": 64,
+    "tuning_hz": 440.0,
+    "volume_port_db": 0.0,
+    "master_volume_cc7": 127,
+    "polyphony": "HEXTER_DEFAULT_POLYPHONY (10)",
+    "program_slot": 0,
+    "voice_input": "163-byte single-voice dump or 4104-byte bank (slot 0); R07 re-encodes every case to a 163-byte single voice via the P01 codec (src/gf180_dx7/sysex.py) so both oracles receive identical voice bytes",
+    "engine_block_note": "hexter renders in HEXTER_NUGGET_SIZE=64 bursts with do_control_update when a burst ends a nugget (hexter.c hexter_run_synth); the harness replicates that loop verbatim."
+  },
+  "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101), C99 (-std=c99 -O2)",
+  "determinism": {
+    "verified": "2026-09-20: byte-identical f32 output across fresh processes on identical inputs (repeat renders hashed equal).",
+    "rand_note": "hexter calls rand() only on the LFO sample-and-hold path (LFO wave 4, dx7_voice.c); unseeded rand() is deterministically seeded per platform, and the R07 diagnostic set contains no wave-4 voice (dev32 goal set is waves 0-3 only; synthetic cases use wave 0 with zero mod depths).",
+    "uninitialized_memory_note": "dx7_voice_new() mallocs uninitialized voice memory; every field consumed by the render path is initialized by dx7_voice_setup_note()/dx7_voice_update_mod_depths() before rendering (verified by reading dx7_voice.c); renders are byte-identical across processes, which is the operative guarantee."
+  },
+  "event_to_block_policy": "The harness applies events at their exact sample tick inside the nugget-64 burst loop (mirroring hexter_run_synth). The R07 driver (tools/r07_compare.py) pre-quantizes all event positions to exact multiples of 64 samples, so both oracles receive identical effective event times; the driver refuses any non-multiple position.",
+  "boundary": "external-oracle-only; outputs are comparison evidence",
+  "fidelity_note": "Cross-implementation agreement or disagreement is a software finding only. Neither engine is adjudicated as physically correct by this work; original-DX7 fidelity claims require hardware evidence (AGENTS.md; docs/DECISIONS-v1.md DEC-001 analog for second oracles).",
+  "build_notes": "Engine sources compiled unmodified; upstream emits 5 shift-negative-value warnings in dx7_voice.c at this commit (reproduced verbatim in the build log, unmodified build). Link requires dx7_voice_patches.c (hexter internal patch bank, referenced by hexter_data_patches_init).",
+  "verification": "git -C /Users/joseph/hexter-oracle rev-parse HEAD equals source.git_commit, and sha256(/Users/joseph/hexter-oracle/hexter-oracle) equals binary.sha256; enforced by tools/r07_compare.py _check_identity() before any render, and by tests/test_r07.py.",
+  "pinned_at": "2026-09-20"
+}

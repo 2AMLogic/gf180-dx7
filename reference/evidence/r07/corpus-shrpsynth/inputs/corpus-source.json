@@ -1,0 +1,11 @@
+{
+  "archive": {
+    "entry": "DX7_AllTheWeb/Aminet/105.syx",
+    "filename": "DX7_AllTheWeb.zip",
+    "sha256": "c2c47bd1aa29ab07bdf5e6ec8a25faa1b10e06ea0bcf57f6a83d8363051ed6ef",
+    "slot": 3
+  },
+  "canonical_hash": "e619786fe3cc7b6be694470709f054aa129abd042d852efaba54b413aefbec6d",
+  "dev32_index": 0,
+  "policy": "archive read-only; bytes not redistributed; this evidence directory deliberately stores no third-party voice bytes for this case (only this provenance record + events + render hashes)"
+}

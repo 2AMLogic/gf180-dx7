@@ -222,7 +222,7 @@ formula and cross-checked against the profile JSON.
 | Control | Mechanism | Result (committed evidence, `controls[]`) |
 |---|---|---|
 | Plain 4-stage linear ADSR | `LinearAdsr` interpolates **gain-linearly** between the same stage-boundary frames (times match, law differs) and drives the same probe machinery against the oracle PCM | FAIL_DETECTED, divergent stages named: `decay`, `release` (attack matches at the probed block because the DX jump-floor start crosses the gain-linear ramp there — the exponential-segment law diverges on the falling legs). An oracle-independent pure variant asserts mid-segment divergence > 2^20 Q24 |
-| sr_multiplier ±1 | Mutated constant must (a) fail the formula re-derivation, (b) flip reachable coefficients so the independent derivation disagrees on exact frames | FAIL_DETECTED: M+1 flips the rate-0 `statics[0]//20` static-count; M−1 flips the `inc_` coefficient at rate 74/rs 0 (found by exhaustive scan of all 100×4 rate/rs pairs and all 77 statics; ±1 is otherwise absorbed by the `>> 24` truncation — recorded as the control's sensitivity boundary) |
+| sr_multiplier ±1 | Mutated constant must (a) fail the formula re-derivation, (b) flip reachable coefficients so the independent derivation disagrees on exact frames | FAIL_DETECTED: M+1 flips the `inc_` coefficient in battery entry 3 (rate 1/rs 1: 1175 → 1176, diverging from frame 0) and entry 4 (rate-99 and rate-40 coefficients at rs 0); M−1 flips the `inc_` coefficient at rate 74/rs 0 (entry 2: 3371827 → 3371826). The rate-0 `statics[0]//20` count (81033) does **not** flip — it is identical for M−1/M/M+1 (entry 1 exercises that path without diverging). ±1 is otherwise absorbed by the `>> 24` truncation; the committed scan (section 7) records this as the control's sensitivity boundary |
 | Swapped rate/level arrays | Model consumes `levels` as `rates` and vice versa; same probe machinery against the oracle PCM | FAIL_DETECTED, divergent stages named: `decay`, `release`; pure variant shows > 500 diverging frames |
 
 ## 7. Deviations, observations, and what is NOT claimed
@@ -239,10 +239,17 @@ formula and cross-checked against the profile JSON.
   the final clamp, env.cc:94/113); `ix_ == 3 ∧ down_` is the sustained
   state. N01 owns the predicate; N03 only mirrors env.cc exactly.
 - **sr_multiplier ±1 sensitivity boundary**: ±1 is below the resolution of
-  the `>> 24` coefficient truncation for most (rate, rate_scaling) pairs
-  (89 upward + 1934 total flips over the full scan; none in the statics for
-  M−1). The control therefore asserts the formula check plus the flip
-  locations above; a looser timing-tolerance control would be vacuous.
+  the `>> 24` coefficient truncation for most of the sweep space. The
+  committed scan (`test_sr_multiplier_scan_statistics` in
+  `tests/test_envelope.py`) sweeps rate 0..99 × rate_scaling {0,1,2,3} (the
+  100×4 grid, 400 pairs), mapping each pair to its q-rate coefficient
+  `q = min((41·rate) >> (6 + rate_scaling), 63)`, plus the 77-entry statics
+  table in raw and attack-hold (`//20`) variants: 122 M+1 coefficient flips
+  (113 `inc_` + 7 raw statics + 2 attack-hold) and 19 M−1 flips (all `inc_`;
+  no statics entry flips in either variant). Widening the sweep to
+  rate_scaling 0..63 (100×64 grid) gives 188 `inc_` M+1 / 19 M−1 flips.
+  The control therefore asserts the formula check plus the flip locations
+  above; a looser timing-tolerance control would be vacuous.
 - **Not claimed**: RTL equivalence (H-stage), pitch EG (N05), routing (N04),
   synthesis/place-and-route/signoff, original-DX7 fidelity, preset quality.
   Oracle agreement is software-reference agreement only. The listening
@@ -250,7 +257,7 @@ formula and cross-checked against the profile JSON.
 
 ## 8. Status
 
-- Model + directed suite: **PASS** (32/32 tests; 12 directed cases, 51 value/
+- Model + directed suite: **PASS** (33/33 tests; 12 directed cases, 51 value/
   time/onset/ratio/silence probes, 15 oracle renders — see the committed
   evidence JSON for per-probe rows).
 - Negative controls: **FAIL_DETECTED** (all three fire, stages named).

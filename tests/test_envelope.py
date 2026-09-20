@@ -550,9 +550,15 @@ def independent_trace(rates, levels, outlevel, rate_scaling, n, events,
 
 
 def mutation_battery():
-    """Bounded battery for the sr_multiplier control. The first entry has a
-    rate-0 stage (known statics[0]//20 upward flip for M+1); the second has
-    rate 74 at rs 0 (known inc_ downward flip for M-1)."""
+    """Bounded battery for the sr_multiplier control, with the measured
+    +-1 flips (verified by direct simulation both ways): M+1 flips the
+    inc_ coefficient in entry 3 (rate 1 at rate_scaling 1: 1175 -> 1176,
+    diverging from frame 0) and entry 4 (rate-99 and rate-40 coefficients
+    at rs 0); M-1 flips the inc_ coefficient at rate 74/rs 0 (entry 2:
+    3371827 -> 3371826). Entry 1 drives the rate-0 statics[0]//20 static
+    path, whose scaled count (81033) is identical for M-1, M, and M+1, so
+    it exercises that path without flipping; where +-1 does flip is pinned
+    by the committed scan (test_sr_multiplier_scan_statistics)."""
     return [
         ([0, 80, 70, 60], [0, 90, 80, 70], 4064, 0),
         ([74, 50, 50, 50], [99, 99, 60, 40], 4064, 0),
@@ -650,6 +656,47 @@ class TestModelSemantics(unittest.TestCase):
         profile = json.loads(
             (REPO / "spec" / "numeric-profile-v1.json").read_text())
         self.assertEqual(profile["envelope"]["sr_multiplier_48k"], derived)
+
+    def test_sr_multiplier_scan_statistics(self):
+        """Pins the +-1 coefficient-flip scan statistics quoted in
+        docs/N03-ENVELOPE-MODEL.md section 7 so they stay reproducible.
+
+        The scan sweeps the (rate, rate_scaling) grid and maps each pair
+        to its q-rate coefficient q = min((41*rate) >> (6 + rate_scaling),
+        63) -- the sweep mapping, not the model's per-note derivation
+        ((41*rate) >> 6) + rate_scaling -- then counts scaled inc_
+        coefficients whose value changes under sr_multiplier +-1. The
+        statics table is scanned in raw and attack-hold (//20) variants;
+        no entry of either variant flips for M-1."""
+        def inc_of(rate, rs):
+            q = min((rate * 41) >> (6 + rs), 63)
+            return (4 + (q & 3)) << (2 + 6 + (q >> 2))
+
+        def flips(value):
+            base = (value * E.SR_MULTIPLIER_48K) >> 24
+            return ((value * (E.SR_MULTIPLIER_48K + 1)) >> 24 != base,
+                    (value * (E.SR_MULTIPLIER_48K - 1)) >> 24 != base)
+
+        inc_flips = {}
+        for label, rs_values in (("100x4", range(4)),
+                                 ("100x64", range(64))):
+            up = dn = 0
+            for rate in range(100):
+                for rs in rs_values:
+                    f = flips(inc_of(rate, rs))
+                    up += f[0]
+                    dn += f[1]
+            inc_flips[label] = (up, dn)
+        self.assertEqual(inc_flips["100x4"], (113, 19))
+        self.assertEqual(inc_flips["100x64"], (188, 19))
+        raw_up = sum(flips(_INDEP_STATICS[s])[0] for s in range(77))
+        hold_up = sum(flips(_INDEP_STATICS[s] // 20)[0] for s in range(77))
+        self.assertEqual((raw_up, hold_up), (7, 2))
+        statics_dn = any(flips(_INDEP_STATICS[s])[1]
+                         or flips(_INDEP_STATICS[s] // 20)[1]
+                         for s in range(77))
+        self.assertFalse(statics_dn)
+        self.assertEqual(inc_flips["100x4"][0] + raw_up + hold_up, 122)
 
     def test_init_matches_env_cc(self):
         env = E.Envelope()

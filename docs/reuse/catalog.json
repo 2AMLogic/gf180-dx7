@@ -1308,8 +1308,8 @@
     },
     {
       "path": "tests/test_envelope.py",
-      "sha256": "ae8f2358bc97bc435f37bb0dc72c4792ad742c5583bd70cdf5cca635a58646b8",
-      "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes"
+      "sha256": "ab3bc3181a2a38e7e80c62e38650befa316d84e7d6e9e7272052bd3c0fa16ce8",
+      "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes. Re-pinned after the PR #58 judge-fix revision (sr_multiplier control documentation corrected to the measured flip locations; committed scan-statistics test added)"
     },
     {
       "path": "src/gf180_dx7/capabilities.py",

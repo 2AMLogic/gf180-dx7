@@ -1,0 +1,122 @@
+{
+  "contract": "gf180-dx7 product contract",
+  "version": 1,
+  "frozen": "2026-09-19",
+  "profile": "dx7-compatible-v1",
+  "companion_document": "docs/DECISIONS-v1.md",
+  "adoption_record": "docs/decision-records/0001-product-contract-v1.md",
+
+  "sample_rate_hz": 48000,
+  "polyphony": 16,
+  "timbres": 1,
+  "operators": 6,
+  "algorithms": 32,
+
+  "reference_profile": "dexed-marki",
+  "reference_engine_role": "pinned_external_comparison_oracle_only_never_copied",
+  "reference_pinning_owner": "R01",
+
+  "synthesis": "six_sine_operators_all_32_algorithms_feedback_including_algorithms_4_and_6",
+  "audio": {
+    "output": "continuous_dry_mono",
+    "transport": "explicit_i2s_format_to_external_dac",
+    "stereo": "optional_duplication_to_both_slots"
+  },
+  "effects_policy": "external_or_later_all_reference_comparisons_dry",
+  "effects_policy_status": "proposed_owner_may_veto",
+
+  "preset_banks": {
+    "initial_listening_bank_patches": 32,
+    "shipping_curated_bank_patches": 128,
+    "archive_import": "host_side",
+    "curated_contents_status": "proposed_owner_may_veto"
+  },
+  "voice_data": {
+    "import": ["dx7_single_voice_sysex", "dx7_32_voice_bank_sysex"],
+    "export": true,
+    "support_boundary": "explicit_only_no_filename_implied_compatibility"
+  },
+  "performance_controls": [
+    "note_on",
+    "note_off",
+    "velocity",
+    "sustain",
+    "pitch_bend",
+    "modulation_wheel",
+    "channel_aftertouch",
+    "volume",
+    "all_sound_off"
+  ],
+  "performance_controls_other": "remaining_original_function_modes_tracked_explicitly",
+  "sound_semantics": "full_dx7_voice_parameter_set_no_silent_fallback",
+
+  "host_boundary": "host_file_midi_ui_patch_conversion_chip_audio_rate_autonomous",
+  "state_policy": "explicit_reset_phase_lfo_init_event_timing_repeatability_tested",
+  "physical_target": "gf180mcu_no_slot_fit_assertion",
+
+  "event_application": "next_frame_boundary",
+  "event_latency_bound_frames": 1,
+  "event_queue": "bounded_depth_set_by_H03_never_guessed",
+  "event_queue_overflow": "explicit_rejection_backpressure_never_silent_drop",
+  "retrigger": "envelope_retrigger_from_current_level",
+  "same_pitch_repeat": "steal_oldest_matching_voice",
+  "voice_stealing_order": "releasing_first_then_oldest_sounding_deterministic",
+  "voice_stealing_status": "proposed_owner_may_veto",
+  "sustain": "hold_until_pedal_release_midi_semantics",
+  "patch_change_while_held": "old_patch_until_note_off_atomic_frame_boundary_commit",
+  "osc_lfo_phase": "free_running_except_patch_sync_param_restart",
+  "note_tail_policy": "envelope_release_to_documented_silence_floor_no_fixed_cutoff",
+  "silence_floor_owner": "N01",
+  "forced_kill": "all_sound_off_or_explicit_reset_only",
+  "patch_performance_separation": true,
+  "transpose_scaling_velocity": "applied_exactly_once_no_double_transpose_no_global_velocity_clamp",
+
+  "original_hardware_fidelity_claim": false,
+  "exclusions": [
+    "no_original_hardware_fidelity_claim",
+    "no_synthesis_par_signoff_or_playback_claims_without_evidence",
+    "no_effects_or_output_coloration_in_core",
+    "no_multi_timbre_operation",
+    "no_preset_quality_claims_from_numeric_tests",
+    "no_arithmetic_or_physical_constraint_decisions_here"
+  ],
+
+  "licensing": {
+    "repo_license": "Apache-2.0",
+    "per_file_headers": false,
+    "gpl_engines": ["dexed_source_engine_mki", "vdx7", "hexter"],
+    "gpl_engine_role": "external_comparison_oracles_only_never_copied",
+    "apache_material": "adoptable_with_provenance_record_plus_requalification",
+    "hash_equality_alone_never_qualifies": true
+  },
+
+  "proposed_owner_may_veto": ["DEC-004", "DEC-012", "DEC-017"],
+
+  "decisions": {
+    "DEC-001": "fidelity_profile_dx7_compatible_v1",
+    "DEC-002": "synthesis",
+    "DEC-003": "polyphony_and_timbre",
+    "DEC-004": "presets",
+    "DEC-005": "voice_data",
+    "DEC-006": "performance_controls",
+    "DEC-007": "sound_semantics",
+    "DEC-008": "audio",
+    "DEC-009": "sample_rate_48khz",
+    "DEC-010": "host_core_boundary",
+    "DEC-011": "state_and_reset",
+    "DEC-012": "effects_policy",
+    "DEC-013": "physical_target",
+    "DEC-014": "event_application_timing",
+    "DEC-015": "retrigger",
+    "DEC-016": "same_pitch_repeat",
+    "DEC-017": "voice_stealing_order",
+    "DEC-018": "sustain_pedal",
+    "DEC-019": "patch_change_while_held",
+    "DEC-020": "osc_lfo_phase",
+    "DEC-021": "note_tails_and_silence_floor",
+    "DEC-022": "patch_vs_performance_state",
+    "DEC-023": "transpose_scaling_velocity_preservation",
+    "DEC-024": "no_original_hardware_fidelity_claim",
+    "DEC-025": "licensing_and_source_policy"
+  }
+}

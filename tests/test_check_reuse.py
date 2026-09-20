@@ -33,12 +33,12 @@ def write(path, data):
         f.write(data)
 
 
-def make_catalog(component_extra=None, exempt=None):
+def make_catalog(component_extra=None, exempt=None, originals=None):
     return {
         "schema_version": 1,
         "rulings_enum": ["adopt", "adapt", "reject", "reference-only",
                          "external-oracle-only"],
-        "local_files_exempt": exempt or [],
+        "local_originals": originals or [],
         "components": [
             {
                 "component": "fixture-adopted",
@@ -79,8 +79,8 @@ class CheckReuseTestCase(unittest.TestCase):
             capture_output=True, text=True)
 
     def test_compliant_tree_passes(self):
-        catalog = make_catalog(exempt=[
-            {"path": "src/gf180_dx7/__init__.py",
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
              "reason": "local package marker"}])
         tmp = tempfile.mkdtemp(prefix="reuse-check-")
         write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
@@ -92,27 +92,29 @@ class CheckReuseTestCase(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
     def test_unrecorded_source_file_fails(self):
-        catalog = make_catalog(exempt=[
-            {"path": "src/gf180_dx7/__init__.py",
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
              "reason": "local package marker"}])
         tmp = tempfile.mkdtemp(prefix="reuse-check-")
         write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
               json.dumps(catalog).encode())
         write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
         write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
         write(os.path.join(tmp, "src", "unrecorded.py"), b"import os\n")
         proc = self.run_check(tmp)
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("unrecorded.py", proc.stdout)
 
     def test_drifted_hash_fails(self):
-        catalog = make_catalog(exempt=[
-            {"path": "src/gf180_dx7/__init__.py",
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
              "reason": "local package marker"}])
         tmp = tempfile.mkdtemp(prefix="reuse-check-")
         write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
               json.dumps(catalog).encode())
         # adopted file present but bytes edited after the "import"
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
         write(os.path.join(tmp, "src", "comp.py"),
               UPSTREAM_BYTES + b"# local tweak\n")
         write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
@@ -121,13 +123,14 @@ class CheckReuseTestCase(unittest.TestCase):
         self.assertIn("drifted", proc.stdout)
 
     def test_adapt_destination_without_adapted_hash_fails(self):
-        catalog = make_catalog(exempt=[
-            {"path": "src/gf180_dx7/__init__.py",
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
              "reason": "local package marker"}])
         del catalog["components"][1]["adapted_sha256"]
         tmp = tempfile.mkdtemp(prefix="reuse-check-")
         write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
               json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
         write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
         write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
         proc = self.run_check(tmp)
@@ -148,8 +151,38 @@ class CheckReuseTestCase(unittest.TestCase):
                "destination": ["src/dsp.v"], "maintainer": "test",
                "requalification": {"check": "none", "result": "NOT_RUN"},
                "negative_control": "n/a", "notes": ""}
-        catalog = make_catalog(component_extra=bad, exempt=[
-            {"path": "src/gf180_dx7/__init__.py",
+        catalog = make_catalog(component_extra=bad, originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
+             "reason": "local package marker"}])
+        tmp = tempfile.mkdtemp(prefix="reuse-check-")
+        write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+              json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
+        write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
+        write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("must not declare destinations", proc.stdout)
+
+    def test_original_drift_fails(self):
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
+             "reason": "local package marker"}])
+        tmp = tempfile.mkdtemp(prefix="reuse-check-")
+        write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+              json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
+        write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"),
+              b"# edited after pinning\n")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("original", proc.stdout)
+        self.assertIn("drifted", proc.stdout)
+
+    def test_missing_original_fails(self):
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
              "reason": "local package marker"}])
         tmp = tempfile.mkdtemp(prefix="reuse-check-")
         write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
@@ -158,7 +191,7 @@ class CheckReuseTestCase(unittest.TestCase):
         write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
         proc = self.run_check(tmp)
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
-        self.assertIn("must not declare destinations", proc.stdout)
+        self.assertIn("missing from the tree", proc.stdout)
 
 
 if __name__ == "__main__":

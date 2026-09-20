@@ -28,11 +28,11 @@
   "identity_verified": true,
   "inputs": {
     "events": {
-      "path": "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/events.txt",
+      "path": "/private/tmp/opencode/wt-c01-capabilities/reference/fixtures/smoke/events.txt",
       "sha256": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb"
     },
     "voice": {
-      "path": "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/voice.syx",
+      "path": "/private/tmp/opencode/wt-c01-capabilities/reference/fixtures/smoke/voice.syx",
       "sha256": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d"
     }
   },
@@ -41,9 +41,9 @@
   "oracle_command": [
     "/Users/joseph/dx7-oracle-marki/dx7-oracle",
     "--voice",
-    "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/voice.syx",
+    "/private/tmp/opencode/wt-c01-capabilities/reference/fixtures/smoke/voice.syx",
     "--events",
-    "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/events.txt",
+    "/private/tmp/opencode/wt-c01-capabilities/reference/fixtures/smoke/events.txt",
     "--out",
     "<temp>",
     "--rate",
@@ -57,7 +57,7 @@
   "oracle_identity": {
     "binary": {
       "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
-      "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f"
+      "sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42"
     },
     "boundary": "external-oracle-only; outputs are comparison evidence",
     "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
@@ -68,13 +68,27 @@
     "pinned_at": "2026-09-20",
     "purpose": "Pin the external GPL render oracle consumed by tools/render_reference.py, so every render is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository.",
     "source": {
-      "git_commit": "82325d80bc7903603ab1e23d9ecb1baf7cc6edca",
-      "git_commit_short": "82325d8",
+      "git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "git_commit_short": "0047c3f",
       "license": "GPL-3.0-or-later",
       "path": "/Users/joseph/dx7-oracle-marki",
       "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)"
     },
     "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "trace_extension": {
+      "added_by": "R05 (issue #12), oracle commit 0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "flag": "--trace <file.jsonl>",
+      "granularity": "one JSON line per 64-sample block",
+      "non_invasiveness": "wrapper-level reads only; traced and untraced PCM verified byte-identical by tools/capture_trace.py before any trace artifact is written",
+      "taps": [
+        "lfo_value",
+        "lfo_delay",
+        "live_mask",
+        "keydown_mask",
+        "active_notes"
+      ],
+      "unavailable_taps": "per-operator phase, envelope stage/level, feedback history, per-operator output live inside the Dexed msfa engine and are documented-unavailable (reference/trace-registry.json)"
+    },
     "upstream": {
       "commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
       "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
@@ -82,7 +96,7 @@
       "project": "Dexed",
       "repo_url": "https://github.com/asb2m10/dexed"
     },
-    "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--rate 48000] [--seconds 4]"
+    "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--trace trace.jsonl] [--rate 48000] [--seconds 4]"
   },
   "oracle_meta_echo": {
     "block_size": 64,
@@ -118,7 +132,7 @@
   },
   "renderer": "tools/render_reference.py",
   "repo_dirty_at_render": true,
-  "repo_git_head": "3d7ee2af54c4892c54dda5a8dc3d938d3a9311a5",
+  "repo_git_head": "35c9854052326d83163780f573054ccbd2021809",
   "sample_rate": 48000,
   "seconds": 4.0,
   "silent_output_guard": {

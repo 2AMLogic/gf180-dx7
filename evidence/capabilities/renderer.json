@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "python3",
+    "tools/compare_evidence.py"
+  ],
+  "check": "compare-evidence-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_render_reference.TestNegativeControls"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "reference/evidence/compare/reproducibility-r04.json": "1428bbc5f5405289a829c168be201c464811cf143053584beb70d3ef1fe5fb51",
+    "reference/evidence/smoke/render.f32": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a",
+    "reference/evidence/smoke/render.json": "92e963abbd331ee730d489abb9881ec1b249c9d01c4cfe4cf4a98b0296a83b97",
+    "reference/evidence/smoke/render.wav": "d963de69e13fe9498bd054684e2b3b09ec8939c0961fc477d9a2d95bb6a21cb4",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "src/gf180_dx7/compare.py": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
+    "tools/compare_evidence.py": "be94730dd8b60f2f4f1d1364de3bb95ae6c7c31a49d8d01e4a8443d7cbbd3981",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+    "tools/render_reference.py": "4320ad073fdf01c43f6343c9389cdfef3eb9814347e27c6edfc14900018c0a11"
+  },
+  "exit_code": 0,
+  "node_id": "renderer",
+  "recorded_at": "2026-09-20T11:50:26Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

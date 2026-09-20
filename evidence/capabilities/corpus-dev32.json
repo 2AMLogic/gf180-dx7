@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "python3",
+    "tools/validate_dev32.py",
+    "--out",
+    "build/capabilities/dev32-renderproof.json"
+  ],
+  "check": "dev32-validation-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_dev32.TestNegativeControls"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "corpus/archive-catalogs/alltheweb-catalog.json": "9bfe25ca706f15f603fc5ca22c13bb1b22697eae0830e71939181622e00af216",
+    "corpus/dev32-renderproof.json": "3c03c5afc91f30e4760968b50aed1595495e9fe6504986a5bc8656530c157d68",
+    "corpus/dev32.json": "ad0a30ac43801af3f86a466c5a8d498c7425d0ac2bfc813e512b480a81a7f3c0",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+    "tools/validate_dev32.py": "25a88e84dac936f5d4e75fef001b028fc3d73ade8c722734ef4510949660da92"
+  },
+  "exit_code": 0,
+  "node_id": "corpus-dev32",
+  "recorded_at": "2026-09-20T11:50:33Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

@@ -1285,6 +1285,16 @@
       "path": "tools/check_registry.py",
       "sha256": "ff78d51851a6d782b2f399a04adb9356d926606400075ff8767c49cf46bcf564",
       "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "sha256": "8044685347e4a20dcee98139fb4e344cf527d47c5fbbbe1a3a32dd6ddb10d5fb",
+      "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted"
+    },
+    {
+      "path": "spec/capabilities-v1.json",
+      "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+      "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
     }
   ]
 }

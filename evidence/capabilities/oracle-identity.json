@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "python3",
+    "tools/render_selfcheck.py"
+  ],
+  "check": "render-selfcheck-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_render_reference.TestNegativeControls"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "reference/fixtures/smoke/events.txt": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb",
+    "reference/fixtures/smoke/voice.syx": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d",
+    "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+    "tools/render_selfcheck.py": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b"
+  },
+  "exit_code": 0,
+  "node_id": "oracle-identity",
+  "recorded_at": "2026-09-20T11:50:24Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

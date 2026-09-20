@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "tests.test_compare",
+    "-v"
+  ],
+  "check": "comparator-qualification-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_compare.TestMutationBatteryCli"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "reference/evidence/compare/qualification-r04.json": "3d962faf54bee757ed75493e2dfd1cc7eeeb7ee9e3f2c1bc49762b4273150c7c",
+    "reference/evidence/compare/reproducibility-r04.json": "1428bbc5f5405289a829c168be201c464811cf143053584beb70d3ef1fe5fb51",
+    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "tests/test_compare.py": "3d62fb28a78021eadef79a41239fd8f568bae92799d85ba3337790f6ac3e3ee1",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
+  },
+  "exit_code": 0,
+  "node_id": "comparator",
+  "recorded_at": "2026-09-20T11:50:30Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

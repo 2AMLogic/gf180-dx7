@@ -1297,6 +1297,21 @@
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
     },
     {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "0ffea4e9e05b3205539491871fe371e1b4faf4f54f51deb67cc2a7e060a74cf5",
+      "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import"
+    },
+    {
+      "path": "src/gf180_dx7/model/envelope.py",
+      "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+      "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
+    },
+    {
+      "path": "tests/test_envelope.py",
+      "sha256": "ab3bc3181a2a38e7e80c62e38650befa316d84e7d6e9e7272052bd3c0fa16ce8",
+      "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes. Re-pinned after the PR #58 judge-fix revision (sr_multiplier control documentation corrected to the measured flip locations; committed scan-statistics test added)"
+    },
+    {
       "path": "src/gf180_dx7/capabilities.py",
       "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
       "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md"

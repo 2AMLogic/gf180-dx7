@@ -1,0 +1,7 @@
+# gf180-dx7 R02 smoke fixture events (issue #7)
+# Positions are absolute sample offsets at 48000 Hz; the external oracle
+# applies every event before the 64-sample block containing its position.
+# 2400 lies past the first block (delayed onset); the note sustains until
+# 96000 (2 s) inside a 4 s (192000-sample) render.
+2400 note_on 60 100
+96000 note_off 60

@@ -1167,8 +1167,8 @@
     },
     {
       "path": "tools/check_all.sh",
-      "sha256": "acce313c6f2cb345f142affb24c65e3246628973a529f62cf0c4714c79fffd71",
-      "reason": "locally authored CI entry point; re-pinned after R01 added guarded verify_reference run"
+      "sha256": "4350db24151b91c938417e9296ccbe614375422c8057207defaaa8842272e7e9",
+      "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7)"
     },
     {
       "path": "src/gf180_dx7/sysex.py",
@@ -1204,6 +1204,21 @@
       "path": "tools/verify_reference.py",
       "sha256": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa",
       "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes (converted from exemption at merge; byte-pinned)"
+    },
+    {
+      "path": "tools/render_reference.py",
+      "sha256": "4320ad073fdf01c43f6343c9389cdfef3eb9814347e27c6edfc14900018c0a11",
+      "reason": "locally authored R02 render harness (issue #7); drives the external GPL oracle as comparison evidence, no upstream bytes"
+    },
+    {
+      "path": "tools/render_selfcheck.py",
+      "sha256": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b",
+      "reason": "locally authored R02 fast self-check (issue #7); guarded NOT_RUN where the oracle binary is absent, no upstream bytes"
+    },
+    {
+      "path": "tools/make_smoke_fixture.py",
+      "sha256": "11f3c2aba60df00ab52808c894928938692470cdd875f68aedf9f8cb8769fd37",
+      "reason": "locally authored R02 smoke-fixture generator (issue #7); original synthetic parameter set, no third-party voice bytes"
     }
   ]
 }

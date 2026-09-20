@@ -1,0 +1,154 @@
+{
+  "determinism": {
+    "byte_identical": true,
+    "protocol": "second render in a fresh subprocess, byte-compare"
+  },
+  "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
+  "events_parsed": [
+    {
+      "args": [
+        60,
+        100
+      ],
+      "block": 37,
+      "cmd": "note_on",
+      "pos": 2400
+    },
+    {
+      "args": [
+        60
+      ],
+      "block": 1500,
+      "cmd": "note_off",
+      "pos": 96000
+    }
+  ],
+  "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",
+  "fixture": "smoke",
+  "identity_verified": true,
+  "inputs": {
+    "events": {
+      "path": "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/events.txt",
+      "sha256": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb"
+    },
+    "voice": {
+      "path": "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/voice.syx",
+      "sha256": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d"
+    }
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/7",
+  "listening": "NOT_RUN: pending human audition",
+  "oracle_command": [
+    "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+    "--voice",
+    "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/voice.syx",
+    "--events",
+    "/private/tmp/opencode/wt-r02-renderer/reference/fixtures/smoke/events.txt",
+    "--out",
+    "<temp>",
+    "--rate",
+    "48000",
+    "--seconds",
+    "4.0",
+    "--meta",
+    "<temp>"
+  ],
+  "oracle_exit_code": 0,
+  "oracle_identity": {
+    "binary": {
+      "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
+      "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f"
+    },
+    "boundary": "external-oracle-only; outputs are comparison evidence",
+    "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
+    "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",
+    "id": "R02-oracle-identity",
+    "identity_version": 1,
+    "issue": "https://github.com/2AMLogic/gf180-dx7/issues/7",
+    "pinned_at": "2026-09-20",
+    "purpose": "Pin the external GPL render oracle consumed by tools/render_reference.py, so every render is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository.",
+    "source": {
+      "git_commit": "82325d80bc7903603ab1e23d9ecb1baf7cc6edca",
+      "git_commit_short": "82325d8",
+      "license": "GPL-3.0-or-later",
+      "path": "/Users/joseph/dx7-oracle-marki",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)"
+    },
+    "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "upstream": {
+      "commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "pinned_by": "reference/manifest.json (R01, issue #6)",
+      "project": "Dexed",
+      "repo_url": "https://github.com/asb2m10/dexed"
+    },
+    "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--rate 48000] [--seconds 4]"
+  },
+  "oracle_meta_echo": {
+    "block_size": 64,
+    "engine": "marki",
+    "event_to_block": "apply_events_with_pos_in_block_before_block",
+    "events": [
+      {
+        "block": 37,
+        "cmd": "note_on",
+        "pos": 2400
+      },
+      {
+        "block": 1500,
+        "cmd": "note_off",
+        "pos": 96000
+      }
+    ],
+    "events_applied": 2,
+    "mono_mode": false,
+    "mts_esp": "disabled (standard tuning)",
+    "normalize_dx_velocity": false,
+    "oracle": "dx7-oracle-marki",
+    "sample_rate": 48000,
+    "samples": 192000
+  },
+  "oracle_stdout": "rendered 192000 samples, 2 events applied",
+  "output": {
+    "bytes": 768000,
+    "file": "render.f32",
+    "format": "pcm_f32le mono (raw, headerless)",
+    "samples": 192000,
+    "sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a"
+  },
+  "renderer": "tools/render_reference.py",
+  "repo_dirty_at_render": true,
+  "repo_git_head": "3d7ee2af54c4892c54dda5a8dc3d938d3a9311a5",
+  "sample_rate": 48000,
+  "seconds": 4.0,
+  "silent_output_guard": {
+    "observed_peak_abs": 0.244293212890625,
+    "threshold_max_abs": 1e-06,
+    "triggered": false
+  },
+  "stats": {
+    "dc_offset": -3.9788087209065753e-05,
+    "peak_abs": 0.244293212890625,
+    "rms": 0.06126699351236304
+  },
+  "voice_decode_p01": {
+    "algorithm": 0,
+    "anomalies": [],
+    "feedback": 3,
+    "name": "R02SMOKE01",
+    "operator_output_levels": [
+      99,
+      90,
+      99,
+      90,
+      90,
+      90
+    ]
+  },
+  "wav_convenience_copy": {
+    "conversion": "clamp to [-1,1], scale by 32767, round-half-to-even, saturate to int16",
+    "file": "render.wav",
+    "format": "WAVE_FORMAT_PCM, 16-bit integer, mono (stdlib wave cannot write IEEE float; render.f32 is the exact evidence of record)",
+    "sha256": "d963de69e13fe9498bd054684e2b3b09ec8939c0961fc477d9a2d95bb6a21cb4"
+  }
+}

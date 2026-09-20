@@ -1,1 +1,4 @@
-"""gf180_dx7.model — frozen integer models (gf180-dx7-integer-v1)."""
+"""Integer models for the gf180-dx7 frozen contract (gf180-dx7-integer-v1).
+
+Package marker only; each model module is self-contained and stdlib-only.
+"""

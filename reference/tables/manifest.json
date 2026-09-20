@@ -1,0 +1,37 @@
+{
+  "generator": "tools/gen_tables.py",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/16",
+  "model_contract": "gf180-dx7-integer-v1",
+  "note": "tables REGENERATED from documented formulas (NUM-001); no bytes copied from the pinned GPL/Apache trees",
+  "sample_rate_hz": 48000,
+  "schema": "gf180-dx7/table-manifest-v1",
+  "tables": {
+    "freqlut_table": {
+      "bits": 32,
+      "entries": 1025,
+      "file": "freqlut_table.hex",
+      "formula": "lut[i] = floor(y + 0.5); y *= 2**(1/1024); y0 = 2**44 / 48000.0",
+      "formula_citation": "freqlut.cc:35-42 (dexed b6cf2e9)",
+      "sha256": "6d3c597008e85c67cfa1165ef4038a3c1c9c56a60a4b441b7486296a897dc64d",
+      "signed": true
+    },
+    "sinexp_table": {
+      "bits": 16,
+      "entries": 1024,
+      "file": "sinexp_table.hex",
+      "formula": "round(float32((pow(2, float(i)/1024) - 1) * 4096))",
+      "formula_citation": "EngineMkI.cpp:88-92 (dexed b6cf2e9)",
+      "sha256": "e515a71ae736d92dcb3fd36973dea486c96d1521f1a0bab1f917be2c4ec07794",
+      "signed": false
+    },
+    "sinlog_table": {
+      "bits": 16,
+      "entries": 1024,
+      "file": "sinlog_table.hex",
+      "formula": "round(-1024 * log2(float32(sin(((0.5+i)/1024) * pi/2))))",
+      "formula_citation": "EngineMkI.cpp:83-86 (dexed b6cf2e9)",
+      "sha256": "990c19e90732efe712a19ba4272f97c7c9d884ac0e4e19450a1067165d8aa8a8",
+      "signed": false
+    }
+  }
+}

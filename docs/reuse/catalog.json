@@ -318,7 +318,7 @@
         "result": "NOT_RUN"
       },
       "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
-      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption. | Adopted as a pattern re-implementation (DR-0004) with the REUSE-RULINGS fixes; implementation files are local_originals, upstream code not copied."
+      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
     },
     {
       "component": "spi-reg-control",
@@ -1320,6 +1320,86 @@
       "path": "tools/compile_capabilities.py",
       "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
       "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+      "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge; conflict-marker regression repaired after #57 squash (orchestrator)"
+    },
+    {
+      "path": "src/gf180_dx7/model/tables.py",
+      "sha256": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+      "reason": "locally authored N02 table generator (issue #16); formulas adopted as facts from the pinned trees with citations, zero upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/model/operator.py",
+      "sha256": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+      "reason": "locally authored N02 integer operator model (issue #16); Mark I semantics re-implemented from cited facts (EngineMkI.cpp is external-oracle-only), no GPL/MSFA bytes"
+    },
+    {
+      "path": "tools/gen_tables.py",
+      "sha256": "36caa180ce476e69a83b3947a06779ac5264a38e7cd8dc8ac4ad21ee19775224",
+      "reason": "locally authored N02 regenerate-and-hash CLI (issue #16); parasynth --check discipline re-expressed, no upstream bytes"
+    },
+    {
+      "path": "tests/test_operator.py",
+      "sha256": "5a7bb873383fe2ba0fe408730b2ef7762757443e4959cd9f28dfe26b996aafd4",
+      "reason": "locally authored N02 probe suite (issue #16); analytic probes, negative controls, and the pinned-oracle reference probe"
+    },
+    {
+      "path": "reference/tables/sinlog_table.hex",
+      "sha256": "91182672af773c5df0ba41b76bc89b74b6268cc233f5b2659eb3e3c6ac836ea3",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/sinexp_table.hex",
+      "sha256": "dc3b3a93db54df5c7d41ca1ad38e6c67e6ba7b8a891c5c2e0be4cba7856794f7",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/freqlut_table.hex",
+      "sha256": "f1b080824a8286e307c8febcacca96c25eb501f0c482296062c3ff22f15d9c7b",
+      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+    },
+    {
+      "path": "reference/tables/manifest.json",
+      "sha256": "7dff9a64852bb701a07662c9bee6689a8804e60c8791bac856564547c7ef4e81",
+      "reason": "generated N02 table manifest (issue #16): sha256/entries/bits/formula citations per table"
+    },
+    {
+      "path": "reference/evidence/n02-operator/reference-probe.json",
+      "sha256": "cd306c4e7d1613ac3da341b58f185062c8e7eaa3431853704336cfe4cfbfe08a",
+      "reason": "N02 reference-probe evidence record (issue #16); liveness re-verified by tests/test_operator.py"
+    },
+    {
+      "path": "src/gf180_dx7/model/pitch.py",
+      "sha256": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+      "reason": "locally authored N05 integer pitch/modulation model (issue #19); numeric semantics, constants and table contents adopted as facts from the pinned Apache-2.0 msfa files by citation (freqlut.cc, dx7note.cc, pitchenv.cc, lfo.cc, sin.cc, tuning.cc), clean re-implementation with zero copied bytes; GPL EngineMkI never copied or imported"
+    },
+    {
+      "path": "tests/test_pitch.py",
+      "sha256": "45b37dd3a1f03195147675bb96c7e529ce12cd73f85782e8c5344a1d16ef1062",
+      "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes"
+    },
+    {
+      "path": "rtl/storage_probe.v",
+      "sha256": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
+      "reason": "locally authored H02 full-state storage probe RTL (issue #21); state image widths mirrored from spec/numeric-profile-v1.json as facts, no upstream bytes"
+    },
+    {
+      "path": "rtl/storage_probe_tb.v",
+      "sha256": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6",
+      "reason": "locally authored H02 iverilog smoke bench (issue #21); write/readback of all 113 banks, no upstream bytes"
+    },
+    {
+      "path": "tools/storage_probe_synth.py",
+      "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
+      "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tests/test_storage_probe.py",
+      "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
+      "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
     }
   ]
 }

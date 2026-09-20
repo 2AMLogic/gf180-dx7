@@ -1,0 +1,415 @@
+{
+ "accounting_recomputed": {
+  "expected_mapped_flops": 38781,
+  "note_fields": [
+   [
+    "basepitch_6",
+    192
+   ],
+   [
+    "fb_buf_2",
+    64
+   ],
+   [
+    "pitchenv_level",
+    32
+   ],
+   [
+    "pitchenv_targetlevel",
+    32
+   ],
+   [
+    "pitchenv_inc",
+    32
+   ],
+   [
+    "pitchenv_ix",
+    3
+   ],
+   [
+    "pitchenv_rising",
+    1
+   ],
+   [
+    "pitchenv_down",
+    1
+   ],
+   [
+    "noteLogFreq",
+    32
+   ],
+   [
+    "playingMidiNote",
+    7
+   ],
+   [
+    "midiChannel",
+    4
+   ],
+   [
+    "mpePitchBend",
+    14
+   ],
+   [
+    "mpePressure",
+    7
+   ],
+   [
+    "mpeTimbre",
+    7
+   ],
+   [
+    "voice_flags_keydown_sustained_live",
+    3
+   ],
+   [
+    "steal_rotation_age",
+    15
+   ]
+  ],
+  "note_w": 446,
+  "num_notes": 16,
+  "num_ops": 96,
+  "obs_flops": 1,
+  "op_fields": [
+   [
+    "phase",
+    32
+   ],
+   [
+    "freq",
+    32
+   ],
+   [
+    "gain_out",
+    32
+   ],
+   [
+    "level_in",
+    32
+   ],
+   [
+    "env_level",
+    32
+   ],
+   [
+    "env_targetlevel",
+    32
+   ],
+   [
+    "env_inc",
+    32
+   ],
+   [
+    "env_staticcount",
+    32
+   ],
+   [
+    "env_effective_outlevel",
+    32
+   ],
+   [
+    "env_effective_rate_scaling",
+    32
+   ],
+   [
+    "env_ix",
+    3
+   ],
+   [
+    "env_rising",
+    1
+   ],
+   [
+    "env_down",
+    1
+   ]
+  ],
+  "op_w": 325,
+  "patch_bits": 444,
+  "patch_bytes_ceil": 56,
+  "patch_bytes_exact": 55.5,
+  "patch_fields": [
+   [
+    "env_rates_4_x6ops",
+    168
+   ],
+   [
+    "env_levels_4_x6ops",
+    168
+   ],
+   [
+    "pitchenv_rates_4",
+    28
+   ],
+   [
+    "pitchenv_levels_4",
+    28
+   ],
+   [
+    "opmode_6",
+    6
+   ],
+   [
+    "ampmodsens_6",
+    12
+   ],
+   [
+    "algorithm",
+    5
+   ],
+   [
+    "fb_depth",
+    5
+   ],
+   [
+    "mod_depths_and_sens",
+    24
+   ]
+  ],
+  "patch_w": 444,
+  "replicated_bits": 38336,
+  "runtime_bytes": 4792,
+  "section": "DECISIONS-NUMERIC-v1.md section 6 (N01 rev 1.1)",
+  "source": "spec/numeric-profile-v1.json",
+  "state_bits_with_patch": 38780,
+  "state_with_patch_bytes_ceil": 4848
+ },
+ "claim_boundary": "mapped storage cost of the probe only; no place-and-route, no timing closure, no full-chip fit, no functional-fidelity claim",
+ "flop_vs_macro_verdicts": {
+  "patch_shared_444b": {
+   "mapped_flop_area_um2_measured": 28265.3952,
+   "min_macro_area_um2_derived": 100571.5568,
+   "min_macro_mix": {
+    "gf180mcu_fd_ip_sram__sram64x8m8wm1": 1
+   },
+   "verdict": "flops"
+  },
+  "per_mapped_flop_um2_measured": 63.6608,
+  "runtime_state_38336b": {
+   "mapped_flop_area_um2_measured": 2440500.4288,
+   "min_macro_area_um2_derived": 2031814.928,
+   "min_macro_mix": {
+    "gf180mcu_fd_ip_sram__sram256x8m8wm1": 1,
+    "gf180mcu_fd_ip_sram__sram512x8m8wm1": 9
+   },
+   "port_rule": "flops for the schedule (1 eval/cycle random access + same-slot writeback; 1RW macros cannot); macro area shown for the area-only comparison the issue asks for"
+  }
+ },
+ "gates": {
+  "full": {
+   "mapped_flops": 38781,
+   "requirement": "mapped flops == 38781 (38336 replicated + 444 patch + 1 obs, documented separately)",
+   "status": "PASS"
+  },
+  "strip_negative_control": {
+   "mapped_flops": 0,
+   "requirement": "strip-observability must make the flop-count gate FAIL (state removed)",
+   "status": "MET (gate fails as required)"
+  }
+ },
+ "issue": 21,
+ "macro_analysis": {
+  "flop_equivalents": {
+   "patch_bits": 444,
+   "runtime_state_bits": 38336
+  },
+  "label_note": "LEF SIZE / liberty area = measured; counts, mixes and comparisons = derived. Per-note and per-operator runtime classes stay in flops regardless of macro area: 1RW macros cannot serve the per-slot read of one op bank + one note bank and the same-cycle writeback at the assumed 1 eval/cycle access, and banking 38,336 random-access bits across 512-byte macros serializes the schedule (see report).",
+  "macros_measured": [
+   {
+    "capacity_bytes_measured": 64,
+    "lef_area_um2_derived": 100571.5568,
+    "lef_size_um": {
+     "height": 232.88,
+     "width": 431.86
+    },
+    "lef_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram64x8m8wm1.lef",
+    "lef_vs_liberty_area_delta_um2": 0.0,
+    "liberty_area_um2_measured": 100571.5568,
+    "liberty_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram64x8m8wm1__tt_025C_5v00.lib",
+    "macro": "gf180mcu_fd_ip_sram__sram64x8m8wm1"
+   },
+   {
+    "capacity_bytes_measured": 128,
+    "lef_area_um2_derived": 116118.5168,
+    "lef_size_um": {
+     "height": 268.88,
+     "width": 431.86
+    },
+    "lef_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram128x8m8wm1.lef",
+    "lef_vs_liberty_area_delta_um2": 0.0,
+    "liberty_area_um2_measured": 116118.5168,
+    "liberty_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram128x8m8wm1__tt_025C_5v00.lib",
+    "macro": "gf180mcu_fd_ip_sram__sram128x8m8wm1"
+   },
+   {
+    "capacity_bytes_measured": 256,
+    "lef_area_um2_derived": 147212.4368,
+    "lef_size_um": {
+     "height": 340.88,
+     "width": 431.86
+    },
+    "lef_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram256x8m8wm1.lef",
+    "lef_vs_liberty_area_delta_um2": 0.0,
+    "liberty_area_um2_measured": 147212.4368,
+    "liberty_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__tt_025C_5v00.lib",
+    "macro": "gf180mcu_fd_ip_sram__sram256x8m8wm1"
+   },
+   {
+    "capacity_bytes_measured": 512,
+    "lef_area_um2_derived": 209400.2768,
+    "lef_size_um": {
+     "height": 484.88,
+     "width": 431.86
+    },
+    "lef_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram512x8m8wm1.lef",
+    "lef_vs_liberty_area_delta_um2": 0.0,
+    "liberty_area_um2_measured": 209400.2768,
+    "liberty_source": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib",
+    "macro": "gf180mcu_fd_ip_sram__sram512x8m8wm1"
+   }
+  ],
+  "patch_store_56B": {
+   "min_area_mix": {
+    "area_um2_derived": 100571.5568,
+    "bytes_capacity": 64,
+    "bytes_needed": 56,
+    "label": "derived (exact DP over measured LEF areas)",
+    "macro_count": 1,
+    "mix": {
+     "gf180mcu_fd_ip_sram__sram64x8m8wm1": 1
+    }
+   },
+   "same_size_options": [
+    {
+     "area_um2_derived": 100571.5568,
+     "bytes_capacity_derived": 64,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram64x8m8wm1",
+     "macro_count_derived": 1
+    },
+    {
+     "area_um2_derived": 116118.5168,
+     "bytes_capacity_derived": 128,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram128x8m8wm1",
+     "macro_count_derived": 1
+    },
+    {
+     "area_um2_derived": 147212.4368,
+     "bytes_capacity_derived": 256,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram256x8m8wm1",
+     "macro_count_derived": 1
+    },
+    {
+     "area_um2_derived": 209400.2768,
+     "bytes_capacity_derived": 512,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+     "macro_count_derived": 1
+    }
+   ]
+  },
+  "runtime_state_4792B": {
+   "min_area_mix": {
+    "area_um2_derived": 2031814.928,
+    "bytes_capacity": 4864,
+    "bytes_needed": 4792,
+    "label": "derived (exact DP over measured LEF areas)",
+    "macro_count": 10,
+    "mix": {
+     "gf180mcu_fd_ip_sram__sram256x8m8wm1": 1,
+     "gf180mcu_fd_ip_sram__sram512x8m8wm1": 9
+    }
+   },
+   "same_size_options": [
+    {
+     "area_um2_derived": 7542866.76,
+     "bytes_capacity_derived": 4800,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram64x8m8wm1",
+     "macro_count_derived": 75
+    },
+    {
+     "area_um2_derived": 4412503.6384,
+     "bytes_capacity_derived": 4864,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram128x8m8wm1",
+     "macro_count_derived": 38
+    },
+    {
+     "area_um2_derived": 2797036.2992,
+     "bytes_capacity_derived": 4864,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram256x8m8wm1",
+     "macro_count_derived": 19
+    },
+    {
+     "area_um2_derived": 2094002.768,
+     "bytes_capacity_derived": 5120,
+     "label": "derived from measured LEF area",
+     "macro": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+     "macro_count_derived": 10
+    }
+   ]
+  },
+  "state_with_patch_4848B": {
+   "min_area_mix": {
+    "area_um2_derived": 2031814.928,
+    "bytes_capacity": 4864,
+    "bytes_needed": 4848,
+    "label": "derived (exact DP over measured LEF areas)",
+    "macro_count": 10,
+    "mix": {
+     "gf180mcu_fd_ip_sram__sram256x8m8wm1": 1,
+     "gf180mcu_fd_ip_sram__sram512x8m8wm1": 9
+    }
+   }
+  }
+ },
+ "planning_id": "H02",
+ "runs": {
+  "full": {
+   "abc_mapped": true,
+   "chip_area_um2": 4115369.9776,
+   "dff_area_um2": 2468829.4848,
+   "dff_cells": {
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 38781
+   },
+   "dff_total": 38781,
+   "dfflibmap_mapped": 38781,
+   "mode": "full"
+  },
+  "strip": {
+   "abc_mapped": true,
+   "chip_area_um2": null,
+   "dff_area_um2": null,
+   "dff_cells": {},
+   "dff_total": 0,
+   "dfflibmap_mapped": null,
+   "mode": "strip"
+  }
+ },
+ "schema": "h02-storage-probe-report/1",
+ "smoke_bench": {
+  "status": "PASS",
+  "summary": "PASS storage_probe_tb: 113 banks written and read back, obs live"
+ },
+ "status": "PASS",
+ "tool_identity": {
+  "constraints": "no SDC: storage probe, no clock defined; synth -nofsm; dfflibmap + abc -liberty",
+  "dont_use_policy": "none: *_1 drive cells allowed (declared per D01 section 4/section 10.3)",
+  "liberty": {
+   "corner": "tt_025C_5v00",
+   "library": "gf180mcu_fd_sc_mcu7t5v0 (7t, 5 metal)",
+   "path": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+   "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+  },
+  "rtl": {
+   "rtl/storage_probe.v": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
+   "rtl/storage_probe_tb.v": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6"
+  },
+  "yosys": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"
+ }
+}

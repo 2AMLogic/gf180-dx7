@@ -71,7 +71,7 @@ Generated from [spec/issue-dag-v1.json](spec/issue-dag-v1.json) by `tools/render
 
 | CLOSED | OPEN | UNKNOWN | TOTAL |
 | ---: | ---: | ---: | ---: |
-| 18 | 18 | 0 | 36 |
+| 19 | 17 | 0 | 36 |
 
 These are issue states, not verification verdicts: a closed issue is not a capability claim, and no numeric PASS/coverage status is shown here. Evidence-derived capability status arrives with the fixed model and comparator (plan section 7).
 
@@ -83,7 +83,7 @@ graph TD
   A01["A01 (issue 39) CLOSED"]:::closed
   D00["D00 (issue 4) CLOSED"]:::closed
   D01["D01 (issue 5) CLOSED"]:::closed
-  H01["H01 (issue 20) OPEN"]:::open
+  H01["H01 (issue 20) CLOSED"]:::closed
   H02["H02 (issue 21) CLOSED"]:::closed
   H03["H03 (issue 25) OPEN"]:::open
   H04["H04 (issue 26) OPEN"]:::open

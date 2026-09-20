@@ -1,0 +1,165 @@
+{
+ "claim_boundary": "mapped area/cell cost of the probe only; no place-and-route, no timing closure, no fit claim, no audibility claim; RTL-vs-model agreement is tools/h01_compare.py's result",
+ "cycles_per_operator": {
+  "budget_input": "the kernel's 1 clk/eval leaves 1.67 clk/eval (96 of 256 used) at 12.288 MHz and 4.33 clk/eval (96 of 512) at 24.576 MHz for state access, control and output -- the N01 section-7 all-in question; whether the shared core with H02 storage sustains <= 2.67 stays unproven here (that schedule is H03/H10)",
+  "latency_clks": 3,
+  "note": "one evaluation accepted per clock once the 3-stage pipeline is full (measured by the equivalence harness: every eval stream sustains 1 eval/clk)",
+  "schedule_context": {
+   "clock_12m288_all_in_clks_per_op_eval": 2.6667,
+   "clock_12m288_clks_per_sample": 256,
+   "clock_12m288_hz": 12288000,
+   "clock_24m576_all_in_clks_per_op_eval": 5.3333,
+   "clock_24m576_clks_per_sample": 512,
+   "clock_24m576_hz": 24576000,
+   "design_point": "24.576 MHz; 12.288 MHz fallback only if the shared operator core measures <= 2 clk/eval",
+   "operator_evals_per_sample": 96,
+   "operator_evals_per_second": 4608000,
+   "source": "spec/numeric-profile-v1.json schedule; DECISIONS-NUMERIC-v1.md section 7"
+  },
+  "throughput_clks_per_eval": 1
+ },
+ "declared_vs_mapped_state": {
+  "declared_bits": 139,
+  "declared_detail": {
+   "clip_q": 17,
+   "obs_q": 1,
+   "out_q": 32,
+   "out_valid_q": 1,
+   "phase_q": 32,
+   "s1_env": 16,
+   "s1_log": 16,
+   "s1_valid": 1,
+   "s2_exp": 16,
+   "s2_shift": 5,
+   "s2_sign": 1,
+   "s2_valid": 1
+  },
+  "mapped_flops_full": 99,
+  "note": "mapped < declared is expected and behavior-preserving: yosys exploits ROM-content constants (e.g. sinlog entries never set bit 15) and sign-extension redundancy of out_q/clip_q, replacing redundant flops with wires. The contract the mapping must preserve is RTL behavior, proven bit-exact to the frozen model by tools/h01_compare.py."
+ },
+ "gates": {
+  "full": {
+   "cell_total": 2407,
+   "chip_area_um2": 46939.9616,
+   "mapped_flops": 99,
+   "requirement": "mapped flops > 32 (irreducible 32-bit phase accumulator) and chip area > 0 and sequential area > 0 and cells > 0",
+   "seq_area_um2": 6302.4192,
+   "status": "PASS"
+  },
+  "strip_negative_control": {
+   "mapped_flops": 0,
+   "requirement": "strip-observability must make the flop gate FAIL (all state removed)",
+   "status": "MET (gate fails as required)"
+  }
+ },
+ "issue": 20,
+ "pipeline_structure": [
+  {
+   "content": "phi fold (mirror XOR + quadrant sign) + sinlog ROM read + env capture",
+   "registers": "s1_log[15:0], s1_env[15:0], s1_valid",
+   "stage": 1
+  },
+  {
+   "content": "log-domain level add (mod 2^16) + sign split + sinexp ROM read + shift capture",
+   "registers": "s2_exp[15:0], s2_shift[4:0], s2_sign, s2_valid",
+   "stage": 2
+  },
+  {
+   "content": "4096 bias + >>shift + sign reconstruct (~result<<13) + >>>4 / clip(+-2^24) / >>>9",
+   "registers": "out_q[31:0], clip_q[16:0], out_valid_q",
+   "stage": 3
+  },
+  {
+   "content": "phase <= ld_phase ? phase_in : phase_q + freq (mod 2^32)",
+   "phase": "phase register",
+   "registers": "phase_q[31:0]"
+  },
+  {
+   "content": "registered XOR reduction of all state bits",
+   "observability": "state_obs",
+   "registers": "obs_q"
+  }
+ ],
+ "planning_id": "H01",
+ "runs": {
+  "full": {
+   "cell_total": 2407,
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 51,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 15,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 5,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 60,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 184,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 89,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 8,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 84,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 59,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 99,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 53,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 596,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 201,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 38,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 248,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 32,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 5,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 116,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 181,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 27,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 22,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 31,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 24,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 22,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 5,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_1": 2,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 26,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 4,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 63,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 57
+   },
+   "chip_area_um2": 46939.9616,
+   "dff_cells": {
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 99
+   },
+   "flop_total": 99,
+   "generic_gate_depth": 195,
+   "loop_warnings": 84,
+   "mode": "full",
+   "rom_representation": {
+    "detail": "both 1024x16 ROMs dissolve to combinational gates (yosys MEMORY_MAP; no BRAM in this flow); final stat shows no memory cells",
+    "evidence": {
+     "memory_cells_in_final_stat": 0,
+     "memory_map_pass_ran": true
+    },
+    "representation": "logic"
+   },
+   "seq_area_um2": 6302.4192
+  },
+  "strip": {
+   "cell_total": 0,
+   "cells_by_name": {},
+   "chip_area_um2": null,
+   "dff_cells": {},
+   "flop_total": 0,
+   "mode": "strip",
+   "seq_area_um2": null
+  }
+ },
+ "schema": "h01-synth-report/1",
+ "status": "PASS",
+ "tool_identity": {
+  "constraints": "no SDC: probe flow per issue #20 (read_verilog; synth -top; dfflibmap; abc; ltp; stat), no clock defined",
+  "dont_use_policy": "none: *_1 drive cells allowed (declared per D01 section 4/section 10.3)",
+  "equivalence_harness": "tools/h01_compare.py (golden: src/gf180_dx7/model/operator.py)",
+  "liberty": {
+   "corner": "tt_025C_5v00",
+   "library": "gf180mcu_fd_sc_mcu7t5v0 (7t, 5 metal)",
+   "path": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+   "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+  },
+  "rtl": {
+   "rtl/operator_probe.v": "c20277c0c39258250a4acaa259847f2395e0e31f894d34ea92d9a4e710f10f04",
+   "rtl/tb_operator_probe.v": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842"
+  },
+  "yosys": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"
+ }
+}

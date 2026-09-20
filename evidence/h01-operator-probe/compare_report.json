@@ -1,0 +1,65 @@
+{
+ "claim_boundary": "RTL-vs-frozen-model bit-exactness only; no synthesis, timing, fit, or audibility claim",
+ "equivalence": {
+  "actual_file": "evidence/h01-operator-probe/actual.txt",
+  "actual_rows": 4794,
+  "bench_captured": 4794,
+  "bench_evals": 4794,
+  "bench_loads": 26,
+  "expected_rows": 4794,
+  "first_mismatch": null,
+  "mismatches": 0,
+  "status": "PASS",
+  "vvp_stdout_tail": "PASS tb_operator_probe (evals=4794 loads=26 captured=4794)\n/private/tmp/opencode/wt-h01/rtl/tb_operator_probe.v:162: $finish called at 49560 (1s)"
+ },
+ "expected_sha256": "90c225096fc429002bb870b96aef1439a195fab13071415fcaed258824c28e5e",
+ "issue": 20,
+ "negative_control": {
+  "actual_file": "evidence/h01-operator-probe/actual_mutant.txt",
+  "bench_captured": 4794,
+  "bench_evals": 4794,
+  "bench_loads": 26,
+  "define": "MUTATE_ADDRWIDTH (sinlog address width 10 -> 9)",
+  "first_mismatch": {
+   "actual_clip": "00003",
+   "actual_out": "00006000",
+   "env": "0400",
+   "eval_index": 1024,
+   "expected_clip": "00b50",
+   "expected_out": "016a0000",
+   "freq": "00001000",
+   "phase_before": "00200000"
+  },
+  "mismatches": 2220,
+  "status": "MET (mutant fails equivalence as required)",
+  "vvp_stdout_tail": "PASS tb_operator_probe (evals=4794 loads=26 captured=4794)\n/private/tmp/opencode/wt-h01/rtl/tb_operator_probe.v:162: $finish called at 49560 (1s)"
+ },
+ "planning_id": "H01",
+ "schema": "h01-compare-report/1",
+ "status": "PASS",
+ "tool_identity": {
+  "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
+  "python": "3.14.7",
+  "rtl": {
+   "rtl/operator_probe.v": "c20277c0c39258250a4acaa259847f2395e0e31f894d34ea92d9a4e710f10f04",
+   "rtl/tb_operator_probe.v": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842"
+  },
+  "tables_manifest": "reference/tables/manifest.json"
+ },
+ "vector_stats": {
+  "cycle_boundary_24bit_crossings": 1007,
+  "distinct_sinexp_addrs": 1024,
+  "distinct_sinlog_addrs": 1024,
+  "env_above_env_max": 594,
+  "env_env_max": 26,
+  "env_zero": 25,
+  "evals": 4794,
+  "loads": 26,
+  "min_evals_required": 2000,
+  "negative_outputs": 1359,
+  "register_wrap_32bit_at_max": 4,
+  "sinexp_addrs_total": 1024,
+  "sinlog_addrs_total": 1024
+ },
+ "vectors_sha256": "07f22971ae6b025fd7fa03ae0b671b573ef03037d9a7debf975ab6fa532e1a6f"
+}

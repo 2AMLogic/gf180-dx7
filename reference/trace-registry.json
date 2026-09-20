@@ -1,0 +1,129 @@
+{
+  "registry_version": 1,
+  "id": "R05-trace-registry",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/12",
+  "purpose": "Versioned spec of the reference trace taps exposed by the external GPL oracle (dx7-oracle-marki, pinned in reference/oracle-identity.json). Every tap a consumer might expect is listed here as available or explicitly unavailable; unavailable taps are never silently omitted (issue #12 acceptance).",
+  "non_invasiveness_rule": "A capture is evidence only if the traced and untraced renders of the same inputs are byte-identical. tools/capture_trace.py runs the oracle in both modes, byte-compares the PCM, and refuses to write trace artifacts on divergence or on a malformed trace. Non-invasiveness is a gate, not a claim.",
+  "trace_streams": {
+    "block_jsonl": "one JSON line per 64-sample block: {\"block\":k,\"lfo_value\":...,\"lfo_delay\":...,\"live_mask\":<16-bit>,\"keydown_mask\":<16-bit>,\"active_notes\":n}; block-level taps are read at the block boundary after that block's events are applied",
+    "meta_json": "per-render metadata from the oracle --meta stream (configuration echo + applied-events log)",
+    "pcm_f32": "dry mono f32le PCM render, 48000 Hz (the comparison evidence of record)"
+  },
+  "taps": [
+    {
+      "name": "events_applied",
+      "available": true,
+      "granularity": "per_render",
+      "stream": "meta_json",
+      "stability": "deterministic across processes",
+      "semantics": "Ordered log of performance events the oracle applied, each with its absolute sample position, command, and the 64-sample block it was applied before; the count is echoed as events_applied. Policy: every event whose position falls inside a block is applied before that block."
+    },
+    {
+      "name": "lfo_value",
+      "available": true,
+      "granularity": "per_block",
+      "stream": "block_jsonl",
+      "stability": "instance-dependent across oracle processes",
+      "semantics": "LFO waveform sample for this block (msfa Lfo::getsample, int32), the value passed to every live Dx7Note::compute in the block. Shared per timbre.",
+      "stability_reason": "Upstream msfa Lfo leaves phase_ (and randstate_) uninitialized and Lfo::reset() does not set them (pinned lfo.h/lfo.cc), so the start phase differs per process instance — the same undefined state exists in upstream Dexed. Comparable within one captured render only; excluded from cross-run trace comparison."
+    },
+    {
+      "name": "lfo_delay",
+      "available": true,
+      "granularity": "per_block",
+      "stream": "block_jsonl",
+      "stability": "instance-dependent across oracle processes",
+      "semantics": "LFO delay/phase counter for this block (msfa Lfo::getdelay, int32); shows the LFO's delay/ramp state entering the block.",
+      "stability_reason": "Upstream msfa Lfo leaves delaystate_ uninitialized and Lfo::reset() does not set it; observed stable on the smoke fixture but not guaranteed across process instances. Comparable within one captured render only; excluded from cross-run trace comparison."
+    },
+    {
+      "name": "live_mask",
+      "available": true,
+      "granularity": "per_block",
+      "stream": "block_jsonl",
+      "stability": "deterministic across processes",
+      "semantics": "16-bit bitmask, bit n set iff wrapper voice n is live (its output is summed into this block). Wrapper voice bookkeeping, read after this block's events are applied; not engine-internal state."
+    },
+    {
+      "name": "keydown_mask",
+      "available": true,
+      "granularity": "per_block",
+      "stream": "block_jsonl",
+      "stability": "deterministic across processes",
+      "semantics": "16-bit bitmask, bit n set iff wrapper voice n is keydown (key held or sustained). Wrapper voice bookkeeping; may differ from live_mask during releases."
+    },
+    {
+      "name": "active_notes",
+      "available": true,
+      "granularity": "per_block",
+      "stream": "block_jsonl",
+      "stability": "deterministic across processes",
+      "semantics": "popcount(live_mask): number of voices summed into this block. Validated against live_mask by tools/capture_trace.py."
+    },
+    {
+      "name": "final_pcm",
+      "available": true,
+      "granularity": "per_render",
+      "stream": "pcm_f32",
+      "stability": "deterministic across processes",
+      "semantics": "The dry mono f32le PCM render itself (voice mix after per-voice scaling and clipping). Byte-identical in traced and untraced runs by the non-invasiveness gate."
+    },
+    {
+      "name": "op_phase",
+      "available": false,
+      "status": "planned",
+      "granularity": "per_operator_per_block",
+      "stream": null,
+      "semantics": "Per-operator phase accumulator (6 operators x 16 voices) at the block boundary.",
+      "reason": "Phase accumulators live inside Dexed's msfa engine (Dx7Note/FmOperator state) and are not visible at the wrapper level. Instrumenting requires copying the Apache-2.0 msfa/ sources into the external oracle tree and patching that copy (the pinned ~/dev/dexed tree must stay byte-clean); future work, see docs/TRACE-PLAN.md roadmap.",
+      "requirements_to_make_available": "copy msfa/ into dx7-oracle-marki with a provenance record, patch the copy with read-only taps, re-prove byte-identity with and without taps, re-pin oracle identity in this repository"
+    },
+    {
+      "name": "op_env_stage",
+      "available": false,
+      "status": "planned",
+      "granularity": "per_operator_per_block",
+      "stream": null,
+      "semantics": "Per-operator DX envelope stage (attack/decay/sustain/release/off) at the block boundary.",
+      "reason": "Envelope phase state lives inside msfa Env::process per Dx7Note operator; not visible at the wrapper level. Same instrumenting path as op_phase (copy + patch msfa inside the external oracle).",
+      "requirements_to_make_available": "same as op_phase"
+    },
+    {
+      "name": "op_env_level",
+      "available": false,
+      "status": "planned",
+      "granularity": "per_operator_per_block",
+      "stream": null,
+      "semantics": "Per-operator DX envelope level output at the block boundary.",
+      "reason": "Envelope levels live inside msfa Env per Dx7Note operator; not visible at the wrapper level. Same instrumenting path as op_phase.",
+      "requirements_to_make_available": "same as op_phase"
+    },
+    {
+      "name": "feedback_history",
+      "available": false,
+      "status": "planned",
+      "granularity": "per_voice_per_block",
+      "stream": null,
+      "semantics": "Operator-feedback shift-register state for each voice's modulator chain at the block boundary (DX7 self-feedback memory).",
+      "reason": "Feedback history is engine-internal msfa state; not visible at the wrapper level. Same instrumenting path as op_phase. Until available, N0x model bring-up must not assume feedback-history traces exist (issue #12 stop/escalate clause).",
+      "requirements_to_make_available": "same as op_phase"
+    },
+    {
+      "name": "op_output",
+      "available": false,
+      "status": "planned",
+      "granularity": "per_operator_per_block",
+      "stream": null,
+      "semantics": "Per-operator output before algorithm routing and voice summing.",
+      "reason": "Operator outputs are computed inside EngineMkI::compute from the pinned tree; only the summed, scaled voice mix is visible at the wrapper level. Same instrumenting path as op_phase.",
+      "requirements_to_make_available": "same as op_phase"
+    }
+  ],
+  "notes": [
+    "Decoded patch parameters and the algorithm (routing) are available WITHOUT oracle instrumentation: reference/fixtures/<name>/voice.syx decodes via the P01 codec (src/gf180_dx7/sysex.py), which is the in-repo decoded-parameter source for model bring-up.",
+    "LFO finding (R05): lfo_value/lfo_delay are instance-dependent across oracle processes because upstream msfa leaves the LFO start state uninitialized (see the taps' stability_reason). Cross-run trace comparison therefore uses ONLY the deterministic columns (block, live_mask, keydown_mask, active_notes) — hashed as deterministic_columns_sha256 in every capture meta — plus the PCM hash. The untraced LFO values do not affect the smoke fixture's PCM (no LFO routing), which stays byte-reproducible (R02 determinism).",
+    "A per-voice pre-sum output mix would be obtainable at wrapper level (the wrapper accumulates each live voice into sumbuf) without msfa surgery; it is a candidate future wrapper-level tap, not implemented in registry_version 1.",
+    "Unavailable taps are status 'planned' with an explicit reason and requirements; they are never approximated or silently omitted (issue #12 acceptance, plan section 7)."
+  ],
+  "negative_control": "An oracle-like stub that writes traces AND perturbs the PCM between traced and untraced runs must be rejected by the byte-identity gate with no artifacts written (tests/test_trace_capture.py)."
+}

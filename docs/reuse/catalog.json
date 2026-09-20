@@ -50,7 +50,7 @@
     },
     {
       "component": "trace-capture",
-      "ruling": "adopt",
+      "ruling": "reference-only",
       "upstream": {
         "repo": "2AMLogic/gf180-torchsynth",
         "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
@@ -71,18 +71,14 @@
         "path": "LICENSE",
         "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
       },
-      "destination": [
-        "src/gf180_dx7/trace_capture.py",
-        "tools/qualify_trace_capture.py",
-        "tests/test_trace_capture.py"
-      ],
+      "destination": [],
       "maintainer": "loom-builder + owner review",
       "requalification": {
-        "check": "run the upstream stdlib unittest subset (tests/test_trace_capture.py) against the adopted copy; non-perturbation must hold for DX7 traces",
-        "result": "NOT_RUN (import pending)"
+        "check": "none required (no bytes imported)",
+        "result": "NOT_RUN"
       },
       "negative_control": "an observer that mutates render state must fail the non-perturbation comparison",
-      "notes": "stdlib-only, non-perturbing passive capture; Torch injected at run time. Adapt call sites to the Dexed/pinned-reference seam registry (R01/R04)."
+      "notes": "Re-ruled adopt -> reference-only in R05 (issue #12): the planned byte-exact import destinations were superseded by the R05 issue brief (external-oracle seam). tools/capture_trace.py and tests/test_trace_capture.py are locally authored against the sibling's PATTERN (non-perturbing observers, versioned tap registry, non-perturbation negative control) with no upstream bytes; the capture tool is byte-pinned in local_originals. The sibling negative control is kept live: a stub oracle that writes traces AND perturbs PCM is rejected by the byte-identity gate with no artifacts written. Upstream hashes retain the original adopt-entry provenance."
     },
     {
       "component": "paired-comparator",
@@ -1219,6 +1215,11 @@
       "path": "tools/make_smoke_fixture.py",
       "sha256": "11f3c2aba60df00ab52808c894928938692470cdd875f68aedf9f8cb8769fd37",
       "reason": "locally authored R02 smoke-fixture generator (issue #7); original synthetic parameter set, no third-party voice bytes"
+    },
+    {
+      "path": "tools/capture_trace.py",
+      "sha256": "e83a0a20504ae43682d166577a9cad1a66e171ce8e22a7c53ff3e51312255bee",
+      "reason": "locally authored R05 non-invasive trace capture gate (issue #12); drives the external GPL oracle as comparison evidence and byte-compares traced vs untraced renders, no upstream bytes"
     }
   ]
 }

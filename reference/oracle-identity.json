@@ -5,14 +5,14 @@
   "purpose": "Pin the external GPL render oracle consumed by tools/render_reference.py, so every render is attributable to one exact binary built from one exact source tree. The oracle itself is NOT committed here and must never be rebuilt from this repository.",
   "source": {
     "path": "/Users/joseph/dx7-oracle-marki",
-    "git_commit": "82325d80bc7903603ab1e23d9ecb1baf7cc6edca",
-    "git_commit_short": "82325d8",
+    "git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+    "git_commit_short": "0047c3f",
     "license": "GPL-3.0-or-later",
     "role": "external-oracle-only; never copied into this Apache-2.0 repository (AGENTS.md licensing/source policy; docs/REUSE-RULINGS.md)"
   },
   "binary": {
     "path": "/Users/joseph/dx7-oracle-marki/dx7-oracle",
-    "sha256": "dc4c1b26322caa4ec5086c7a28bd86c9b0566c7c0ac03bf4c95ce178b077d39f"
+    "sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42"
   },
   "upstream": {
     "project": "Dexed",
@@ -22,7 +22,15 @@
     "pinned_by": "reference/manifest.json (R01, issue #6)"
   },
   "toolchain_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
-  "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--rate 48000] [--seconds 4]",
+  "usage": "dx7-oracle --voice voice.syx --events events.txt --out out.f32 [--meta meta.json] [--trace trace.jsonl] [--rate 48000] [--seconds 4]",
+  "trace_extension": {
+    "added_by": "R05 (issue #12), oracle commit 0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+    "flag": "--trace <file.jsonl>",
+    "taps": ["lfo_value", "lfo_delay", "live_mask", "keydown_mask", "active_notes"],
+    "granularity": "one JSON line per 64-sample block",
+    "non_invasiveness": "wrapper-level reads only; traced and untraced PCM verified byte-identical by tools/capture_trace.py before any trace artifact is written",
+    "unavailable_taps": "per-operator phase, envelope stage/level, feedback history, per-operator output live inside the Dexed msfa engine and are documented-unavailable (reference/trace-registry.json)"
+  },
   "event_to_block_policy": "events.txt positions are absolute sample offsets; the oracle applies every event before the 64-sample block containing its position (oracle main.cpp render loop)",
   "boundary": "external-oracle-only; outputs are comparison evidence",
   "fidelity_note": "Oracle agreement is software-reference agreement only; it is not original-DX7 fidelity and never implies the instrument sounds good (reference/oracle-protocol.md section 4, DEC-001).",

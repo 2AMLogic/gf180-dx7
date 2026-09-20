@@ -1297,11 +1297,6 @@
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
     },
     {
-      "path": "src/gf180_dx7/model/__init__.py",
-      "sha256": "0ffea4e9e05b3205539491871fe371e1b4faf4f54f51deb67cc2a7e060a74cf5",
-      "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import"
-    },
-    {
       "path": "src/gf180_dx7/model/envelope.py",
       "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
       "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
@@ -1400,6 +1395,21 @@
       "path": "tests/test_storage_probe.py",
       "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
       "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/model/algorithm.py",
+      "sha256": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+      "reason": "locally authored N04 integer algorithm/feedback model (issue #18); routing table values adopted as numeric facts from the pinned msfa citation with clean re-implementation, zero GPL bytes"
+    },
+    {
+      "path": "tests/test_algorithm.py",
+      "sha256": "733f778ba5ef7fc7ab605fe6da92ee42a5316204cb12cf6ac01843e87439ac0a",
+      "reason": "locally authored N04 test suite (issue #18); hand-derived wiring table re-derived from the citation, scripted-source battery, oracle sweep, three negative controls"
+    },
+    {
+      "path": "docs/N04-ALGORITHM-MODEL.md",
+      "sha256": "99138af716d18a4ec761ac55c919d0264f36ed141fe702ba9abe99844fff24a0",
+      "reason": "locally authored N04 derivation and results record (issue #18)"
     }
   ]
 }

@@ -1295,6 +1295,31 @@
       "path": "spec/capabilities-v1.json",
       "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+    },
+    {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+      "reason": "locally authored N05 model package marker (issue #19); not a reuse import"
+    },
+    {
+      "path": "src/gf180_dx7/model/pitch.py",
+      "sha256": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+      "reason": "locally authored N05 integer pitch/modulation model (issue #19); numeric semantics, constants and table contents adopted as facts from the pinned Apache-2.0 msfa files by citation (freqlut.cc, dx7note.cc, pitchenv.cc, lfo.cc, sin.cc, tuning.cc), clean re-implementation with zero copied bytes; GPL EngineMkI never copied or imported"
+    },
+    {
+      "path": "tests/test_pitch.py",
+      "sha256": "45b37dd3a1f03195147675bb96c7e529ce12cd73f85782e8c5344a1d16ef1062",
+      "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/capabilities.py",
+      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+      "reason": "locally authored C01 capability model (issue #45); landed without a byte-pin and caught by the check_reuse gate during N05 (issue #19); pinned retroactively, no upstream bytes"
+    },
+    {
+      "path": "tools/compile_capabilities.py",
+      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+      "reason": "locally authored C01 capability view generator (issue #45); landed without a byte-pin and caught by the check_reuse gate during N05 (issue #19); pinned retroactively, no upstream bytes"
     }
   ]
 }

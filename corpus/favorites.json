@@ -1,0 +1,23 @@
+{
+  "favorites": {
+    "45fd5c40d07d066d30630cb628b860d867c3e511daf03e1a9713c30915c525df": {
+      "added": "2026-09-20T10:03:17Z",
+      "note": "U01 round-trip control: first standalone voice in the catalog; proves select/render/favorite/recall end to end",
+      "phrase_hashes": {
+        "chord-3note-60-64-67": "f4c80aef8938de921efeef512873b17ae72e2cf8ce6fe853e0449e472151916a",
+        "high-84-vel100": "d6026bf8f460798ad0e8175c2b2d3956e5916e52b02fb0c42b1818ca8cc5703c",
+        "long-hold-60": "32b1b15e53c38be27cfd787abd20e4af0c00cebb607e38eeb7ffeed20094f01f",
+        "low-36-vel100": "1ae559531adafcaf3624d0b4f88ee1f00d8cbd12c48ed7730e6f61e9bf7d9363",
+        "mid-60-vel100": "d162d0a54cab7cf2752eed6d995f8143accb193bab614385f0beebfb54ecc66a",
+        "mid-60-vel127": "d162d0a54cab7cf2752eed6d995f8143accb193bab614385f0beebfb54ecc66a",
+        "mid-60-vel32": "d162d0a54cab7cf2752eed6d995f8143accb193bab614385f0beebfb54ecc66a",
+        "mid-60-vel80": "d162d0a54cab7cf2752eed6d995f8143accb193bab614385f0beebfb54ecc66a",
+        "modwheel-sweep-60": "82223d2c418650eaec9e84c2879e9a96f1b3e296d3bcfba736822d76069c152e",
+        "pitch-bend-60": "be2083ffa58aae3d0c8566df50450ed545fc730c19e9e8ac8d73c5470602b01f",
+        "release-tail-60": "42fa7b1b647841367e0f4b047d790fe6ffa714678787ff07bd8d58b0332d47dc",
+        "short-pluck-60": "6bbec02f39014bada5e75b29620fc8d7b7eab3a90bb5b6b18a50cf143cb9f54a"
+      }
+    }
+  },
+  "schema": "gf180-dx7.favorites/1"
+}

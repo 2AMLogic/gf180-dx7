@@ -203,6 +203,26 @@ def check_one(repo_root, entry, ruling, adapted, rel, name):
                 f"adapted sha256; update the catalog in the same PR")
 
 
+def check_originals(repo_root, originals):
+    """Byte-pin locally authored governed files (judge follow-up on PR #44).
+
+    Exemptions alone would pass any file once listed; originals carry a
+    recorded sha256 that must keep matching, so local code stays inside the
+    drift-detection coverage set.
+    """
+    for entry in originals:
+        rel = entry["path"]
+        path = os.path.join(repo_root, rel)
+        if not os.path.isfile(path):
+            raise CheckFailure(f"original {rel} is byte-pinned in the catalog "
+                               f"but missing from the tree")
+        actual = sha256_file(path)
+        if actual != entry.get("sha256"):
+            raise CheckFailure(
+                f"original {rel} drifted from its recorded sha256; update "
+                f"docs/reuse/catalog.json in the same PR")
+
+
 def find_sibling_checkout(repo_root, repo_name, commit):
     name = repo_name.rstrip("/").split("/")[-1]
     roots = [repo_root + "/..", repo_root + "/../2amlogic"]
@@ -267,11 +287,14 @@ def main(argv=None):
     try:
         catalog = load_catalog(repo_root, catalog_path)
         components = catalog["components"]
-        exempt = {e["path"] for e in catalog.get("local_files_exempt", [])}
+        originals = catalog.get("local_originals", [])
+        exempt = {e["path"] for e in originals}
+        exempt |= {e["path"] for e in catalog.get("local_files_exempt", [])}
         check_catalog_schema(components)
         files = list(iter_source_files(repo_root, exempt))
         check_coverage(files, components)
         check_hashes(repo_root, components)
+        check_originals(repo_root, originals)
         if args.verify_upstream:
             verify_upstream(repo_root, components)
     except CheckFailure as exc:
@@ -282,6 +305,7 @@ def main(argv=None):
         return 2
 
     print(f"reuse check PASS: {len(components)} catalog components, "
+          f"{len(originals)} byte-pinned originals, "
           f"governed destinations clean")
     return 0
 

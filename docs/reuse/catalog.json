@@ -12,40 +12,6 @@
   ],
   "hash_method": "sha256 of `git -C <sibling-checkout> show <upstream.commit>:<path>` -- bytes at the pinned commit, not a moving branch. Verify with tools/check_reuse.py --verify-upstream when sibling checkouts are available.",
   "maintainer": "loom-builder + owner review",
-  "local_files_exempt": [
-    {
-      "path": "src/gf180_dx7/__init__.py",
-      "reason": "locally authored empty package marker; not a reuse import"
-    },
-    {
-      "path": "tools/check_reuse.py",
-      "reason": "locally authored governance checker (this catalog's negative control)"
-    },
-    {
-      "path": "tools/check_all.sh",
-      "reason": "locally authored CI entry point"
-    },
-    {
-      "path": "src/gf180_dx7/cli.py",
-      "reason": "locally authored CLI wrapper (P01, issue #8); no upstream bytes"
-    },
-    {
-      "path": "src/gf180_dx7/sysex.py",
-      "reason": "locally authored DX7 SysEx codec (P01, issue #8); written from the DX7 format facts and D00 rulings, no upstream bytes"
-    },
-    {
-      "path": "tools/make_test_fixtures.py",
-      "reason": "locally authored fixture assembler (P01, issue #8); no upstream bytes"
-    },
-    {
-      "path": "tools/sysex_probe.py",
-      "reason": "locally authored sysex inspection tool (P01, issue #8); no upstream bytes"
-    },
-    {
-      "path": "tools/verify_reference.py",
-      "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes"
-    }
-  ],
   "components": [
     {
       "component": "reuse-governance-audit",
@@ -1186,6 +1152,58 @@
       },
       "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
       "notes": "NEVER copied into this repository."
+    }
+  ],
+  "local_originals": [
+    {
+      "path": "src/gf180_dx7/__init__.py",
+      "sha256": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
+      "reason": "locally authored empty package marker; not a reuse import"
+    },
+    {
+      "path": "tools/check_reuse.py",
+      "sha256": "dff695f77de7d2925bab8430ccca21a71fb721da3cda55b87ce4657e2a04b3b9",
+      "reason": "locally authored governance checker (this catalog's negative control)"
+    },
+    {
+      "path": "tools/check_all.sh",
+      "sha256": "acce313c6f2cb345f142affb24c65e3246628973a529f62cf0c4714c79fffd71",
+      "reason": "locally authored CI entry point; re-pinned after R01 added guarded verify_reference run"
+    },
+    {
+      "path": "src/gf180_dx7/sysex.py",
+      "sha256": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+      "reason": "locally authored P01 codec (PR #43); DX7 field layout taken from published documentation as facts, no upstream source bytes adopted"
+    },
+    {
+      "path": "src/gf180_dx7/cli.py",
+      "sha256": "110f5f06705b5e524649d05cf1553a53f16268a1ec5763eb27a8d460c8222ced",
+      "reason": "locally authored P01 CLI (PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/sysex_probe.py",
+      "sha256": "698b2fa580b08f3c19c26b18e9b56d8c5bad4dde493bfce6aa62add23d5b4a7d",
+      "reason": "locally authored P01 probe tool (PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/make_test_fixtures.py",
+      "sha256": "f60fa9ea5195ea3bc0e5b9a710a3c8ed475b7dd31eb94ba0199be8aa742d6c78",
+      "reason": "locally authored P01 fixture generator (PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/catalog_archive.py",
+      "sha256": "09d732a1e31f9c859f38709109bfbb425721bbf03ce9c054047f0f0ea343de20",
+      "reason": "locally authored P02 archive cataloger (#9); not a reuse import"
+    },
+    {
+      "path": "tools/render_issue_dag.py",
+      "sha256": "8fd504f8636e95178afdda9c1c5dd244547cda0135cfbea9296408d92c7f1e13",
+      "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import"
+    },
+    {
+      "path": "tools/verify_reference.py",
+      "sha256": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa",
+      "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes (converted from exemption at merge; byte-pinned)"
     }
   ]
 }

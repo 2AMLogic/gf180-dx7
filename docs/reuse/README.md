@@ -19,3 +19,9 @@ One JSON record per adopted component, created BEFORE the import lands
 
 `tools/check_reuse.py` fails when a file under a governed destination has no
 matching record (negative control for A01).
+
+Locally authored governed files are recorded under `local_originals` with a
+byte pin (`sha256`): an exemption alone would pass any file once listed, so
+originals stay inside the drift-detection coverage set — editing a pinned
+original fails the check until the catalog is updated in the same PR
+(judge follow-up on PR #44).

@@ -1,0 +1,32 @@
+name: dag
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate README issue-DAG block
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/render_issue_dag.py
+      - name: Commit regenerated view (never force-push)
+        run: |
+          if git diff --quiet README.md; then
+            echo "README up to date"
+          else
+            git config user.name "loom-dag-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add README.md
+            git commit -m "dag: regenerate README issue-DAG view [skip ci]"
+            git push
+          fi

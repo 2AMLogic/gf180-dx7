@@ -1168,8 +1168,8 @@
     },
     {
       "path": "tools/check_numeric_profile.py",
-      "sha256": "6563ba739427f56d52951da0ba838589108da2a3db46e812edac03869d9edb98",
-      "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic, enforces error/cost estimates per decision, verifies citations against the pinned trees; not a reuse import"
+      "sha256": "11129ee06a919a5dfcfc8f1eaa39cbcaa80cdc42c9c9552093647cdac4b4345d",
+      "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1)"
     },
     {
       "path": "src/gf180_dx7/sysex.py",

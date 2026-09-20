@@ -6,8 +6,13 @@ Fails when:
   - the profile is missing required sections or any decision lacks an
     error_estimate or cost_estimate (issue #15 negative control);
   - the schedule arithmetic disagrees with independent recomputation;
-  - the storage totals disagree with the per-field bit widths, or the cost
-    lines disagree with the family anchors they cite;
+  - sr_multiplier or the LFO/pitch-EG unit constants disagree with their
+    cited formulas evaluated at the premise sample rate (env.cc:47-49,
+    lfo.cc:26-29, pitchenv.cc:22-24) — the frozen values are derived, never
+    restated literals;
+  - the classified storage totals disagree with the per-field bit widths
+    (runtime vs patch-shared), or the cost lines disagree with the family
+    anchors they cite;
   - the full 16-note storage estimate is missing (issue #15 negative control);
   - event timing disagrees with spec/contract-v1.json (D00 DEC-014);
   - the provisional Mark I tables do not regenerate byte-identically (or their
@@ -139,8 +144,8 @@ def check_schedule(profile):
 
 
 def recomputed_storage_totals(storage):
-    bits_per_op = sum(storage["per_operator_state_bits"].values())
-    bits_per_note = sum(storage["per_note_state_bits"].values())
+    bits_per_op = sum(storage["per_operator_runtime_state_bits"].values())
+    bits_per_note = sum(storage["per_note_runtime_state_bits"].values())
     ops = storage["instances"]["operators"]
     notes = storage["instances"]["notes"]
     total = bits_per_op * ops + bits_per_note * notes
@@ -152,6 +157,34 @@ def recomputed_storage_totals(storage):
     }
 
 
+def check_derived_constants(profile):
+    """sr_multiplier and the LFO/pitch-EG unit constants must equal their
+    cited formulas evaluated at the premise sample rate (env.cc:47-49,
+    lfo.cc:26-29, pitchenv.cc:22-24) — never restated literals."""
+    failures = []
+    rate = profile["premises"]["sample_rate_hz"]
+    n = profile["block"]["n"]
+    want = math.floor((44100.0 / rate) * (1 << 24))
+    got = profile.get("envelope", {}).get("sr_multiplier_48k")
+    if got != want:
+        failures.append(
+            f"envelope.sr_multiplier_48k = {got!r} but floor((44100.0/{rate}) "
+            f"* 2^24) = {want} (env.cc:47-49 uint32_t truncation)")
+    want = math.floor(n * 25190424 / rate + 0.5)
+    got = profile.get("lfo", {}).get("unit_48k")
+    if got != want:
+        failures.append(
+            f"lfo.unit_48k = {got!r} but floor(N * 25190424 / {rate} + 0.5) "
+            f"= {want} (lfo.cc:26-29)")
+    want = math.floor(n * (1 << 24) / (21.3 * rate) + 0.5)
+    got = profile.get("pitch_env", {}).get("unit_48k")
+    if got != want:
+        failures.append(
+            f"pitch_env.unit_48k = {got!r} but floor(N * 2^24 / "
+            f"(21.3 * {rate}) + 0.5) = {want} (pitchenv.cc:22-24)")
+    return failures
+
+
 AREA_PER_BIT_REGISTER = 118.0  # family-measured replicated-state anchor, um^2
 AREA_PER_BIT_ROM = (1.9, 2.2)  # family-measured ROM-as-logic anchor, um^2
 SRAM_MACRO_BYTES = 512
@@ -161,7 +194,8 @@ SRAM_MACRO_MM2 = 0.2094
 def check_storage(profile):
     storage = profile["storage"]
     failures = []
-    for section in ("per_operator_state_bits", "per_note_state_bits",
+    for section in ("classification_policy", "per_operator_runtime_state_bits",
+                    "per_note_runtime_state_bits", "patch_shared_state_bits",
                     "instances", "totals", "cost_lines"):
         if section not in storage:
             failures.append(f"storage missing required section: {section}")
@@ -179,6 +213,16 @@ def check_storage(profile):
     if abs(totals["total_bytes_approx"] - want["total_bytes"]) > 0.5:
         failures.append("storage.totals.total_bytes_approx disagrees with "
                         f"total_bits/8 = {want['total_bytes']}")
+    patch_shared = sum(storage["patch_shared_state_bits"].values())
+    if totals.get("patch_shared_bits") != patch_shared:
+        failures.append(f"storage.totals.patch_shared_bits = "
+                        f"{totals.get('patch_shared_bits')} but "
+                        f"patch_shared_state_bits sums to {patch_shared}")
+    with_shared = want["total_bits"] + patch_shared
+    if totals.get("replicated_total_with_patch_shared_bits") != with_shared:
+        failures.append("storage.totals.replicated_total_with_patch_shared_bits"
+                        f" = {totals.get('replicated_total_with_patch_shared_bits')}"
+                        f" but total_bits + patch_shared = {with_shared}")
     reg_area = want["total_bits"] * AREA_PER_BIT_REGISTER / 1e6
     by_option = {line.get("option"): line for line in storage["cost_lines"]}
     line = by_option.get("all registers")
@@ -404,6 +448,7 @@ def main(argv=None):
         return 1
 
     failures += check_schedule(profile)
+    failures += check_derived_constants(profile)
     failures += check_storage(profile)
     failures += check_decisions(profile)
     failures += check_provisional_tables(profile)

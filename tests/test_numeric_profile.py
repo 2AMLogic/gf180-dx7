@@ -56,6 +56,7 @@ def run_checker_on(profile):
     """Run the checker's full validation against a (possibly mutated) profile."""
     failures = []
     failures += CHK.check_schedule(profile)
+    failures += CHK.check_derived_constants(profile)
     failures += CHK.check_storage(profile)
     failures += CHK.check_decisions(profile)
     failures += CHK.check_provisional_tables(profile)
@@ -146,6 +147,26 @@ class TestScheduleArithmetic(unittest.TestCase):
                          4_608_000)
         self.assertEqual(4_608_000, 16 * 6 * 48_000)
 
+    def test_sr_multiplier_derived_from_formula(self):
+        # env.cc:47-49: sr_multiplier = (44100.0 / sampleRate) * (1 << 24),
+        # assigned to uint32_t (truncation toward zero). Derive at 48 kHz;
+        # the frozen value is checked against the derivation, never against a
+        # restated literal.
+        derived = math.floor(44100.0 / 48000.0 * (1 << 24))
+        self.assertEqual(derived, 15_414_067)
+        self.assertEqual(PROFILE["envelope"]["sr_multiplier_48k"], derived)
+        self.assertEqual(PROFILE["premises"]["sample_rate_hz"], 48000)
+        # negative control: v1's wrong constant differs from the derivation
+        self.assertNotEqual(15_405_619, derived)
+
+    def test_lfo_and_pitchenv_units_derived(self):
+        # lfo.cc:26-29 / pitchenv.cc:22-24, (int32)(x + 0.5) truncation
+        self.assertEqual(math.floor(64 * 25190424 / 48000 + 0.5),
+                         PROFILE["lfo"]["unit_48k"])
+        self.assertEqual(
+            math.floor(64 * (1 << 24) / (21.3 * 48000) + 0.5),
+            PROFILE["pitch_env"]["unit_48k"])
+
     def test_checker_recomputation_agrees(self):
         facts = CHK.recomputed_schedule(PROFILE["premises"], PROFILE["block"])
         self.assertEqual(facts["operator_evals_per_second"], 4_608_000)
@@ -157,33 +178,50 @@ class TestScheduleArithmetic(unittest.TestCase):
 
 
 class TestStorageEstimate(unittest.TestCase):
-    """Recompute the 16-note state totals from the per-field widths."""
+    """Recompute the 16-note state totals from the classified field tables."""
 
     def test_bits_per_operator(self):
-        want = (32 * 6) + 3 + 1 + 1 + 32 + 32
-        fields = PROFILE["storage"]["per_operator_state_bits"]
-        self.assertEqual(sum(fields.values()), want)
-        self.assertEqual(PROFILE["storage"]["totals"]["bits_per_operator"],
-                         want)
+        fields = PROFILE["storage"]["per_operator_runtime_state_bits"]
+        self.assertEqual(
+            sum(fields.values()),
+            PROFILE["storage"]["totals"]["bits_per_operator"])
+        # omitted from v1's subset; restored per the judge finding on PR #52
+        for member in ("freq", "level_in", "env_effective_outlevel",
+                       "env_effective_rate_scaling"):
+            self.assertIn(member, fields)
 
     def test_bits_per_note(self):
-        fields = PROFILE["storage"]["per_note_state_bits"]
-        self.assertEqual(sum(fields.values()), 460)
-        self.assertEqual(PROFILE["storage"]["totals"]["bits_per_note"], 460)
+        fields = PROFILE["storage"]["per_note_runtime_state_bits"]
+        self.assertEqual(sum(fields.values()),
+                         PROFILE["storage"]["totals"]["bits_per_note"])
+
+    def test_patch_shared_bits(self):
+        fields = PROFILE["storage"]["patch_shared_state_bits"]
+        self.assertEqual(sum(fields.values()),
+                         PROFILE["storage"]["totals"]["patch_shared_bits"])
 
     def test_total_16_note_state(self):
-        want = 96 * 261 + 16 * 460
-        self.assertEqual(want, 32_416)
-        self.assertEqual(PROFILE["storage"]["totals"]["total_bits"], 32_416)
-        self.assertAlmostEqual(PROFILE["storage"]["totals"]["total_bytes_approx"],
-                               32_416 / 8, delta=0.5)
+        totals = PROFILE["storage"]["totals"]
+        ops = PROFILE["storage"]["instances"]["operators"]
+        notes = PROFILE["storage"]["instances"]["notes"]
+        want = (totals["bits_per_operator"] * ops
+                + totals["bits_per_note"] * notes)
+        self.assertEqual(totals["total_bits"], want)
+        self.assertEqual(totals["replicated_total_with_patch_shared_bits"],
+                         want + totals["patch_shared_bits"])
+        self.assertAlmostEqual(totals["total_bytes_approx"],
+                               totals["total_bits"] / 8, delta=0.5)
+        # the bounded finding must survive the recount
+        self.assertGreater(totals["total_bits"] * 118.0 / 1e6,
+                           1.6734)  # quarter-slot core (D01 section 1)
 
     def test_cost_lines_follow_family_anchors(self):
         self.assertEqual(CHK.check_storage(PROFILE), [])
-        registers_mm2 = 32_416 * 118.0 / 1e6
-        self.assertAlmostEqual(registers_mm2, 3.825, places=3)
-        macros = math.ceil((32_416 / 8) / 512)
-        self.assertEqual(macros, 8)
+        totals = PROFILE["storage"]["totals"]
+        registers_mm2 = totals["total_bits"] * 118.0 / 1e6
+        self.assertAlmostEqual(registers_mm2, 4.524, places=3)
+        macros = math.ceil((totals["total_bits"] / 8) / 512)
+        self.assertEqual(macros, 10)
         doc = DOC.read_text(encoding="utf-8")
         self.assertIn("118", doc)
         self.assertIn("family-measured", doc)
@@ -191,7 +229,10 @@ class TestStorageEstimate(unittest.TestCase):
 
     def test_storage_estimate_present_for_full_state(self):
         """Issue #15 negative control: the full 16-note estimate must exist."""
-        for section in ("per_operator_state_bits", "per_note_state_bits",
+        for section in ("classification_policy",
+                        "per_operator_runtime_state_bits",
+                        "per_note_runtime_state_bits",
+                        "patch_shared_state_bits",
                         "instances", "totals", "cost_lines"):
             self.assertIn(section, PROFILE["storage"])
 
@@ -330,6 +371,12 @@ class TestNegativeControls(unittest.TestCase):
         del profile["decision_index"][5]["error_estimate"]
         failures = run_checker_on(profile)
         self.assertTrue(any("error_estimate" in f for f in failures), failures)
+
+    def test_sr_multiplier_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["envelope"]["sr_multiplier_48k"] = 15_405_619  # v1's wrong value
+        failures = run_checker_on(profile)
+        self.assertTrue(any("sr_multiplier" in f for f in failures), failures)
 
     def test_missing_full_state_storage_fails(self):
         profile = copy.deepcopy(PROFILE)

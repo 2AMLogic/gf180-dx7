@@ -62,9 +62,14 @@ companion [`spec/numeric-profile-v1.json`](../../spec/numeric-profile-v1.json)
    **24.576 MHz**, with 12.288 MHz as fallback only if the shared operator core
    measures ≤2 clk/eval; ss-corner closure at 24.576 MHz is unproven (D01 §2)
    and must be measured by H01/H10 before any timing claim.
-4. **Storage finding:** the exact 16-note state is 32,416 bits (derived from
-   the pinned structs); all-register ≈ 3.83 mm² at the family-measured
-   118 µm²/bit anchor — 2.3× a quarter-slot core — so a register/SRAM hybrid
+4. **Storage finding (rev 1.1 — corrected on judge review, PR #52):** the core
+   replicated 16-note runtime state is **38,336 bits**, counted
+   member-by-member with an explicit runtime-vs-patch classification (v1's
+   "exact 32,416 bits" was a mislabeled subset: it omitted
+   `FmOpParams.freq`/`level_in` and the per-note derived env params); static
+   patch params are excluded from replication with per-member justification
+   (444 shared bits). All-register ≈ **4.52 mm²** at the family-measured
+   118 µm²/bit anchor — 2.70× a quarter-slot core — so a register/SRAM hybrid
    is structurally required; H02 decides the split against these anchors.
 5. **DEC-021 numbers (delegated to N01):** silence floor = the exact integer
    predicate "all six operator envelopes in final release at the 16<<16 clamp

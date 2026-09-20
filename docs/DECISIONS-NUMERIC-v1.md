@@ -15,6 +15,13 @@
   `Accepted (owner-ruled)`, `Proposed (owner may veto)`), plus per-decision
   `error_estimate` and `cost_estimate` fields as required by issue #15's
   negative control.
+- **Rev 1.1 (2026-09-20):** pre-merge corrections from the PR #52 review:
+  NUM-005's `sr_multiplier` fixed to **15,414,067** (v1 froze 15,405,619 — an
+  arithmetic error; the correct value is derived from `env.cc:47-49` and
+  test-enforced, never restated as a literal), and the §6 storage estimate
+  reclassified runtime vs patch state member-by-member (v1's "exact 32,416
+  bits" was a mislabeled subset; the recount is 38,336 replicated runtime bits
+  + 444 shared patch bits — bounded finding strengthened).
 
 ## 0. Scope, evidence rules, and change control
 
@@ -265,9 +272,10 @@ musical usefulness (listening records only, plan §7).
   `actuallevel = (scaleoutlevel(level)>>1 <<6) + outlevel_ − 4256`, clamp `<16 → 16`
   (`env.cc:113-121`, `levellut` `env.cc:28-30`, `scaleoutlevel`
   `env.cc:109-111`). Rates: `qrate = (rate·41)>>6 + rate_scaling`, clamp 63
-  (`env.cc:125-127`); step `inc_ = (4 + (qrate&3)) << (2 + 6 + (qrate>>2))`
-  scaled by `sr_multiplier = (44100/sample_rate)·2²⁴`
-  (`env.cc:147-149`, `env.cc:47-49`; at 48 kHz ⇒ 15,405,619 after truncation).
+   (`env.cc:125-127`); step `inc_ = (4 + (qrate&3)) << (2 + 6 + (qrate>>2))`
+   scaled by `sr_multiplier = (44100/sample_rate)·2²⁴`
+   (`env.cc:147-149`, `env.cc:47-49`; at 48 kHz, `(44100/48000)·2²⁴ =
+   15,414,067.2` ⇒ **15,414,067** after `uint32_t` truncation).
   `ACCURATE_ENVELOPE` static-hold counters decrement by N per frame
   (`env.cc:64-71`, `statics[]` table `env.cc:33-44`).
   The 14-bit *gain* applied per sample is derived per frame as
@@ -276,7 +284,10 @@ musical usefulness (listening records only, plan §7).
   This is a DX exponential-segment envelope with per-sample linear gain
   interpolation — **not** an ADSR (AGENTS.md negative-control list; D00 DEC-015).
 - **Decision:** replicate the model above integer-for-integer at 48 kHz
-  (sr_multiplier frozen to the 48 kHz value 15,405,619).
+  (sr_multiplier frozen to the derived 48 kHz value
+  ⌊(44100.0/48000.0)·2²⁴⌋ = **15,414,067**; v1's 15,405,619 was an arithmetic
+  error — corrected on PR #52 review, and the frozen value is checked against
+  the formula by test, not restated as a bare literal).
 - **Alternatives:** true per-sample envelope integration — error: structural
   divergence from reference trajectories; cost: 64× envelope rate for no
   fidelity gain. *Coarser envelopes (per-2-frames)* — error: every segment
@@ -284,7 +295,8 @@ musical usefulness (listening records only, plan §7).
   budget (control path is ≤10% total, §7). Both rejected.
 - **Error estimate:** `exact_by_construction`.
 - **Cost estimate:** `derived` — 96 envelope steps/frame × ~8–12 clk ≈ 0.8–1.2k
-  clk/frame (< 8% of 16,384 at 12.288 MHz); state 96 × 198 bits (§6).
+  clk/frame (< 8% of 16,384 at 12.288 MHz); envelope runtime state 96 × 229
+  bits (§6).
 
 ### NUM-006 — Feedback path: two-element int32 history, `(y0+y) >> (shift+1)`, 8-bit feedback depth, algorithms 4/6 serial expansion
 
@@ -539,39 +551,101 @@ recorded in `spec/numeric-profile-v1.json: provisional_tables`):
 `sinExpTable` sha256 `e515a71ae736d92dcb3fd36973dea486c96d1521f1a0bab1f917be2c4ec07794`
 (1024 × uint16 LE each; first entry 10597, last 0; first 0, last 4090).
 
-## 6. Storage estimate for the full 16-note state (issue #15 negative control)
+## 6. Storage estimate for the 16-note state (issue #15 negative control)
 
-Bits below are **derived** from the pinned structures
-(`Source/msfa/dx7note.h:72-96`, `env.h:60-76`, `fm_op_kernel.h:20-25`) keeping
-Dexed's exact widths (width-trimming is a later, separately-budgeted decision):
+**Rev 1.1 (judge findings on PR #52):** v1's table claimed an "exact 16-note
+state = 32,416 bits" but was a **mislabeled subset**: it omitted
+`FmOpParams.freq` and `level_in` and gave no classification of which members
+are per-note state at all. This section counts member-by-member, classifying
+every member as **runtime state** (mutable per note/op while audio renders —
+must exist 16×) or **patch params** (loaded per patch, identical across all
+voices of the single-timbre product — may live in one shared patch register
+file). The claim is relabeled accordingly.
 
-| Per-operator state (×96) | bits | | Per-note state (×16) | bits |
-|---|---:|---|---|---:|
-| `phase` | 32 | | `fb_buf_[2]` | 64 |
-| `gain_out` | 32 | | `fb_shift_` | 5 |
-| `env level_` | 32 | | `basepitch_[6]` | 192 |
-| `env targetlevel_` | 32 | | pitch EG level/target/inc | 96 |
-| `env inc_` | 32 | | pitch EG ix/rising/down | 5 |
-| `env staticcount_` | 32 | | `ampmodsens_[6]` | 12 |
-| `env ix_/rising_/down_` | 5 | | `opMode[6]` | 6 |
-| `outlevel_` | 32 | | pitch/amp mod depths+sens | 24 |
-| `rate_scaling_` | 32 | | `algorithm_` | 5 |
-| | | | note/channel/velocity/MPE | 33 |
-| | | | sustain/keydown/steal-age | 18 |
-| **per op** | **261** | | **per note** | **460** |
+**Classification policy.** Runtime = mutable per note or per op-of-a-note as
+audio renders. Patch = written at patch-load/edit events only and identical
+for all 16 voices — the reference copies the *same* patch bytes into every
+note (`dx7note.cc:163-200`), so shared registers committed at D00 event time
+are behavior-identical under the one-timbre premise. Widths: pinned reference
+type width (32 bits for `int`/`int32_t` accumulators, counters, and the
+derived env params); content width for small bounded fields, stated per
+field. Trimming below these widths remains a later, separately-budgeted
+decision.
 
-**Total = 96 × 261 + 16 × 460 = 25,056 + 7,360 = 32,416 bits ≈ 3.96 KiB**
-(recomputed by test). Cost lines:
+### Per-operator runtime state (× 96) — `FmOpParams` (`fm_op_kernel.h:20-25`), `Env` (`env.h:60-76`), per-note derived env params (`dx7note.cc:163-179`)
 
-- All-register: 32,416 bits × **118 µm²/bit** (family-measured replicated-state
-  anchor, D01 §5) = **3.83 mm² derived** — **2.3× the 1.6734 mm² quarter-slot
-  core** (confirmed die geometry, D01 §1). *Bounded finding:* the 16-note state
-  cannot be all-DFF in a quarter slot.
-- SRAM tiling: 8 × 512 B foundry macros (D01 §5; ceiling 512 B/macro) =
-  8 × 0.2094 mm² = **1.67 mm² derived LEF footprint** — bank-select/mux cost
-  **not modelled** (D01 records this gap) and the macros have **no Liberty
-  timing views** (D01 §5, confirmed-incomplete) — usable for area projection
-  only.
+| Member | Bits | Class | Why |
+|---|---:|---|---|
+| `FmOpParams.phase` | 32 | runtime | per-sample accumulator, advances per note |
+| `FmOpParams.freq` | 32 | runtime | per-note per-frame increment, carried across the frame boundary (`fm_core.cc:133`); **omitted in v1** |
+| `FmOpParams.gain_out` | 32 | runtime | previous frame env gain → next frame's `gain1` (`EngineMkI.cpp:314`) |
+| `FmOpParams.level_in` | 32 | runtime | current-frame env gain into the op render (`EngineMkI.cpp:315`); **omitted in v1** |
+| `Env.level_` | 32 | runtime | Q24-doubling envelope level (`env.h:67`) |
+| `Env.targetlevel_` | 32 | runtime | segment target (`env.cc:121`) |
+| `Env.inc_` | 32 | runtime | `sr_multiplier`-scaled segment step (`env.cc:147-149`) |
+| `Env.staticcount_` | 32 | runtime | `ACCURATE_ENVELOPE` hold counter (`env.h:73`, `env.cc:137-141`) |
+| effective `outlevel_` | 32 | runtime (per-note derived) | `scaleoutlevel` + key-level scaling (midinote) + velocity scaling (`dx7note.cc:169-177`) — differs per note even under one timbre |
+| effective `rate_scaling_` | 32 | runtime (per-note derived) | keyboard rate scaling `ScaleRate(midinote, sens)` (`dx7note.cc:178`) |
+| `Env.ix_` | 3 | runtime | segment index 0..4 |
+| `Env.rising_` | 1 | runtime | direction flag |
+| `Env.down_` | 1 | runtime | key-state flag |
+| **per op** | **325** | | |
+
+### Per-note runtime state (× 16) — `Dx7Note` (`dx7note.h:72-96`), `PitchEnv` (`pitchenv.h:34-45`), `ProcessorVoice` (`PluginProcessor.h:40-53`)
+
+| Member | Bits | Class | Why |
+|---|---:|---|---|
+| `basepitch_[6]` | 192 | runtime | per-note pitch (midinote-dependent, `dx7note.cc:185-187`) |
+| `fb_buf_[2]` | 64 | runtime | feedback history (NUM-006) |
+| pitch EG `level_`/`targetlevel_`/`inc_` | 96 | runtime | Q24-octave pitch envelope state |
+| pitch EG `ix_`/`rising_`/`down_` | 5 | runtime | 3 + 1 + 1 |
+| `noteLogFreq` | 32 | runtime | note-on log frequency incl. tuning (`dx7note.cc:154-161`) |
+| `playingMidiNote` | 7 | runtime | 0..127 |
+| `midiChannel` | 4 | runtime | 0..15 |
+| `mpePitchBend`/`mpePressure`/`mpeTimbre` | 28 | runtime | 14 + 7 + 7 (`dx7note.h:68-70`) |
+| keydown/sustained/live flags | 3 | runtime | voice management (`PluginProcessor.h:44-46`) |
+| steal rotation/age | 15 | runtime | allocator bookkeeping estimate (v1's "18" = 3 flags + 15, split explicitly here) |
+| **per note** | **446** | | |
+
+### Patch-shared state (one copy — **excluded from replication**, justified)
+
+| Member | Bits | Why shared |
+|---|---:|---|
+| `Env.rates_[4]` ×6 ops | 168 | raw 0..99 rates (7 bits each, 4 × 6 ops); the same patch bytes go into every note (`dx7note.cc:165-167`) — per-note divergence enters only via the derived params counted above |
+| `Env.levels_[4]` ×6 ops | 168 | same |
+| pitch EG `rates_[4]`/`levels_[4]` | 56 | `dx7note.cc:190-194` |
+| `opMode[6]` | 6 | `patch[off+17]` (`dx7note.cc:181`) |
+| `ampmodsens_[6]` | 12 | `ampmodsenstab[patch[off+14]&3]` (`dx7note.cc:188`) |
+| `algorithm_` | 5 | `patch[134]` |
+| feedback depth → `fb_shift_` | 5 | derived once per patch (`dx7note.cc:196-197`) |
+| `pitchmoddepth_`/`pitchmodsens_`/`ampmoddepth_` | 24 | derived from patch bytes once (`dx7note.cc:198-200`) |
+| **shared total** | **444** | |
+
+**Excluded as not-state:** `currentPatch` (pointer into the shared patch
+buffer); `tuning_state_`/`mtsFreq`/`mtsClient` (single fixed tuning in the
+pinned configuration, R01 `settings[tuning]`; MTS absent ⇒ `mtsFreq = 0`,
+`dx7note.cc:154-161`); raw velocity (consumed once at note-on into the
+effective outlevel, `dx7note.cc:176`); `VoiceStatus` (`dx7note.h:34-38`, UI
+snapshot only).
+
+**Claim (relabeled honestly):** core replicated runtime state =
+96 × 325 + 16 × 446 = 31,200 + 7,136 = **38,336 bits ≈ 4.68 KiB**
+(recomputed by test from the classification tables above); static patch
+params excluded from replication (444 shared bits, justified
+member-by-member). Cost lines:
+
+- All-register: 38,336 bits × **118 µm²/bit** (family-measured replicated-state
+  anchor, D01 §5) = **4.52 mm² derived** (4.58 mm² including the shared patch
+  registers) — **2.70× the 1.6734 mm² quarter-slot core** (confirmed die
+  geometry, D01 §1). *Bounded finding:* the 16-note runtime state cannot be
+  all-DFF in a quarter slot — **strengthened** vs v1's 3.83 mm², which was a
+  subset.
+- SRAM tiling: ⌈4,792 B / 512 B⌉ = 10 foundry macros (D01 §5; ceiling
+  512 B/macro) = 10 × 0.2094 mm² = **2.09 mm² derived LEF footprint** (the
+  55.5 B of shared patch bytes do not change the macro count);
+  bank-select/mux cost **not modelled** (D01 records this gap) and the macros
+  have **no Liberty timing views** (D01 §5, confirmed-incomplete) — usable
+  for area projection only.
 - Tables (Mark I): 2 × 16,384 bits = 32,768 bits × **1.9–2.2 µm²/bit**
   (family-measured ROM-as-logic anchor, D01 §5) = **0.062–0.072 mm² derived**.
   Modern-engine comparison (NUM-004): 131,072 bits ≈ 0.25–0.29 mm² **plus**
@@ -643,7 +717,7 @@ relaxation knobs.
 | NUM-002 | N=64 frames; per-frame control cadence | Accepted | exact_by_construction | ≤10% frame @12.288 (derived) |
 | NUM-003 | 32-bit phase, 2³²/cycle; Q24 logfreq + 1025-entry Freqlut | Accepted | exact; lut ≤1 incr LSB (derived) | 3,072 bits phase (derived) |
 | NUM-004 | Mark I mkiSin: 10-bit log-sin + 10-bit sin-exp, 14-bit env, multiply-free | Accepted | exact_by_construction | 0.070 mm² tables, 2–3 clk/eval (derived) |
-| NUM-005 | DX envelope: 4×4, Q24-log level, per-frame step, linear intra-frame gain | Accepted | exact_by_construction | 96×198 bits; <8% frame (derived) |
+| NUM-005 | DX envelope: 4×4, Q24-log level, per-frame step, linear intra-frame gain | Accepted | exact_by_construction | 96×229 bits env runtime state; <8% frame (derived) |
 | NUM-006 | Feedback: 2×int32 history, >> (shift+1), 8-bit depth, algo 4/6 serial (+2 shift) | Accepted | exact_by_construction | 1,024 bits (derived) |
 | NUM-007 | LFO: 6 waveforms, per-frame sample, sine via msfa table (unit 33,587) | Accepted | exact_by_construction | negligible (derived) |
 | NUM-008 | Pitch EG (unit 1050) + declared float-gated spots with bounds | Accepted / bounds NO_VERDICT→N02 | ≤1 logfreq count (bend); others per §3 | host-side event-time (derived) |

@@ -87,7 +87,9 @@
     "target_formula": "actuallevel = (scaleoutlevel(l) >> 1 << 6) + outlevel_ - 4256, clamp <16 to 16",
     "qrate_formula": "qrate = (rate * 41) >> 6 + rate_scaling, clamp 63",
     "inc_formula": "inc_ = (4 + (qrate & 3)) << (2 + lg_n + (qrate >> 2))",
-    "sr_multiplier_48k": 15405619,
+    "sr_multiplier_formula": "uint32_t truncation of (44100.0 / sample_rate) * (1 << 24) (env.cc:47-49)",
+    "sr_multiplier_derivation": "(44100.0 / 48000.0) * 2^24 = 15414067.2 -> floor = 15414067",
+    "sr_multiplier_48k": 15414067,
     "accurate_envelope": true,
     "static_count_decrement": "N per frame"
   },
@@ -206,57 +208,119 @@
   },
 
   "storage": {
-    "per_operator_state_bits": {
+    "claim": "core replicated runtime state (16 notes x 6 ops) = 38336 bits, member-by-member classified (rev 1.1: v1's 'exact 32416 bits' was a mislabeled subset that omitted FmOpParams.freq/level_in and the per-note derived env params); static patch params excluded from replication (justified member-by-member); all-register estimate 4.5236 mm2 - bounded finding for H02 strengthened",
+    "classification_policy": "runtime = mutable per note or per op-of-a-note while audio renders, must exist 16x; patch = loaded per patch and identical across all voices of the single-timbre product (the reference copies the same patch bytes into every note, dx7note.cc:163-200), so it may live in one shared patch register file committed at D00 event time; widths = pinned reference type width (32 for int/int32_t accumulators, counters, and derived env params), content width for small bounded fields as stated; trimming below these widths is a later, separately-budgeted decision",
+    "per_operator_runtime_state_bits": {
       "phase": 32,
+      "freq": 32,
       "gain_out": 32,
+      "level_in": 32,
       "env_level": 32,
       "env_targetlevel": 32,
       "env_inc": 32,
       "env_staticcount": 32,
+      "env_effective_outlevel": 32,
+      "env_effective_rate_scaling": 32,
       "env_ix": 3,
       "env_rising": 1,
-      "env_down": 1,
-      "op_outlevel": 32,
-      "op_rate_scaling": 32
+      "env_down": 1
     },
-    "per_note_state_bits": {
-      "fb_buf_2": 64,
-      "fb_shift": 5,
+    "per_operator_justification": {
+      "phase": "FmOpParams.phase: per-sample accumulator, advances independently per note (fm_op_kernel.h:20-25, fm_core.cc:133) - runtime",
+      "freq": "FmOpParams.freq: per-note per-frame phase increment, carried across the frame boundary for phase += freq << lg_n (fm_core.cc:133) - runtime; omitted in v1 (judge finding PR #52)",
+      "gain_out": "FmOpParams.gain_out: previous frame env gain, consumed as gain1 next frame (EngineMkI.cpp:314) - runtime",
+      "level_in": "FmOpParams.level_in: current-frame env gain into the op render (EngineMkI.cpp:315) - runtime; omitted in v1",
+      "env_level": "Env.level_ Q24-doubling envelope state (env.h:67) - runtime",
+      "env_targetlevel": "Env.targetlevel_ current segment target (env.cc:121) - runtime",
+      "env_inc": "Env.inc_ sr_multiplier-scaled segment step (env.cc:147-149) - runtime",
+      "env_staticcount": "Env.staticcount_ ACCURATE_ENVELOPE hold counter (env.h:73, env.cc:137-141) - runtime",
+      "env_effective_outlevel": "per-note DERIVED, not patch-shared: scaleoutlevel + key-level scaling (midinote) + velocity scaling (dx7note.cc:169-177) differs per note even under one timbre; v1 counted the field but without this derivation justification",
+      "env_effective_rate_scaling": "per-note DERIVED, not patch-shared: ScaleRate(midinote, sensitivity) keyboard rate scaling (dx7note.cc:178)",
+      "env_ix": "Env.ix_ segment index 0..4, content width (env.h:70)",
+      "env_rising": "Env.rising_ direction flag, bool (env.h:69)",
+      "env_down": "Env.down_ key-state flag, bool (env.h:76)"
+    },
+    "per_note_runtime_state_bits": {
       "basepitch_6": 192,
+      "fb_buf_2": 64,
       "pitchenv_level": 32,
       "pitchenv_targetlevel": 32,
       "pitchenv_inc": 32,
       "pitchenv_ix": 3,
-      "pitchenv_flags": 2,
-      "ampmodsens_6": 12,
-      "opmode_6": 6,
-      "pitch_amp_mod_depths_sens": 24,
-      "algorithm": 5,
-      "note_channel_velocity_mpe": 33,
-      "sustain_keydown_steal_age": 18
+      "pitchenv_rising": 1,
+      "pitchenv_down": 1,
+      "noteLogFreq": 32,
+      "playingMidiNote": 7,
+      "midiChannel": 4,
+      "mpePitchBend": 14,
+      "mpePressure": 7,
+      "mpeTimbre": 7,
+      "voice_flags_keydown_sustained_live": 3,
+      "steal_rotation_age": 15
     },
+    "per_note_justification": {
+      "basepitch_6": "6 x int32 per-note pitch, midinote-dependent (dx7note.cc:185-187) - runtime",
+      "fb_buf_2": "2 x int32 feedback history (dx7note.h:77, NUM-006) - runtime",
+      "pitchenv_state": "PitchEnv level_/targetlevel_/inc_ (Q24-octave) + ix_/rising_/down_ (pitchenv.h:34-45) - runtime",
+      "noteLogFreq": "note-on log frequency incl. tuning (dx7note.cc:154-161) - runtime",
+      "playingMidiNote": "0..127 (dx7note.h:82) - runtime",
+      "midiChannel": "0..15 (dx7note.h:83) - runtime",
+      "mpe_fields": "per-note MPE expression: mpePitchBend 0..16383 (14), mpePressure/mpeTimbre 0..127 (7+7) (dx7note.h:68-70, PluginProcessor.h:48-50) - runtime",
+      "voice_flags": "ProcessorVoice keydown/sustained/live bools (PluginProcessor.h:44-46) - runtime",
+      "steal_rotation_age": "voice allocator bookkeeping estimate, unchanged from v1 (18 = 3 flags + 15 age/rotation)"
+    },
+    "patch_shared_state_bits": {
+      "env_rates_4_x6ops": 168,
+      "env_levels_4_x6ops": 168,
+      "pitchenv_rates_4": 28,
+      "pitchenv_levels_4": 28,
+      "opmode_6": 6,
+      "ampmodsens_6": 12,
+      "algorithm": 5,
+      "fb_depth": 5,
+      "mod_depths_and_sens": 24
+    },
+    "patch_shared_justification": {
+      "env_rates_4_x6ops": "raw 0..99 rates; the same patch bytes are copied into every note (dx7note.cc:165-167) - one shared copy",
+      "env_levels_4_x6ops": "raw 0..99 levels; per-note divergence enters only through the derived outlevel/rate_scaling counted as runtime",
+      "pitchenv_rates_4": "patch[126+i] (dx7note.cc:190-194) - patch",
+      "pitchenv_levels_4": "patch[130+i] (dx7note.cc:190-194) - patch",
+      "opmode_6": "patch[off+17] raster/fixed mode (dx7note.cc:181) - patch",
+      "ampmodsens_6": "ampmodsenstab[patch[off+14] & 3] (dx7note.cc:188) - patch",
+      "algorithm": "patch[134] (dx7note.cc:195) - patch",
+      "fb_depth": "patch[135], fb_shift_ derived once per patch (dx7note.cc:196-197) - patch",
+      "mod_depths_and_sens": "pitchmoddepth_/pitchmodsens_/ampmoddepth_ derived once from patch bytes (dx7note.cc:198-200) - patch"
+    },
+    "excluded_not_state": [
+      "currentPatch: pointer into the shared patch buffer, not replicated state",
+      "tuning_state_/mtsFreq/mtsClient: single fixed tuning in the pinned configuration (R01 settings[tuning]); MTS absent so mtsFreq = 0 (dx7note.cc:154-161)",
+      "raw velocity: consumed once at note-on into the per-note effective outlevel (dx7note.cc:176), not needed to render",
+      "VoiceStatus (dx7note.h:34-38): UI status snapshot via peekVoiceStatus, not render state"
+    ],
     "instances": { "operators": 96, "notes": 16 },
     "totals": {
-      "bits_per_operator": 261,
-      "bits_per_note": 460,
-      "total_bits": 32416,
-      "total_bytes_approx": 4052
+      "bits_per_operator": 325,
+      "bits_per_note": 446,
+      "patch_shared_bits": 444,
+      "total_bits": 38336,
+      "replicated_total_with_patch_shared_bits": 38780,
+      "total_bytes_approx": 4792
     },
     "cost_lines": [
       {
         "option": "all registers",
         "anchor": "family-measured 118 um^2/bit replicated state (gf180-parasynth docs/area-budget.md via D01 section 5)",
         "label": "derived total from family-measured per-bit anchor",
-        "area_mm2": 3.83,
-        "verdict": "2.3x the 1.6734 mm2 quarter-slot core - all-DFF 16-note state cannot fit a quarter slot (bounded finding)"
+        "area_mm2": 4.5236,
+        "verdict": "2.70x the 1.6734 mm2 quarter-slot core - all-DFF 16-note runtime state cannot fit a quarter slot (bounded finding, strengthened from v1's mislabeled 32416-bit subset; 4.58 mm2 including the 444 shared patch bits)"
       },
       {
         "option": "SRAM tiling",
         "anchor": "family-measured macro footprint 0.2094 mm2 (gf180-sram LEF via D01 section 5), 512 B/macro ceiling",
         "label": "derived; bank-select/mux cost not modelled; no Liberty timing views (D01: confirmed-incomplete)",
-        "macros_512b": 8,
-        "area_mm2": 1.67,
-        "verdict": "area-plausible, timing-unproven; H02 decides the hybrid split"
+        "macros_512b": 10,
+        "area_mm2": 2.09,
+        "verdict": "area-plausible, timing-unproven; the 55.5 B of shared patch bytes do not change the macro count; H02 decides the hybrid split"
       },
       {
         "option": "Mark I tables (2 x 1024 x 16 bit)",
@@ -378,7 +442,7 @@
       "status": "accepted_plan_default",
       "error_estimate": "exact_by_construction",
       "error_class": "exact_by_construction",
-      "cost_estimate": "96 x 198 bits state; 96 steps/frame ~= 8% of 16384 clk/frame (derived)",
+      "cost_estimate": "96 x 229 bits envelope state (runtime fields only, section 6); 96 steps/frame ~= 8% of 16384 clk/frame (derived)",
       "cost_class": "derived",
       "citations": [
         { "tree": "dexed", "path": "Source/msfa/env.h", "lines": "25", "expect": "#define ACCURATE_ENVELOPE" },
@@ -517,5 +581,5 @@
     }
   ],
 
-  "negative_control": "tools/check_numeric_profile.py fails when any decision lacks an error_estimate or cost_estimate, when the full 16-note storage estimate is missing, when schedule arithmetic disagrees with recomputation, when a citation's pinned file hash or cited line content drifts, or when event timing disagrees with spec/contract-v1.json"
+  "negative_control": "tools/check_numeric_profile.py fails when any decision lacks an error_estimate or cost_estimate, when the full classified 16-note storage estimate is missing or its totals disagree with the per-field sums (runtime vs patch-shared classification), when schedule arithmetic disagrees with recomputation, when sr_multiplier or the LFO/pitch-EG unit constants disagree with their cited formulas evaluated at the premise sample rate, when a citation's pinned file hash or cited line content drifts, or when event timing disagrees with spec/contract-v1.json"
 }

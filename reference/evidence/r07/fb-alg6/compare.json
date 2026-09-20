@@ -1,0 +1,166 @@
+{
+  "case": "fb-alg6",
+  "diagnosis": {
+    "divergence_class": "on_note_on_block",
+    "magnitude_class": "signal_scale",
+    "note": "diagnosis rows are triage aids (compare.py SECONDARY role applies to onset/envelope/ZCR); the FAIL verdict is expected for cross-engine comparison and is the finding",
+    "rms_reference": 0.0801748839515825,
+    "rms_second": 0.054481429522617565
+  },
+  "engines": {
+    "reference": {
+      "binary_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "identity_id": "R02-oracle-identity",
+      "source_git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "upstream": "Dexed"
+    },
+    "second": {
+      "binary_sha256": "4f1cde37cadab4a33a99ed0b8d4839be776ea0fdfb45450f379de5a55e6b1732",
+      "engine_mode": "hexter fixed-point (HEXTER_USE_FLOATING_POINT undefined; upstream configure default)",
+      "identity_id": "R07-second-oracle-identity",
+      "source_git_commit": "a0fe615a906197b40588a704c7ef932d7b6461d8",
+      "upstream": "hexter (DSSI software synthesizer)"
+    }
+  },
+  "expected_verdict": "FAIL (cross-engine exactness failure is the expected result; exactness PASS applies only within one implementation)",
+  "hypothesis": {
+    "expect_if_confirmed": "Magnitude class consistent with fb-alg4 (both feedback 7); a large class mismatch would instead point at the algorithm tables (hexter dx7_voice_render.c switch vs dexed msfa fm_core.cc algorithms[]).",
+    "hypothesis": "Same feedback seam as fb-alg4, exercised through a different algorithm topology, to check the finding is not specific to one routing: the feedback operator wraps into a different carrier structure, so matching measured divergence class would localize the cause to the feedback path itself rather than one algorithm table entry.",
+    "seam": "feedback coefficient mapping + feedback history depth (second algorithm topology)",
+    "status": "HYPOTHESIS"
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/14",
+  "non_claims": [
+    "No engine is adjudicated as physically correct. These are two software implementations; cross-implementation disagreement is recorded as localized findings (hypotheses), and any claim about original DX7 hardware would require hardware evidence this investigation does not have."
+  ],
+  "rationale": "feedback-heavy: algorithm 6 (index 5), feedback 7",
+  "render_config": {
+    "event_policy": "positions are exact 64-sample block multiples; identical effective times for both engines",
+    "events": [
+      {
+        "args": [
+          60,
+          100
+        ],
+        "cmd": "note_on",
+        "pos": 4800
+      },
+      {
+        "args": [
+          60
+        ],
+        "cmd": "note_off",
+        "pos": 96000
+      }
+    ],
+    "sample_rate": 48000,
+    "seconds": 3.0
+  },
+  "render_run_logs": {
+    "reference": {
+      "bytes": 576000,
+      "exit": 0,
+      "peak_abs": 0.1627197265625,
+      "stderr": ""
+    },
+    "second": {
+      "bytes": 576000,
+      "exit": 0,
+      "peak_abs": 0.10658193379640579,
+      "stderr": ""
+    }
+  },
+  "renders": {
+    "reference": {
+      "bytes": 576000,
+      "path": "render-ref.f32",
+      "peak_abs": 0.1627197265625,
+      "sha256": "c9282b28f568ce582aa60f6c0d25a3a1f892c322d7705aa44ae74f3bcb840179"
+    },
+    "second": {
+      "bytes": 576000,
+      "path": "render-second.f32",
+      "peak_abs": 0.10658193379640579,
+      "sha256": "c014ae003c2e19d70fd76c8587463ba59e2635a54e7ee406ee2aa44368ff4f8b"
+    }
+  },
+  "report": {
+    "byte_identical": false,
+    "estimator": {
+      "name": "exact-time-locked-paired",
+      "version": "1"
+    },
+    "exact_mode": true,
+    "failure_class": null,
+    "failure_detail": null,
+    "inputs": {
+      "format": "pcm_f32le mono (raw, headerless)",
+      "sample_count_a": 144000,
+      "sample_count_b": 144000,
+      "sample_rate": 48000,
+      "sha256_a": "c9282b28f568ce582aa60f6c0d25a3a1f892c322d7705aa44ae74f3bcb840179",
+      "sha256_b": "c014ae003c2e19d70fd76c8587463ba59e2635a54e7ee406ee2aa44368ff4f8b"
+    },
+    "primary": {
+      "error_sign": "candidate_minus_reference",
+      "exact_equal": false,
+      "first_divergent_sample": 4800,
+      "max_abs_error": 0.18518410623073578,
+      "max_abs_error_index": 19826,
+      "mean_bias": -0.0024438841638770156,
+      "mismatch_count": 139200,
+      "rms_error": 0.09570600423944593,
+      "snr_db": -1.5380168933991412,
+      "snr_reason": "measured"
+    },
+    "primary_not_computed_reason": null,
+    "primary_role": "PRIMARY - time-locked; no alignment, trimming, resampling, or normalization",
+    "schema": "paired-comparison-report",
+    "schema_version": 1,
+    "secondary": {
+      "envelope_shape_proxy": {
+        "argmax_window_start": 4800,
+        "max_relative_rms_diff": 0.8834727563896428,
+        "n_windows": 60,
+        "window_samples": 2400,
+        "window_seconds": 0.05
+      },
+      "onset_time": {
+        "delta_samples": -3,
+        "sample_a": 4803,
+        "sample_b": 4800,
+        "threshold_abs": 1e-05
+      },
+      "role": "SECONDARY - triage only; never sufficient for PASS",
+      "spectral_character_proxy": {
+        "abs_diff": 0.015576497059007354,
+        "metric": "zero_crossing_rate",
+        "rate_a": 0.020847366995604136,
+        "rate_b": 0.005270869936596782
+      }
+    },
+    "secondary_not_computed_reason": null,
+    "secondary_role": "SECONDARY - triage only; never sufficient for PASS",
+    "stream_stats": {
+      "a": {
+        "dc_offset": -5.249892340766047e-05,
+        "peak_abs": 0.1627197265625,
+        "peak_index": 13589,
+        "rms": 0.0801748839515825,
+        "sample_count": 144000
+      },
+      "b": {
+        "dc_offset": -0.0024963830872846765,
+        "peak_abs": 0.10658193379640579,
+        "peak_index": 16288,
+        "rms": 0.054481429522617565,
+        "sample_count": 144000
+      },
+      "not_computed_reason": null
+    },
+    "verdict": "FAIL",
+    "verdict_reason": "samples_differ"
+  },
+  "schema": "r07-disagreement-case/1"
+}

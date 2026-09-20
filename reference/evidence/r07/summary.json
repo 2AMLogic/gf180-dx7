@@ -1,0 +1,78 @@
+{
+  "cases": {
+    "corpus-shrpsynth": {
+      "notes": [],
+      "status": "PASS"
+    },
+    "detune-extreme": {
+      "notes": [],
+      "status": "PASS"
+    },
+    "fb-alg4": {
+      "notes": [],
+      "status": "PASS"
+    },
+    "fb-alg6": {
+      "notes": [],
+      "status": "PASS"
+    },
+    "fixed-frequency-high": {
+      "notes": [],
+      "status": "PASS"
+    },
+    "slow-envelope": {
+      "notes": [],
+      "status": "PASS"
+    }
+  },
+  "generated_by": "tools/r07_compare.py",
+  "identities": {
+    "reference": {
+      "binary_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+      "engine_mode": "DEXED_ENGINE_MARKI (Mark I)",
+      "identity_id": "R02-oracle-identity",
+      "source_git_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "upstream": "Dexed"
+    },
+    "second": {
+      "binary_sha256": "4f1cde37cadab4a33a99ed0b8d4839be776ea0fdfb45450f379de5a55e6b1732",
+      "engine_mode": "hexter fixed-point (HEXTER_USE_FLOATING_POINT undefined; upstream configure default)",
+      "identity_id": "R07-second-oracle-identity",
+      "source_git_commit": "a0fe615a906197b40588a704c7ef932d7b6461d8",
+      "upstream": "hexter (DSSI software synthesizer)"
+    }
+  },
+  "identity_checks": {
+    "reference": {
+      "binary_sha256_actual": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+      "detail": "binary hash matches pinned identity",
+      "identity": "R02-oracle-identity",
+      "identity_path": "/private/tmp/opencode/wt-r07-disagreement/reference/oracle-identity.json",
+      "source_head": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "status": "PASS"
+    },
+    "second": {
+      "binary_sha256_actual": "4f1cde37cadab4a33a99ed0b8d4839be776ea0fdfb45450f379de5a55e6b1732",
+      "detail": "binary hash matches pinned identity",
+      "identity": "R07-second-oracle-identity",
+      "identity_path": "/private/tmp/opencode/wt-r07-disagreement/reference/second-oracle-identity.json",
+      "source_head": "a0fe615a906197b40588a704c7ef932d7b6461d8",
+      "status": "PASS"
+    }
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/14",
+  "non_claims": [
+    "No engine is adjudicated as physically correct. These are two software implementations; cross-implementation disagreement is recorded as localized findings (hypotheses), and any claim about original DX7 hardware would require hardware evidence this investigation does not have."
+  ],
+  "notes": [],
+  "overall": {
+    "cases_completed": 6,
+    "cases_failed": 0,
+    "cases_not_run": 0
+  },
+  "render_config": {
+    "sample_rate": 48000,
+    "seconds": 3.0
+  },
+  "schema": "r07-disagreement-summary/1"
+}

@@ -1,0 +1,23 @@
+{
+  "tool": "hexter-oracle",
+  "role": "external second oracle for gf180-dx7 R07; no engine adjudication",
+  "license": "GPL-2.0-or-later (hexter); external-oracle-only",
+  "upstream_hexter_commit": "1cf1bfea5962f7c9726e0cf809b762b3b2655225",
+  "engine_mode": "fixed-point (HEXTER_USE_FLOATING_POINT undefined; upstream configure default)",
+  "sample_rate": 48000.0,
+  "seconds": 3.000000,
+  "total_samples": 144000,
+  "voice": "/var/folders/fb/l4j31ymn3bn0mc6v1qbvvl8c0000gn/T/r07-k9ml278z/voice.syx",
+  "voice_form": "single voice",
+  "voice_len": 163,
+  "program_slot": 0,
+  "tuning_hz": 440.0,
+  "volume_port_db": 0.0,
+  "nugget_size": 64,
+  "event_policy": "events applied at exact sample tick; R07 driver pre-quantizes positions to 64-sample block starts",
+  "event_count": 2,
+  "events": [
+    {"pos": 4800, "cmd": "note_on", "a": 60, "b": 100},
+    {"pos": 96000, "cmd": "note_off", "a": 60, "b": 64}
+  ]
+}

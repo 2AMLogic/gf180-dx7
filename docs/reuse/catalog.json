@@ -1260,6 +1260,11 @@
       "path": "spec/audition-phrases-v1.json",
       "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
       "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
+    },
+    {
+      "path": "tools/r07_compare.py",
+      "sha256": "b80bd15bb5e489bde962b71a6a2feb38ae39285eb288ab2a081360cfefeaa8e3",
+      "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported"
     }
   ]
 }

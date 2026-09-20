@@ -24,6 +24,26 @@
     {
       "path": "tools/check_all.sh",
       "reason": "locally authored CI entry point"
+    },
+    {
+      "path": "src/gf180_dx7/sysex.py",
+      "reason": "locally authored P01 codec (merged PR #43); DX7 field layout taken from published documentation (Dave Benson dx7.txt) as facts, no upstream source bytes adopted"
+    },
+    {
+      "path": "src/gf180_dx7/cli.py",
+      "reason": "locally authored P01 CLI (merged PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/sysex_probe.py",
+      "reason": "locally authored P01 probe tool (merged PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/make_test_fixtures.py",
+      "reason": "locally authored P01 fixture generator (merged PR #43); not a reuse import"
+    },
+    {
+      "path": "tools/catalog_archive.py",
+      "reason": "locally authored P02 archive cataloger (issue #9); not a reuse import"
     }
   ],
   "components": [

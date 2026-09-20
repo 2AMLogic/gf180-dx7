@@ -1,0 +1,1681 @@
+{
+  "schema": "gf180-dx7.dev32/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/10",
+  "generated_utc": "2026-09-20T09:45:59Z",
+  "counts": {
+    "entries": 32
+  },
+  "selection": {
+    "tool": "tools/select_dev32.py",
+    "tool_sha256": "4a049248a659a016095978df15b56ce6a86b19d178ec8abce27d7359869ed6e0",
+    "catalog": {
+      "path": "corpus/archive-catalogs/alltheweb-catalog.json",
+      "schema": "gf180-dx7.archive-catalog/1",
+      "snapshot_sha256": "9bfe25ca706f15f603fc5ca22c13bb1b22697eae0830e71939181622e00af216"
+    },
+    "catalog_snapshot_sha256": "9bfe25ca706f15f603fc5ca22c13bb1b22697eae0830e71939181622e00af216",
+    "archive": {
+      "filename": "DX7_AllTheWeb.zip",
+      "size_bytes": 26330401,
+      "sha256": "c2c47bd1aa29ab07bdf5e6ec8a25faa1b10e06ea0bcf57f6a83d8363051ed6ef",
+      "entry_count": 13124
+    },
+    "selection_zip": {
+      "path": "/Users/joseph/Downloads/DX7_AllTheWeb.zip",
+      "sha256_verified": "c2c47bd1aa29ab07bdf5e6ec8a25faa1b10e06ea0bcf57f6a83d8363051ed6ef",
+      "note": "archive read-only for feature decoding; bytes are never redistributed (catalog rights policy)"
+    },
+    "candidate_universe": {
+      "clean_instances": 161925,
+      "distinct_clean_hashes": 15209,
+      "scope": "standalone voice entries + bank slot rows, anomaly_count == 0; stream-class instances excluded from selection"
+    },
+    "goals": [
+      {
+        "tag": "pitch_eg_present"
+      },
+      {
+        "tag": "lfo_wave_0"
+      },
+      {
+        "tag": "lfo_wave_1"
+      },
+      {
+        "tag": "lfo_wave_2"
+      },
+      {
+        "tag": "lfo_wave_3"
+      },
+      {
+        "tag": "fixed_frequency_op"
+      },
+      {
+        "tag": "high_feedback"
+      },
+      {
+        "tag": "low_feedback"
+      },
+      {
+        "tag": "velocity_sensitive"
+      }
+    ],
+    "stages": {
+      "stage_a": {
+        "0": "DX7_AllTheWeb/Aminet/105.syx",
+        "1": "DX7_AllTheWeb/Aminet/10.syx",
+        "2": "DX7_AllTheWeb/Aminet/10.syx",
+        "3": "DX7_AllTheWeb/Aminet/10.syx",
+        "4": "DX7_AllTheWeb/Aminet/10.syx",
+        "5": "DX7_AllTheWeb/Aminet/10.syx",
+        "6": "DX7_AllTheWeb/Aminet/109.syx",
+        "7": "DX7_AllTheWeb/Aminet/10.syx",
+        "8": "DX7_AllTheWeb/Aminet/108.syx",
+        "9": "DX7_AllTheWeb/Aminet/106.syx",
+        "10": "DX7_AllTheWeb/Aminet/108.syx",
+        "11": "DX7_AllTheWeb/Aminet/114.syx",
+        "12": "DX7_AllTheWeb/Aminet/126.syx",
+        "13": "DX7_AllTheWeb/Aminet/106.syx",
+        "14": "DX7_AllTheWeb/Aminet/108.syx",
+        "15": "DX7_AllTheWeb/Aminet/10.syx",
+        "16": "DX7_AllTheWeb/Aminet/104.syx",
+        "17": "DX7_AllTheWeb/Aminet/10.syx",
+        "18": "DX7_AllTheWeb/Aminet/108.syx",
+        "19": "DX7_AllTheWeb/Aminet/106.syx",
+        "20": "DX7_AllTheWeb/Aminet/103.syx",
+        "21": "DX7_AllTheWeb/Aminet/101.syx",
+        "22": "DX7_AllTheWeb/Aminet/112.syx",
+        "23": "DX7_AllTheWeb/Aminet/12.syx",
+        "24": "DX7_AllTheWeb/Aminet/118.syx",
+        "25": "DX7_AllTheWeb/Aminet/10.syx",
+        "26": "DX7_AllTheWeb/Aminet/10.syx",
+        "27": "DX7_AllTheWeb/Aminet/10.syx",
+        "28": "DX7_AllTheWeb/Aminet/109.syx",
+        "29": "DX7_AllTheWeb/Aminet/143.syx",
+        "30": "DX7_AllTheWeb/Aminet/10.syx",
+        "31": "DX7_AllTheWeb/Aminet/103.syx"
+      },
+      "stage_b_swaps": [
+        {
+          "goal": "lfo_wave_1",
+          "algorithm": 21,
+          "path": "DX7_AllTheWeb/Aminet/105.syx",
+          "slot": 4,
+          "replaced": "DX7_AllTheWeb/Aminet/101.syx"
+        },
+        {
+          "goal": "lfo_wave_2",
+          "algorithm": 16,
+          "path": "DX7_AllTheWeb/Aminet/112.syx",
+          "slot": 24,
+          "replaced": "DX7_AllTheWeb/Aminet/104.syx"
+        }
+      ],
+      "stage_b_appends": [],
+      "stage_c_fills": 0,
+      "goal_holes": [],
+      "algorithms_missing": []
+    }
+  },
+  "feature_goal_definitions": {
+    "pitch_eg_present": "any pitch EG level != 50 (level center = zero deviation, MSFA pitchenv table convention)",
+    "lfo_wave_W": "voice LFO waveform == W (goals 0-3 per issue #10)",
+    "fixed_frequency_op": "at least one operator osc_mode == 1 (fixed frequency)",
+    "high_feedback": "feedback >= 4 (0-7 range)",
+    "low_feedback": "feedback <= 0 (0-7 range)",
+    "velocity_sensitive": "at least one operator key_velocity_sensitivity > 0"
+  },
+  "render_convention": {
+    "note_pitch": 60,
+    "profiles": {
+      "default": "note_on vel 100 @ 4800; note_off @ 96000; 4.0 s",
+      "velocity_contrast": "note_on vel 100 @ 4800; note_off @ 48000; note_on vel 30 @ 72000; note_off @ 120000; 4.0 s",
+      "slow_hold": "any operator rate <= 25: note_on vel 100 @ 4800; note_off @ 144000; 6.0 s"
+    },
+    "precedence": "slow_hold over velocity_contrast over default"
+  },
+  "coverage": {
+    "algorithms_covered": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "algorithms_missing": [],
+    "algorithm_holes": [],
+    "lfo_waves_covered": {
+      "0": 19,
+      "1": 1,
+      "2": 1,
+      "3": 3
+    },
+    "lfo_wave_goals_unmet": [],
+    "fixed_mode_count": 8,
+    "pitch_eg_count": 10,
+    "high_feedback_count": 19,
+    "low_feedback_count": 8,
+    "velocity_sensitive_count": 24,
+    "render_profiles": {
+      "default": 4,
+      "slow_hold": 25,
+      "velocity_contrast": 3
+    },
+    "goal_holes": []
+  },
+  "entries": [
+    {
+      "index": 0,
+      "path": "DX7_AllTheWeb/Aminet/105.syx",
+      "slot": 3,
+      "name": "SHRPSYNTH ",
+      "canonical_hash": "e619786fe3cc7b6be694470709f054aa129abd042d852efaba54b413aefbec6d",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:0"
+      ],
+      "decoded_features": {
+        "algorithm": 0,
+        "feedback": 1,
+        "lfo_wave": 3,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": false,
+        "min_operator_rate": 14
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 1,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 18,
+      "name": "MELLOWSOLO",
+      "canonical_hash": "879763e98c6c03c839c674d436cc8f9a08c561120023ae46bf6af5b51bb1dc6a",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:1"
+      ],
+      "decoded_features": {
+        "algorithm": 1,
+        "feedback": 7,
+        "lfo_wave": 4,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 2,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 0,
+      "name": "SIZLECYMB.",
+      "canonical_hash": "cd758bbe33f6fbab3c571eaf889a8a5b7ce36cc3e9a61946f08f07f66cbfc495",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:2"
+      ],
+      "decoded_features": {
+        "algorithm": 2,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 4,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 3,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 13,
+      "name": "PROPHETess",
+      "canonical_hash": "8a1cf76a93bfb102e9ffb4d5a9c21c438714c5dedae874d89464fb5d475e9722",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:3"
+      ],
+      "decoded_features": {
+        "algorithm": 3,
+        "feedback": 1,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": false,
+        "min_operator_rate": 30
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 48000
+        },
+        {
+          "pos": 72000,
+          "cmd": "note_on",
+          "args": [
+            60,
+            30
+          ]
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 120000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "velocity_contrast"
+      }
+    },
+    {
+      "index": 4,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 10,
+      "name": "OO-CUTER  ",
+      "canonical_hash": "2a8396365292503f3844be133be78c05b8fabf8e45cf931385e6de9c6ba40d8d",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:4"
+      ],
+      "decoded_features": {
+        "algorithm": 4,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 12
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 5,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 12,
+      "name": "WRMSP MCK ",
+      "canonical_hash": "589ecfe643402a26b2f038e93802b8b6ecd830d85152fe65ee4248924cce1bbb",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:5"
+      ],
+      "decoded_features": {
+        "algorithm": 5,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 3,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 6,
+      "path": "DX7_AllTheWeb/Aminet/109.syx",
+      "slot": 7,
+      "name": "belandBIWA",
+      "canonical_hash": "65a17a76bdbf0c5302835e43952e840c1df3a6839d6a7345a50be3dc6d683f7f",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:6"
+      ],
+      "decoded_features": {
+        "algorithm": 6,
+        "feedback": 2,
+        "lfo_wave": 4,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": false,
+        "min_operator_rate": 29
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 48000
+        },
+        {
+          "pos": 72000,
+          "cmd": "note_on",
+          "args": [
+            60,
+            30
+          ]
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 120000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "velocity_contrast"
+      }
+    },
+    {
+      "index": 7,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 3,
+      "name": "ANALG SYN6",
+      "canonical_hash": "04efc7acec6e0090bba637a354204cb38f79b91b8484e470506db465c92b8c1d",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:7"
+      ],
+      "decoded_features": {
+        "algorithm": 7,
+        "feedback": 5,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 9
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 8,
+      "path": "DX7_AllTheWeb/Aminet/108.syx",
+      "slot": 20,
+      "name": "MEMORYMOOG",
+      "canonical_hash": "ac14c3d4dd2a75f9bb3c5a52af2719dfdfc93b163c1885db342cb6a7804ad262",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:8"
+      ],
+      "decoded_features": {
+        "algorithm": 8,
+        "feedback": 7,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 49
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 96000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "default"
+      }
+    },
+    {
+      "index": 9,
+      "path": "DX7_AllTheWeb/Aminet/106.syx",
+      "slot": 23,
+      "name": "DIM SUM   ",
+      "canonical_hash": "4cfaa2d5557d4494793d9e359f85245cc3c5cc4232d815124942f7c3ae9101b1",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:9"
+      ],
+      "decoded_features": {
+        "algorithm": 9,
+        "feedback": 0,
+        "lfo_wave": 4,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 13
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 10,
+      "path": "DX7_AllTheWeb/Aminet/108.syx",
+      "slot": 29,
+      "name": "12STRG 1  ",
+      "canonical_hash": "4cd98ce818f30c577cbceaae509c0d29a954cfded53861cde79e9d258d0546e0",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:10"
+      ],
+      "decoded_features": {
+        "algorithm": 10,
+        "feedback": 5,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 11,
+      "path": "DX7_AllTheWeb/Aminet/114.syx",
+      "slot": 29,
+      "name": "SPACENOISE",
+      "canonical_hash": "dd6b72a2a74d25a0b9834e8a5918524738a52a933fd121bf7d3eae2488c53a83",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:11"
+      ],
+      "decoded_features": {
+        "algorithm": 11,
+        "feedback": 5,
+        "lfo_wave": 3,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 12,
+      "path": "DX7_AllTheWeb/Aminet/126.syx",
+      "slot": 21,
+      "name": "E FILTER 1",
+      "canonical_hash": "13e492e9d2ca7557de371f260a8715ff90f5c88581b4dfeee01d411bcd45824f",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:12"
+      ],
+      "decoded_features": {
+        "algorithm": 12,
+        "feedback": 7,
+        "lfo_wave": 4,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 32
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 96000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "default"
+      }
+    },
+    {
+      "index": 13,
+      "path": "DX7_AllTheWeb/Aminet/106.syx",
+      "slot": 9,
+      "name": "CHAUCHAU  ",
+      "canonical_hash": "bf1d88155f374ca0757895e878a9b2a2ee60803188f06a9b39dd1ddcc74847c8",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:13"
+      ],
+      "decoded_features": {
+        "algorithm": 13,
+        "feedback": 5,
+        "lfo_wave": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 14,
+      "path": "DX7_AllTheWeb/Aminet/108.syx",
+      "slot": 1,
+      "name": "FLU.STRG.1",
+      "canonical_hash": "1d5d32bde19c5464252c0bd453e5722f59ef5c2dc020b58b9aea31821b47abe0",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:14"
+      ],
+      "decoded_features": {
+        "algorithm": 14,
+        "feedback": 7,
+        "lfo_wave": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 3
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 15,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 8,
+      "name": "GROWL     ",
+      "canonical_hash": "4d6b7bcc6195b1a75b0d46040a8986005ed30103e9e90d74273d097103adbeeb",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:15"
+      ],
+      "decoded_features": {
+        "algorithm": 15,
+        "feedback": 2,
+        "lfo_wave": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": false,
+        "high_feedback": false,
+        "low_feedback": false,
+        "min_operator_rate": 28
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 96000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "default"
+      }
+    },
+    {
+      "index": 16,
+      "path": "DX7_AllTheWeb/Aminet/112.syx",
+      "slot": 24,
+      "name": "CLAVINET  ",
+      "canonical_hash": "bbb1ab875d24a092618cbf9e140c12fd56df4ef05c0c41b3af2e373693fae41b",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:16",
+        "lfo_wave_2"
+      ],
+      "decoded_features": {
+        "algorithm": 16,
+        "feedback": 3,
+        "lfo_wave": 2,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 17,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 16,
+      "name": "VIO SOLO 3",
+      "canonical_hash": "261d4b91dcffaa52b64c5535ec49aee36d6b4ef3320b593b87bbe45e530e333c",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:17"
+      ],
+      "decoded_features": {
+        "algorithm": 17,
+        "feedback": 7,
+        "lfo_wave": 4,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 13
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 18,
+      "path": "DX7_AllTheWeb/Aminet/108.syx",
+      "slot": 12,
+      "name": "TOY PIANO ",
+      "canonical_hash": "10291ff712896eaea6e928463f6d8b84623f2ac5f76714a07a84ffed081c4be6",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:18"
+      ],
+      "decoded_features": {
+        "algorithm": 18,
+        "feedback": 7,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 19,
+      "path": "DX7_AllTheWeb/Aminet/106.syx",
+      "slot": 27,
+      "name": "Vce.P01   ",
+      "canonical_hash": "414353875578c4a7db86f2bcecae258ba2ad1f3bd80a472d987a19c90bc78e54",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:19"
+      ],
+      "decoded_features": {
+        "algorithm": 19,
+        "feedback": 4,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 16
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 20,
+      "path": "DX7_AllTheWeb/Aminet/103.syx",
+      "slot": 1,
+      "name": "ORGANBRASS",
+      "canonical_hash": "9688ff912430009a4c6e0f30f1c6e454b047a92768cff97edcc22d77d51c573d",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:20"
+      ],
+      "decoded_features": {
+        "algorithm": 20,
+        "feedback": 7,
+        "lfo_wave": 4,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 21,
+      "path": "DX7_AllTheWeb/Aminet/105.syx",
+      "slot": 4,
+      "name": "RING-MOD  ",
+      "canonical_hash": "2ffda8aaddd20f68a56494d9aefbd43c059a256aee8d6d9b9d6177ca528f1a6d",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:21",
+        "lfo_wave_1"
+      ],
+      "decoded_features": {
+        "algorithm": 21,
+        "feedback": 7,
+        "lfo_wave": 1,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 22,
+      "path": "DX7_AllTheWeb/Aminet/112.syx",
+      "slot": 9,
+      "name": "SYN.GLOC.3",
+      "canonical_hash": "b78bd321c012971b81d3c347f3e1eb5fadffd91a0fcfd9a40583376d7bfb7676",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:22"
+      ],
+      "decoded_features": {
+        "algorithm": 22,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 24
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 23,
+      "path": "DX7_AllTheWeb/Aminet/12.syx",
+      "slot": 26,
+      "name": "PERC.YCPIU",
+      "canonical_hash": "a5dad7e092d6a688ceec4703e9993cd647e01220f4fbc1881f27aa1b5caeaaab",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:23"
+      ],
+      "decoded_features": {
+        "algorithm": 23,
+        "feedback": 7,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 24,
+      "path": "DX7_AllTheWeb/Aminet/118.syx",
+      "slot": 26,
+      "name": "SYN-VOX   ",
+      "canonical_hash": "834a2378bad09adb6c46b8c1c905f42839be5e4c8ecd051a6827bbee2c74f193",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:24"
+      ],
+      "decoded_features": {
+        "algorithm": 24,
+        "feedback": 6,
+        "lfo_wave": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 22
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 25,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 2,
+      "name": "ERIE SUSTN",
+      "canonical_hash": "ffc0fb05de2adc2bf6038b7ae15f584d15f6d63117b4f466b922188bd81e7198",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:25"
+      ],
+      "decoded_features": {
+        "algorithm": 25,
+        "feedback": 7,
+        "lfo_wave": 3,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 20
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 26,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 4,
+      "name": "Ugly      ",
+      "canonical_hash": "ba7bb3c5a5de5e746a81c498834521fb4e4f8d39cc6a8fb5ff93792a9acd4c9c",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:26"
+      ],
+      "decoded_features": {
+        "algorithm": 26,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 25
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 27,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 30,
+      "name": "PROPHET-10",
+      "canonical_hash": "fbbe6e3cf4bc3efe6787e02ee489bbab52d2014487098c8561ff65c4dc69df41",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:27"
+      ],
+      "decoded_features": {
+        "algorithm": 27,
+        "feedback": 7,
+        "lfo_wave": 5,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 30
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 96000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "default"
+      }
+    },
+    {
+      "index": 28,
+      "path": "DX7_AllTheWeb/Aminet/109.syx",
+      "slot": 4,
+      "name": "TUBES     ",
+      "canonical_hash": "b236a24e274c8222b47c847649502d3989cc98f75a9b85d0f5c9e809f46ca46f",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:28"
+      ],
+      "decoded_features": {
+        "algorithm": 28,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 20
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 29,
+      "path": "DX7_AllTheWeb/Aminet/143.syx",
+      "slot": 17,
+      "name": "Q TIME  8 ",
+      "canonical_hash": "69d3d58ff01998f327d3f317adbc805397a59c009f98c1be4e5d3d9a71182280",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:29"
+      ],
+      "decoded_features": {
+        "algorithm": 29,
+        "feedback": 0,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": false,
+        "low_feedback": true,
+        "min_operator_rate": 10
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    },
+    {
+      "index": 30,
+      "path": "DX7_AllTheWeb/Aminet/10.syx",
+      "slot": 14,
+      "name": "SOFT TOUCH",
+      "canonical_hash": "3f57cc96e63cc107ce995d987c86f6f462952225b1cd3a26b138e82c5ecd8cd9",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:30"
+      ],
+      "decoded_features": {
+        "algorithm": 30,
+        "feedback": 5,
+        "lfo_wave": 4,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 30
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 48000
+        },
+        {
+          "pos": 72000,
+          "cmd": "note_on",
+          "args": [
+            60,
+            30
+          ]
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 120000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 4.0,
+        "samples": 192000,
+        "profile": "velocity_contrast"
+      }
+    },
+    {
+      "index": 31,
+      "path": "DX7_AllTheWeb/Aminet/103.syx",
+      "slot": 21,
+      "name": "9softpiano",
+      "canonical_hash": "d37f57a37e7106579f5cc0286106d2430ce5a66ef3f60f41f1d7dca578dd873f",
+      "anomaly_free": true,
+      "selected_features": [
+        "algorithm:31"
+      ],
+      "decoded_features": {
+        "algorithm": 31,
+        "feedback": 4,
+        "lfo_wave": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": false,
+        "high_feedback": true,
+        "low_feedback": false,
+        "min_operator_rate": 0
+      },
+      "events": [
+        {
+          "cmd": "note_on",
+          "args": [
+            60,
+            100
+          ],
+          "pos": 4800
+        },
+        {
+          "cmd": "note_off",
+          "args": [
+            60
+          ],
+          "pos": 144000
+        }
+      ],
+      "render": {
+        "sample_rate": 48000,
+        "seconds": 6.0,
+        "samples": 288000,
+        "profile": "slow_hold"
+      }
+    }
+  ]
+}

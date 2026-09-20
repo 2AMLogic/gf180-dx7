@@ -1,0 +1,33 @@
+{
+  "budget_justification": "complete integer re-derivation: regenerated tables byte-identical to the pinned toolchain's runtime tables (measured on Apple clang 21.0.0, this host; equal to spec/numeric-profile-v1.json provisional sha256 records) and every integer operation mirrored per EngineMkI.cpp:124-150,152-205,361 + PluginProcessor.cpp:258-268 (oracle main.cpp:455-465); a nonzero error would indicate a model defect, not an accepted budget",
+  "case": "single-operator synthetic voice (algorithm 32; ops 1-5 total level 0 -> envelope-gated; op 6 audible, constant envelope target; note_on 60 vel 100 at sample 0; 4 s dry f32le @ 48 kHz)",
+  "comparator": "src/gf180_dx7/compare.py exact-time-locked-paired v1 (no alignment/normalization)",
+  "date": "2026-09-20",
+  "declared_budget": "exact (0.0)",
+  "inputs": {
+    "events_sha256": "eae4cff195eb6520f552e4043678e2327c2666e92128db6b305b137aa8ba00df",
+    "oracle_binary_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+    "oracle_source_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+    "voice_syx_sha256": "4927ae86caa6ffea6a31ba130db93c3b1f3c9fdce3bf80cf90ce0ab93220d965"
+  },
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/16",
+  "model_contract": "gf180-dx7-integer-v1",
+  "outputs": {
+    "byte_identical": true,
+    "max_abs_error": 0.0,
+    "max_abs_error_index": null,
+    "mismatch_count": 0,
+    "model_render_sha256": "6213fcffabbbbcfd0721c4a7ac1c94ec49f863f059d44b00ae522c37d9f754c5",
+    "oracle_peak_abs": 0.12493896484375,
+    "oracle_render_sha256": "6213fcffabbbbcfd0721c4a7ac1c94ec49f863f059d44b00ae522c37d9f754c5",
+    "samples": 192000
+  },
+  "probe_only_path": "constant frame gain from the frozen env target formula (env.cc:113-121, dx7note.cc:169-179, EngineMkI.cpp:314-316); N03 owns the general envelope",
+  "schema": "gf180-dx7/n02-reference-probe-v1",
+  "status": "PASS",
+  "tables": {
+    "freqlut_table": "6d3c597008e85c67cfa1165ef4038a3c1c9c56a60a4b441b7486296a897dc64d",
+    "sinexp_table": "e515a71ae736d92dcb3fd36973dea486c96d1521f1a0bab1f917be2c4ec07794",
+    "sinlog_table": "990c19e90732efe712a19ba4272f97c7c9d884ac0e4e19450a1067165d8aa8a8"
+  }
+}

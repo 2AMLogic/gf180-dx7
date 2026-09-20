@@ -35,4 +35,11 @@ fi
 echo "== python3 tools/render_selfcheck.py"
 python3 tools/render_selfcheck.py
 
+# N01 (issue #15): numeric/scheduling profile — schedule + storage arithmetic
+# recomputed, decision estimates present, event timing vs contract-v1, and
+# citation hashes/line content against the pinned trees (guarded skip per
+# tree when a pinned clone is absent).
+echo "== python3 tools/check_numeric_profile.py"
+python3 tools/check_numeric_profile.py
+
 echo "all repo checks passed"

@@ -38,3 +38,28 @@ Three judgments are kept separate throughout:
 3. the instrument sounds good.
 
 Passing one never establishes the others.
+
+## Reuse vs build new
+
+The DX7 DSP (six operators, DX envelopes, 32 algorithms, feedback) is built
+new — no sibling implements it. What is reused from the Apache-2.0 sibling
+repositories, each adoption with a provenance record and requalification:
+
+- **gf180-parasynth / gf180-monosynth** (same design): SPI control link
+  (`spi_ctl.v` + decision record 0007), I2S transmitter and pin-level
+  decode harness, chip chassis (single-clock 256-cycle frame, tick/go,
+  overrun), the N-channel shared-datapath precedent (`ladder_dp_n.v`,
+  bit-exact at NCH=1/2/4/8), the working gf180mcu ORFS flow, ULX3S FPGA
+  flow, and measured gf180mcu area calibrations.
+- **gf180-torchsynth**: the pinning stack (commit-archive + SHA-256
+  manifest + drift-rejecting verifier + runtime lock), non-perturbing
+  trace capture, no-alignment paired comparator, case-registry/scorecard
+  pattern, generic fixed-point primitives, and reuse-governance template
+  (decision record 0005).
+- **External GPL engines** (Dexed Mark I, VDX7, Hexter) are comparison
+  oracles only — never copied into this Apache-2.0 repository.
+
+## License
+
+Apache License 2.0 (repo-level, per 2AMLogic convention). See
+[LICENSE](LICENSE).

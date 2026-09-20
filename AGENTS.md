@@ -18,11 +18,14 @@ polyphony, one timbre, 48 kHz, external host/controller/DAC/storage.
   records do.
 - Comparison renders are dry. Do not normalize each render independently,
   time-warp comparisons, or switch reference engines per patch.
-- Licensing: Dexed is GPL-3.0-or-later in `Source/EngineMkI.cpp` while its
-  `msfa/` subset is Apache-2.0; VDX7 is GPL-3.0-or-later; Hexter is
-  GPL-2.0-or-later. Record file/table-level provenance before adopting any
-  third-party code or table, and choose an explicit compatible source policy
-  rather than inheriting one through a port.
+- Licensing/source policy (org convention, repo-level Apache-2.0, no per-file
+  headers): GPL-3.0-or-later code (Dexed `Source/EngineMkI.cpp`, VDX7) and
+  GPL-2.0-or-later code (Hexter) must never be copied into this repository;
+  those engines are external comparison oracles only. Apache-2.0 material
+  (Dexed `msfa/`, any 2AMLogic sibling component) may be adopted with a
+  provenance record (upstream commit, path, hashes, license, destination,
+  adaptations) plus requalification; hash equality alone never qualifies.
+  Dexed agreement is not original-DX7 fidelity.
 - Do not claim FPGA or gf180mcu synthesis, place-and-route, signoff, or
   hardware playback, original-hardware fidelity, or preset quality without a
   committed evidence record that establishes exactly that claim. Source

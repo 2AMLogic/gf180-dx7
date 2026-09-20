@@ -77,45 +77,45 @@ These are issue states, not verification verdicts: a closed issue is not a capab
 
 ```mermaid
 graph TD
-  E1["E1: epic #1"]:::epic
-  E2["E2: epic #2"]:::epic
-  E3["E3: epic #3"]:::epic
-  A01["A01 #39"]::closed
-  D00["D00 #4"]::closed
-  D01["D01 #5"]::closed
-  H01["H01 #20"]::open
-  H02["H02 #21"]::open
-  H03["H03 #25"]::open
-  H04["H04 #26"]::open
-  H05["H05 #27"]::open
-  H06["H06 #28"]::open
-  H07["H07 #29"]::open
-  H08["H08 #30"]::open
-  H09["H09 #31"]::open
-  H10["H10 #32"]::open
-  H11["H11 #33"]::open
-  N01["N01 #15"]::open
-  N02["N02 #16"]::open
-  N03["N03 #17"]::open
-  N04["N04 #18"]::open
-  N05["N05 #19"]::open
-  N06["N06 #22"]::open
-  N07["N07 #23"]::open
-  N08["N08 #24"]::open
-  P01["P01 #8"]::closed
-  P02["P02 #9"]::closed
-  R01["R01 #6"]::closed
-  R02["R02 #7"]::open
-  R03["R03 #10"]::open
-  R04["R04 #11"]::open
-  R05["R05 #12"]::open
-  R06["R06 #13"]::open
-  R07["R07 #14"]::open
-  U01["U01 #34"]::open
-  U02["U02 #35"]::open
-  U03["U03 #36"]::open
-  U04["U04 #37"]::open
-  U05["U05 #38"]::open
+  E1["E1 epic (issue 1)"]:::epic
+  E2["E2 epic (issue 2)"]:::epic
+  E3["E3 epic (issue 3)"]:::epic
+  A01["A01 (issue 39) CLOSED"]:::closed
+  D00["D00 (issue 4) CLOSED"]:::closed
+  D01["D01 (issue 5) CLOSED"]:::closed
+  H01["H01 (issue 20) OPEN"]:::open
+  H02["H02 (issue 21) OPEN"]:::open
+  H03["H03 (issue 25) OPEN"]:::open
+  H04["H04 (issue 26) OPEN"]:::open
+  H05["H05 (issue 27) OPEN"]:::open
+  H06["H06 (issue 28) OPEN"]:::open
+  H07["H07 (issue 29) OPEN"]:::open
+  H08["H08 (issue 30) OPEN"]:::open
+  H09["H09 (issue 31) OPEN"]:::open
+  H10["H10 (issue 32) OPEN"]:::open
+  H11["H11 (issue 33) OPEN"]:::open
+  N01["N01 (issue 15) OPEN"]:::open
+  N02["N02 (issue 16) OPEN"]:::open
+  N03["N03 (issue 17) OPEN"]:::open
+  N04["N04 (issue 18) OPEN"]:::open
+  N05["N05 (issue 19) OPEN"]:::open
+  N06["N06 (issue 22) OPEN"]:::open
+  N07["N07 (issue 23) OPEN"]:::open
+  N08["N08 (issue 24) OPEN"]:::open
+  P01["P01 (issue 8) CLOSED"]:::closed
+  P02["P02 (issue 9) CLOSED"]:::closed
+  R01["R01 (issue 6) CLOSED"]:::closed
+  R02["R02 (issue 7) OPEN"]:::open
+  R03["R03 (issue 10) OPEN"]:::open
+  R04["R04 (issue 11) OPEN"]:::open
+  R05["R05 (issue 12) OPEN"]:::open
+  R06["R06 (issue 13) OPEN"]:::open
+  R07["R07 (issue 14) OPEN"]:::open
+  U01["U01 (issue 34) OPEN"]:::open
+  U02["U02 (issue 35) OPEN"]:::open
+  U03["U03 (issue 36) OPEN"]:::open
+  U04["U04 (issue 37) OPEN"]:::open
+  U05["U05 (issue 38) OPEN"]:::open
   E1 -.-> A01
   E1 -.-> D00
   E1 -.-> D01
@@ -206,9 +206,10 @@ graph TD
   U04 --> U05
   H09 --> U05
   U02 --> U05
-  classDef epic fill:#7C3AED,color:#fff;
-  classDef closed fill:#0E8A16,color:#fff;
-  classDef open fill:#9CA3AF,color:#000;
+  classDef epic fill:purple,color:white;
+  classDef closed fill:green,color:white;
+  classDef open fill:darkgray,color:black;
+  classDef unknown fill:orange,color:black;
 ```
 
 <!-- ISSUEDAG:END -->

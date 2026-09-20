@@ -1197,8 +1197,8 @@
     },
     {
       "path": "tools/render_issue_dag.py",
-      "sha256": "8fd504f8636e95178afdda9c1c5dd244547cda0135cfbea9296408d92c7f1e13",
-      "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import"
+      "sha256": "c11889e6b7969f090bae371df1c68e7c9cbb58e285dd29bcee6f369922a6ef06",
+      "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import; re-pinned after GitHub mermaid rich-display fix (conservative labels/edges + built-in fence lint)"
     },
     {
       "path": "tools/verify_reference.py",

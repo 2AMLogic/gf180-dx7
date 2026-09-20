@@ -23,3 +23,53 @@ jobs:
       - name: Repo checks
         run: |
           if [ -f tools/check_all.sh ]; then bash tools/check_all.sh; fi
+
+  mermaid:
+    # README mermaid blocks must render: a syntax error here breaks the GitHub
+    # rich display of the whole README (regression fixed 2026-09-20).
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Extract mermaid blocks from README.md
+        run: |
+          mkdir -p .mermaid-ci
+          python3 - <<'PY'
+          import re, pathlib
+          text = pathlib.Path("README.md").read_text()
+          blocks = re.findall(r"```mermaid\n(.*?)```", text, re.S)
+          if not blocks:
+              raise SystemExit("no ```mermaid blocks found in README.md")
+          for i, block in enumerate(blocks):
+              pathlib.Path(f".mermaid-ci/block-{i}.mmd").write_text(block)
+          print(f"extracted {len(blocks)} mermaid block(s)")
+          PY
+      - name: Render every mermaid block (pinned mermaid-cli)
+        run: |
+          printf '{\n  "args": ["--no-sandbox", "--disable-gpu"]\n}\n' > .mermaid-ci/puppeteer.json
+          for f in .mermaid-ci/block-*.mmd; do
+            echo "== validating $f"
+            npx -y @mermaid-js/mermaid-cli@11 -p .mermaid-ci/puppeteer.json -i "$f" -o "${f%.mmd}.svg"
+          done
+
+  dag-fresh:
+    # Staleness guard: the committed README block must equal a fresh render
+    # (tools/render_issue_dag.py runs its own mermaid lint before comparing).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: README issue-DAG block is fresh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/render_issue_dag.py --check

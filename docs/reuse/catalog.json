@@ -1167,8 +1167,8 @@
     },
     {
       "path": "tools/check_all.sh",
-      "sha256": "7d5cc9a9a081a3838722cb1dfb495117066e736fec8b83a1bda4cec9ce79ae87",
-      "reason": "locally authored CI entry point"
+      "sha256": "acce313c6f2cb345f142affb24c65e3246628973a529f62cf0c4714c79fffd71",
+      "reason": "locally authored CI entry point; re-pinned after R01 added guarded verify_reference run"
     },
     {
       "path": "src/gf180_dx7/sysex.py",
@@ -1199,6 +1199,11 @@
       "path": "tools/render_issue_dag.py",
       "sha256": "8fd504f8636e95178afdda9c1c5dd244547cda0135cfbea9296408d92c7f1e13",
       "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import"
+    },
+    {
+      "path": "tools/verify_reference.py",
+      "sha256": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa",
+      "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes (converted from exemption at merge; byte-pinned)"
     }
   ]
 }

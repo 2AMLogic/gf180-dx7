@@ -1,0 +1,424 @@
+{
+  "manifest_version": 1,
+  "id": "R01",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/6",
+  "purpose": "Pin the executable comparison reference completely, so that 'matches Dexed' is unambiguous: exact upstream commit, Mark I engine selection, file identities and licenses, engine/render settings, and toolchain, with drift rejection.",
+  "fidelity_note": "Dexed agreement is not original-DX7 fidelity (docs/DECISIONS-v1.md DEC-001, plan section 5).",
+  "upstream": {
+    "project": "Dexed",
+    "repo_url": "https://github.com/asb2m10/dexed",
+    "commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
+    "commit_date": "2023-10-14T12:35:25-04:00",
+    "commit_subject": "Bump gh-action versions",
+    "commit_verification": {
+      "local_clone": "/Users/joseph/dev/dexed",
+      "local_origin_remote": "https://github.com/asb2m10/dexed.git",
+      "local_head_at_pin_time": "b6cf2e9190e216387ad96f977284ebbef765b447",
+      "upstream_api_check": "gh api repos/asb2m10/dexed/commits/b6cf2e9190e216387ad96f977284ebbef765b447 --jq .sha returned the identical sha (checked 2026-09-20)"
+    }
+  },
+  "engine": {
+    "engine_type": "marki",
+    "engine_type_enum": {
+      "name": "DEXED_ENGINE_MARKI",
+      "value": 1,
+      "enum_container": "DexedEngineResolution",
+      "enum_members": {
+        "DEXED_ENGINE_MODERN": 0,
+        "DEXED_ENGINE_MARKI": 1,
+        "DEXED_ENGINE_OPL": 2
+      },
+      "source_path": "Source/PluginProcessor.h",
+      "applied_by": "DexedAudioProcessor::DexedAudioProcessor calls setEngineType(DEXED_ENGINE_MARKI) (Source/PluginProcessor.cpp)"
+    },
+    "sample_rate": 48000,
+    "sample_rate_source": "docs/DECISIONS-v1.md DEC-009 (project pin). Dexed itself is host-rate-driven; 48000 is applied via the wrapper as prepareToPlay(48000.0), which initializes Freqlut, Lfo, PitchEnv, Env and PluginFx (Source/PluginProcessor.cpp prepareToPlay)."
+  },
+  "settings": [
+    {
+      "name": "engine_type",
+      "value": "marki (DEXED_ENGINE_MARKI = 1)",
+      "source_path": "Source/PluginProcessor.h",
+      "note": "Selected in DexedAudioProcessor constructor; oracle must use EngineMkI, not EngineOpl or the modern FmCore path."
+    },
+    {
+      "name": "sample_rate",
+      "value": 48000,
+      "source_path": "docs/DECISIONS-v1.md (DEC-009)",
+      "note": "Wrapper-defined input to prepareToPlay; Dexed has no built-in default rate."
+    },
+    {
+      "name": "max_active_notes",
+      "value": 16,
+      "source_path": "Source/PluginProcessor.h",
+      "note": "MAX_ACTIVE_NOTES = 16; voice allocation order is part of the render path the R02 wrapper must replicate."
+    },
+    {
+      "name": "engine_block_size",
+      "value": 64,
+      "source_path": "Source/msfa/synth.h",
+      "note": "LG_N = 6, N = 64: internal per-note render block of msfa/Dexed; processBlock handles buffers not a multiple of N via extra_buf."
+    },
+    {
+      "name": "controllers_defaults",
+      "value": "amp_mod = pitch_mod = eg_mod = 0; opSwitch = \"111111\"; transpose12AsScale = true; mpeEnabled = true; mpePitchBendRange = 24",
+      "source_path": "Source/msfa/controllers.h",
+      "note": "Controllers::Controllers constructor plus the C++ default member initializers in the same header. mpeEnabled is render-relevant: it changes MPE channel/note matching in processMidiMessage and keydown (Source/PluginProcessor.cpp) and pitch handling (Source/msfa/dx7note.cc line 235). The R02 oracle must run with these constructor defaults."
+    },
+    {
+      "name": "mod_wheel_default_modifiers",
+      "value": "range = 0; pitch = amp = eg = false",
+      "source_path": "Source/msfa/controllers.h",
+      "note": "FmMod::FmMod default; applies to wheel, foot, breath, at (all four default-constructed the same)."
+    },
+    {
+      "name": "pitch_bend_range",
+      "value": "up = 3, down = 3, step = 0",
+      "source_path": "Source/PluginProcessor.cpp",
+      "note": "DexedAudioProcessor constructor: values_[kControllerPitchRangeUp] = 3; values_[kControllerPitchRangeDn] = 3; values_[kControllerPitchStep] = 0."
+    },
+    {
+      "name": "master_tune",
+      "value": 0,
+      "source_path": "Source/PluginProcessor.cpp",
+      "note": "DexedAudioProcessor constructor: controllers.masterTune = 0."
+    },
+    {
+      "name": "mono_mode",
+      "value": 0,
+      "source_path": "Source/PluginProcessor.cpp",
+      "note": "DexedAudioProcessor constructor: monoMode = 0 (polyphonic); monoMode branches keydown voice allocation (Source/PluginProcessor.cpp keydown)."
+    },
+    {
+      "name": "normalize_dx_velocity",
+      "value": false,
+      "source_path": "Source/PluginProcessor.cpp",
+      "note": "normalizeDxVelocity = false in the constructor."
+    },
+    {
+      "name": "fx_defaults",
+      "value": "uiCutoff = 1, uiReso = 0, uiGain = 1",
+      "source_path": "Source/PluginFx.cpp",
+      "note": "PluginFx::PluginFx defaults; at maximum cutoff the LPF is bypassed (PluginFx::process). Dry comparison renders keep these defaults."
+    },
+    {
+      "name": "tuning",
+      "value": "standard tuning, A4 = 440, base increment 50857777",
+      "source_path": "Source/msfa/tuning.cc",
+      "note": "StandardTuning uses base = 50857777 ((1 << 24) * (log(440) / log(2) - 69/12)); DexedAudioProcessor constructor calls createStandardTuning(). The constructor also registers an MTS-ESP client (MTS_RegisterClient, Source/PluginProcessor.cpp); with no MTS-ESP master connected MTS_HasMaster is false, so retuning and MTS note filtering are inactive (Source/PluginProcessor.cpp processBlock/processMidiMessage). The oracle build links libs/MTS-ESP/Client (pinned in files) and runs with no MTS master: confirmed behavior is R02's responsibility."
+    },
+    {
+      "name": "sysex_echo",
+      "value": "off",
+      "source_path": "N/A (wrapper-defined in R02)",
+      "note": "Plugin sysex echo is a host/UI path (Source/SysexComm.*), outside the engine render path. The headless oracle has no MIDI in/out; echo is structurally absent."
+    },
+    {
+      "name": "render_scaling",
+      "value": "int32 accumulate -> >>4 -> clip to +/- (1<<24) -> >>9 -> /0x8000 -> float, clamped to [-1, 1]; mono output copied to both channels",
+      "source_path": "Source/PluginProcessor.cpp",
+      "note": "DexedAudioProcessor::processBlock per-note conversion; the R02 wrapper must replicate this exactly. Output remains dry: no normalization."
+    },
+    {
+      "name": "block_event_scheduling",
+      "value": "wrapper-defined in R02",
+      "source_path": "reference/oracle-protocol.md",
+      "note": "Host block size and MIDI event placement follow DexedAudioProcessor::processBlock / getNextEvent semantics; exact block sizes are fixed by the R02 wrapper and echoed in render metadata."
+    }
+  ],
+  "files": [
+    {
+      "path": "Source/EngineMkI.cpp",
+      "sha256": "c991945175a304e386064500d439f59a42499bacd61125e8f47def01948c5dde",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2015-2017 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository (docs/REUSE-RULINGS.md: dexed-enginemki)"
+    },
+    {
+      "path": "Source/EngineMkI.h",
+      "sha256": "29e5f1c73f43e57f0c6c483585dc7f4e083e1ec6e1b8104eb8ce918664bc3268",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2014 Pascal Gauthier; Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification"
+    },
+    {
+      "path": "Source/msfa/aligned_buf.h",
+      "sha256": "6140a81aacae153220ce80aa58f5d7efcd5b3a2c8389fef14ed35deb14d62caf",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/controllers.h",
+      "sha256": "6e6f551498e76c6e4de12eed9c81c64b650da0071943adb9a0df7350eee32897",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/dx7note.cc",
+      "sha256": "9cc1cd4b266ce41da0bba43b4696c55a4595fe3322141b05be7ec9b96f19e7ba",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2016-2017 Pascal Gauthier; Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/dx7note.h",
+      "sha256": "401906140d17c0f8771d6cb16da5e4671fb0fb786ad3689d76dac5b6625b3cc2",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2016-2017 Pascal Gauthier; Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/env.cc",
+      "sha256": "cb3d35d9c84106aefdcf758e2630b668db23388b2b360cc4c88c4fb4b5ed4ac6",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2017 Pascal Gauthier; Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/env.h",
+      "sha256": "1370b0faf12ff04c5abcee348795384a09f10f39d73e04e5537aec002c6d2a4a",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2017 Pascal Gauthier; Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/exp2.cc",
+      "sha256": "dff6dfd8af6f0a470360c2d2fa98aa7ae5208c27b83c9229ffccbc84815930da",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/exp2.h",
+      "sha256": "23aa480e221e5d1f928a5ccab654a9c01a80eb0b610fd66d9364af09d18cdda8",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/fm_core.cc",
+      "sha256": "7171950dd13002c768de1c047e128b843671401cc2bf8ce35441957f87d84eab",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/fm_core.h",
+      "sha256": "b6ae45c6b2ca67a1f7bddb4a1ee535ea432ba92bb1c78b316e53d8495182f7aa",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/fm_op_kernel.cc",
+      "sha256": "ad00f2c63bf8163624a367478969f5a250568a9c6c0dcee348a4eb0b7848b21b",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/fm_op_kernel.h",
+      "sha256": "77c12aae2c5c3c2cacd541e693e4fdbc28f474c8446aa5d6711cf4908ebb07e6",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/freqlut.cc",
+      "sha256": "f46ddab0d296f1a82d2ef6826f7e431cad97967418a37fdb486052a4187dcaf8",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/freqlut.h",
+      "sha256": "d319ee2d35e8e8e2c860b6fc2a2d1382bf5782d1d147264914325ca41f89f00b",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/lfo.cc",
+      "sha256": "84abeb915cb6a0e51cf678aaea717af124395bcc673efedfdd6c695149223cb2",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/lfo.h",
+      "sha256": "0b8eaf07887acf8db10ca5b4e0e718e2b7092286ee811be40aca7e705c29ac10",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/module.h",
+      "sha256": "a03078ae9e62aeb8808df4b8dd02fdb941dc90e04f4840dcf25af6c785e0427d",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/pitchenv.cc",
+      "sha256": "99529ae7ed0ccc153af765da100f205ed84cbf56113f2db1ec24e29175e85078",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/pitchenv.h",
+      "sha256": "be825b9272fe59bd7faf47b4878fdbd756f502ca3b4364d2934a7f5dafa0abe4",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2013 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/sin.cc",
+      "sha256": "ebb96ae8460af68da025659a329f72d2c64301673ad83ef54a7ac20590ad7e65",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/sin.h",
+      "sha256": "b57300e93e18a4262d7f0dec84642a7da228704bec1fddd481d2ab85ed805311",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/synth.h",
+      "sha256": "8aa3de2de1a7d303b34cae2b0cf0837e9e476ab640ff02dbf4d59ccf23e96b50",
+      "license_class": "Apache-2.0",
+      "license_basis": "in-file Apache-2.0 header (Copyright 2012 Google Inc.)",
+      "role": "reference-pin; adoptable only with provenance + requalification (docs/REUSE-RULINGS.md: dexed-msfa-tables)"
+    },
+    {
+      "path": "Source/msfa/tuning.cc",
+      "sha256": "8057c17dfb7493acb3eda9b62b289aff4c3f390abab045a08a18d2e69dc1a99e",
+      "license_class": "no-in-file-header",
+      "license_basis": "no license header in file; Dexed project is GPL-3.0-or-later (repo LICENSE). Treated as GPL-3.0-or-later project code.",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository"
+    },
+    {
+      "path": "Source/msfa/tuning.h",
+      "sha256": "db9c47985e99cbff30307000801aa07fabf79ced48fec93edb9c254a56aa3ef5",
+      "license_class": "no-in-file-header",
+      "license_basis": "no license header in file; Dexed project is GPL-3.0-or-later (repo LICENSE). Treated as GPL-3.0-or-later project code.",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository"
+    },
+    {
+      "path": "Source/Dexed.h",
+      "sha256": "91ea58158e19443db7be88f871ac794e7565c1187c348ee259caa11357855d5d",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2014 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. Included by Source/msfa/controllers.h, so the msfa engine headers do not compile standalone without it."
+    },
+    {
+      "path": "Source/PluginProcessor.h",
+      "sha256": "4f01dc3d795e293f6a53d70b57ab239cfec3094be3563b5f663ff958c404c490",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2013-2017 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. Defines DexedEngineResolution (engine enum), MAX_ACTIVE_NOTES = 16, and uint8_t data[161]."
+    },
+    {
+      "path": "Source/PluginProcessor.cpp",
+      "sha256": "fc5a3dec3de5fd936c439dde76899e7f51e3dc82b2a4d55b08399df826509ea9",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2013-2018 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. Defines the constructor defaults, prepareToPlay, processBlock render path, keydown, and processMidiMessage that the R02 wrapper must replicate or replace."
+    },
+    {
+      "path": "Source/PluginData.cpp",
+      "sha256": "e9a9adb3a4e154230f6ff11163c7d90ddea287bcb43fc59495f9816e23c4ebde",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2014-2017 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. updateProgramFromSysex (memcpy(data, rawdata, 155)) is the sysex -> data[161] mapping entry point."
+    },
+    {
+      "path": "Source/PluginFx.h",
+      "sha256": "40727355715cc9b93b244038ad84dc9760b3301fcfbcadebc8a984d0b2c17c94",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2013 Pascal Gauthier)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. Declares PluginFx (render-path output filter)."
+    },
+    {
+      "path": "Source/PluginFx.cpp",
+      "sha256": "a5e4b4e2bb3d7bc03d0e7c2ae92b78711249b98b8816ab4227b599faa1462ef9",
+      "license_class": "GPL-3.0-or-later",
+      "license_basis": "in-file header: 'GNU General Public License ... either version 3 ... or any later version' (Copyright 2013-2014 Pascal Gauthier; Copyright 2013-2014 Filatov Vadim; filter taken from the Obxd project)",
+      "role": "external-oracle-only; never copied into this Apache-2.0 repository. PluginFx::process sits in the processBlock output path (fx.process) even at dry defaults."
+    },
+    {
+      "path": "libs/tuning-library/include/Tunings.h",
+      "sha256": "5a33f3ec277494e53d004cbc7deef747cc06cadf0e96269e096ddcccea8d1993",
+      "license_class": "MIT",
+      "license_basis": "in-file header: 'Released under the MIT License. See LICENSE.md' (Copyright Paul Walker, 2019-2020); MIT text at libs/tuning-library/LICENSE.md",
+      "role": "reference-pin; adoptable only with provenance + requalification"
+    },
+    {
+      "path": "libs/tuning-library/include/TuningsImpl.h",
+      "sha256": "db5c28cb203f7ffe00888c5780b2ad158ca26736ad68fdca1ced1b8cb2ceb1bf",
+      "license_class": "MIT",
+      "license_basis": "part of the tuning-library (in-file MIT header); MIT text at libs/tuning-library/LICENSE.md",
+      "role": "reference-pin; adoptable only with provenance + requalification"
+    },
+    {
+      "path": "libs/tuning-library/LICENSE.md",
+      "sha256": "ee3bd73591efbb9272e28d066fc430790a1e9eeb75b6658864f4377fe79dc558",
+      "license_class": "MIT",
+      "license_basis": "license text file (Copyright 2019-2020, Paul Walker)",
+      "role": "reference-pin; license anchor for the tuning-library files above"
+    },
+    {
+      "path": "libs/MTS-ESP/Client/libMTSClient.h",
+      "sha256": "7563635cb21440e2aa3c577b2b9f0f70a63e74df5da328fd0329d54092449cba",
+      "license_class": "ISC-style permissive",
+      "license_basis": "in-file header: 'Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.' (Copyright 2021 ODDSound Ltd.)",
+      "role": "reference-pin; included by Source/msfa/dx7note.h, so the msfa engine headers do not compile standalone without it"
+    },
+    {
+      "path": "libs/MTS-ESP/Client/libMTSClient.cpp",
+      "sha256": "4c213026a94f91efbe3065e4023aae1c8c2cb7ee365228c7e786257b60f5e160",
+      "license_class": "ISC-style permissive",
+      "license_basis": "client library implementation accompanying libMTSClient.h (same ODDSound permissive notice)",
+      "role": "reference-pin; linked into the oracle build, where it reports no MTS master and leaves tuning untouched"
+    }
+  ],
+  "patch_struct_note": "The engine consumes voice state from Dexed's internal uint8_t data[161] (Source/PluginProcessor.h). Verified layout facts: a DX7 single-voice dump is copied verbatim into data[0..154] (memcpy(data, rawdata, 155), Source/PluginData.cpp updateProgramFromSysex), so data[0..154] are the packed DX7 single-voice bytes (data[134] algorithm, data[135] feedback, data[136] osc key sync per the CtrlDX offsets in Source/PluginParam.cpp initCtrl; data[137..] LFO block per lfo.reset(data + 137) in Source/PluginData.cpp); data[136] gates oscSync at keydown (Source/PluginProcessor.cpp keydown: if (data[136]) ... oscSync()); data[155] holds the packed operator-switch byte, which is not part of a sysex cartridge and is rendered by packOpSwitch (Source/PluginParam.cpp setDxValue); data[156..160] are Dexed-internal state. Dx7Note::init(const uint8_t patch[156], ...) consumes the first 156 entries (Source/msfa/dx7note.h). The P01 sysex codec (src/gf180_dx7/sysex.py) owns DX7 sysex framing; the .syx -> data[161] mapping for the oracle is wrapper-defined in R02.",
+  "toolchain": {
+    "purpose": "Compiler/runtime used to build and run the external oracle (R02). Recorded at manifest time on the pin machine.",
+    "cxx_compiler": {
+      "command": "clang++",
+      "version_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "target": "arm64-apple-darwin25.5.0",
+      "installed_dir": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+    },
+    "python_runtime_of_record": {
+      "command": "python3",
+      "version": "3.14.7",
+      "note": "Recorded for reproducibility. tools/verify_reference.py is stdlib-only and does not hard-fail on a newer Python; the R02 oracle build/runtime pin is enforced there."
+    },
+    "drift_rule": "A different clang++ version line than toolchain.cxx_compiler.version_line is drift: verify_reference.py reports it and exits 1. Re-pinning the toolchain requires a manifest change and review, never a silent follow."
+  },
+  "oracle_protocol": {
+    "protocol_doc": "reference/oracle-protocol.md",
+    "status": "Interface I/O contract is defined in reference/oracle-protocol.md; the executable wrapper that implements it is defined by R02 (issue R02). The GPL oracle code lives OUTSIDE this repository; this repository stores only the protocol, hashes, and evidence."
+  },
+  "drift_policy": {
+    "verifier": "tools/verify_reference.py",
+    "command": "python3 tools/verify_reference.py --dexed-root /Users/joseph/dev/dexed",
+    "exit_codes": {
+      "0": "PASS: pinned commit, every file hash, and toolchain match",
+      "1": "FAIL (drift): commit mismatch, file missing/modified, or toolchain mismatch; first mismatch reported explicitly",
+      "2": "NOT_RUN (environment/usage): missing or unusable --dexed-root, missing git, or invalid manifest"
+    },
+    "rules": [
+      "Any hash or commit mismatch aborts; the verifier never updates the manifest or follows upstream.",
+      "A pinned value may change only by editing the manifest, re-running the verifier, and review; pin changes are STALE-marked per DEC-001 change control.",
+      "verify_reference.py is re-run by tools/check_all.sh whenever the local Dexed clone exists; where the clone is absent the check is NOT_RUN (guarded skip), never reported as PASS."
+    ]
+  }
+}

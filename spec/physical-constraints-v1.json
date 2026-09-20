@@ -1,0 +1,282 @@
+{
+  "version": "physical-constraints-v1",
+  "generated": "2026-09-19",
+  "issue": 5,
+  "doc": "docs/PHYSICAL-CONSTRAINTS.md",
+  "status_enum": ["confirmed", "assumed", "inaccessible"],
+  "notes": [
+    "Statuses: confirmed = source path + measurement or re-run check; assumed = hypothesis, not a constraint; inaccessible = access or artifact missing, reported as missing.",
+    "Sibling measurements calibrate the library and flow; they are not measurements of the DX7 core. No die-fit claim is made here (H10 measures it)."
+  ],
+  "items": [
+    {
+      "id": "shuttle-wafer-space-quarter-slot",
+      "category": "shuttle",
+      "status": "confirmed",
+      "claim": "wafer.space gf180mcu quarter-slot MPW die is 1314.88 x 1317.12 um = 1.7319 mm2 inside the default pad ring (core 1.6734 mm2); recorded constraint and budget premise, no seat purchased by this repo.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md",
+      "measurement": "die 1,731,850 um2; core 1,673,400 um2 (fixed-die inputs of the sibling's routed runs)"
+    },
+    {
+      "id": "shuttle-ttgf26c",
+      "category": "shuttle",
+      "status": "confirmed",
+      "claim": "TinyTapeout TTGF26c: gf180mcuD on wafer.space MPW; deadline 2026-12-07 20:00 UTC; 160 tiles (158 available), sales paused as of 2026-09-16; snapshot, must be re-checked at decision time.",
+      "source": "prep-tinytapeout:REPORT.md",
+      "measurement": "live shuttle-API check recorded 2026-09-16"
+    },
+    {
+      "id": "shuttle-tt-tile-geometry",
+      "category": "shuttle",
+      "status": "confirmed",
+      "claim": "TT gf180 tile dies: 1x1 = 346.64 x 160.72 um; largest 4x4 = 1440.32 x 736.96 um (~1.06 mm2); up to 16 tiles per design; Metal5 forbidden for chip-level PDN; RT_MAX_LAYER = Metal4.",
+      "source": "prep-tinytapeout:REPORT.md",
+      "measurement": "die sizes from tile_sizes.yaml as recorded in the report"
+    },
+    {
+      "id": "shuttle-selection",
+      "category": "shuttle",
+      "status": "assumed",
+      "claim": "Which packaging this product targets (TT tiles vs direct quarter-slot seat) is undecided; plan says feasibility first, no slot-fit assertion yet.",
+      "source": "2AMLogic/gf180-dx7:docs/dx7-chip-plan-v0.1-2026-09-20.md"
+    },
+    {
+      "id": "clock-12m288",
+      "category": "clock",
+      "status": "confirmed",
+      "claim": "12.288 MHz (81.38 ns) is a plan clock candidate and closed with margin on the sibling's routed joined gf180 chip; a sibling measurement, not a DX7-core result.",
+      "source": "gf180-parasynth:pnr/orfs/evidence/synth_top/joined-d1e5068/",
+      "measurement": "setup +10.173 ns at ss_125C_4v50, +43.592 ns at tt_025C_5v00, hold positive at all three corners; implied min period 71.21 ns (14.0 MHz) at ss"
+    },
+    {
+      "id": "clock-24m576-candidate",
+      "category": "clock",
+      "status": "confirmed",
+      "claim": "24.576 MHz (40.69 ns) is a plan clock candidate: 512 clocks per 48 kHz frame, ~5.33 clocks per operator over 96 operator states.",
+      "source": "2AMLogic/gf180-dx7:docs/dx7-chip-plan-v0.1-2026-09-20.md",
+      "measurement": "16 x 6 x 48,000 = 4,608,000 operator evaluations/s"
+    },
+    {
+      "id": "clock-24m576-ss-closure",
+      "category": "clock",
+      "status": "assumed",
+      "claim": "24.576 MHz ss-corner closure for a DX7 core is unknown; on the sibling design the same run implies 26.5 MHz at tt and a 71.21 ns min period at ss, which would miss 40.69 ns. Established only by H10.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md"
+    },
+    {
+      "id": "clock-frame-budget",
+      "category": "clock",
+      "status": "confirmed",
+      "claim": "Frame budget: 16 notes x 6 operators x 48 kHz = 4.608M operator evaluations/s; 512/256 clocks per frame at 24.576/12.288 MHz.",
+      "source": "2AMLogic/gf180-dx7:docs/dx7-chip-plan-v0.1-2026-09-20.md"
+    },
+    {
+      "id": "clock-tt-voltage-corner",
+      "category": "clock",
+      "status": "confirmed",
+      "claim": "TT hardens gf180 7t cells at 3.3 V (VDD_PIN_VOLTAGE 3.3, corner tt_025C_3v30); sibling 5 V timing numbers do not transfer to a TT tile environment.",
+      "source": "prep-tinytapeout:REPORT.md"
+    },
+    {
+      "id": "board-ulx3s-25f",
+      "category": "board",
+      "status": "confirmed",
+      "claim": "ULX3S (ECP5 LFE5U-25F, CABGA381, 25 MHz oscillator) is the org's proven FPGA pattern: sibling routed on nextpnr-ecp5 --25k with PLL 725/59 MHz (+11 ppm).",
+      "source": "gf180-parasynth:docs/fpga-build.md"
+    },
+    {
+      "id": "board-ulx3s-sufficient-for-dx7",
+      "category": "board",
+      "status": "assumed",
+      "claim": "ULX3S sufficiency for the DX7 core is NOT established; core LUT/BRAM/DSP need unmeasured (H09/H10). Scale reference only: sibling synth_top 5,885 LUT4, drum_kit 6,777 LUT4.",
+      "source": "gf180-parasynth:docs/integration-area.md"
+    },
+    {
+      "id": "lib-7t",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "gf180mcu_fd_sc_mcu7t5v0 (7-track, 5 metal, site GF018hv5v_mcu_sc7) is the library the working gf180 ORFS flow maps and routes (TRACK_OPTION=7t).",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md"
+    },
+    {
+      "id": "lib-9t-cost",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "9-track library costs +26-27% area measured across blocks; 7t preferred.",
+      "source": "gf180-parasynth:docs/area-budget.md",
+      "measurement": "core NV=4 395,990 -> 502,486 um2 (1.269); ladder 1.269; modal 1.262-1.265"
+    },
+    {
+      "id": "lib-local-install",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "gf180mcu PDK ciel install present on this machine at /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/ (variants A-D, same ciel commit the sibling docs cite; liberty incl. tt_025C_5v00, LEF, techlef, GDS, SPICE, behavioural Verilog). Nonstandard path; no ciel/volare CLI on PATH; PDK_ROOT unset.",
+      "source": "local check 2026-09-19",
+      "measurement": "installed 2026-09-16, log 14-ciel-gf180mcu.log; directory listing verified 2026-09-19"
+    },
+    {
+      "id": "lib-yosys-mapping-smoke",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "Local yosys maps against gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib: dfflibmap+abc succeed and dffq_1 liberty area 63.66 um2 reproduces the sibling's per-cell table. Tooling-access smoke check, not an H01/H02 result.",
+      "source": "local check 2026-09-19",
+      "measurement": "dfflibmap: dffq_1 area 63.66; yosys check 0 problems"
+    },
+    {
+      "id": "lib-dont-use-cells-policy",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "ORFS gf180 stock DONT_USE_CELLS=*_1 costs +29.1% (placeholder chip) / +31.1% (joined chip) synthesis area vs *_1 allowed; +33-40% across blocks with local scripts. Policy must be declared per flow; numbers under different policies are not comparable.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md",
+      "measurement": "1,979,380 -> 1,510,153 um2 (joined, synthesis); 925,387 -> 717,049 um2 (placeholder)"
+    },
+    {
+      "id": "lib-no-enable-flop",
+      "category": "cell_library",
+      "status": "confirmed",
+      "claim": "The 7t library has no enable flop; an enable-written state bit costs dffq_1 + mux2_1 = 92.20 um2 before any logic touches it.",
+      "source": "gf180-parasynth:docs/area-budget.md",
+      "measurement": "63.66 + 28.54 = 92.20 um2"
+    },
+    {
+      "id": "mem-flop-rates",
+      "category": "memory",
+      "status": "confirmed",
+      "claim": "Register-state cost anchors: dffq_1 63.66 um2/flop; replicated state bit ~118 um2/bit all-in; FIFO storage 120 um2/bit; a measured register file (drum_regs) landed at 139.9 um2/bit once decode/enable overhead landed.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md",
+      "measurement": "318,300 um2 / 2,276 bits = 139.9 um2/bit (routed-layout measurement)"
+    },
+    {
+      "id": "mem-foundry-sram-macros",
+      "category": "memory",
+      "status": "confirmed",
+      "claim": "Foundry gf180mcu_fd_ip_sram macros: exactly 64x8 / 128x8 / 256x8 / 512x8; ceiling 512 B per macro; sram512x8m8wm1 footprint 0.2094 mm2 (LEF SIZE). Liberty timing views exist (present in the local ciel install libs.ref/gf180mcu_fd_ip_sram/lib/), so the small macros are usable with real timing.",
+      "source": "2AMLogic/gf180-sram:spec/kb-scale-integration.md",
+      "measurement": "macro table measured from PDK LEF SIZE fields; 4,096 bits max per instance"
+    },
+    {
+      "id": "mem-custom-256x32",
+      "category": "memory",
+      "status": "confirmed",
+      "claim": "Custom gf180-sram 256x32 macro: DRC-clean, LVS-clean, 27-corner PVT signoff passed, LEF abstract committed; NO Liberty timing views generated and integrated nowhere, hence not usable for timing-closed design today.",
+      "source": "2AMLogic/gf180-sram:README.md",
+      "measurement": "repo status section (2026-09-09 LEF; Liberty still open)"
+    },
+    {
+      "id": "mem-kb-scale-gap",
+      "category": "memory",
+      "status": "inaccessible",
+      "claim": "No usable large (>512 B) on-chip SRAM with timing views exists on this PDK today. Recorded options: tile foundry 512x8 macros (derived; bank-select/mux cost not modelled), DFFRAM (gf180mcuD target configured, not signoff-clean; unverified tier), OpenRAM (no gf180mcu SRAM support, ROM only). Reported as missing, not worked around.",
+      "source": "2AMLogic/gf180-sram:spec/kb-scale-integration.md"
+    },
+    {
+      "id": "mem-rom-as-logic",
+      "category": "memory",
+      "status": "confirmed",
+      "claim": "Case-table ROMs synthesize to logic at ~1.9-2.2 um2 per stored bit, cheaper per bit than a flop; relevant to DX7 sine/exp table representation.",
+      "source": "gf180-parasynth:docs/area-budget.md",
+      "measurement": "sine table 8,829 um2 (2.15 um2/bit); note table 5,782 um2 (1.88 um2/bit)"
+    },
+    {
+      "id": "flow-orfs-pinned-image",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "ORFS pinned image openroad/orfs:26Q3-296-gda37dce1c @ sha256:ebc8142d... is the working gf180 pattern (platform gf180, TRACK_OPTION=7t, CORNER=TC): sibling joined chip routes on a fixed 3.4650 mm2 two-slot die at 60.1% utilisation, 0 detailed-route DRC, ss setup +10.173 ns; the same chip is 118.3% of the quarter slot and does not place. Sibling calibration, not a DX7-core result.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md"
+    },
+    {
+      "id": "flow-fixed-die-method",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "Fixed-die methodology: set DIE_AREA/CORE_AREA to fixed rectangles and never set CORE_UTILIZATION; utilisation is the measured quantity, not an input.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md"
+    },
+    {
+      "id": "flow-orfs-image-local",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "The pinned ORFS image is present on this machine (dangling tag openroad/orfs:<none>), ID 02d4efa1ace4, 4,639,381,198 bytes, RepoDigest sha256:ebc8142da6d6... = the recorded pin; runs linux/amd64 under Docker Desktop emulation.",
+      "source": "local check 2026-09-19",
+      "measurement": "docker image ls -a + image inspect RepoDigests, 2026-09-19"
+    },
+    {
+      "id": "flow-klt-crosscheck",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "klt RTL-to-GDS-to-DRC/LVS/STA/ERC is proven end-to-end on this machine for sky130 only; the gf180 klt place-and-route configuration (polysynth asic/) has never been executed anywhere.",
+      "source": "prep-asic:REPORT.md",
+      "measurement": "3 consecutive runs, byte-identical routed GDS, every stage exit 0"
+    },
+    {
+      "id": "flow-pdn-power-block",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "Recorded lesson: a routed layout without a PDN power block fails klt drc --deck gf180mcu with 19 nwell.space.1 violations; the same design with the block routes clean. ORFS-derived strap pitches (9t strategy): Metal1 5.04 um followpins, Metal4 44.8 um, Metal5 89.6 um. The flow carrying this block has never run.",
+      "source": "gf180-polysynth:asic/README.md"
+    },
+    {
+      "id": "flow-orfs-signoff-gaps",
+      "category": "physical_flow",
+      "status": "confirmed",
+      "claim": "ORFS gf180 platform gaps: no KLayout sign-off DRC deck (router DRC only, not a sign-off DRC run), no LVS, IR analysis aborts at TC, power figures are ORFS estimates with default switching activity.",
+      "source": "gf180-parasynth:docs/pnr-synth-top.md"
+    },
+    {
+      "id": "flow-ci-github-actions",
+      "category": "physical_flow",
+      "status": "assumed",
+      "claim": "GitHub Actions ubuntu runners plausibly install ciel + ORFS at run time (multi-GB images); no evidence record of this exists in this repo yet.",
+      "source": "local check 2026-09-19"
+    },
+    {
+      "id": "eda-yosys",
+      "category": "eda_access",
+      "status": "confirmed",
+      "claim": "yosys 0.69+post (git sha1 143eb14f9cc...) native at /opt/homebrew/bin/yosys.",
+      "source": "local check 2026-09-19"
+    },
+    {
+      "id": "eda-iverilog",
+      "category": "eda_access",
+      "status": "confirmed",
+      "claim": "Icarus Verilog 13.0 (stable) native at /opt/homebrew/bin/iverilog.",
+      "source": "local check 2026-09-19"
+    },
+    {
+      "id": "eda-openroad-native",
+      "category": "eda_access",
+      "status": "inaccessible",
+      "claim": "No native OpenROAD binary on PATH; OpenROAD is available only inside the ORFS Docker image.",
+      "source": "local check 2026-09-19"
+    },
+    {
+      "id": "eda-docker-vm-disk",
+      "category": "eda_access",
+      "status": "confirmed",
+      "claim": "Docker Desktop 29.7.2 running; recorded risk: Docker VM disk (59 GB) had 5.0 GB free on 2026-09-16 and a 1.47 GB image pull failed 'no space left on device' then; host disk ~2.0 Ti free 2026-09-19.",
+      "source": "prep-tinytapeout:REPORT.md",
+      "measurement": "02-docker-pull.log failure recorded 2026-09-16; host df 2026-09-19"
+    },
+    {
+      "id": "eda-mapped-probes-possible",
+      "category": "eda_access",
+      "status": "confirmed",
+      "claim": "Liberty-based mapping probes are not blocked locally: liberty + yosys smoke check passed 2026-09-19. This corrects the task briefing's 'standard-cell liberty absent => BLOCKED' premise. Still never-run anywhere: gf180 klt place-and-route; still unmeasured: any DX7-core P&R (H10/H11).",
+      "source": "local check 2026-09-19"
+    },
+    {
+      "id": "dac-i2s-external",
+      "category": "dac",
+      "status": "confirmed",
+      "claim": "I2S transmit to an external DAC is the proven pattern: sibling i2s_tx (49 flops, 3,334.5 um2 flop area) is routed in both sibling chips; plan specifies audio over an explicitly specified I2S format to an external DAC.",
+      "source": "gf180-parasynth:docs/ARCHITECTURE.md"
+    },
+    {
+      "id": "dac-pcm5102a-class",
+      "category": "dac",
+      "status": "confirmed",
+      "claim": "PCM5102A-class is the sibling's I2S format-compatibility intent (bench decodes as a PCM5102A does; candidates PCM5102A with SCK tied low, MAX98357A, TLV320DAC3100). No DAC part is chosen for gf180-dx7; N01/H08 own that decision.",
+      "source": "gf180-parasynth:spec/NUMERIC-CONTRACT.md"
+    }
+  ]
+}

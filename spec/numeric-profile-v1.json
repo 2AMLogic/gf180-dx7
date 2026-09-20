@@ -1,0 +1,521 @@
+{
+  "schema": "gf180-dx7/numeric-profile-v1",
+  "id": "numeric-profile-v1",
+  "frozen": "2026-09-20",
+  "issue": 15,
+  "companion_document": "docs/DECISIONS-NUMERIC-v1.md",
+  "adoption_record": "docs/decision-records/0003-numeric-profile-v1.md",
+  "model_contract_name": "gf180-dx7-integer-v1",
+  "status": {
+    "default": "accepted_plan_default",
+    "adoption_strategy": "proposed_owner_signoff",
+    "owner_signoff_items": ["NUM-001", "NUM-011_frame_interpretation"]
+  },
+
+  "premises": {
+    "sample_rate_hz": 48000,
+    "polyphony": 16,
+    "operators_per_note": 6,
+    "reference_engine": "dexed-marki (DEXED_ENGINE_MARKI, R01 manifest engine.engine_type)",
+    "reference_tree": {
+      "path_env": "DEXED_ROOT",
+      "default_path": "/Users/joseph/dev/dexed",
+      "pinned_commit": "b6cf2e9190e216387ad96f977284ebbef765b447",
+      "hash_owner": "reference/manifest.json"
+    },
+    "oracle_tree": {
+      "path_env": "DX7_ORACLE_ROOT",
+      "default_path": "/Users/joseph/dx7-oracle-marki",
+      "pinned_commit": "0047c3f51b04f59e82c51e117e16fcb338e05c7e",
+      "identity_owner": "reference/oracle-identity.json",
+      "main_cpp_sha256": "e5a86babdc80441f16599a43be08969088832338bbc4d480b7fa03d71204b07c"
+    },
+    "claims_boundary": "RTL-vs-frozen-model must be exact; model-vs-reference is budgeted; nothing here claims synthesis, fit, or audibility"
+  },
+
+  "block": { "lg_n": 6, "n": 64, "frames_per_second": 750 },
+  "phase": {
+    "width_bits": 32,
+    "format": "uint32 wrapping, one cycle = 2^32",
+    "per_sample_increment": "freq (int32)",
+    "per_frame_advance": "freq << lg_n",
+    "logfreq_format": "Q24 octaves",
+    "a4_base_logfreq": 50857777,
+    "freqlut_entries": 1025,
+    "freqlut_entry_bits": 32,
+    "freqlut_max_logfreq_int": 20
+  },
+
+  "operator_core": {
+    "semantics": "EngineMkI mkiSin (pinned oracle), multiply-free log-domain",
+    "env_bitdepth": 14,
+    "env_max": 16384,
+    "sinlog_bitdepth": 10,
+    "sinlog_entries": 1024,
+    "sinlog_entry_bits": 16,
+    "sinexp_bitdepth": 10,
+    "sinexp_entries": 1024,
+    "sinexp_entry_bits": 16,
+    "output_scale": "result << 13; negative side (-result - 1) << 13",
+    "gain_ramp": "dgain = (gain2 - gain1 + (N >> 1)) >> lg_n, gain += dgain per sample",
+    "per_sample_op": [
+      "index = sinLogTable[(phase_with_mod >> 12) & 1023 quarter-wave folded]",
+      "expVal = sinLog_index_value + env_gain_14bit",
+      "result = 4096 + sinExpTable[(expVal & 0x3FF) ^ 0x3FF]",
+      "result >>= expVal >> 10",
+      "out = sign ? (-result - 1) << 13 : result << 13"
+    ]
+  },
+
+  "feedback": {
+    "history_entries": 2,
+    "history_bits_each": 32,
+    "scaled": "(y0 + y) >> (fb_shift + 1)",
+    "feedback_bitdepth": 8,
+    "fb_shift": "feedback != 0 ? 8 - feedback : 16",
+    "algorithm4_algorithm6_serial": "inline 3-op / 2-op serial forms, shift min(feedback_shift + 2, 16), skipped ops advance phase by freq << lg_n"
+  },
+
+  "envelope": {
+    "segments": 4,
+    "levels": 4,
+    "level_format": "Q24-doubling log, stored << 16",
+    "update_cadence": "once per 64-sample frame per operator",
+    "intra_frame_gain": "gain2 = ENV_MAX - (level_in >> 14); linear per-sample ramp via dgain",
+    "rising_step": "level_ += (((17 << 24) - level_) >> 24) * inc_, jump floor 1716 << 16",
+    "falling_step": "level_ -= inc_",
+    "target_formula": "actuallevel = (scaleoutlevel(l) >> 1 << 6) + outlevel_ - 4256, clamp <16 to 16",
+    "qrate_formula": "qrate = (rate * 41) >> 6 + rate_scaling, clamp 63",
+    "inc_formula": "inc_ = (4 + (qrate & 3)) << (2 + lg_n + (qrate >> 2))",
+    "sr_multiplier_48k": 15405619,
+    "accurate_envelope": true,
+    "static_count_decrement": "N per frame"
+  },
+
+  "lfo": {
+    "waveforms": ["triangle", "saw_down", "saw_up", "square", "sine", "sample_hold"],
+    "update_cadence": "one getsample + one getdelay per 64-sample frame",
+    "unit_48k": 33587,
+    "unit_formula": "(int32)(N * 25190424 / sample_rate + 0.5)",
+    "sine_branch": "msfa Sin::lookup table (regenerated + pinned at N02)",
+    "keydown_sync": "phase_ = (1U << 31) - 1, delaystate_ = 0, only when patch sync set"
+  },
+
+  "pitch_env": {
+    "update_cadence": "once per 64-sample frame",
+    "unit_48k": 1050,
+    "unit_formula": "N * (1 << 24) / (21.3 * sample_rate) + 0.5",
+    "step": "additive level_ +/- inc_ against pitchenv_tab targets"
+  },
+
+  "float_gated_reference_spots": [
+    {
+      "spot": "pitch_bend_scaling",
+      "cadence": "per frame when bend active",
+      "model_policy": "reproduce float formulas in model; RTL consumes frozen integer results",
+      "derived_bound": "float32 relative error <= 2^-24 on |pb| <= 2^24 => <= +1 logfreq count; dF/F <= ln2 * 2^-22 ~= 1.7e-7"
+    },
+    {
+      "spot": "ampmod_sensitivity_exp",
+      "cadence": "per frame, only when ampmodsens != 0",
+      "model_policy": "reproduce float formulas in model",
+      "derived_bound": "NO_VERDICT (measure at N02), patch-gated"
+    },
+    {
+      "spot": "event_time_pitch_math",
+      "cadence": "per event/init (osc_freq detune/fine, LFO unit, Freqlut init, sr_multiplier)",
+      "model_policy": "host/control-side float math off the audio frame budget",
+      "derived_bound": "Freqlut regeneration drift <= a few LSB at top entries => <= 1 phase-increment LSB on rare pitches; counted by N02"
+    }
+  ],
+
+  "routing_gating": {
+    "algorithm_table": "32 entries x 6 packed op descriptors (in_bus/out_bus/add/fb flags)",
+    "gain1": "gain_out == 0 ? ENV_MAX - 1 : gain_out",
+    "gain2": "ENV_MAX - (level_in >> 14)",
+    "k_level_thresh": 16284,
+    "gate": "render only if gain1 <= 16284 or gain2 <= 16284 (Mark I rule)",
+    "has_contents_suppression": true
+  },
+
+  "output": {
+    "per_note_chain": [
+      "val = block_accumulator >> 4",
+      "clip_val = val < -(1 << 24) ? 0x8000 : val >= (1 << 24) ? 0x7fff : val >> 9",
+      "f = clip_val / 0x8000, clamp [-1, 1]"
+    ],
+    "quirk_negative_overflow_maps_positive": "clip_val = 0x8000 = +32768 => f = +1.0",
+    "mix": "integer sum of clip_val in >= 20 bits; bit-exact vs the reference float mix (each term an integer multiple of 2^-15, |sum| < 2^24 * 2^-15, no -0.0)",
+    "comparison_render_format": "f32le dry (R01 render_scaling; DEC-012)",
+    "product_transport": "chip hands off clip_val-domain samples; I2S framing owned by H08"
+  },
+
+  "event_timing": {
+    "dec014_event_application": "next_frame_boundary",
+    "frame_definition": "core render frame = 64 samples = 1.333 ms at 48 kHz",
+    "commit_granularity_samples": 64,
+    "worst_case_core_latency_samples": 64,
+    "policy_string": "apply every event with position inside a frame before rendering that frame",
+    "queue": "bounded depth set by H03, never guessed",
+    "overflow": "explicit rejection backpressure, never silent drop",
+    "reference_alignment": "identical to oracle policy (events[evi].pos < i + N applied before block i) and Dexed processBlock block-boundary drain",
+    "flagged": "DEC-014 parenthetical read frame as one sample (20.833 us); this profile fixes frame = 64-sample render block; owner may veto, fallback is a per-sample event shifter in N02"
+  },
+
+  "note_tail": {
+    "reclaimable_predicate": "all six operator envelopes: down_ == true AND ix_ == 3 AND level_ == 16 << 16 (clamp floor)",
+    "hold_frames": 64,
+    "hold_seconds": 0.08533,
+    "reclaim_point": "next frame boundary after hold elapses",
+    "output_neutrality": "level_in = 16 << 16 => gain2 = 16368 > k_level_thresh 16284 and gain_out follows => operator gated off (EngineMkI.cpp:314-318); contribution exactly zero",
+    "louder_release_patches": "never satisfy predicate; keep sounding until stolen (DEC-016/017) - valid patch, not an error"
+  },
+
+  "schedule": {
+    "operator_evals_per_second": 4608000,
+    "operator_evals_per_sample": 96,
+    "operator_evals_per_frame": 6144,
+    "frames_per_second": 750,
+    "clock_12m288": {
+      "hz": 12288000,
+      "clks_per_sample": 256,
+      "clks_per_frame": 16384,
+      "op_loop_floor_share": 0.375,
+      "all_in_clks_per_op_eval": 2.6667,
+      "verdict": "closes only if shared operator core sustains <= 2.67 clk/op-eval all-in; no margin"
+    },
+    "clock_24m576": {
+      "hz": 24576000,
+      "clks_per_sample": 512,
+      "clks_per_frame": 32768,
+      "op_loop_floor_share": 0.1875,
+      "all_in_clks_per_op_eval": 5.3333,
+      "verdict": "comfortable at 4-5 clk/eval (~55-70% frame); ss-corner closure unproven per D01 section 2 - H01/H10 must measure"
+    },
+    "op_loop_only_minimum_clock_hz": 4608000,
+    "design_point": "24.576 MHz; 12.288 MHz fallback only if operator core measures <= 2 clk/eval",
+    "derived_consumers_clk_per_frame_12m288": {
+      "op_loop_2clk_per_eval": 12288,
+      "op_loop_3clk_per_eval": 18432,
+      "envelopes_freqlut_pitch_lfo": "1300-1600 (~9%)",
+      "output_conversion_mix_pipelined": "2000-4000 (~12-24%)",
+      "i2s_events_pipeline_margin": "800+ (~5%)"
+    },
+    "correction_note": "earlier 213-clk/frame note divided 12.288 MHz by a block rate 64x too high; correct frame rate 750/s => 16384 clk/frame; D01's 256/512 clk are per-sample views of the same arithmetic",
+    "stop_rule": "if neither clock closes with the full 16-note schedule, present architecture alternatives to the owner; polyphony (DEC-003) and reference budgets are not relaxation knobs"
+  },
+
+  "storage": {
+    "per_operator_state_bits": {
+      "phase": 32,
+      "gain_out": 32,
+      "env_level": 32,
+      "env_targetlevel": 32,
+      "env_inc": 32,
+      "env_staticcount": 32,
+      "env_ix": 3,
+      "env_rising": 1,
+      "env_down": 1,
+      "op_outlevel": 32,
+      "op_rate_scaling": 32
+    },
+    "per_note_state_bits": {
+      "fb_buf_2": 64,
+      "fb_shift": 5,
+      "basepitch_6": 192,
+      "pitchenv_level": 32,
+      "pitchenv_targetlevel": 32,
+      "pitchenv_inc": 32,
+      "pitchenv_ix": 3,
+      "pitchenv_flags": 2,
+      "ampmodsens_6": 12,
+      "opmode_6": 6,
+      "pitch_amp_mod_depths_sens": 24,
+      "algorithm": 5,
+      "note_channel_velocity_mpe": 33,
+      "sustain_keydown_steal_age": 18
+    },
+    "instances": { "operators": 96, "notes": 16 },
+    "totals": {
+      "bits_per_operator": 261,
+      "bits_per_note": 460,
+      "total_bits": 32416,
+      "total_bytes_approx": 4052
+    },
+    "cost_lines": [
+      {
+        "option": "all registers",
+        "anchor": "family-measured 118 um^2/bit replicated state (gf180-parasynth docs/area-budget.md via D01 section 5)",
+        "label": "derived total from family-measured per-bit anchor",
+        "area_mm2": 3.83,
+        "verdict": "2.3x the 1.6734 mm2 quarter-slot core - all-DFF 16-note state cannot fit a quarter slot (bounded finding)"
+      },
+      {
+        "option": "SRAM tiling",
+        "anchor": "family-measured macro footprint 0.2094 mm2 (gf180-sram LEF via D01 section 5), 512 B/macro ceiling",
+        "label": "derived; bank-select/mux cost not modelled; no Liberty timing views (D01: confirmed-incomplete)",
+        "macros_512b": 8,
+        "area_mm2": 1.67,
+        "verdict": "area-plausible, timing-unproven; H02 decides the hybrid split"
+      },
+      {
+        "option": "Mark I tables (2 x 1024 x 16 bit)",
+        "anchor": "family-measured ROM-as-logic 1.9-2.2 um^2/bit (gf180-parasynth docs/area-budget.md via D01 section 5)",
+        "label": "derived total from family-measured per-bit anchor",
+        "bits": 32768,
+        "area_mm2": "0.062-0.072"
+      },
+      {
+        "option": "msfa/Modern comparison: tables + 24x24 multiplier",
+        "anchor": "family-measured 130-140 um^2/pp-bit (Booth ~90) and 1.9-2.2 um^2/bit ROM",
+        "label": "derived; rejected alternative NUM-004",
+        "bits": 131072,
+        "area_mm2": "0.25-0.29 tables + 0.075-0.081 multiplier (Booth ~0.052)"
+      }
+    ],
+    "boundary": "no slot-fit assertion (DEC-013, D01 section 9); H02 owns register-vs-SRAM hybrid"
+  },
+
+  "provisional_tables": {
+    "note": "float64 regenerations of the Mark I 16-bit tables following EngineMkI.cpp:83-92 operation order (float32 narrowing before log2, C round half-away-from-zero). Non-normative until N02 requalifies against the pinned oracle's runtime tables; determinism across libm implementations is argued from the recorded half-boundary margins and asserted by tests.",
+    "sinlog_table": {
+      "entries": 1024,
+      "entry_bits": 16,
+      "formula": "round(-1024 * log2(float32(sin((0.5+i)/1024 * pi/2))))",
+      "sha256_uint16le": "990c19e90732efe712a19ba4272f97c7c9d884ac0e4e19450a1067165d8aa8a8",
+      "first_entry": 10597,
+      "last_entry": 0,
+      "min_half_boundary_margin": 1.8e-4
+    },
+    "sinexp_table": {
+      "entries": 1024,
+      "entry_bits": 16,
+      "formula": "round((2^(float32(i)/1024) - 1) * 4096)",
+      "sha256_uint16le": "e515a71ae736d92dcb3fd36973dea486c96d1521f1a0bab1f917be2c4ec07794",
+      "first_entry": 0,
+      "last_entry": 4090,
+      "min_half_boundary_margin": 3.7e-5
+    },
+    "not_byte_stable": "freqlut 1025-entry int32 LUT (freqlut.cc:35-42 accumulates 1024 doublings in double; drift up to ~1e-13 relative => a few LSB at top entries): the frozen model pins its own generated bytes and declares <= 1 phase-increment-LSB budget (NUM-003/NUM-008)"
+  },
+
+  "decision_index": [
+    {
+      "id": "NUM-001",
+      "title": "adopt pinned-oracle integer semantics; regenerate tables; copy no bytes",
+      "doc_section": "DECISIONS-NUMERIC-v1.md section 1",
+      "status": "proposed_owner_signoff",
+      "error_estimate": "exact_by_construction for mirrored integer paths; float-gated spots bounded in NUM-008",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "Mark I core: 0.070 mm2 tables, no multiplier vs Modern 0.25-0.29 + 0.075-0.081 mm2 (derived from family anchors)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "102", "expect": "DEXED_ENGINE_MARKI" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "675-686", "expect": "controllers.core = &engineMkI" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "124-150", "expect": "mkiSin" }
+      ]
+    },
+    {
+      "id": "NUM-002",
+      "title": "N=64 frames; per-frame control cadence",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-002",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "control path <= 10% of 16384 clk/frame at 12.288 MHz (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/synth.h", "lines": "29-30", "expect": "LG_N = 6" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "232", "expect": "i += N" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "244-245", "expect": "lfo.getsample()" },
+        { "tree": "dexed", "path": "Source/msfa/env.h", "lines": "39-40", "expect": "subsampled" }
+      ]
+    },
+    {
+      "id": "NUM-003",
+      "title": "32-bit phase, 2^32/cycle; Q24 logfreq + 1025-entry Freqlut",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-003",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact accumulator; regenerated lut drift <= 1 phase-increment LSB on rare pitches (derived)",
+      "error_class": "derived",
+      "cost_estimate": "96 x 32-bit phase = 3072 bits of state store (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/fm_op_kernel.h", "lines": "20-25", "expect": "int32_t phase" },
+        { "tree": "dexed", "path": "Source/msfa/fm_core.cc", "lines": "133", "expect": "param.phase += param.freq << LG_N" },
+        { "tree": "dexed", "path": "Source/msfa/freqlut.cc", "lines": "27-42", "expect": "24 + MAX_LOGFREQ_INT" },
+        { "tree": "dexed", "path": "Source/msfa/freqlut.cc", "lines": "46-55", "expect": "y >> (MAX_LOGFREQ_INT - hibits)" }
+      ]
+    },
+    {
+      "id": "NUM-004",
+      "title": "Mark I mkiSin: 10-bit log-sin + 10-bit sin-exp, 14-bit env gain, multiply-free",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-004",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction (same tables, same integer ops)",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "two 16 Kbit ROMs ~= 0.062-0.072 mm2 (derived from family-measured ROM anchor); target 2-3 clk/op-eval",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "52-62", "expect": "ENV_BITDEPTH = 14" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "54-60", "expect": "SINLOG_BITDEPTH = 10" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "64-78", "expect": "SINLOG_TABLEFILTER" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "83-92", "expect": "round(-1024 * log2(x1))" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "90", "expect": "pow(2, float(i)/bitReso)-1) * 4096" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "125", "expect": "sinLog(phase >> (22 - SINLOG_BITDEPTH))" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "132", "expect": "4096 + sinExpTable" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "135", "expect": "result >>= ( expVal >> 10 )" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "146-149", "expect": "(-result - 1) << 13" },
+        { "tree": "dexed", "path": "Source/msfa/fm_op_kernel.cc", "lines": "62-64", "expect": "((int64_t)y * (int64_t)gain) >> 24" },
+        { "tree": "dexed", "path": "Source/msfa/sin.h", "lines": "29-35", "expect": "SIN_LG_N_SAMPLES 10" },
+        { "tree": "dexed", "path": "Source/msfa/exp2.h", "lines": "27-45", "expect": "EXP2_LG_N_SAMPLES 10" }
+      ]
+    },
+    {
+      "id": "NUM-005",
+      "title": "DX envelope: 4x4 segments, Q24-log level, per-frame step, linear intra-frame gain ramp",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-005",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "96 x 198 bits state; 96 steps/frame ~= 8% of 16384 clk/frame (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/env.h", "lines": "25", "expect": "#define ACCURATE_ENVELOPE" },
+        { "tree": "dexed", "path": "Source/msfa/env.h", "lines": "60-76", "expect": "int32_t level_" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "47-49", "expect": "(44100.0 / sampleRate) * (1<<24)" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "78-89", "expect": "jumptarget = 1716" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "83", "expect": "level_ += (((17 << 24) - level_) >> 24) * inc_" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "90-96", "expect": "level_ -= inc_" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "113-121", "expect": "+ outlevel_ - 4256" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "125-127", "expect": "(rates_[ix_] * 41) >> 6" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "147-149", "expect": "inc_ = (4 + (qrate & 3)) << (2 + LG_N + (qrate >> 2))" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "155", "expect": "(gain2 - gain1 + (N >> 1)) >> LG_N" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "315", "expect": "ENV_MAX-(param.level_in >> (28-ENV_BITDEPTH))" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "283", "expect": "env_[op].getsample()" }
+      ]
+    },
+    {
+      "id": "NUM-006",
+      "title": "Feedback: 2x int32 history, (y0+y) >> (shift+1), 8-bit depth, algo 4/6 serial (+2 shift)",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-006",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "16 x 64 bits history; one add + one shifter shared (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "28", "expect": "FEEDBACK_BITDEPTH = 8" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "197", "expect": "FEEDBACK_BITDEPTH - feedback : 16" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.h", "lines": "77", "expect": "int32_t fb_buf_[2]" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "196", "expect": "(y0 + y) >> (fb_shift + 1)" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "208-244", "expect": "compute_fb2" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "247-293", "expect": "compute_fb3" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "330-337", "expect": "feedback_shift+2" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "331-339", "expect": "params[1].phase += params[1].freq << LG_N" }
+      ]
+    },
+    {
+      "id": "NUM-007",
+      "title": "LFO: 6 waveforms, per-frame sample + delay, sine via msfa table (unit_48k = 33587)",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-007",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "negligible: ~50-100 clk/frame, one global LFO (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/lfo.cc", "lines": "26-29", "expect": "25190424" },
+        { "tree": "dexed", "path": "Source/msfa/lfo.cc", "lines": "54-74", "expect": "// triangle" },
+        { "tree": "dexed", "path": "Source/msfa/lfo.cc", "lines": "67", "expect": "Sin::lookup(phase_ >> 8)" },
+        { "tree": "dexed", "path": "Source/msfa/lfo.cc", "lines": "78-90", "expect": "delaystate_" },
+        { "tree": "dexed", "path": "Source/msfa/lfo.cc", "lines": "92-97", "expect": "(1U << 31) - 1" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "244-245", "expect": "lfo.getdelay()" }
+      ]
+    },
+    {
+      "id": "NUM-008",
+      "title": "Pitch EG (unit_48k = 1050) + declared float-gated spots with derived bounds",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-008",
+      "status": "accepted_plan_default_bounds_no_verdict_until_n02",
+      "error_estimate": "bend <= +1 logfreq count (derived); ampmod exp NO_VERDICT (measure at N02); event-time pitch math <= 1 phase-increment LSB (derived)",
+      "error_class": "mixed_derived_and_no_verdict",
+      "cost_estimate": "pitch EG ~16 steps/frame negligible; float math host-side at events (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/pitchenv.cc", "lines": "22-24", "expect": "21.3" },
+        { "tree": "dexed", "path": "Source/msfa/pitchenv.cc", "lines": "55-89", "expect": "level_ += inc_" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "210-217", "expect": "pmd = pitchmoddepth_ * lfo_delay" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "225-227", "expect": "(float) (pb << 11)" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "259-268", "expect": "ampmoddepth_ * (int64_t) lfo_delay" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "288", "expect": "exp(((float)sensamp)" },
+        { "tree": "dexed", "path": "Source/msfa/dx7note.cc", "lines": "46-52", "expect": "detuneRatio * logfreq" }
+      ]
+    },
+    {
+      "id": "NUM-009",
+      "title": "Routing table + Mark I gate (thresh 16284, <=, ENV_MAX-1 zero-gain substitution, has_contents)",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-009",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "routing is wiring; gate = 2 compares inside op-eval budget (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/fm_core.cc", "lines": "29-62", "expect": "FmAlgorithm FmCore::algorithms[32]" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "296", "expect": "kLevelThresh = ENV_MAX-100" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "314-315", "expect": "ENV_MAX-1) : param.gain_out" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "318", "expect": "gain1 <= kLevelThresh" },
+        { "tree": "dexed", "path": "Source/msfa/fm_core.cc", "lines": "93-132", "expect": "kLevelThresh = 1120" }
+      ]
+    },
+    {
+      "id": "NUM-010",
+      "title": ">>4 -> clip +/-2^24 -> >>9 -> 16-bit; integer mix bit-exact vs float mix; f32le dry comparisons",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-010",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction (exactness proof in doc section 4; N02 confirms byte-identity)",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "1024 conversions/frame x 2-4 clk, pipelined (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "258-268", "expect": "val = val >> 4" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "262", "expect": "0x7fff : val >> 9" },
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "266", "expect": "sumbuf[j] += f" },
+        { "tree": "oracle", "path": "main.cpp", "lines": "455-465", "expect": "clip_val" },
+        { "tree": "oracle", "path": "main.cpp", "lines": "481-482", "expect": "pcm.data()" }
+      ]
+    },
+    {
+      "id": "NUM-011",
+      "title": "Events commit at 64-sample frame boundaries; DEC-014 queue/backpressure rules unchanged",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-011",
+      "status": "accepted_value_proposed_frame_reading_owner_may_veto",
+      "error_estimate": "exact vs oracle event policy",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "one bounded event queue + frame-boundary commit; depth owned by H03",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/PluginProcessor.cpp", "lines": "236-238", "expect": "getNextEvent(&it, i)" },
+        { "tree": "oracle", "path": "main.cpp", "lines": "385-407", "expect": "events[evi].pos < i + N" }
+      ]
+    },
+    {
+      "id": "NUM-012",
+      "title": "Silence floor: 6-op release-to-16<<16 predicate, 64-frame hold, output-neutral reclamation (DEC-021 numbers)",
+      "doc_section": "DECISIONS-NUMERIC-v1.md NUM-012",
+      "status": "accepted_plan_default",
+      "error_estimate": "exact_by_construction (integer predicate; audio provably identical)",
+      "error_class": "exact_by_construction",
+      "cost_estimate": "flags + 6-input AND + 7-bit hold counter per note ~= negligible (derived)",
+      "cost_class": "derived",
+      "citations": [
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "118-121", "expect": "actuallevel < 16 ? 16" },
+        { "tree": "dexed", "path": "Source/msfa/env.cc", "lines": "74-97", "expect": "ix_ < 3 || ((ix_ < 4) && !down_)" },
+        { "tree": "dexed", "path": "Source/EngineMkI.cpp", "lines": "314-318", "expect": "gain1 <= kLevelThresh" }
+      ]
+    }
+  ],
+
+  "negative_control": "tools/check_numeric_profile.py fails when any decision lacks an error_estimate or cost_estimate, when the full 16-note storage estimate is missing, when schedule arithmetic disagrees with recomputation, when a citation's pinned file hash or cited line content drifts, or when event timing disagrees with spec/contract-v1.json"
+}

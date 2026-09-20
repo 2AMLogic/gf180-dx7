@@ -1,0 +1,40 @@
+{
+  "committed": {
+    "output.sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a",
+    "render.f32.sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a",
+    "render.json.sha256": "edf6b3adb79c4b6ebeccd67ef3d040808ec549280bcd06f38794a11db9baedf8",
+    "sample_rate": 48000
+  },
+  "comparator": {
+    "byte_identical": true,
+    "sample_count": 192000,
+    "verdict": "PASS",
+    "verdict_reason": "byte_identical"
+  },
+  "comparator_version": "1",
+  "fixture": "smoke",
+  "fresh": {
+    "output.sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a",
+    "render.f32.sha256": "1bebaf668e82ae5885750566af22ca47cbb4ed9403e6fc121b349c5fc0bd8e9a",
+    "render.json.sha256": "7ebd37cb79b36a322623d9b820ff03909cb58036e91a54c4bde02e15254a4703",
+    "repo_git_head": "7d39292ce64a5878fd384d934b5d31246308ebae",
+    "sample_rate": 48000
+  },
+  "issue": 11,
+  "metadata_disagreements": [],
+  "metadata_fields_checked": [
+    "fixture",
+    "sample_rate",
+    "output.samples",
+    "output.bytes",
+    "output.sha256",
+    "output.format",
+    "inputs.voice.sha256",
+    "inputs.events.sha256",
+    "oracle_identity.binary.sha256"
+  ],
+  "reason": "fresh re-render byte-matches committed evidence under the pinned oracle",
+  "schema": "reproducibility-check",
+  "tool": "tools/compare_evidence.py",
+  "verdict": "PASS"
+}

@@ -114,8 +114,8 @@
         "check": "upstream unittest subset green on adopted copy; alignment-free comparison demonstrated on two renders of the same input",
         "result": "NOT_RUN (import pending)"
       },
-      "negative_control": "a comparator that normalizes or time-warps independently per render must fail the invariance controls",
-      "notes": "no-alignment paired sample/metric comparison; matches the plan's dry-render comparison rule."
+        "negative_control": "a comparator that normalizes or time-warps independently per render must fail the invariance controls",
+        "notes": "no-alignment paired sample/metric comparison; matches the plan's dry-render comparison rule. R04 (#11) landed the stdlib re-implementation as a local adaptation: src/gf180_dx7/compare.py + docs/COMPARE-CONTRACT.md (byte-pinned under local_originals, no upstream bytes); this adopt entry stays open for any future byte-identical import of paired_metrics.py."
     },
     {
       "component": "case-registry",
@@ -1219,6 +1219,26 @@
       "path": "tools/make_smoke_fixture.py",
       "sha256": "11f3c2aba60df00ab52808c894928938692470cdd875f68aedf9f8cb8769fd37",
       "reason": "locally authored R02 smoke-fixture generator (issue #7); original synthetic parameter set, no third-party voice bytes"
+    },
+    {
+      "path": "src/gf180_dx7/compare.py",
+      "sha256": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
+      "reason": "locally authored R04 exact paired comparator (issue #11); measurement DISCIPLINE adapted from the catalogued paired-comparator (torchsynth spec/PAIRED-METRICS.md @ 36bdc67, Apache-2.0), re-implemented stdlib-only with no upstream bytes; see docs/COMPARE-CONTRACT.md"
+    },
+    {
+      "path": "tools/compare_renders.py",
+      "sha256": "30072c04889a0bc9dca32876e187113cb5c933d6fc3b62161f0159aa1d184c47",
+      "reason": "locally authored R04 comparison CLI (issue #11); 0/1/2 exit convention, no upstream bytes"
+    },
+    {
+      "path": "tools/compare_evidence.py",
+      "sha256": "be94730dd8b60f2f4f1d1364de3bb95ae6c7c31a49d8d01e4a8443d7cbbd3981",
+      "reason": "locally authored R04 reproducibility-evidence tool (issue #11); committed-vs-fresh render metadata cross-check + exact comparison, no upstream bytes"
+    },
+    {
+      "path": "tools/qualify_compare.py",
+      "sha256": "c1a2a1583f1f9a9a1d54fe1e51933fe7b87255d304cf252f2dec9cc7fc3977ae",
+      "reason": "locally authored R04 comparator qualification report generator (issue #11); analytic fixtures + mutation battery, no upstream bytes"
     }
   ]
 }

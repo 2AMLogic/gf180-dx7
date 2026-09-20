@@ -1,0 +1,560 @@
+{
+  "cases": [
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": true,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": true,
+            "first_divergent_sample": null,
+            "max_abs_error": 0.0,
+            "max_abs_error_index": null,
+            "mean_bias": 0.0,
+            "mismatch_count": 0,
+            "rms_error": 0.0,
+            "snr_db": null,
+            "snr_reason": "zero_error_infinite_snr"
+          },
+          "verdict": "PASS",
+          "verdict_reason": "byte_identical"
+        },
+        "kind": "library"
+      },
+      "case": "fixture_identical_sine",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "byte_identical",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "byte_identical": true,
+        "verdict": "PASS"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": true,
+            "first_divergent_sample": null,
+            "max_abs_error": 0.0,
+            "max_abs_error_index": null,
+            "mean_bias": 0.0,
+            "mismatch_count": 0,
+            "rms_error": 0.0,
+            "snr_db": null,
+            "snr_reason": "zero_error_infinite_snr"
+          },
+          "verdict": "PASS",
+          "verdict_reason": "numerically_identical (non-byte-identical sign-of-zero only)"
+        },
+        "kind": "library"
+      },
+      "case": "fixture_sign_of_zero_numeric_identity",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "byte_identical",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "byte_identical": false,
+        "verdict": "PASS"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": false,
+            "first_divergent_sample": 1,
+            "max_abs_error": 0.000500023365020752,
+            "max_abs_error_index": 600,
+            "mean_bias": -8.94237387543994e-23,
+            "mismatch_count": 9599,
+            "rms_error": 0.00035355339621768474,
+            "snr_db": 59.99999984997815,
+            "snr_reason": "measured"
+          },
+          "verdict": "FAIL",
+          "verdict_reason": "samples_differ"
+        },
+        "kind": "library"
+      },
+      "case": "mut_gain_x1.001",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "first_divergent_sample",
+          "ok": true
+        },
+        {
+          "check": "max_abs_error_index",
+          "ok": true
+        },
+        {
+          "check": "max_abs_error_within_tolerance",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "first_divergent_in": [
+          1
+        ],
+        "max_abs_error_abs": [
+          0.0005,
+          5e-05
+        ],
+        "max_abs_error_index": 600,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": false,
+            "first_divergent_sample": 0,
+            "max_abs_error": 0.014398456551134586,
+            "max_abs_error_index": 545,
+            "mean_bias": 1.6651560398056814e-22,
+            "mismatch_count": 9600,
+            "rms_error": 0.010181254897235323,
+            "snr_db": 30.81307390722617,
+            "snr_reason": "measured"
+          },
+          "verdict": "FAIL",
+          "verdict_reason": "samples_differ"
+        },
+        "kind": "library"
+      },
+      "case": "mut_shift_1_sample",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "first_divergent_sample",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "first_divergent_in": [
+          0,
+          1
+        ],
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": false,
+            "first_divergent_sample": 0,
+            "max_abs_error": 0.010000020265579224,
+            "max_abs_error_index": 48,
+            "mean_bias": 0.009999995547890042,
+            "mismatch_count": 9600,
+            "rms_error": 0.009999995547892911,
+            "snr_db": 30.969103985287845,
+            "snr_reason": "measured"
+          },
+          "verdict": "FAIL",
+          "verdict_reason": "samples_differ"
+        },
+        "kind": "library"
+      },
+      "case": "mut_dc_offset_+0.01",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "mean_bias_within_tolerance",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "mean_bias_abs": [
+          0.01,
+          0.001
+        ],
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": "LENGTH_MISMATCH",
+          "failure_detail": {
+            "note": "no common prefix is scored; streams are not aligned, trimmed, or padded",
+            "sample_count_delta": 4800
+          },
+          "primary": {},
+          "verdict": "FAIL",
+          "verdict_reason": "LENGTH_MISMATCH"
+        },
+        "kind": "library"
+      },
+      "case": "mut_silent_tail_append_4800",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "failure_class",
+          "ok": true
+        },
+        {
+          "check": "sample_count_delta",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "failure_class": "LENGTH_MISMATCH",
+        "sample_count_delta": 4800,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": "LENGTH_MISMATCH",
+          "failure_detail": {
+            "note": "no common prefix is scored; streams are not aligned, trimmed, or padded",
+            "sample_count_delta": -2400
+          },
+          "primary": {},
+          "verdict": "FAIL",
+          "verdict_reason": "LENGTH_MISMATCH"
+        },
+        "kind": "library"
+      },
+      "case": "mut_truncate_2400",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "failure_class",
+          "ok": true
+        },
+        {
+          "check": "sample_count_delta",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "failure_class": "LENGTH_MISMATCH",
+        "sample_count_delta": -2400,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": null,
+          "failure_detail": {},
+          "primary": {
+            "error_sign": "candidate_minus_reference",
+            "exact_equal": false,
+            "first_divergent_sample": 1000,
+            "max_abs_error": 2.9802322387695312e-08,
+            "max_abs_error_index": 1000,
+            "mean_bias": -3.1044085820515953e-12,
+            "mismatch_count": 1,
+            "rms_error": 3.041686791657381e-10,
+            "snr_db": 181.3068102806222,
+            "snr_reason": "measured"
+          },
+          "verdict": "FAIL",
+          "verdict_reason": "samples_differ"
+        },
+        "kind": "library"
+      },
+      "case": "mut_one_byte_flip",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "first_divergent_sample",
+          "ok": true
+        },
+        {
+          "check": "max_abs_error_index",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "first_divergent_in": [
+          1000
+        ],
+        "max_abs_error_index": 1000,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": "NON_FINITE",
+          "failure_detail": {
+            "first_non_finite_sample": {
+              "a": null,
+              "b": 500
+            }
+          },
+          "primary": {},
+          "verdict": "FAIL",
+          "verdict_reason": "NON_FINITE"
+        },
+        "kind": "library"
+      },
+      "case": "mut_nan_injection",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "failure_class",
+          "ok": true
+        },
+        {
+          "check": "first_non_finite_sample",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "failure_class": "NON_FINITE",
+        "first_non_finite": {
+          "a": null,
+          "b": 500
+        },
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "byte_identical": false,
+          "failure_class": "NON_FINITE",
+          "failure_detail": {
+            "first_non_finite_sample": {
+              "a": null,
+              "b": 700
+            }
+          },
+          "primary": {},
+          "verdict": "FAIL",
+          "verdict_reason": "NON_FINITE"
+        },
+        "kind": "library"
+      },
+      "case": "mut_inf_injection",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "verdict",
+          "ok": true
+        },
+        {
+          "check": "failure_class",
+          "ok": true
+        },
+        {
+          "check": "first_non_finite_sample",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "failure_class": "NON_FINITE",
+        "first_non_finite": {
+          "a": null,
+          "b": 700
+        },
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "disagreements": [
+            "sample_rate: committed 48000 != fresh 44100"
+          ]
+        },
+        "kind": "metadata"
+      },
+      "case": "mut_wrong_sample_rate_label_metadata",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "disagreement_listed",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "field": "sample_rate"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "exit_code": 0
+        },
+        "kind": "cli"
+      },
+      "case": "ctrl_identical_sine_cli",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "cli_exit_code",
+          "ok": true
+        },
+        {
+          "check": "json_report_verdict",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "exit": 0,
+        "verdict": "PASS"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "exit_code": 1
+        },
+        "kind": "cli"
+      },
+      "case": "ctrl_gain_mutation_cli",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "cli_exit_code",
+          "ok": true
+        },
+        {
+          "check": "json_report_verdict",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "exit": 1,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "exit_code": 2
+        },
+        "kind": "cli"
+      },
+      "case": "ctrl_missing_input_file_exit2",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "cli_exit_code",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "exit": 2
+      }
+    },
+    {
+      "actual": {
+        "actual": {
+          "exit_code": 2
+        },
+        "kind": "cli"
+      },
+      "case": "ctrl_odd_byte_count_exit2",
+      "caught_as_expected": true,
+      "checks": [
+        {
+          "check": "cli_exit_code",
+          "ok": true
+        }
+      ],
+      "expected": {
+        "exit": 2
+      }
+    }
+  ],
+  "claim_scope": "apparatus qualification only: the comparator detects each known-bad mutation class and never passes invalid inputs. No fidelity, synthesis, or musical-quality claim.",
+  "fixture_params": {
+    "amplitude": 0.5,
+    "freq_hz": 220.0,
+    "n_samples": 9600,
+    "sample_rate": 48000
+  },
+  "generated_at": "2026-09-20T09:37:04.837662+00:00",
+  "issue": 11,
+  "schema": "compare-qualification",
+  "schema_version": 1,
+  "summary": {
+    "all_expected": true,
+    "cases": 15,
+    "caught_as_expected": 15
+  },
+  "tool": {
+    "estimator": "exact-time-locked-paired",
+    "module": "src/gf180_dx7/compare.py",
+    "module_sha256": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
+    "python": "3.14.7",
+    "version": "1"
+  }
+}

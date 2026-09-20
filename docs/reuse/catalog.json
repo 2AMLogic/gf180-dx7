@@ -1365,6 +1365,26 @@
       "path": "tests/test_pitch.py",
       "sha256": "45b37dd3a1f03195147675bb96c7e529ce12cd73f85782e8c5344a1d16ef1062",
       "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes"
+    },
+    {
+      "path": "rtl/storage_probe.v",
+      "sha256": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
+      "reason": "locally authored H02 full-state storage probe RTL (issue #21); state image widths mirrored from spec/numeric-profile-v1.json as facts, no upstream bytes"
+    },
+    {
+      "path": "rtl/storage_probe_tb.v",
+      "sha256": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6",
+      "reason": "locally authored H02 iverilog smoke bench (issue #21); write/readback of all 113 banks, no upstream bytes"
+    },
+    {
+      "path": "tools/storage_probe_synth.py",
+      "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
+      "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tests/test_storage_probe.py",
+      "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
+      "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
     }
   ]
 }

@@ -1,0 +1,1750 @@
+# yosys script: read_verilog /private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v; hierarchy -check -top storage_probe; synth -top storage_probe -nofsm; dfflibmap -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; abc -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; stat -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+
+-- Running command `read_verilog /private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v; hierarchy -check -top storage_probe; synth -top storage_probe -nofsm; dfflibmap -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; abc -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; stat -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib' --
+
+1. Executing Verilog-2005 frontend: /private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v
+Parsing Verilog input from `/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v' to AST representation.
+Generating RTLIL representation for module `\storage_probe'.
+Successfully finished Verilog frontend.
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \storage_probe
+
+2.2. Analyzing design hierarchy..
+Top module:  \storage_probe
+Removed 0 unused modules.
+
+3. Executing SYNTH pass.
+
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+
+3.1.1. Analyzing design hierarchy..
+Top module:  \storage_probe
+
+3.1.2. Analyzing design hierarchy..
+Top module:  \storage_probe
+Removed 0 unused modules.
+
+3.2. Executing PROC pass (convert processes to netlists).
+
+3.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 112 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6 in module storage_probe.
+Removed a total of 0 dead cases.
+
+3.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 4 assignments to connections.
+
+3.2.4. Executing PROC_INIT pass (extract init attributes).
+
+3.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+3.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~225 debug messages>
+
+3.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$680'.
+     1/1: $0\note_state[7135:6690]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$675'.
+     1/1: $0\note_state[6689:6244]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$670'.
+     1/1: $0\note_state[6243:5798]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$665'.
+     1/1: $0\note_state[5797:5352]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$660'.
+     1/1: $0\note_state[5351:4906]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$655'.
+     1/1: $0\note_state[4905:4460]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$650'.
+     1/1: $0\note_state[4459:4014]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$645'.
+     1/1: $0\note_state[4013:3568]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$640'.
+     1/1: $0\note_state[3567:3122]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$635'.
+     1/1: $0\note_state[3121:2676]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$630'.
+     1/1: $0\note_state[2675:2230]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$625'.
+     1/1: $0\note_state[2229:1784]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$620'.
+     1/1: $0\note_state[1783:1338]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$615'.
+     1/1: $0\note_state[1337:892]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$610'.
+     1/1: $0\note_state[891:446]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$605'.
+     1/1: $0\note_state[445:0]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$600'.
+     1/1: $0\op_state[31199:30875]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$595'.
+     1/1: $0\op_state[30874:30550]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$590'.
+     1/1: $0\op_state[30549:30225]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$585'.
+     1/1: $0\op_state[30224:29900]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$580'.
+     1/1: $0\op_state[29899:29575]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$575'.
+     1/1: $0\op_state[29574:29250]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$570'.
+     1/1: $0\op_state[29249:28925]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$565'.
+     1/1: $0\op_state[28924:28600]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$560'.
+     1/1: $0\op_state[28599:28275]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$555'.
+     1/1: $0\op_state[28274:27950]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$550'.
+     1/1: $0\op_state[27949:27625]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$545'.
+     1/1: $0\op_state[27624:27300]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$540'.
+     1/1: $0\op_state[27299:26975]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$535'.
+     1/1: $0\op_state[26974:26650]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$530'.
+     1/1: $0\op_state[26649:26325]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$525'.
+     1/1: $0\op_state[26324:26000]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$520'.
+     1/1: $0\op_state[25999:25675]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$515'.
+     1/1: $0\op_state[25674:25350]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$510'.
+     1/1: $0\op_state[25349:25025]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$505'.
+     1/1: $0\op_state[25024:24700]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$500'.
+     1/1: $0\op_state[24699:24375]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$495'.
+     1/1: $0\op_state[24374:24050]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$490'.
+     1/1: $0\op_state[24049:23725]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$485'.
+     1/1: $0\op_state[23724:23400]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$480'.
+     1/1: $0\op_state[23399:23075]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$475'.
+     1/1: $0\op_state[23074:22750]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$470'.
+     1/1: $0\op_state[22749:22425]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$465'.
+     1/1: $0\op_state[22424:22100]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$460'.
+     1/1: $0\op_state[22099:21775]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$455'.
+     1/1: $0\op_state[21774:21450]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$450'.
+     1/1: $0\op_state[21449:21125]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$445'.
+     1/1: $0\op_state[21124:20800]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$440'.
+     1/1: $0\op_state[20799:20475]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$435'.
+     1/1: $0\op_state[20474:20150]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$430'.
+     1/1: $0\op_state[20149:19825]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$425'.
+     1/1: $0\op_state[19824:19500]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$420'.
+     1/1: $0\op_state[19499:19175]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$415'.
+     1/1: $0\op_state[19174:18850]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$410'.
+     1/1: $0\op_state[18849:18525]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$405'.
+     1/1: $0\op_state[18524:18200]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$400'.
+     1/1: $0\op_state[18199:17875]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$395'.
+     1/1: $0\op_state[17874:17550]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$390'.
+     1/1: $0\op_state[17549:17225]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$385'.
+     1/1: $0\op_state[17224:16900]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$380'.
+     1/1: $0\op_state[16899:16575]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$375'.
+     1/1: $0\op_state[16574:16250]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$370'.
+     1/1: $0\op_state[16249:15925]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$365'.
+     1/1: $0\op_state[15924:15600]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$360'.
+     1/1: $0\op_state[15599:15275]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$355'.
+     1/1: $0\op_state[15274:14950]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$350'.
+     1/1: $0\op_state[14949:14625]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$345'.
+     1/1: $0\op_state[14624:14300]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$340'.
+     1/1: $0\op_state[14299:13975]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$335'.
+     1/1: $0\op_state[13974:13650]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$330'.
+     1/1: $0\op_state[13649:13325]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$325'.
+     1/1: $0\op_state[13324:13000]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$320'.
+     1/1: $0\op_state[12999:12675]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$315'.
+     1/1: $0\op_state[12674:12350]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$310'.
+     1/1: $0\op_state[12349:12025]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$305'.
+     1/1: $0\op_state[12024:11700]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$300'.
+     1/1: $0\op_state[11699:11375]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$295'.
+     1/1: $0\op_state[11374:11050]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$290'.
+     1/1: $0\op_state[11049:10725]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$285'.
+     1/1: $0\op_state[10724:10400]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$280'.
+     1/1: $0\op_state[10399:10075]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$275'.
+     1/1: $0\op_state[10074:9750]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$270'.
+     1/1: $0\op_state[9749:9425]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$265'.
+     1/1: $0\op_state[9424:9100]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$260'.
+     1/1: $0\op_state[9099:8775]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$255'.
+     1/1: $0\op_state[8774:8450]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$250'.
+     1/1: $0\op_state[8449:8125]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$245'.
+     1/1: $0\op_state[8124:7800]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$240'.
+     1/1: $0\op_state[7799:7475]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$235'.
+     1/1: $0\op_state[7474:7150]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$230'.
+     1/1: $0\op_state[7149:6825]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$225'.
+     1/1: $0\op_state[6824:6500]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$220'.
+     1/1: $0\op_state[6499:6175]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$215'.
+     1/1: $0\op_state[6174:5850]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$210'.
+     1/1: $0\op_state[5849:5525]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$205'.
+     1/1: $0\op_state[5524:5200]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$200'.
+     1/1: $0\op_state[5199:4875]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$195'.
+     1/1: $0\op_state[4874:4550]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$190'.
+     1/1: $0\op_state[4549:4225]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$185'.
+     1/1: $0\op_state[4224:3900]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$180'.
+     1/1: $0\op_state[3899:3575]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$175'.
+     1/1: $0\op_state[3574:3250]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$170'.
+     1/1: $0\op_state[3249:2925]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$165'.
+     1/1: $0\op_state[2924:2600]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$160'.
+     1/1: $0\op_state[2599:2275]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$155'.
+     1/1: $0\op_state[2274:1950]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$150'.
+     1/1: $0\op_state[1949:1625]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$145'.
+     1/1: $0\op_state[1624:1300]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$140'.
+     1/1: $0\op_state[1299:975]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$135'.
+     1/1: $0\op_state[974:650]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$130'.
+     1/1: $0\op_state[649:325]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$125'.
+     1/1: $0\op_state[324:0]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:182$124'.
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+     1/112: $16\note_rd[445:0]
+     2/112: $15\note_rd[445:0]
+     3/112: $14\note_rd[445:0]
+     4/112: $13\note_rd[445:0]
+     5/112: $12\note_rd[445:0]
+     6/112: $11\note_rd[445:0]
+     7/112: $10\note_rd[445:0]
+     8/112: $9\note_rd[445:0]
+     9/112: $8\note_rd[445:0]
+    10/112: $7\note_rd[445:0]
+    11/112: $6\note_rd[445:0]
+    12/112: $5\note_rd[445:0]
+    13/112: $4\note_rd[445:0]
+    14/112: $3\note_rd[445:0]
+    15/112: $2\note_rd[445:0]
+    16/112: $1\note_rd[445:0]
+    17/112: $96\op_rd[324:0]
+    18/112: $95\op_rd[324:0]
+    19/112: $94\op_rd[324:0]
+    20/112: $93\op_rd[324:0]
+    21/112: $92\op_rd[324:0]
+    22/112: $91\op_rd[324:0]
+    23/112: $90\op_rd[324:0]
+    24/112: $89\op_rd[324:0]
+    25/112: $88\op_rd[324:0]
+    26/112: $87\op_rd[324:0]
+    27/112: $86\op_rd[324:0]
+    28/112: $85\op_rd[324:0]
+    29/112: $84\op_rd[324:0]
+    30/112: $83\op_rd[324:0]
+    31/112: $82\op_rd[324:0]
+    32/112: $81\op_rd[324:0]
+    33/112: $80\op_rd[324:0]
+    34/112: $79\op_rd[324:0]
+    35/112: $78\op_rd[324:0]
+    36/112: $77\op_rd[324:0]
+    37/112: $76\op_rd[324:0]
+    38/112: $75\op_rd[324:0]
+    39/112: $74\op_rd[324:0]
+    40/112: $73\op_rd[324:0]
+    41/112: $72\op_rd[324:0]
+    42/112: $71\op_rd[324:0]
+    43/112: $70\op_rd[324:0]
+    44/112: $69\op_rd[324:0]
+    45/112: $68\op_rd[324:0]
+    46/112: $67\op_rd[324:0]
+    47/112: $66\op_rd[324:0]
+    48/112: $65\op_rd[324:0]
+    49/112: $64\op_rd[324:0]
+    50/112: $63\op_rd[324:0]
+    51/112: $62\op_rd[324:0]
+    52/112: $61\op_rd[324:0]
+    53/112: $60\op_rd[324:0]
+    54/112: $59\op_rd[324:0]
+    55/112: $58\op_rd[324:0]
+    56/112: $57\op_rd[324:0]
+    57/112: $56\op_rd[324:0]
+    58/112: $55\op_rd[324:0]
+    59/112: $54\op_rd[324:0]
+    60/112: $53\op_rd[324:0]
+    61/112: $52\op_rd[324:0]
+    62/112: $51\op_rd[324:0]
+    63/112: $50\op_rd[324:0]
+    64/112: $49\op_rd[324:0]
+    65/112: $48\op_rd[324:0]
+    66/112: $47\op_rd[324:0]
+    67/112: $46\op_rd[324:0]
+    68/112: $45\op_rd[324:0]
+    69/112: $44\op_rd[324:0]
+    70/112: $43\op_rd[324:0]
+    71/112: $42\op_rd[324:0]
+    72/112: $41\op_rd[324:0]
+    73/112: $40\op_rd[324:0]
+    74/112: $39\op_rd[324:0]
+    75/112: $38\op_rd[324:0]
+    76/112: $37\op_rd[324:0]
+    77/112: $36\op_rd[324:0]
+    78/112: $35\op_rd[324:0]
+    79/112: $34\op_rd[324:0]
+    80/112: $33\op_rd[324:0]
+    81/112: $32\op_rd[324:0]
+    82/112: $31\op_rd[324:0]
+    83/112: $30\op_rd[324:0]
+    84/112: $29\op_rd[324:0]
+    85/112: $28\op_rd[324:0]
+    86/112: $27\op_rd[324:0]
+    87/112: $26\op_rd[324:0]
+    88/112: $25\op_rd[324:0]
+    89/112: $24\op_rd[324:0]
+    90/112: $23\op_rd[324:0]
+    91/112: $22\op_rd[324:0]
+    92/112: $21\op_rd[324:0]
+    93/112: $20\op_rd[324:0]
+    94/112: $19\op_rd[324:0]
+    95/112: $18\op_rd[324:0]
+    96/112: $17\op_rd[324:0]
+    97/112: $16\op_rd[324:0]
+    98/112: $15\op_rd[324:0]
+    99/112: $14\op_rd[324:0]
+   100/112: $13\op_rd[324:0]
+   101/112: $12\op_rd[324:0]
+   102/112: $11\op_rd[324:0]
+   103/112: $10\op_rd[324:0]
+   104/112: $9\op_rd[324:0]
+   105/112: $8\op_rd[324:0]
+   106/112: $7\op_rd[324:0]
+   107/112: $6\op_rd[324:0]
+   108/112: $5\op_rd[324:0]
+   109/112: $4\op_rd[324:0]
+   110/112: $3\op_rd[324:0]
+   111/112: $2\op_rd[324:0]
+   112/112: $1\op_rd[324:0]
+Creating decoders for process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:149$3'.
+     1/1: $0\patch_state[443:0]
+
+3.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\storage_probe.\op_rd' from process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+No latch inferred for signal `\storage_probe.\note_rd' from process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+No latch inferred for signal `\storage_probe.\j' from process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+
+3.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\storage_probe.\note_state [7135:6690]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$680'.
+  created $dff cell `$procdff$1247' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [6689:6244]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$675'.
+  created $dff cell `$procdff$1248' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [6243:5798]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$670'.
+  created $dff cell `$procdff$1249' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [5797:5352]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$665'.
+  created $dff cell `$procdff$1250' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [5351:4906]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$660'.
+  created $dff cell `$procdff$1251' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [4905:4460]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$655'.
+  created $dff cell `$procdff$1252' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [4459:4014]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$650'.
+  created $dff cell `$procdff$1253' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [4013:3568]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$645'.
+  created $dff cell `$procdff$1254' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [3567:3122]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$640'.
+  created $dff cell `$procdff$1255' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [3121:2676]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$635'.
+  created $dff cell `$procdff$1256' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [2675:2230]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$630'.
+  created $dff cell `$procdff$1257' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [2229:1784]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$625'.
+  created $dff cell `$procdff$1258' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [1783:1338]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$620'.
+  created $dff cell `$procdff$1259' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [1337:892]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$615'.
+  created $dff cell `$procdff$1260' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [891:446]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$610'.
+  created $dff cell `$procdff$1261' with positive edge clock.
+Creating register for signal `\storage_probe.\note_state [445:0]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$605'.
+  created $dff cell `$procdff$1262' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [31199:30875]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$600'.
+  created $dff cell `$procdff$1263' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [30874:30550]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$595'.
+  created $dff cell `$procdff$1264' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [30549:30225]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$590'.
+  created $dff cell `$procdff$1265' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [30224:29900]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$585'.
+  created $dff cell `$procdff$1266' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [29899:29575]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$580'.
+  created $dff cell `$procdff$1267' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [29574:29250]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$575'.
+  created $dff cell `$procdff$1268' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [29249:28925]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$570'.
+  created $dff cell `$procdff$1269' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [28924:28600]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$565'.
+  created $dff cell `$procdff$1270' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [28599:28275]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$560'.
+  created $dff cell `$procdff$1271' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [28274:27950]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$555'.
+  created $dff cell `$procdff$1272' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [27949:27625]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$550'.
+  created $dff cell `$procdff$1273' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [27624:27300]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$545'.
+  created $dff cell `$procdff$1274' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [27299:26975]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$540'.
+  created $dff cell `$procdff$1275' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [26974:26650]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$535'.
+  created $dff cell `$procdff$1276' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [26649:26325]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$530'.
+  created $dff cell `$procdff$1277' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [26324:26000]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$525'.
+  created $dff cell `$procdff$1278' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [25999:25675]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$520'.
+  created $dff cell `$procdff$1279' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [25674:25350]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$515'.
+  created $dff cell `$procdff$1280' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [25349:25025]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$510'.
+  created $dff cell `$procdff$1281' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [25024:24700]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$505'.
+  created $dff cell `$procdff$1282' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [24699:24375]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$500'.
+  created $dff cell `$procdff$1283' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [24374:24050]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$495'.
+  created $dff cell `$procdff$1284' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [24049:23725]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$490'.
+  created $dff cell `$procdff$1285' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [23724:23400]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$485'.
+  created $dff cell `$procdff$1286' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [23399:23075]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$480'.
+  created $dff cell `$procdff$1287' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [23074:22750]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$475'.
+  created $dff cell `$procdff$1288' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [22749:22425]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$470'.
+  created $dff cell `$procdff$1289' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [22424:22100]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$465'.
+  created $dff cell `$procdff$1290' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [22099:21775]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$460'.
+  created $dff cell `$procdff$1291' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [21774:21450]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$455'.
+  created $dff cell `$procdff$1292' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [21449:21125]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$450'.
+  created $dff cell `$procdff$1293' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [21124:20800]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$445'.
+  created $dff cell `$procdff$1294' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [20799:20475]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$440'.
+  created $dff cell `$procdff$1295' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [20474:20150]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$435'.
+  created $dff cell `$procdff$1296' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [20149:19825]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$430'.
+  created $dff cell `$procdff$1297' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [19824:19500]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$425'.
+  created $dff cell `$procdff$1298' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [19499:19175]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$420'.
+  created $dff cell `$procdff$1299' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [19174:18850]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$415'.
+  created $dff cell `$procdff$1300' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [18849:18525]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$410'.
+  created $dff cell `$procdff$1301' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [18524:18200]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$405'.
+  created $dff cell `$procdff$1302' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [18199:17875]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$400'.
+  created $dff cell `$procdff$1303' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [17874:17550]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$395'.
+  created $dff cell `$procdff$1304' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [17549:17225]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$390'.
+  created $dff cell `$procdff$1305' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [17224:16900]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$385'.
+  created $dff cell `$procdff$1306' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [16899:16575]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$380'.
+  created $dff cell `$procdff$1307' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [16574:16250]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$375'.
+  created $dff cell `$procdff$1308' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [16249:15925]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$370'.
+  created $dff cell `$procdff$1309' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [15924:15600]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$365'.
+  created $dff cell `$procdff$1310' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [15599:15275]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$360'.
+  created $dff cell `$procdff$1311' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [15274:14950]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$355'.
+  created $dff cell `$procdff$1312' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [14949:14625]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$350'.
+  created $dff cell `$procdff$1313' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [14624:14300]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$345'.
+  created $dff cell `$procdff$1314' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [14299:13975]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$340'.
+  created $dff cell `$procdff$1315' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [13974:13650]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$335'.
+  created $dff cell `$procdff$1316' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [13649:13325]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$330'.
+  created $dff cell `$procdff$1317' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [13324:13000]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$325'.
+  created $dff cell `$procdff$1318' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [12999:12675]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$320'.
+  created $dff cell `$procdff$1319' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [12674:12350]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$315'.
+  created $dff cell `$procdff$1320' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [12349:12025]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$310'.
+  created $dff cell `$procdff$1321' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [12024:11700]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$305'.
+  created $dff cell `$procdff$1322' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [11699:11375]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$300'.
+  created $dff cell `$procdff$1323' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [11374:11050]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$295'.
+  created $dff cell `$procdff$1324' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [11049:10725]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$290'.
+  created $dff cell `$procdff$1325' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [10724:10400]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$285'.
+  created $dff cell `$procdff$1326' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [10399:10075]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$280'.
+  created $dff cell `$procdff$1327' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [10074:9750]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$275'.
+  created $dff cell `$procdff$1328' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [9749:9425]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$270'.
+  created $dff cell `$procdff$1329' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [9424:9100]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$265'.
+  created $dff cell `$procdff$1330' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [9099:8775]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$260'.
+  created $dff cell `$procdff$1331' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [8774:8450]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$255'.
+  created $dff cell `$procdff$1332' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [8449:8125]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$250'.
+  created $dff cell `$procdff$1333' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [8124:7800]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$245'.
+  created $dff cell `$procdff$1334' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [7799:7475]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$240'.
+  created $dff cell `$procdff$1335' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [7474:7150]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$235'.
+  created $dff cell `$procdff$1336' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [7149:6825]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$230'.
+  created $dff cell `$procdff$1337' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [6824:6500]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$225'.
+  created $dff cell `$procdff$1338' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [6499:6175]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$220'.
+  created $dff cell `$procdff$1339' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [6174:5850]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$215'.
+  created $dff cell `$procdff$1340' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [5849:5525]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$210'.
+  created $dff cell `$procdff$1341' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [5524:5200]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$205'.
+  created $dff cell `$procdff$1342' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [5199:4875]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$200'.
+  created $dff cell `$procdff$1343' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [4874:4550]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$195'.
+  created $dff cell `$procdff$1344' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [4549:4225]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$190'.
+  created $dff cell `$procdff$1345' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [4224:3900]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$185'.
+  created $dff cell `$procdff$1346' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [3899:3575]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$180'.
+  created $dff cell `$procdff$1347' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [3574:3250]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$175'.
+  created $dff cell `$procdff$1348' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [3249:2925]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$170'.
+  created $dff cell `$procdff$1349' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [2924:2600]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$165'.
+  created $dff cell `$procdff$1350' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [2599:2275]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$160'.
+  created $dff cell `$procdff$1351' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [2274:1950]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$155'.
+  created $dff cell `$procdff$1352' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [1949:1625]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$150'.
+  created $dff cell `$procdff$1353' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [1624:1300]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$145'.
+  created $dff cell `$procdff$1354' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [1299:975]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$140'.
+  created $dff cell `$procdff$1355' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [974:650]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$135'.
+  created $dff cell `$procdff$1356' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [649:325]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$130'.
+  created $dff cell `$procdff$1357' with positive edge clock.
+Creating register for signal `\storage_probe.\op_state [324:0]' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$125'.
+  created $dff cell `$procdff$1358' with positive edge clock.
+Creating register for signal `\storage_probe.\obs_q' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:182$124'.
+  created $dff cell `$procdff$1359' with positive edge clock.
+Creating register for signal `\storage_probe.\patch_state' using process `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:149$3'.
+  created $dff cell `$procdff$1360' with positive edge clock.
+
+3.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$680'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$680'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$675'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$675'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$670'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$670'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$665'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$665'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$660'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$660'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$655'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$655'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$650'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$650'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$645'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$645'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$640'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$640'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$635'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$635'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$630'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$630'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$625'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$625'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$620'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$620'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$615'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$615'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$610'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$610'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$605'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:144$605'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$600'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$600'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$595'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$595'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$590'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$590'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$585'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$585'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$580'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$580'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$575'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$575'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$570'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$570'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$565'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$565'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$560'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$560'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$555'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$555'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$550'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$550'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$545'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$545'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$540'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$540'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$535'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$535'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$530'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$530'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$525'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$525'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$520'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$520'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$515'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$515'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$510'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$510'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$505'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$505'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$500'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$500'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$495'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$495'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$490'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$490'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$485'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$485'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$480'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$480'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$475'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$475'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$470'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$470'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$465'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$465'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$460'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$460'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$455'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$455'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$450'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$450'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$445'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$445'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$440'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$440'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$435'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$435'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$430'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$430'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$425'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$425'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$420'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$420'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$415'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$415'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$410'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$410'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$405'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$405'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$400'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$400'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$395'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$395'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$390'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$390'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$385'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$385'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$380'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$380'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$375'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$375'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$370'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$370'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$365'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$365'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$360'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$360'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$355'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$355'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$350'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$350'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$345'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$345'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$340'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$340'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$335'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$335'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$330'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$330'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$325'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$325'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$320'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$320'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$315'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$315'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$310'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$310'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$305'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$305'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$300'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$300'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$295'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$295'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$290'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$290'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$285'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$285'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$280'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$280'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$275'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$275'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$270'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$270'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$265'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$265'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$260'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$260'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$255'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$255'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$250'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$250'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$245'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$245'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$240'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$240'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$235'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$235'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$230'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$230'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$225'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$225'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$220'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$220'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$215'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$215'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$210'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$210'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$205'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$205'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$200'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$200'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$195'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$195'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$190'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$190'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$185'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$185'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$180'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$180'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$175'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$175'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$170'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$170'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$165'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$165'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$160'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$160'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$155'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$155'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$150'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$150'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$145'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$145'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$140'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$140'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$135'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$135'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$130'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$130'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$125'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:138$125'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:182$124'.
+Found and cleaned up 112 empty switches in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:165$6'.
+Found and cleaned up 1 empty switch in `\storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:149$3'.
+Removing empty process `storage_probe.$proc$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:149$3'.
+Cleaned up 225 empty switches.
+
+3.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+<suppressed ~100 debug messages>
+
+3.3. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+Removed 0 unused cells and 457 unused wires.
+<suppressed ~1 debug messages>
+
+3.5. Executing CHECK pass (checking for obvious problems).
+Checking module storage_probe...
+Found and reported 0 problems.
+
+3.6. Executing OPT pass (performing simple optimizations).
+
+3.6.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.6.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 906 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Computing hashes of 780 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Computing hashes of 670 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+<suppressed ~708 debug messages>
+Removed a total of 236 cells.
+
+3.6.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~340 debug messages>
+
+3.6.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.6.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 670 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.6.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.6.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+Removed 0 unused cells and 236 unused wires.
+<suppressed ~1 debug messages>
+
+3.6.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.6.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.6.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~340 debug messages>
+
+3.6.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.6.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 670 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.6.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.6.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.6.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.6.16. Finished fast OPT passes. (There is nothing left to do.)
+
+3.7. Executing OPT pass (performing simple optimizations).
+
+3.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 670 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~340 debug messages>
+
+3.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 670 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.7.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $procdff$1247 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [7135:6690]).
+Adding EN signal on $procdff$1248 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [6689:6244]).
+Adding EN signal on $procdff$1249 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [6243:5798]).
+Adding EN signal on $procdff$1250 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [5797:5352]).
+Adding EN signal on $procdff$1251 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [5351:4906]).
+Adding EN signal on $procdff$1252 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [4905:4460]).
+Adding EN signal on $procdff$1253 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [4459:4014]).
+Adding EN signal on $procdff$1254 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [4013:3568]).
+Adding EN signal on $procdff$1255 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [3567:3122]).
+Adding EN signal on $procdff$1256 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [3121:2676]).
+Adding EN signal on $procdff$1257 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [2675:2230]).
+Adding EN signal on $procdff$1258 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [2229:1784]).
+Adding EN signal on $procdff$1259 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [1783:1338]).
+Adding EN signal on $procdff$1260 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [1337:892]).
+Adding EN signal on $procdff$1261 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [891:446]).
+Adding EN signal on $procdff$1262 ($dff) from module storage_probe (D = \wr_data, Q = \note_state [445:0]).
+Adding EN signal on $procdff$1263 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [31199:30875]).
+Adding EN signal on $procdff$1264 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [30874:30550]).
+Adding EN signal on $procdff$1265 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [30549:30225]).
+Adding EN signal on $procdff$1266 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [30224:29900]).
+Adding EN signal on $procdff$1267 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [29899:29575]).
+Adding EN signal on $procdff$1268 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [29574:29250]).
+Adding EN signal on $procdff$1269 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [29249:28925]).
+Adding EN signal on $procdff$1270 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [28924:28600]).
+Adding EN signal on $procdff$1271 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [28599:28275]).
+Adding EN signal on $procdff$1272 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [28274:27950]).
+Adding EN signal on $procdff$1273 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [27949:27625]).
+Adding EN signal on $procdff$1274 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [27624:27300]).
+Adding EN signal on $procdff$1275 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [27299:26975]).
+Adding EN signal on $procdff$1276 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [26974:26650]).
+Adding EN signal on $procdff$1277 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [26649:26325]).
+Adding EN signal on $procdff$1278 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [26324:26000]).
+Adding EN signal on $procdff$1279 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [25999:25675]).
+Adding EN signal on $procdff$1280 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [25674:25350]).
+Adding EN signal on $procdff$1281 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [25349:25025]).
+Adding EN signal on $procdff$1282 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [25024:24700]).
+Adding EN signal on $procdff$1283 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [24699:24375]).
+Adding EN signal on $procdff$1284 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [24374:24050]).
+Adding EN signal on $procdff$1285 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [24049:23725]).
+Adding EN signal on $procdff$1286 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [23724:23400]).
+Adding EN signal on $procdff$1287 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [23399:23075]).
+Adding EN signal on $procdff$1288 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [23074:22750]).
+Adding EN signal on $procdff$1289 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [22749:22425]).
+Adding EN signal on $procdff$1290 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [22424:22100]).
+Adding EN signal on $procdff$1291 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [22099:21775]).
+Adding EN signal on $procdff$1292 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [21774:21450]).
+Adding EN signal on $procdff$1293 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [21449:21125]).
+Adding EN signal on $procdff$1294 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [21124:20800]).
+Adding EN signal on $procdff$1295 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [20799:20475]).
+Adding EN signal on $procdff$1296 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [20474:20150]).
+Adding EN signal on $procdff$1297 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [20149:19825]).
+Adding EN signal on $procdff$1298 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [19824:19500]).
+Adding EN signal on $procdff$1299 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [19499:19175]).
+Adding EN signal on $procdff$1300 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [19174:18850]).
+Adding EN signal on $procdff$1301 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [18849:18525]).
+Adding EN signal on $procdff$1302 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [18524:18200]).
+Adding EN signal on $procdff$1303 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [18199:17875]).
+Adding EN signal on $procdff$1304 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [17874:17550]).
+Adding EN signal on $procdff$1305 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [17549:17225]).
+Adding EN signal on $procdff$1306 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [17224:16900]).
+Adding EN signal on $procdff$1307 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [16899:16575]).
+Adding EN signal on $procdff$1308 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [16574:16250]).
+Adding EN signal on $procdff$1309 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [16249:15925]).
+Adding EN signal on $procdff$1310 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [15924:15600]).
+Adding EN signal on $procdff$1311 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [15599:15275]).
+Adding EN signal on $procdff$1312 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [15274:14950]).
+Adding EN signal on $procdff$1313 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [14949:14625]).
+Adding EN signal on $procdff$1314 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [14624:14300]).
+Adding EN signal on $procdff$1315 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [14299:13975]).
+Adding EN signal on $procdff$1316 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [13974:13650]).
+Adding EN signal on $procdff$1317 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [13649:13325]).
+Adding EN signal on $procdff$1318 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [13324:13000]).
+Adding EN signal on $procdff$1319 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [12999:12675]).
+Adding EN signal on $procdff$1320 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [12674:12350]).
+Adding EN signal on $procdff$1321 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [12349:12025]).
+Adding EN signal on $procdff$1322 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [12024:11700]).
+Adding EN signal on $procdff$1323 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [11699:11375]).
+Adding EN signal on $procdff$1324 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [11374:11050]).
+Adding EN signal on $procdff$1325 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [11049:10725]).
+Adding EN signal on $procdff$1326 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [10724:10400]).
+Adding EN signal on $procdff$1327 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [10399:10075]).
+Adding EN signal on $procdff$1328 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [10074:9750]).
+Adding EN signal on $procdff$1329 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [9749:9425]).
+Adding EN signal on $procdff$1330 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [9424:9100]).
+Adding EN signal on $procdff$1331 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [9099:8775]).
+Adding EN signal on $procdff$1332 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [8774:8450]).
+Adding EN signal on $procdff$1333 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [8449:8125]).
+Adding EN signal on $procdff$1334 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [8124:7800]).
+Adding EN signal on $procdff$1335 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [7799:7475]).
+Adding EN signal on $procdff$1336 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [7474:7150]).
+Adding EN signal on $procdff$1337 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [7149:6825]).
+Adding EN signal on $procdff$1338 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [6824:6500]).
+Adding EN signal on $procdff$1339 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [6499:6175]).
+Adding EN signal on $procdff$1340 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [6174:5850]).
+Adding EN signal on $procdff$1341 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [5849:5525]).
+Adding EN signal on $procdff$1342 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [5524:5200]).
+Adding EN signal on $procdff$1343 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [5199:4875]).
+Adding EN signal on $procdff$1344 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [4874:4550]).
+Adding EN signal on $procdff$1345 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [4549:4225]).
+Adding EN signal on $procdff$1346 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [4224:3900]).
+Adding EN signal on $procdff$1347 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [3899:3575]).
+Adding EN signal on $procdff$1348 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [3574:3250]).
+Adding EN signal on $procdff$1349 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [3249:2925]).
+Adding EN signal on $procdff$1350 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [2924:2600]).
+Adding EN signal on $procdff$1351 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [2599:2275]).
+Adding EN signal on $procdff$1352 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [2274:1950]).
+Adding EN signal on $procdff$1353 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [1949:1625]).
+Adding EN signal on $procdff$1354 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [1624:1300]).
+Adding EN signal on $procdff$1355 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [1299:975]).
+Adding EN signal on $procdff$1356 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [974:650]).
+Adding EN signal on $procdff$1357 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [649:325]).
+Adding EN signal on $procdff$1358 ($dff) from module storage_probe (D = \wr_data [324:0], Q = \op_state [324:0]).
+Adding EN signal on $procdff$1360 ($dff) from module storage_probe (D = \wr_data [443:0], Q = \patch_state).
+
+3.7.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+Removed 113 unused cells and 113 unused wires.
+<suppressed ~114 debug messages>
+
+3.7.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.7.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.7.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~114 debug messages>
+
+3.7.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.7.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.7.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.7.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.7.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.7.16. Finished fast OPT passes. (There is nothing left to do.)
+
+3.8. Executing WREDUCE pass (reducing word size of cells).
+Removed top 6 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$8 ($eq).
+Removed top 5 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$9 ($eq).
+Removed top 5 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$10 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$11 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$12 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$13 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$14 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$15 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$16 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$17 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$18 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$19 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$20 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$21 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$22 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$23 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$24 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$25 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$26 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$27 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$28 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$29 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$30 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$31 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$32 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$33 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$34 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$35 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$36 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$37 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$38 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$39 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$40 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$41 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$42 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$43 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$44 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$45 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$46 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$47 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$48 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$49 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$50 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$51 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$52 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$53 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$54 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$55 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$56 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$57 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$58 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$59 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$60 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$61 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$62 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$63 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$64 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$65 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$66 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$67 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$68 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$69 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:168$70 ($eq).
+Removed top 3 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$104 ($eq).
+Removed top 2 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$105 ($eq).
+Removed top 2 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$106 ($eq).
+Removed top 1 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$107 ($eq).
+Removed top 1 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$108 ($eq).
+Removed top 1 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$109 ($eq).
+Removed top 1 bits (of 4) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:172$110 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$208 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$213 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$218 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$223 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$228 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$233 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$238 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$243 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$248 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$253 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$258 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$263 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$268 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$273 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$278 ($eq).
+Removed top 2 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$283 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$288 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$293 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$298 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$303 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$308 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$313 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$318 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$323 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$328 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$333 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$338 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$343 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$348 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$353 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$358 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$363 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$368 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$373 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$378 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$383 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$388 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$393 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$398 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$403 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$408 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$413 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$418 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$423 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$428 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$433 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$438 ($eq).
+Removed top 1 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:139$443 ($eq).
+Removed top 6 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$613 ($eq).
+Removed top 5 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$618 ($eq).
+Removed top 5 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$623 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$628 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$633 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$638 ($eq).
+Removed top 4 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$643 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$648 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$653 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$658 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$663 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$668 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$673 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$678 ($eq).
+Removed top 1 bits (of 2) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$681 ($eq).
+Removed top 3 bits (of 7) from port B of cell storage_probe.$eq$/private/tmp/opencode/wt-h02-storage-probe/rtl/storage_probe.v:145$683 ($eq).
+
+3.9. Executing PEEPOPT pass (run peephole optimizers).
+
+3.10. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.11. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module storage_probe:
+  created 0 $alu and 0 $macc cells.
+
+3.12. Executing SHARE pass (SAT-based resource sharing).
+
+3.13. Executing OPT pass (performing simple optimizations).
+
+3.13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.13.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~114 debug messages>
+
+3.13.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.13.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.13.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.13.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.13.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.13.9. Finished fast OPT passes. (There is nothing left to do.)
+
+3.14. Executing MEMORY pass.
+
+3.14.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+3.14.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+3.14.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+3.14.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+3.14.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+3.14.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.14.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+3.14.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+3.14.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.14.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.15. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.16. Executing OPT pass (performing simple optimizations).
+
+3.16.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.16.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.16.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.16.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.16.5. Finished fast OPT passes.
+
+3.17. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+3.18. Executing OPT pass (performing simple optimizations).
+
+3.18.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.18.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.18.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \storage_probe..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~114 debug messages>
+
+3.18.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \storage_probe.
+Performed a total of 0 changes.
+
+3.18.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 557 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.18.6. Executing OPT_SHARE pass.
+
+3.18.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.18.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+
+3.18.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.18.10. Finished fast OPT passes. (There is nothing left to do.)
+
+3.19. Executing TECHMAP pass (map to technology primitives).
+
+3.19.1. Executing Verilog-2005 frontend: /opt/homebrew/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/opt/homebrew/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `$__div_mod_u'.
+Generating RTLIL representation for module `$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Generating RTLIL representation for module `$connect'.
+Generating RTLIL representation for module `$input_port'.
+Successfully finished Verilog frontend.
+
+3.19.2. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $dffe.
+Using extmapper simplemap for cells of type $eq.
+Using extmapper simplemap for cells of type $logic_and.
+Using extmapper simplemap for cells of type $logic_not.
+Using extmapper simplemap for cells of type $reduce_xor.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $dff.
+No more expansions possible.
+<suppressed ~634 debug messages>
+
+3.20. Executing OPT pass (performing simple optimizations).
+
+3.20.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+<suppressed ~39730 debug messages>
+
+3.20.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 80502 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Computing hashes of 79720 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Computing hashes of 79234 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Computing hashes of 78964 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+<suppressed ~4614 debug messages>
+Removed a total of 1538 cells.
+
+3.20.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.20.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+Removed 112 unused cells and 1485 unused wires.
+<suppressed ~113 debug messages>
+
+3.20.5. Finished fast OPT passes.
+
+3.21. Executing ABC pass (technology mapping using ABC).
+
+3.21.1. Extracting gate netlist of module `\storage_probe' to `<abc-temp-dir>/input.blif'..
+
+3.21.1.1. Executed ABC.
+Extracted 40071 gates and 78873 wires to a netlist network with 38801 inputs and 885 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_library <abc-temp-dir>/stdcells.genlib 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &fraig -x 
+ABC: + &put 
+ABC: + scorr 
+ABC: Warning: The network is combinational (run "fraig" or "fraig_sweep").
+ABC: + dc2 
+ABC: + dretime 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &dch -f 
+ABC: + &nf 
+ABC: + &put 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+3.21.1.2. Re-integrating ABC results.
+ABC RESULTS:               AND cells:    37082
+ABC RESULTS:            ANDNOT cells:       26
+ABC RESULTS:              NAND cells:    39107
+ABC RESULTS:               NOR cells:        8
+ABC RESULTS:              XNOR cells:      500
+ABC RESULTS:               XOR cells:      714
+ABC RESULTS:        internal signals:    39187
+ABC RESULTS:           input signals:    38801
+ABC RESULTS:          output signals:      885
+Removing temp directory.
+Removing global temp directory.
+
+3.22. Executing OPT pass (performing simple optimizations).
+
+3.22.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module storage_probe.
+
+3.22.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\storage_probe'.
+Computing hashes of 116218 cells of `\storage_probe'.
+Finding duplicate cells in `\storage_probe'.
+Removed a total of 0 cells.
+
+3.22.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.22.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \storage_probe..
+Removed 0 unused cells and 40222 unused wires.
+<suppressed ~1 debug messages>
+
+3.22.5. Finished fast OPT passes.
+
+3.23. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `storage_probe'. Setting top module to storage_probe.
+
+3.23.1. Analyzing design hierarchy..
+Top module:  \storage_probe
+
+3.23.2. Analyzing design hierarchy..
+Top module:  \storage_probe
+Removed 0 unused modules.
+
+3.24. Printing statistics.
+
+=== storage_probe ===
+
+        +----------Local Count, excluding submodules.
+        | 
+    76684 wires
+   117934 wire bits
+       19 public wires
+    41269 public wire bits
+       11 ports
+     1684 port bits
+   116218 cells
+       26   $_ANDNOT_
+    37082   $_AND_
+    38780   $_DFFE_PP_
+        1   $_DFF_P_
+    39107   $_NAND_
+        8   $_NOR_
+      500   $_XNOR_
+      714   $_XOR_
+
+3.25. Executing CHECK pass (checking for obvious problems).
+Checking module storage_probe...
+Found and reported 0 problems.
+
+4. Executing DFFLIBMAP pass (mapping DFF/DLATCH cells to sequential cells from liberty file).
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnq_1 (noninv, pins=3, area=65.86) is a direct match for cell type $_DFF_N_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffq_1 (noninv, pins=3, area=63.66) is a direct match for cell type $_DFF_P_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnrnq_1 (noninv, pins=4, area=74.64) is a direct match for cell type $_DFF_NN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnsnq_1 (noninv, pins=4, area=79.03) is a direct match for cell type $_DFF_NN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffrnq_1 (noninv, pins=4, area=74.64) is a direct match for cell type $_DFF_PN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffsnq_1 (noninv, pins=4, area=79.03) is a direct match for cell type $_DFF_PN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnrsnq_1 (noninv, pins=5, area=94.39) is a direct match for cell type $_DFFSR_NNN_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffrsnq_1 (noninv, pins=5, area=85.61) is a direct match for cell type $_DFFSR_PNN_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latq_1 (noninv, pins=3, area=43.90) is a direct match for cell type $_DLATCH_P_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latrnq_1 (noninv, pins=4, area=48.29) is a direct match for cell type $_DLATCH_PN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latsnq_1 (noninv, pins=4, area=46.10) is a direct match for cell type $_DLATCH_PN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latrsnq_1 (noninv, pins=5, area=52.68) is a direct match for cell type $_DLATCHSR_PNN_.
+  final dff/dlatch cell mappings:
+    \gf180mcu_fd_sc_mcu7t5v0__dffnq_1 _DFF_N_ (.CLKN( C), .D( D), .Q( Q));
+    \gf180mcu_fd_sc_mcu7t5v0__dffq_1 _DFF_P_ (.CLK( C), .D( D), .Q( Q));
+    \gf180mcu_fd_sc_mcu7t5v0__dffnrnq_1 _DFF_NN0_ (.CLKN( C), .D( D), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__dffnsnq_1 _DFF_NN1_ (.CLKN( C), .D( D), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DFF_NP0_
+    unmapped dff/dlatch cell: $_DFF_NP1_
+    \gf180mcu_fd_sc_mcu7t5v0__dffrnq_1 _DFF_PN0_ (.CLK( C), .D( D), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__dffsnq_1 _DFF_PN1_ (.CLK( C), .D( D), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DFF_PP0_
+    unmapped dff/dlatch cell: $_DFF_PP1_
+    unmapped dff/dlatch cell: $_DFFE_NN_
+    unmapped dff/dlatch cell: $_DFFE_NP_
+    unmapped dff/dlatch cell: $_DFFE_PN_
+    unmapped dff/dlatch cell: $_DFFE_PP_
+    \gf180mcu_fd_sc_mcu7t5v0__dffnrsnq_1 _DFFSR_NNN_ (.CLKN( C), .D( D), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DFFSR_NNP_
+    unmapped dff/dlatch cell: $_DFFSR_NPN_
+    unmapped dff/dlatch cell: $_DFFSR_NPP_
+    \gf180mcu_fd_sc_mcu7t5v0__dffrsnq_1 _DFFSR_PNN_ (.CLK( C), .D( D), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DFFSR_PNP_
+    unmapped dff/dlatch cell: $_DFFSR_PPN_
+    unmapped dff/dlatch cell: $_DFFSR_PPP_
+    unmapped dff/dlatch cell: $_DLATCH_N_
+    \gf180mcu_fd_sc_mcu7t5v0__latq_1 _DLATCH_P_ (.D( D), .E( E), .Q( Q));
+    unmapped dff/dlatch cell: $_DLATCH_NN0_
+    unmapped dff/dlatch cell: $_DLATCH_NN1_
+    unmapped dff/dlatch cell: $_DLATCH_NP0_
+    unmapped dff/dlatch cell: $_DLATCH_NP1_
+    \gf180mcu_fd_sc_mcu7t5v0__latrnq_1 _DLATCH_PN0_ (.D( D), .E( E), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__latsnq_1 _DLATCH_PN1_ (.D( D), .E( E), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DLATCH_PP0_
+    unmapped dff/dlatch cell: $_DLATCH_PP1_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPP_
+    \gf180mcu_fd_sc_mcu7t5v0__latrsnq_1 _DLATCHSR_PNN_ (.D( D), .E( E), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DLATCHSR_PNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPP_
+
+4.1. Executing DFFLEGALIZE pass (convert FFs and LATCHes to types supported by the target).
+<suppressed ~12 debug messages>
+Mapping DFF/DLATCH cells in module `\storage_probe':
+  mapped 38781 $_DFF_P_ cells to \gf180mcu_fd_sc_mcu7t5v0__dffq_1 cells.
+
+5. Executing ABC pass (technology mapping using ABC).
+
+5.1. Extracting gate netlist of module `\storage_probe' to `<abc-temp-dir>/input.blif'..
+ABC: using cached merged SCL: /var/folders/fb/l4j31ymn3bn0mc6v1qbvvl8c0000gn/T/yosys-liberty-scl-cache-501/yosys_merged_d72b0919.scl (1 files)
+
+5.1.1. Executed ABC.
+Extracted 116217 gates and 155464 wires to a netlist network with 39247 inputs and 39552 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_scl /var/folders/fb/l4j31ymn3bn0mc6v1qbvvl8c0000gn/T/yosys-liberty-scl-cache-501/yosys_merged_d72b0919.scl 
+ABC: Warning: Detected 6 multi-output cells (for example, "gf180mcu_fd_sc_mcu7t5v0__addf_1").
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &fraig -x 
+ABC: + &put 
+ABC: + scorr 
+ABC: Warning: The network is combinational (run "fraig" or "fraig_sweep").
+ABC: + dc2 
+ABC: + dretime 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &dch -f 
+ABC: + &nf 
+ABC: + &put 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+5.1.2. Re-integrating ABC results.
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__and2_1 cells:      192
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__and3_1 cells:      178
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__and4_1 cells:      693
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__aoi211_1 cells:       77
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__aoi21_1 cells:       11
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__aoi221_1 cells:      297
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__aoi222_1 cells:     7922
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__aoi22_1 cells:     6474
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__clkinv_1 cells:      223
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__mux2_1 cells:    38780
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nand2_1 cells:     1482
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nand3_1 cells:     1784
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nand4_1 cells:     1884
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nor2_1 cells:      219
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nor3_1 cells:      239
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__nor4_1 cells:      489
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__oai22_1 cells:        2
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__oai32_1 cells:       16
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__oai33_1 cells:       11
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__or2_1 cells:       21
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__or3_1 cells:       37
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__or4_1 cells:       58
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__xnor2_1 cells:        2
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__xnor3_1 cells:       46
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__xor2_1 cells:      406
+ABC RESULTS:   gf180mcu_fd_sc_mcu7t5v0__xor3_1 cells:      357
+ABC RESULTS:        internal signals:    76665
+ABC RESULTS:           input signals:    39247
+ABC RESULTS:          output signals:    39552
+Removing temp directory.
+Removing global temp directory.
+
+6. Printing statistics.
+
+=== storage_probe ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+   216611        - wires
+   257861        - wire bits
+       19        - public wires
+    41269        - public wire bits
+       11        - ports
+     1684        - port bits
+   100681 4.12E+06 cells
+      192 3.37E+03   gf180mcu_fd_sc_mcu7t5v0__and2_1
+      178 3.91E+03   gf180mcu_fd_sc_mcu7t5v0__and3_1
+      693 1.67E+04   gf180mcu_fd_sc_mcu7t5v0__and4_1
+       77 1.69E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+       11  193.178   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+      297 7.17E+03   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+     7922 2.43E+05   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+     6474 1.28E+05   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+      223 1.96E+03   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+    38781 2.47E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+    38780 1.11E+06   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+     1482 1.63E+04   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+     1784 2.74E+04   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+     1884 3.72E+04   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      219 2.88E+03   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+      239  4.2E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+      489 1.07E+04   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+        2   43.904   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+       16  421.478   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+       11  362.208   gf180mcu_fd_sc_mcu7t5v0__oai33_1
+       21  368.794   gf180mcu_fd_sc_mcu7t5v0__or2_1
+       37  812.224   gf180mcu_fd_sc_mcu7t5v0__or3_1
+       58 1.53E+03   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        2   57.075   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+       46 2.42E+03   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+      406 1.07E+04   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+      357  1.8E+04   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+
+   Chip area for module '\storage_probe': 4115369.977600
+     of which used for sequential elements: 2468829.484800 (59.99%)
+
+End of script. Logfile hash: fc52f769f0, time: 109.41s, user: 7.09s, system: 0.34s, MEM: 442.00 MB peak
+Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+Time spent: 94% 2x abc (96 sec), 1% 14x opt_clean (1 sec), ...

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gf180-dx7"
+version = "0.1.0"
+description = "DX7-compatible six-operator FM synthesis engine on gf180mcu - verification-first"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.optional-dependencies]
+metrics = ["numpy"]
+
+[project.scripts]
+gf180-dx7 = "gf180_dx7.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gf180_dx7"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "tools", "spec", "docs"]

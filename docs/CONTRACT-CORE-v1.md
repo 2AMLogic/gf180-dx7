@@ -271,7 +271,7 @@ MHz at the 24.576 design point, 3.072 MHz at 12.288 MHz.
 
 Status word on MISO (32 bits, loaded at CS_N fall), adapting the parasynth
 DR-0007 §4 word (`{0x4D, VERSION, overrun, queue_nonempty, overflow, fresh,
-frame[15:0]}`; first read after reset reads `0xD710_0001`-shaped
+frame[15:0]}`; first read after reset reads `0xD711_0001`-shaped
 `{MAGIC, VERSION, FRESH=1, FRAME=1}`):
 
 | Field | Width | Meaning |

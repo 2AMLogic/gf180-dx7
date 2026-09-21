@@ -1,0 +1,203 @@
+{
+  "schema": "gf180-dx7.n07-poly/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/23",
+  "model": "src/gf180_dx7/model/poly.py (N07 D00 polyphonic state/event manager around the N06 integrated model)",
+  "policy": "docs/DECISIONS-v1.md DEC-014..DEC-023 (D00 event policy); stealing per DEC-017, repeated notes per DEC-016, retrigger per DEC-015, sustain per DEC-018, patch binding per DEC-019",
+  "comparator": "src/gf180_dx7/compare.py (exact mode, dry; docs/COMPARE-CONTRACT.md)",
+  "oracle": {
+    "identity_path": "reference/oracle-identity.json",
+    "pinned_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+    "observed_sha256_match": true
+  },
+  "sample_rate": 48000,
+  "wrapper_validity_boundary": "the pinned wrapper drops the 17th note (alloc-17th-drop, docs/REGISTRY-POLICY.md section 5) and matches note-offs by channel while mpeEnabled; the D00 model is compared against it only on <=16-voice cases that trigger no stealing and where the note-off matchings coincide",
+  "summary": {
+    "wrapper_valid_total": 7,
+    "wrapper_valid_by_verdict": {
+      "EXACT": 7
+    },
+    "policy_divergence": 1,
+    "not_run": 0
+  },
+  "sections": {
+    "wrapper_valid_registry": [
+      {
+        "id": "ev-repeated-note",
+        "class": "wrapper_valid",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "185ff82b6f8b15a965a5c808f598cf6cac5bba63fa9e4f8d91d649a9dbc6f390",
+        "render_seconds": 1.5,
+        "input_fingerprint": "03275eedffc4741304c540fa5138285951ff2b0256fb0861801e23a2ac35301e",
+        "expect_property": "distinct_hash_vs:dir-base",
+        "oracle_pcm_sha256": "72057d03bbcbfb54734494efcf24a68e25f8ec4f7fd54803eb9f265f5b963493",
+        "model_pcm_sha256": "72057d03bbcbfb54734494efcf24a68e25f8ec4f7fd54803eb9f265f5b963493",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 2,
+        "boundary_note": "16 slots are never exhausted here: the pinned wrapper still allocates every note, so the comparison triggers no stealing (D00 and the wrapper coincide)"
+      },
+      {
+        "id": "ev-retrigger",
+        "class": "wrapper_valid",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "a3945c17b3d605c90697ac99909ab396b242759e51615adbdb8ac2844791ce0d",
+        "render_seconds": 1.5,
+        "input_fingerprint": "05292b3387f48f53fd4da04cb7f7b6c5e2284592657381b4fd45efd99008a738",
+        "expect_property": "distinct_hash_vs:dir-base",
+        "oracle_pcm_sha256": "f18effc2030e59b8a39874474631115ea0d5cc72478ca36fa084f05d866903d7",
+        "model_pcm_sha256": "f18effc2030e59b8a39874474631115ea0d5cc72478ca36fa084f05d866903d7",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 2,
+        "boundary_note": "16 slots are never exhausted here: the pinned wrapper still allocates every note, so the comparison triggers no stealing (D00 and the wrapper coincide)"
+      },
+      {
+        "id": "ev-sum-15",
+        "class": "wrapper_valid",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "856cfd64e8bccab49b2164e651e617c0bf9c8f48b201a216892e0851823770e4",
+        "render_seconds": 2.0,
+        "input_fingerprint": "71986652a0ec01df724a3b0c5508ac4648ed5f1ae6f40583272b4efa11950c42",
+        "expect_property": "non_silent_after_onset",
+        "oracle_pcm_sha256": "aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a",
+        "model_pcm_sha256": "aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 15,
+        "boundary_note": "16 slots are never exhausted here: the pinned wrapper still allocates every note, so the comparison triggers no stealing (D00 and the wrapper coincide)"
+      },
+      {
+        "id": "ev-steal-16",
+        "class": "wrapper_valid",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "a67d90ebbe173be9716148074ee0e4fa25df312c0dd881d9c59ec47bf4f55e35",
+        "render_seconds": 2.0,
+        "input_fingerprint": "2e5291bbb1adb499aceaa05a11a566fa834c389fcc51f84ea8b967a3f4147372",
+        "expect_property": "finite_peak",
+        "oracle_pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+        "model_pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 16,
+        "boundary_note": "16 slots are never exhausted here: the pinned wrapper still allocates every note, so the comparison triggers no stealing (D00 and the wrapper coincide)"
+      }
+    ],
+    "wrapper_valid_dev32_velocity_contrast": [
+      {
+        "id": "dev32-03",
+        "class": "wrapper_valid",
+        "primary": true,
+        "profile": "velocity_contrast",
+        "name": "PROPHETess",
+        "voice_sha256": "4c8aef2501bb8c09dd5646f7ff7b276cb263a64f63e0406b249f2f14f1731882",
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "oracle_pcm_sha256": "e21505ca0e4faa52931f907713dddfcd74d6b623ea1a3807e54292e1ceb9a666",
+        "model_pcm_sha256": "e21505ca0e4faa52931f907713dddfcd74d6b623ea1a3807e54292e1ceb9a666",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 2,
+        "boundary_note": "velocity_contrast: the second strike lands during the first voice's release tail (two live voices, 15 free slots); no stealing on either side"
+      },
+      {
+        "id": "dev32-06",
+        "class": "wrapper_valid",
+        "primary": false,
+        "profile": "velocity_contrast",
+        "name": "belandBIWA",
+        "voice_sha256": "8ddc3920cbb07c690b111a6267f45b6b4b5b500a3e37da60b4fb8bcc2aff7ddf",
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "oracle_pcm_sha256": "f507b0f4c7ddf5d4b4d6369feb8fe6ce675fce3678b29be2cc898d86d8ccbdf9",
+        "model_pcm_sha256": "f507b0f4c7ddf5d4b4d6369feb8fe6ce675fce3678b29be2cc898d86d8ccbdf9",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 2,
+        "boundary_note": "velocity_contrast: the second strike lands during the first voice's release tail (two live voices, 15 free slots); no stealing on either side"
+      },
+      {
+        "id": "dev32-30",
+        "class": "wrapper_valid",
+        "primary": false,
+        "profile": "velocity_contrast",
+        "name": "SOFT TOUCH",
+        "voice_sha256": "f92d822da86f111577813187fa8aa4b31d3d58f5fd4112cc32c8a75c5353c2fa",
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "oracle_pcm_sha256": "777aa7a1254d485805dfa70a511e073befe2862bdd8fd4b7cbe1f24ccf63c484",
+        "model_pcm_sha256": "777aa7a1254d485805dfa70a511e073befe2862bdd8fd4b7cbe1f24ccf63c484",
+        "verdict": "EXACT",
+        "status": "PASS",
+        "byte_identical": true,
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "first_divergent_sample": null,
+        "n_allocations": 2,
+        "boundary_note": "velocity_contrast: the second strike lands during the first voice's release tail (two live voices, 15 free slots); no stealing on either side"
+      }
+    ],
+    "policy_divergence": [
+      {
+        "id": "ev-steal-17",
+        "class": "policy_divergence",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "6fc8a9580727fbaf0d0dd1083870c2ba4bff321d5ba05164e141095165258cfe",
+        "render_seconds": 2.0,
+        "oracle_pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+        "model_pcm_sha256": "f8bfa1d1249b61bc544126c8078f8ceca9eee77a52b9c3a2e001f486375acbaf",
+        "comparison": "DIFFER",
+        "verdict": "POLICY_DIFFERENCE",
+        "status": "PASS",
+        "classification": "documented policy difference: the pinned wrapper drops the 17th note (registry finding alloc-17th-drop; oracle render byte-identical to the 16-note render: true), while the product policy is D00 DEC-017 deterministic stealing. Our model implements the D00 contract; this row is a measured divergence record, NOT a defect and NOT a budgeted equality (no agreement claim is made or implied on this case)",
+        "wrapper_alloc_17th_drop_confirmed": true,
+        "max_abs_error": 0.345001220703125,
+        "mismatch_count": 92004,
+        "first_divergent_sample": 3968,
+        "first_divergent_block": 62,
+        "model_allocations": {
+          "n_allocations": 17,
+          "steal_entries": [
+            {
+              "seq": 17,
+              "slot": 0,
+              "kind": "steal-dec017",
+              "midi_note": 76,
+              "velocity": 100,
+              "patch_index": 0,
+              "victim_slot": 0,
+              "victim_midi_note": 60,
+              "victim_seq": 1
+            }
+          ],
+          "decision": "DEC-017: prefer voices in release, then the oldest sounding voice (earliest note-on sequence); the 17th note re-struck the oldest held voice (slot 0, pitch 60)"
+        },
+        "registered_wrapper_expectation": "finite_peak"
+      }
+    ]
+  },
+  "fidelity_note": "Software-reference agreement only (pinned Dexed Mark I oracle); not original-DX7 fidelity, not RTL agreement, not a musical-quality claim (DEC-001). D00 event policy (docs/DECISIONS-v1.md DEC-014..DEC-023) is the model semantics; the pinned wrapper is comparison-valid only for <=16-voice cases with no stealing."
+}

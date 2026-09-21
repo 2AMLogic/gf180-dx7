@@ -1458,13 +1458,13 @@
     },
     {
       "path": "docs/N06-INTEGRATED-MODEL.md",
-      "sha256": "a3511af08677f109582c99cc5b86b7926921918819b5ed0937a4bb28e74dd475",
-      "reason": "locally authored N06 derivation and results record (issue #22): composition order, event semantics, evidence tables, findings F-1..F-5"
+      "sha256": "2a177959638e1947adb50c7044e5f277a62525f3d3f9331f1065d9b65b05934f",
+      "reason": "locally authored N06 derivation and results record (issue #22): composition order, event semantics, evidence tables, findings F-1..F-5; re-pinned after DR-0006 wording follow-up (judge note)"
     },
     {
       "path": "docs/decision-records/0006-n06-integration-findings.md",
-      "sha256": "2671359e30a3bfd5a2a73102a3204e32e500ee09a234ade1dd7a5d79d71c3905",
-      "reason": "locally authored decision record for the N06 integration findings (issue #22, stop/escalate clause)"
+      "sha256": "239729f38b610c66e0c843065cac723227498d4e6a184cd755d09985612eef5e",
+      "reason": "locally authored decision record for the N06 integration findings (issue #22, stop/escalate clause); re-pinned after DR-0006 wording follow-up (judge note)"
     },
     {
       "path": "reference/evidence/n06-integrated/dev32-subset.json",

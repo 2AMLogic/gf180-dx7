@@ -49,7 +49,7 @@ Measured facts:
   `phase_` uninitialized (no constructor/reset initializer,
   `lfo.cc:26-49`); the wrapper resets it only via `lfo.keydown()` when
   the patch's LFO key sync is set. On keysync-0 patches the rendered LFO
-  phase is C++-indeterminate stack residue (stable per binary; the R05
+  phase is C++-indeterminate stack residue (differs per process instance (registry wording); the R05
   finding, `reference/trace-registry.json`). dev32-04 and dev32-21
   (keysync 0 with an LFO path reaching the PCM) FAIL against the oracle
   on exactly that property; no derivable reference value exists.

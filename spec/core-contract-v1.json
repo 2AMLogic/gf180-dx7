@@ -1,0 +1,448 @@
+{
+  "contract": "gf180-dx7 core interface/schedule contract",
+  "version": 1,
+  "frozen": "2026-09-20",
+  "issue": 25,
+  "planning_id": "H03",
+  "companion_document": "docs/CONTRACT-CORE-v1.md",
+  "adoption_record": "docs/decision-records/0008-core-schedule-contract.md",
+  "product_contract": "spec/contract-v1.json",
+  "numeric_profile": "spec/numeric-profile-v1.json",
+
+  "claims_boundary": "paper schedulability of the core interface and per-frame schedule only; no RTL exists yet, no synthesis/timing/fit claim, no fidelity claim, no audibility claim (DEC-001, DEC-013, DEC-024)",
+
+  "depends_on": {
+    "n08_release": {
+      "path": "reference/release/manifest.json",
+      "bundle_sha256": "81bcc43cd49a29f35b21370733bb9888dd5641862501b441136e122485f54f8c",
+      "role": "frozen conformance oracle for every module (DR-0007)"
+    },
+    "numeric_profile_sha256": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
+    "h01_evidence": {
+      "synth_report": {
+        "path": "evidence/h01-operator-probe/synth_report.json",
+        "sha256": "2828acd92fa5d36d14093300848e26ac00fb0fbbb08b375a6b334dac72cbb4d1"
+      },
+      "compare_report": {
+        "path": "evidence/h01-operator-probe/compare_report.json",
+        "sha256": "af5952db03c05a5f83ec337390c170086eaed0ff60cfa8b6cc71d7f13ae802dc"
+      }
+    },
+    "h02_evidence": {
+      "storage_synth_report": {
+        "path": "evidence/h02-storage-probe/storage_synth_report.json",
+        "sha256": "f744532c12d8e702eff64d7c9df87de8fd05a0d83b708b1d4d47bc3b3673143b"
+      }
+    }
+  },
+
+  "premises": {
+    "sample_rate_hz": 48000,
+    "polyphony": 16,
+    "operators_per_note": 6,
+    "frame_samples": 64,
+    "frames_per_second": 750,
+    "operator_evals_per_frame": 6144,
+    "operator_evals_per_second": 4608000
+  },
+
+  "clock_targets": {
+    "design_point": {
+      "name": "clk_24m576",
+      "hz": 24576000,
+      "clks_per_sample": 512,
+      "clks_per_frame": 32768,
+      "op_loop_floor_share": 0.1875,
+      "status": "design point; adopted Proposed (owner sign-off), DR-0008"
+    },
+    "fallback": {
+      "name": "clk_12m288",
+      "hz": 12288000,
+      "clks_per_sample": 256,
+      "clks_per_frame": 16384,
+      "op_loop_floor_share": 0.375,
+      "status": "fails the worst-case budget; see budget_worst_case.totals"
+    },
+    "op_loop_only_minimum_clock_hz": 4608000,
+    "design_point_justification": "N01 section 7 named 24.576 MHz the design point with 12.288 MHz viable only if the shared core sustains <= 2 clk/eval all-in; H01 measured 1 clk/eval kernel-only, leaving 1.67 clk/eval at 12.288 MHz for storage+control+output, which the line-by-line worst-case budget below refutes",
+    "timing_closure_note": "no timing claim exists: ss-corner closure at 24.576 MHz is unproven (D01 section 2; sibling implies 14.0 MHz ss minimum on a different design) and is H10's measurement"
+  },
+
+  "budget_worst_case": {
+    "policy": "worst_case_never_average: every consumer is accounted at its worst admissible per-frame value; the frame must close for every admissible frame; a schedule that closes only when event bursts or envelope transitions are rare is the forbidden average-case argument (issue #25 negative control)",
+    "rows": [
+      {
+        "id": "op_evals",
+        "consumer": "operator evaluations (mkiSin + phase advance + per-eval convert pipeline)",
+        "unit_clks": 1,
+        "unit_class": "measured",
+        "unit_basis": "H01 probe measured sustained throughput 1 clk/eval (3-stage pipeline, 4,794/4,794 bit-exact); evidence/h01-operator-probe",
+        "count": 6144,
+        "count_basis": "16 notes x 6 ops x 64 samples (structural worst case: every voice live every frame; NUM-002)",
+        "clocks": 6144,
+        "dec_ids": ["DEC-002", "DEC-003", "DEC-009"]
+      },
+      {
+        "id": "env_steps",
+        "consumer": "operator-envelope steps, worst case including a segment advance (levellut target, qrate, statics hold, inc_ x sr_multiplier constant multiply; env.cc:63-151)",
+        "unit_clks": 24,
+        "unit_class": "derived_estimate",
+        "unit_basis": "N01 section 7 budgeted 8-12 clk for the step alone; the worst-case step additionally executes advance() (scaleoutlevel/levellut + qrate + statics + the 15,414,067 constant multiply); 24 clk is the upper-bound estimate H04 must measure",
+        "count": 96,
+        "count_basis": "one step per operator per frame (N03 cadence fact, env.h:39-40; NUM-005)",
+        "clocks": 2304,
+        "dec_ids": ["DEC-007"]
+      },
+      {
+        "id": "freq_updates",
+        "consumer": "per-operator frequency updates: Freqlut 1025-entry interpolated lookup (freqlut.cc:27-42)",
+        "unit_clks": 8,
+        "unit_class": "derived_estimate",
+        "unit_basis": "index compute + two table reads + interpolate; N01 section 7 counted 96 lookups/frame in the ~1,300-1,600 control estimate",
+        "count": 96,
+        "count_basis": "6 ops x 16 notes; per-op basepitch differs (coarse/fine/detune), pitch EG + LFO enter before the LUT (dx7note.cc:279-281; NUM-003)",
+        "clocks": 768,
+        "dec_ids": ["DEC-007"]
+      },
+      {
+        "id": "pitch_eg_steps",
+        "consumer": "pitch-EG steps (pitchenv.cc:55-89, additive legs)",
+        "unit_clks": 12,
+        "unit_class": "derived_estimate",
+        "unit_basis": "N01 section 7 grouped 17 LFO/pitch-env steps in the control estimate; upper bound per step",
+        "count": 16,
+        "count_basis": "one per note per frame (NUM-002/NUM-008)",
+        "clocks": 192,
+        "dec_ids": ["DEC-006", "DEC-007"]
+      },
+      {
+        "id": "lfo_frame",
+        "consumer": "LFO: one getsample + one getdelay per frame, all six waveforms (lfo.cc)",
+        "unit_clks": 100,
+        "unit_class": "derived_estimate",
+        "unit_basis": "N01 NUM-007 cost estimate ~50-100 clk/frame; worst case taken",
+        "count": 1,
+        "count_basis": "shared per timbre, once per frame (NUM-007)",
+        "clocks": 100,
+        "dec_ids": ["DEC-007", "DEC-020"]
+      },
+      {
+        "id": "pitch_mod_application",
+        "consumer": "pitch-mod application into each note's logfreq (log-domain add of LFO x depth; dx7note.cc:210-217)",
+        "unit_clks": 8,
+        "unit_class": "derived_estimate",
+        "unit_basis": "one shift-add chain per note per frame",
+        "count": 16,
+        "count_basis": "all notes, worst case (NUM-008)",
+        "clocks": 128,
+        "dec_ids": ["DEC-006"]
+      },
+      {
+        "id": "amp_mod_application",
+        "consumer": "amp-mod application into operator gains (dx7note.cc:259-268)",
+        "unit_clks": 4,
+        "unit_class": "derived_estimate",
+        "unit_basis": "per-op gain modification once per frame",
+        "count": 96,
+        "count_basis": "all operators of all notes, worst case (NUM-008; N08 ampmod-ams3 renders this path byte-exact)",
+        "clocks": 384,
+        "dec_ids": ["DEC-006"]
+      },
+      {
+        "id": "control_tail_commits",
+        "consumer": "control-tail state writes: 96 envelope commits + 16 pitch-EG commits",
+        "unit_clks": 1,
+        "unit_class": "structural",
+        "unit_basis": "one register-file write per clock (H02 port structure)",
+        "count": 112,
+        "count_basis": "96 + 16 (NUM-002/NUM-005)",
+        "clocks": 112,
+        "dec_ids": ["DEC-007"]
+      },
+      {
+        "id": "note_on_application",
+        "consumer": "note-on application: steal scan + per-op derived params (scaleoutlevel, ScaleLevel, ScaleVelocity, ScaleRate; dx7note.cc:163-179) + basepitch + phase/gain init",
+        "unit_clks": 224,
+        "unit_class": "derived_estimate",
+        "unit_basis": "16-clk steal scan + 6 ops x ~14 clk derivation + 6 x 8 clk basepitch + 12 clk init, rounded up to 224; host-side float math is off-frame per NUM-008 (DEC-010 boundary)",
+        "count": 16,
+        "count_basis": "worst admissible burst: a 16-note chord change in one frame (polyphony bound, DEC-003)",
+        "clocks": 3584,
+        "dec_ids": ["DEC-003", "DEC-010", "DEC-014", "DEC-015", "DEC-016", "DEC-017", "DEC-023"]
+      },
+      {
+        "id": "note_off_application",
+        "consumer": "note-off application: voice lookup + keydown/sustain branch (DEC-018) + reclaim predicate check (NUM-012)",
+        "unit_clks": 48,
+        "unit_class": "derived_estimate",
+        "unit_basis": "16-note scan + sustain branch + 6-op predicate test",
+        "count": 16,
+        "count_basis": "worst admissible burst: full chord release in one frame",
+        "clocks": 768,
+        "dec_ids": ["DEC-014", "DEC-018", "DEC-021"]
+      },
+      {
+        "id": "controller_events",
+        "consumer": "controller event application (sustain, pitch-bend scale commit, mod wheel, volume): store + mark pitch-dirty across notes",
+        "unit_clks": 32,
+        "unit_class": "derived_estimate",
+        "unit_basis": "chip receives frozen integer scale factors (float-gated math stays host-side, NUM-008); per-note dirty marking",
+        "count": 16,
+        "count_basis": "one controller per voice in the worst admissible frame alongside the chord change",
+        "clocks": 512,
+        "dec_ids": ["DEC-006", "DEC-014"]
+      },
+      {
+        "id": "patch_commit",
+        "consumer": "atomic patch-commit bookkeeping at the frame boundary (generation swap + per-note tag ring)",
+        "unit_clks": 64,
+        "unit_class": "derived_estimate",
+        "unit_basis": "shadow image swap is 1 clk; the budget carries ring bookkeeping + a held-note tag sweep",
+        "count": 1,
+        "count_basis": "at most one commit per frame (events commit at the boundary; DEC-019)",
+        "clocks": 64,
+        "dec_ids": ["DEC-014", "DEC-019", "DEC-022"]
+      },
+      {
+        "id": "mix_convert",
+        "consumer": "per-note output conversion (>>>4, clip +/-2^24 with the +32768 quirk, >>>9) + unclamped >=20-bit mix add (NUM-010)",
+        "unit_clks": 2,
+        "unit_class": "derived_estimate",
+        "unit_basis": "H01 stage 3 measured convert+clip inside 1 clk; +1 clk for the 20-bit mix add; NUM-010 budgeted 2-4 clk, pipelined, serialized here (no free overlap assumed)",
+        "count": 1024,
+        "count_basis": "16 notes x 64 samples, all live (structural worst case)",
+        "clocks": 2048,
+        "dec_ids": ["DEC-008", "DEC-012"]
+      },
+      {
+        "id": "i2s_loads",
+        "consumer": "I2S sample loads into the transmitter (BCLK/LRCLK are frame-counter bits; shifting is a dedicated divider, zero core-clock serialization)",
+        "unit_clks": 1,
+        "unit_class": "structural",
+        "unit_basis": "one registered load per sample (parasynth synth_top 'I2S load@255' pattern)",
+        "count": 64,
+        "count_basis": "64 samples per frame",
+        "clocks": 64,
+        "dec_ids": ["DEC-008", "DEC-009"]
+      },
+      {
+        "id": "write_queue_drain",
+        "consumer": "SPI write-queue drain into the shadow image (1 write/clk, oldest first)",
+        "unit_clks": 1,
+        "unit_class": "structural",
+        "unit_basis": "one shadow-image write per clock; count = worst admissible writes/frame at SCK = f_core/4 with a 48-bit frame + 2-cycle CS gap = 194 core clk per transaction",
+        "count_12m288": 84,
+        "count_24m576": 168,
+        "count_basis": "floor(16384/194) = 84; floor(32768/194) = 168",
+        "clocks_12m288": 84,
+        "clocks_24m576": 168,
+        "dec_ids": ["DEC-006", "DEC-010", "DEC-014"]
+      },
+      {
+        "id": "frame_controller_overhead",
+        "consumer": "frame controller tick + op-core pipeline fill (3-stage latency, once per frame)",
+        "unit_clks": 4,
+        "unit_class": "structural",
+        "unit_basis": "1 tick + 3 pipeline-fill clocks (H01 latency)",
+        "count": 1,
+        "count_basis": "once per frame",
+        "clocks": 4,
+        "dec_ids": ["DEC-009", "DEC-011"]
+      }
+    ],
+    "required_row_ids": [
+      "op_evals", "env_steps", "freq_updates", "pitch_eg_steps", "lfo_frame",
+      "pitch_mod_application", "amp_mod_application", "control_tail_commits",
+      "note_on_application", "note_off_application", "controller_events",
+      "patch_commit", "mix_convert", "i2s_loads", "write_queue_drain",
+      "frame_controller_overhead"
+    ],
+    "totals": {
+      "clocks_12m288": 17260,
+      "frame_clks_12m288": 16384,
+      "utilization_12m288": 1.053466796875,
+      "margin_12m288": -876,
+      "verdict_12m288": "FAIL",
+      "clocks_24m576": 17344,
+      "frame_clks_24m576": 32768,
+      "utilization_24m576": 0.529296875,
+      "margin_24m576": 15424,
+      "verdict_24m576": "PASS",
+      "headline": "12.288 MHz DOES NOT close the worst case: 17,260 clocks demanded against 16,384 available (105.35%, shortfall 876 clocks). The forbidden average-case framing would 'close' it only by dropping the worst-burst event rows (an idle frame is 12,332 clocks = 75.3%): that is exactly the average-case argument issue #25 rejects. 24.576 MHz closes with 15,424 clocks of margin (52.93% worst-case utilization) and is the design point.",
+      "family_calibration": "parasynth monosynth ~154/256 clk/frame (~60%, average-case measured; its worst-case bursts are why average arguments fail), ladder filter 24 cycles/channel x 8 = 192/256 (75%, practical ceiling datapoint); quoted as family calibration, never transferred as a budget (D01 section 2)"
+    }
+  },
+
+  "storage_ports": {
+    "structure": "flop banks per H02 verdict: 96 op banks x 325 b + 16 note banks x 446 b = 38,336 replicated runtime bits; patch-shared store per DEC-019 below",
+    "ports_per_eval_slot": "2R (op bank + owning note bank, parallel) + 1W (staged writeback)",
+    "staged_writeback": "a slot's new op-bank value rides a stage register and writes the single W port at a later slot of the same bank (96-slot interleaving); note-bank writes (feedback history + accumulator, 2x32 b per note-sample) use the same W port in disjoint slots",
+    "conflict_resolutions": [
+      "same-slot read-modify-write (feedback history) is impossible on one W port: resolved by the staged delayed writeback (H02 section 4 conflict 1)",
+      "1RW SRAM macros cannot serve 2R+1W per eval cycle: resolved by the flop verdict (H02 section 4 conflict 2, section 5)",
+      "eval-read vs env-write: control-tail writes occupy slots after the eval pass (slot-disjoint windows); frame-boundary commit writes occupy the tick cycle (slot 0), never an eval slot",
+      "same-cycle dual write never occurs: write traffic is bounded below the port supply (see write_traffic_bound)"
+    ],
+    "write_traffic_bound": {
+      "op_bank_writes": 6144,
+      "note_bank_writes": 1024,
+      "control_tail_writes": 112,
+      "event_application_writes": 48,
+      "total_worst_case": 7328,
+      "supply_24m576": 32768,
+      "supply_12m288": 16384,
+      "verdict": "feasible at both clocks with the single W port; H02 section 4 numbers, event writes added by this contract"
+    },
+    "measured_anchor": "H02 mapped 38,781 flops = 38,336 replicated + 444 patch + 1 obs, 4.115 mm2 all-in on the probe structure; bounded finding: the 16-note state cannot be all-register in a quarter slot (owner architecture decision pending, H02 section 6) - this contract assumes the flop organization and does not resolve the area finding"
+  },
+
+  "patch_interface": {
+    "commit_policy": "atomic at a 64-sample frame boundary (DEC-019); a patch selection commits before frame N+1; held notes keep the patch they started with until note-off + release completion (DEC-019, DEC-021)",
+    "mechanism": "patch bytes arrive as SPI register writes into a shadow image (continuously drained, never live); the frame-boundary commit swaps the shadow into a 4-entry committed-patch ring; each note binds the generation it started on (2-bit tag)",
+    "held_note_bound": "a held note keeps its exact starting patch for up to 3 subsequent commits (4-entry ring); a 4th commit while a note is still held evicts its generation and is a declared DEC-019 conformance gap - owner ruling required for unbounded held-note patch binding (alternative: per-note replication of rates/levels, +5,376 bits)",
+    "load_cost": "a 161-byte voice + performance settings arrive as <= 216 writes, absorbed by the drain at <= 168 writes/frame (2 frames worst case), never blocking the audio schedule",
+    "dec_ids": ["DEC-019", "DEC-022", "DEC-005"]
+  },
+
+  "event_interface": {
+    "transport": "SPI slave, mode 0, 48-bit frames {F, 6'b0, SEC, A[7:0], D[31:0]} adapted from gf180-parasynth DR-0007 rtl-sketch/spi_ctl.v (Apache-2.0, provenance recorded); SEC pages: 0 = events/performance, 1 = patch bytes",
+    "sck_limit": "SCK <= f_core/4 (two-flop synchronizer sampling); 6.144 MHz at the 24.576 MHz design point, 3.072 MHz at 12.288 MHz",
+    "queue": "bounded skid FIFO, depth 8 entries x 49 bits (48-bit frame + valid), continuously drained into the shadow image at 1 write/clk",
+    "queue_depth_skid": 8,
+    "queue_entry_bits": 49,
+    "drain_rate_writes_per_clk": 1,
+    "min_transaction_period_clks": 194,
+    "queue_depth_derivation": "worst admissible arrival = 1 write per 194 core clocks (SCK = f_core/4, 48-bit frame + 2-cycle CS gap); drain = 1 write/clk = 194x the arrival rate, so 8-deep absorption is provably sufficient and overflow is impossible at the declared SCK bound",
+    "overflow_policy": "explicit rejection per DEC-014: the overflow flag is sticky, reported in the status word, cleared on read; a dropped write is a contract defect (the host retries); silent drops and silent deferral are forbidden (DEC-014)",
+    "commit_boundary": "an event received during frame N is applied before the first sample of frame N+1 (DEC-014 + NUM-011; identical to the pinned oracle's event_to_block_policy)",
+    "worst_burst": "16 note-ons + 16 note-offs + 16 controller events in one frame (48 writes <= 84 admissible at 12.288 MHz, <= 168 at 24.576 MHz); budgeted in budget_worst_case rows note_on_application/note_off_application/controller_events",
+    "never_silent": "every accepted event appears in the block-level event-application trace (N08 manifest traces); a stolen/rejected event is surfaced in status/trace metadata (DEC-017)",
+    "dec_ids": ["DEC-006", "DEC-010", "DEC-014", "DEC-015", "DEC-016", "DEC-017", "DEC-018", "DEC-023"]
+  },
+
+  "status_word": {
+    "pattern_source": "gf180-parasynth DR-0007 section 4 + rtl-sketch/spi_ctl.v status word {0x4D, VERSION, overrun, queue_nonempty, overflow, fresh, frame[15:0]} (Apache-2.0, adapted; ARCHITECTURE section 9 first-read 0x4D210001)",
+    "word": "{MAGIC 8'hD7, VERSION 4'h1, OVERRUN, QUEUE, OVERFLOW, FRESH, FRAME[15:0]}",
+    "flags": {
+      "OVERRUN": "schedule deadline missed (control pass or eval pass unfinished at its window end) - sticky defect detector, must never set; set at the tick like the parasynth overrun flag",
+      "QUEUE": "skid FIFO nonempty",
+      "OVERFLOW": "a write was dropped (impossible at the declared SCK bound; sticky defect detector per DEC-014 backpressure)",
+      "FRESH": "no write accepted since reset; host boots on fresh=1 and re-sends the image whenever fresh reads 1 later (brown-out, parasynth ARCHITECTURE section 7 protocol)",
+      "FRAME": "16-bit frame counter (750 frames/s at 48 kHz); the I2S LRCLK/BCLK derive from it as counter bits"
+    },
+    "transpose_note": "the core applies only the patch's own transpose/scaling/velocity parameters exactly once (DEC-023); host MIDI transposition is host-side; N08 perf-transpose-12 pins the observed wrapper behavior as the conformance reference"
+  },
+
+  "reset_boot": {
+    "pad_reset": "RST_N through a two-flop synchronizer; every block uses synchronous reset; frame counter and link reset by the pad only (parasynth ARCHITECTURE section 7 pattern)",
+    "soft_reset": "a SOFT_RESET register write clears voice/env/phase state and the event shadow; it never touches the link, the queue, or the frame counter (per-page soft-reset pattern)",
+    "boot_protocol": "reset -> fresh=1 in the status word -> host sends patch image + performance settings -> atomic commit at a frame boundary -> engine runs; DEC-011 requires the post-reset state (LFO/phase init) to be explicit and render-repeatability tested",
+    "dec_ids": ["DEC-011", "DEC-020"]
+  },
+
+  "latency": {
+    "definition": "event-sample -> I2S-out latency is measured from the sample position p of an event's arrival (frame N) to the SDATA bit of the first audio sample its commit affects",
+    "commit_bound_frames": 1,
+    "commit_rule": "first affected sample is frame N+1 sample 0 (DEC-014/NUM-011)",
+    "worst_case_to_sdata_samples": 128,
+    "worst_case_to_sdata_note": "<= (64 - p) samples until the boundary + <= 64 samples serialization position + 1, declared as <= 2 frames = 128 samples = 2.667 ms",
+    "measurable_for": "H07/H09 acceptance: the measured (first_affected_sdata_slot - event_sample) must land in [(64-p), (64-p)+65] samples; comparisons align events per NUM-011"
+  },
+
+  "trace_access": {
+    "state_observability": "H02-style load-bearing observability: every state bank drives a read mux; per-module state_obs XOR folds keep synthesis honest; dropping any field drops mapped flops and fails the gate (H01/H02 negative-control pattern)",
+    "block_taps": "optional per-frame tap bus (frame counter, live_mask, keydown_mask, lfo_value, applied-event log) mirroring the R05 trace registry columns; taps are read-only and must be non-invasive (traced and untraced renders byte-identical, TRACE-PLAN rule)",
+    "conformance_use": "event-application traces are part of the N08 bundle (138 applied events); RTL traces must match the frozen traces after declared latency alignment"
+  },
+
+  "modules": [
+    {
+      "name": "frame_controller",
+      "role": "cycle counter, tick/go, window enforcement (commit, control tail, eval pass, mix, I2S), OVERRUN flag",
+      "clock": "single core clock; no derived clocks (BCLK/LRCLK are counter bits)",
+      "reset": "pad only",
+      "handshake": "tick/go pulses to all blocks; busy collection at the tick",
+      "conformance_vectors": ["dir-base", "ev-sum-15", "ev-steal-16"],
+      "conformance_oracle": "n08_verify_release sha256-exact suite + OVERRUN-never-sets across all 51 vectors + directed late-finish injection control"
+    },
+    {
+      "name": "op_core",
+      "role": "shared 6-op x 16-note evaluation kernel (mkiSin + phase advance + convert pipeline)",
+      "clock": "core clock; 1 eval/clk sustained, 3-stage pipeline (H01)",
+      "reset": "synchronous (pad + soft-reset scope)",
+      "handshake": "en/busy/out_valid in acceptance order (H01 pattern); ld_phase for directed corners",
+      "conformance_vectors": ["dir-base", "alg4-fb7", "alg6-fb3", "bd-rising-env", "osc-fixed-carrier"],
+      "conformance_oracle": "H01 4,794-vector bit-exact equivalence retained + N08 vectors sha256-exact; MUTATE_ADDRWIDTH control kept live"
+    },
+    {
+      "name": "state_banks",
+      "role": "96 op banks x 325 b + 16 note banks x 446 b, 2R+1W staged-writeback port structure",
+      "clock": "core clock",
+      "reset": "synchronous; all state defined at reset (DEC-011)",
+      "handshake": "combinational bank reads per eval slot; staged writeback acknowledge",
+      "conformance_vectors": ["dir-base", "ev-sum-15", "ev-steal-16", "ev-repeated-note"],
+      "conformance_oracle": "H02 readback smoke + full-flop-count gate + strip-observability control + N08 vectors"
+    },
+    {
+      "name": "env_unit",
+      "role": "96 operator-envelope steps/frame + 16 pitch-EG steps (N03 semantics)",
+      "clock": "core clock, control-tail window",
+      "reset": "synchronous; envelopes parked at the DEC-021/N01 floor state",
+      "handshake": "tail_start/tail_done to the frame controller",
+      "conformance_vectors": ["bd-fast-release", "bd-slow-rate3", "bd-delayed-attack", "bd-nonzero-final", "ev-sustain-pedal", "ev-retrigger"],
+      "conformance_oracle": "N08 vectors sha256-exact; sr_multiplier +-1 control retained from N03"
+    },
+    {
+      "name": "pitch_mod_unit",
+      "role": "Freqlut lookups, LFO, pitch-mod/amp-mod application, transpose/scaling once (DEC-023)",
+      "clock": "core clock, control-tail window",
+      "reset": "synchronous; LFO phase per DEC-020/DEC-011 declared init",
+      "handshake": "params_valid from state banks; freq/gain outputs committed before go",
+      "conformance_vectors": ["ev-pitch-bend-up", "ev-pitch-bend-down", "ev-pitch-bend-center", "perf-transpose-12", "lfo-pm-sens7", "lfo-wave1", "lfo-wave5", "lfo-delay99", "ampmod-ams3", "peg-up", "kbd-right-c3", "bd-coarse0", "bd-coarse31", "bd-detune0", "bd-detune14", "bd-fine99", "bd-rs3", "vel-kvs7-30", "vel-kvs0-127", "osc-keysync0"],
+      "conformance_oracle": "N08 vectors sha256-exact (event alignment per NUM-011)"
+    },
+    {
+      "name": "algorithm_router",
+      "role": "32-algorithm routing + Mark I gate (threshold 16284) + feedback (algorithms 4/6 serial, +2 shift)",
+      "clock": "core clock (wiring + compares; no per-eval clock cost beyond op_evals)",
+      "reset": "synchronous; fb history cleared",
+      "handshake": "per-eval in/out with the op pipeline",
+      "conformance_vectors": ["alg-05", "alg-16", "alg-31", "alg4-fb0", "alg4-fb3", "alg4-fb7", "alg6-fb0", "alg6-fb3", "alg6-fb7"],
+      "conformance_oracle": "N08 vectors sha256-exact; broken_feedback mutation control retained (N08 mutation battery)"
+    },
+    {
+      "name": "mixer",
+      "role": "per-note convert + unclamped >=20-bit mix (NUM-010 exact-sum proof)",
+      "clock": "core clock",
+      "reset": "synchronous; accumulator cleared per note-sample",
+      "handshake": "note accumulator in, frame mix out to i2s_tx",
+      "conformance_vectors": ["ev-sum-15", "ev-all-sound-off", "ev-all-notes-off"],
+      "conformance_oracle": "N08 ev-sum-15 (the only preregistered case summing past per-note rails) sha256-exact; voice_sum_order_swap mutation control retained"
+    },
+    {
+      "name": "spi_ctl",
+      "role": "SPI slave link: 48-bit frames, skid queue, continuous shadow drain, status word on MISO",
+      "clock": "core clock; SCK/MOSI/CS_N through two-flop synchronizers (SCK <= f_core/4)",
+      "reset": "pad only (soft reset never touches the link)",
+      "handshake": "wr_valid/wr_addr/wr_data write port; MISO status word at CS_N fall",
+      "conformance_vectors": ["dir-base", "ev-repeated-note", "perf-transpose-12"],
+      "conformance_oracle": "pin-to-acceptance + drain-order bench (parasynth verify_ctl pattern, adapted) + every N08 event trace reproduced in order"
+    },
+    {
+      "name": "i2s_tx",
+      "role": "I2S transmitter: BCLK/LRCLK from frame-counter bits, one load per sample",
+      "clock": "core clock",
+      "reset": "synchronous (pad)",
+      "handshake": "sample load handshake with the mixer/frame controller",
+      "conformance_vectors": ["dir-base", "ev-sum-15"],
+      "conformance_oracle": "decoded-wire vs model bench (sibling tb_synth_top pattern, adapted) + H07/H09 latency measurement per the latency definition"
+    }
+  ],
+
+  "stale_rules": {
+    "contract_change": "any change to docs/CONTRACT-CORE-v1.md or spec/core-contract-v1.json after H04-H07 implementation starts requires a new decision record and marks the affected modules' RTL evidence STALE (status vocabulary per AGENTS.md)",
+    "artifact_drift": "drift of any hash in depends_on (N08 bundle, numeric profile, H01/H02 evidence) fails tools/h03_budget_check.py and marks every H03-derived budget STALE until re-derived from the new artifacts",
+    "clock_change": "changing the design point or the fallback verdict requires a new DR (owner sign-off item); polyphony (DEC-003) and reference budgets are never relaxation knobs",
+    "negative_control": "a budget that closes only by removing or shrinking worst-burst rows fails the checker (required_row_ids + recorded verdicts are enforced)"
+  }
+}

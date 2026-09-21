@@ -1,0 +1,416 @@
+{
+ "claim_boundary": "RTL-vs-frozen-model bit-exactness only; no synthesis, timing, fit, or audibility claim; model-vs-reference agreement is N05's result",
+ "equivalence": {
+  "actual_file": "actual.txt",
+  "actual_rows": 4332,
+  "bench_captured": 4332,
+  "bench_frames": 4332,
+  "bench_max_cycles_per_frame": 25,
+  "bench_writes": 12645,
+  "expected_rows": 4332,
+  "first_mismatch": null,
+  "mismatches": 0,
+  "status": "PASS",
+  "vvp_stdout_tail": "PASS tb_pitch_mod (frames=4332 writes=12645 captured=4332 maxcycles=25)\n/private/tmp/opencode/wt-h06-pitch-rtl/rtl/tb_pitch_mod.v:203: $finish called at 1106770 (1s)"
+ },
+ "expected_sha256": "6d0a1d6e374423e17190094d582e6d3e7eb55c405f373ae2e0c86378c3b981f3",
+ "golden": "src/gf180_dx7/model/pitch.py via the pinned integrated order (src/gf180_dx7/model/integrated.py compute_frame, seam finding F-3, DR-0006)",
+ "host_core_split": "docs/CONTRACT-CORE-v1.md sections 4.2/4.7/5; DEC-010/DEC-014/DEC-019/DEC-022/DEC-023; NUM-008 event_time_pitch_math",
+ "issue": 28,
+ "negative_controls": {
+  "fixedkb": {
+   "actual_file": "actual_fixedkb.txt",
+   "bench_captured": 4332,
+   "bench_frames": 4332,
+   "bench_max_cycles_per_frame": 25,
+   "bench_writes": 12645,
+   "define": "-DMUTATE_FIXED_TRACKS_KEYBOARD",
+   "description": "fixed mode tracks the keyboard (N05 named control)",
+   "first_mismatch": {
+    "basepitch": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000"
+    ],
+    "bend": {
+     "range_dn": 3,
+     "range_up": 3,
+     "step": 0,
+     "value": 8192
+    },
+    "ctrl_pm": 0,
+    "diff": {
+     "freq0": [
+      "0000015d",
+      "0004b17d"
+     ],
+     "freq1": [
+      "0000015d",
+      "0004b17d"
+     ],
+     "freq2": [
+      "0000015d",
+      "0004b17d"
+     ],
+     "freq3": [
+      "0000015d",
+      "0004b17d"
+     ],
+     "freq4": [
+      "0000015d",
+      "0004b17d"
+     ],
+     "freq5": [
+      "0000015d",
+      "0004b17d"
+     ]
+    },
+    "frame_index": 436,
+    "lfo": {
+     "delay": 0,
+     "rate": 0,
+     "sync": 1,
+     "wave": 0
+    },
+    "note": null,
+    "peg_levels": [
+     50,
+     50,
+     50,
+     50
+    ],
+    "peg_rates": [
+     99,
+     99,
+     99,
+     99
+    ],
+    "scenario_tag": "static-matrix",
+    "transpose": 24
+   },
+   "mismatches": 1138,
+   "status": "MET (mutant fails exact compare as required)",
+   "vvp_stdout_tail": "PASS tb_pitch_mod (frames=4332 writes=12645 captured=4332 maxcycles=25)\n/private/tmp/opencode/wt-h06-pitch-rtl/rtl/tb_pitch_mod.v:203: $finish called at 1106770 (1s)"
+  },
+  "lsb": {
+   "actual_file": "actual_lsb.txt",
+   "bench_captured": 4332,
+   "bench_frames": 4332,
+   "bench_max_cycles_per_frame": 25,
+   "bench_writes": 12645,
+   "define": "-DMUTATE_INCREMENT_LSB",
+   "description": "op-0 phase increment +1 LSB (boundary-value mutation)",
+   "first_mismatch": {
+    "basepitch": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000"
+    ],
+    "bend": {
+     "range_dn": 3,
+     "range_up": 3,
+     "step": 0,
+     "value": 8192
+    },
+    "ctrl_pm": 0,
+    "diff": {
+     "freq0": [
+      "0000015d",
+      "0000015e"
+     ]
+    },
+    "frame_index": 0,
+    "lfo": {
+     "delay": 0,
+     "rate": 0,
+     "sync": 0,
+     "wave": 0
+    },
+    "note": null,
+    "peg_levels": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "peg_rates": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "scenario_tag": "reset-state",
+    "transpose": 24
+   },
+   "mismatches": 4332,
+   "status": "MET (mutant fails exact compare as required)",
+   "vvp_stdout_tail": "PASS tb_pitch_mod (frames=4332 writes=12645 captured=4332 maxcycles=25)\n/private/tmp/opencode/wt-h06-pitch-rtl/rtl/tb_pitch_mod.v:203: $finish called at 1106770 (1s)"
+  },
+  "persample": {
+   "actual_file": "actual_persample.txt",
+   "bench_captured": 4332,
+   "bench_frames": 4332,
+   "bench_max_cycles_per_frame": 25,
+   "bench_writes": 12645,
+   "define": "-DH06_PER_SAMPLE_HOST",
+   "description": "illegal per-sample host stream gates increments (split violation)",
+   "first_mismatch": {
+    "basepitch": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000"
+    ],
+    "bend": {
+     "range_dn": 3,
+     "range_up": 3,
+     "step": 0,
+     "value": 8192
+    },
+    "ctrl_pm": 0,
+    "diff": {
+     "freq0": [
+      "0000015d",
+      "00000000"
+     ],
+     "freq1": [
+      "0000015d",
+      "00000000"
+     ],
+     "freq2": [
+      "0000015d",
+      "00000000"
+     ],
+     "freq3": [
+      "0000015d",
+      "00000000"
+     ],
+     "freq4": [
+      "0000015d",
+      "00000000"
+     ],
+     "freq5": [
+      "0000015d",
+      "00000000"
+     ]
+    },
+    "frame_index": 0,
+    "lfo": {
+     "delay": 0,
+     "rate": 0,
+     "sync": 0,
+     "wave": 0
+    },
+    "note": null,
+    "peg_levels": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "peg_rates": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "scenario_tag": "reset-state",
+    "transpose": 24
+   },
+   "mismatches": 4332,
+   "status": "MET (mutant fails exact compare as required)",
+   "vvp_stdout_tail": "PASS tb_pitch_mod (frames=4332 writes=12645 captured=4332 maxcycles=25)\n/private/tmp/opencode/wt-h06-pitch-rtl/rtl/tb_pitch_mod.v:203: $finish called at 1106770 (1s)"
+  },
+  "sync": {
+   "actual_file": "actual_sync.txt",
+   "bench_captured": 4332,
+   "bench_frames": 4332,
+   "bench_max_cycles_per_frame": 25,
+   "bench_writes": 12645,
+   "define": "-DMUTATE_LFO_SYNC_IGNORED",
+   "description": "LFO keydown keeps phase (N05 named control)",
+   "first_mismatch": {
+    "basepitch": [
+     "02032523",
+     "02032523",
+     "02032523",
+     "02032523",
+     "02032523",
+     "02032523"
+    ],
+    "bend": {
+     "range_dn": 3,
+     "range_up": 3,
+     "step": 0,
+     "value": 8192
+    },
+    "ctrl_pm": 0,
+    "diff": {
+     "lfo_val": [
+      "00fff4b9",
+      "00000b46"
+     ]
+    },
+    "frame_index": 4,
+    "lfo": {
+     "delay": 0,
+     "rate": 0,
+     "sync": 1,
+     "wave": 0
+    },
+    "note": null,
+    "peg_levels": [
+     50,
+     50,
+     50,
+     50
+    ],
+    "peg_rates": [
+     99,
+     99,
+     99,
+     99
+    ],
+    "scenario_tag": "static-matrix",
+    "transpose": 24
+   },
+   "mismatches": 3939,
+   "status": "MET (mutant fails exact compare as required)",
+   "vvp_stdout_tail": "PASS tb_pitch_mod (frames=4332 writes=12645 captured=4332 maxcycles=25)\n/private/tmp/opencode/wt-h06-pitch-rtl/rtl/tb_pitch_mod.v:203: $finish called at 1106770 (1s)"
+  }
+ },
+ "planning_id": "H06",
+ "schema": "h06-compare-report/1",
+ "status": "PASS",
+ "tables": {
+  "freqlut_sha256": "6d3c597008e85c67cfa1165ef4038a3c1c9c56a60a4b441b7486296a897dc64d",
+  "lfo_sin_hex": "reference/tables/lfo_sin_table.hex",
+  "lfo_sin_sha256_packed_s32": "806df6b1dab6434b80a7c548728ef4ab727d39efb12e21e16bffe2c30602c3df",
+  "manifest": "reference/tables/manifest.json"
+ },
+ "tool_identity": {
+  "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
+  "python": "3.14.7",
+  "rtl": {
+   "rtl/pitch_mod.v": "e84051493e0f99575c022f53ae429c966e7d830fbe2e3f92ced3908c345750de",
+   "rtl/tb_pitch_mod.v": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2"
+  }
+ },
+ "transpose_ruling": "documented mode (transpose - 24) applied once in-core per DEC-023 + contract 4.2; the pinned-wrapper omission (registry perf-transpose-12) is a wrapper finding, not RTL scope",
+ "vector_stats": {
+  "active_frames": 4328,
+  "bend_events": 57,
+  "burst_frames": 6,
+  "coarse0_frames": 528,
+  "coarse31_frames": 508,
+  "detune0_frames": 564,
+  "detune14_frames": 594,
+  "distinct_freqlut_ix": 917,
+  "distinct_hibits": 21,
+  "fixed_op_frames": 1138,
+  "frames": 4332,
+  "keysync_noteons": 421,
+  "negative_lookup_inputs": 169,
+  "no_traffic_frames": 3424,
+  "scenario_frames": {
+   "am-0-eg127-cam0": 24,
+   "am-0-eg127-cam100": 24,
+   "am-50-eg127-cam100": 24,
+   "am-99-eg0-cam0": 24,
+   "am-99-eg127-cam0": 24,
+   "bend-frozen": 16,
+   "burst": 6,
+   "ctrlpm-125-sens0": 24,
+   "ctrlpm-125-sens7": 24,
+   "ctrlpm-13-sens0": 24,
+   "ctrlpm-13-sens7": 24,
+   "fixed-keyboard-invariance": 6,
+   "lfo-w0-r0-d0-pm0": 40,
+   "lfo-w0-r0-d0-pm99": 40,
+   "lfo-w0-r0-d99-pm0": 40,
+   "lfo-w0-r0-d99-pm99": 40,
+   "lfo-w0-r35-nosync": 30,
+   "lfo-w0-r99-d0-pm0": 40,
+   "lfo-w0-r99-d0-pm99": 40,
+   "lfo-w0-r99-d99-pm0": 40,
+   "lfo-w0-r99-d99-pm99": 40,
+   "lfo-w1-r0-d0-pm0": 40,
+   "lfo-w1-r0-d0-pm99": 40,
+   "lfo-w1-r0-d99-pm0": 40,
+   "lfo-w1-r0-d99-pm99": 40,
+   "lfo-w1-r35-nosync": 30,
+   "lfo-w1-r99-d0-pm0": 40,
+   "lfo-w1-r99-d0-pm99": 40,
+   "lfo-w1-r99-d99-pm0": 40,
+   "lfo-w1-r99-d99-pm99": 40,
+   "lfo-w2-r0-d0-pm0": 40,
+   "lfo-w2-r0-d0-pm99": 40,
+   "lfo-w2-r0-d99-pm0": 40,
+   "lfo-w2-r0-d99-pm99": 40,
+   "lfo-w2-r35-nosync": 30,
+   "lfo-w2-r99-d0-pm0": 40,
+   "lfo-w2-r99-d0-pm99": 40,
+   "lfo-w2-r99-d99-pm0": 40,
+   "lfo-w2-r99-d99-pm99": 40,
+   "lfo-w3-r0-d0-pm0": 40,
+   "lfo-w3-r0-d0-pm99": 40,
+   "lfo-w3-r0-d99-pm0": 40,
+   "lfo-w3-r0-d99-pm99": 40,
+   "lfo-w3-r35-nosync": 30,
+   "lfo-w3-r99-d0-pm0": 40,
+   "lfo-w3-r99-d0-pm99": 40,
+   "lfo-w3-r99-d99-pm0": 40,
+   "lfo-w3-r99-d99-pm99": 40,
+   "lfo-w4-r0-d0-pm0": 40,
+   "lfo-w4-r0-d0-pm99": 40,
+   "lfo-w4-r0-d99-pm0": 40,
+   "lfo-w4-r0-d99-pm99": 40,
+   "lfo-w4-r35-nosync": 30,
+   "lfo-w4-r99-d0-pm0": 40,
+   "lfo-w4-r99-d0-pm99": 40,
+   "lfo-w4-r99-d99-pm0": 40,
+   "lfo-w4-r99-d99-pm99": 40,
+   "lfo-w5-r0-d0-pm0": 40,
+   "lfo-w5-r0-d0-pm99": 40,
+   "lfo-w5-r0-d99-pm0": 40,
+   "lfo-w5-r0-d99-pm99": 40,
+   "lfo-w5-r35-nosync": 30,
+   "lfo-w5-r99-d0-pm0": 40,
+   "lfo-w5-r99-d0-pm99": 40,
+   "lfo-w5-r99-d99-pm0": 40,
+   "lfo-w5-r99-d99-pm99": 40,
+   "peg-peg-down-fast": 38,
+   "peg-peg-down-slow": 64,
+   "peg-peg-hold": 36,
+   "peg-peg-nonzero-final": 36,
+   "peg-peg-rate3-mixed": 60,
+   "peg-peg-retrigger": 60,
+   "peg-peg-up-fast": 38,
+   "peg-peg-up-slow": 64,
+   "random": 700,
+   "reset-state": 4,
+   "static-matrix": 864,
+   "transpose-documented": 24
+  },
+  "seed": 13656065,
+  "shifted_noteons": 69,
+  "wave_frames": [
+   1892,
+   560,
+   460,
+   470,
+   490,
+   460
+  ],
+  "writes": 12645
+ },
+ "vectors_sha256": "46bbd745b777d5f818d755c1e97e97e3cff3edcd6274f33c51d20a9c064475b3"
+}

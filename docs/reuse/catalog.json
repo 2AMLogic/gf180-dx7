@@ -1297,6 +1297,11 @@
       "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
     },
     {
+      "path": "src/gf180_dx7/model/__init__.py",
+      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+      "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import; re-pinned to the N02 package-marker bytes (same file, later entry records the same hash)"
+    },
+    {
       "path": "src/gf180_dx7/model/envelope.py",
       "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
       "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
@@ -1395,6 +1400,31 @@
       "path": "tests/test_storage_probe.py",
       "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
       "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
+    },
+    {
+      "path": "rtl/operator_probe.v",
+      "sha256": "c20277c0c39258250a4acaa259847f2395e0e31f894d34ea92d9a4e710f10f04",
+      "reason": "locally authored H01 synthesizable operator-probe RTL (issue #20); Mark I per-sample operator semantics mirrored from the frozen N02 model (operator.py) as facts with citations, ROMs $readmemh-load the repo's own manifest-pinned reference/tables bytes, no upstream bytes"
+    },
+    {
+      "path": "rtl/tb_operator_probe.v",
+      "sha256": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842",
+      "reason": "locally authored H01 iverilog equivalence driver (issue #20); drives golden vectors and dumps RTL outputs for the Python judge, no upstream bytes"
+    },
+    {
+      "path": "tools/h01_compare.py",
+      "sha256": "5368c6ff1e1e1b32a05eb55127bd5da9b285ea04f9d6b83b55b25f4ee9f8a0f6",
+      "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes"
+    },
+    {
+      "path": "tools/h01_synth.py",
+      "sha256": "d3e82f753d741ee8291fd601c44f51078e56672f4ea9af8c963bc5b29a49459e",
+      "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tests/test_h01.py",
+      "sha256": "8d34a6e1d04eccb2f83eb12e51aca0320eed3feb44e16bd57f3fb229a9aae89f",
+      "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes"
     },
     {
       "path": "src/gf180_dx7/model/algorithm.py",

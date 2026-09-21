@@ -1163,8 +1163,8 @@
     },
     {
       "path": "tools/check_all.sh",
-      "sha256": "c19d3b6d0fd2010d0e4704a59ff5aa9f2f699f5a98c90daafb5fd1231c31fe61",
-      "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge"
+  "sha256": "7e13170117ac69768e329b8a42a952ffacf049bb17b48aa678ff846aa47de011",
+  "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge; re-pinned after H03 added the core-contract budget gate (issue #25)"
     },
     {
       "path": "src/gf180_dx7/sysex.py",
@@ -1551,10 +1551,35 @@
       "sha256": "ad9cba1b2cb0f1f529b1d9147c1977b7b476559c0f7893be70c564e48b768198",
       "reason": "committed N08 challenge record (issue #24): 21/21 preregistered challenge cases AGREE_EXACT at the frozen thresholds, bound to the bundle hash"
     },
-    {
-      "path": "reference/release/mutation-results.json",
-      "sha256": "8c7741511b5ba8df8ed0bd617d5988c5493a4066f7e83f358f8993933444a900",
-      "reason": "committed N08 mutation results (issue #24): 5/5 mutations detected by the release verification, bound to the bundle hash"
-    }
-  ]
+ {
+  "path": "reference/release/mutation-results.json",
+  "sha256": "8c7741511b5ba8df8ed0bd617d5988c5493a4066f7e83f358f8993933444a900",
+  "reason": "committed N08 mutation results (issue #24): 5/5 mutations detected by the release verification, bound to the bundle hash"
+ },
+ {
+  "path": "docs/CONTRACT-CORE-v1.md",
+  "sha256": "6332fa05eedc6f1ce2899b80be8983762d5a73f83e3d06cb77e2f241de53af73",
+  "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules"
+ },
+ {
+  "path": "spec/core-contract-v1.json",
+  "sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
+  "reason": "locally authored H03 machine-readable contract (issue #25): budget rows with measured/structural/derived_estimate classes, clock targets, queue/latency constants, module conformance subsets pointing at N08 case ids, depends_on hash pins"
+ },
+ {
+  "path": "tools/h03_budget_check.py",
+  "sha256": "9df7c1cedadbb438205938b7782fce134b474cd2bdb14c4ecb71c82796c5547f",
+  "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes"
+ },
+ {
+  "path": "tests/test_h03_contract.py",
+  "sha256": "c93c5c7cecbade3b8417a9142edea3543fc8846f64d452e128d4b458d3fb26fc",
+  "reason": "locally authored H03 test suite (issue #25): independent budget recomputation, DEC-citation existence, queue/latency constants, live tool gate, and four negative controls (mutated 2 clk/eval row, burst-stripped average-case budget, fake PASS verdict, drifted evidence hash); no upstream bytes"
+ },
+ {
+  "path": "docs/decision-records/0008-core-schedule-contract.md",
+  "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
+  "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
+ }
+]
 }

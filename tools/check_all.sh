@@ -42,4 +42,10 @@ python3 tools/render_selfcheck.py
 echo "== python3 tools/check_numeric_profile.py"
 python3 tools/check_numeric_profile.py
 
+# H03 (issue #25): core interface/schedule contract — worst-case budget
+# recomputed from the measured H01/H02/N08 anchors (hash-gated), verdicts
+# enforced (12.288 MHz FAIL / 24.576 MHz PASS), DEC citations checked.
+echo "== python3 tools/h03_budget_check.py"
+python3 tools/h03_budget_check.py
+
 echo "all repo checks passed"

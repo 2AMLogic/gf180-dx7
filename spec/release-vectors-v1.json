@@ -1,0 +1,154 @@
+{
+  "schema": "gf180-dx7.release-vectors-preregistration/1",
+  "id": "release-vectors-v1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/24",
+  "plan_id": "N08",
+  "frozen": "2026-09-20",
+  "purpose": "Preregistration for the frozen fixed-model release (N08): the development set, the challenge set, the acceptance thresholds, and the exclusion list were fixed HERE, before any challenge render was inspected. The bundle itself (per-case model PCM sha256 vectors, block-level event traces, model identity, bundle hash) is built deterministically from this file by tools/n08_build_release.py into reference/release/manifest.json; expected oracle values are recorded only at the frozen challenge run (reference/release/challenge-results.json). Editing this file after the freeze invalidates the bundle (bundle hash + binding sha checks fail; all H-series conformance is STALE) and requires a new decision record plus a full re-freeze.",
+  "ordering_declaration": "Thresholds and case selection in this file were committed before any challenge render was inspected. The challenge run consumes the thresholds from this file (tools/n08_challenge.py refuses to run unless thresholds_frozen_before_challenge is true and the binding hashes match) and records per-case verdicts at those frozen thresholds in reference/release/challenge-results.json in the same commit as this preregistration. Tuning thresholds after inspecting challenge failures is forbidden (plan section 7; issue #24 non-goals); a threshold change is a decision record plus a full re-freeze, never an in-place edit.",
+
+  "model_identity_note": "The frozen model is the merged N06+N07 tree in this commit: src/gf180_dx7/sysex.py plus src/gf180_dx7/model/{__init__,operator,envelope,algorithm,pitch,tables,integrated,poly}.py, byte-unchanged from the N06/N07 merges. The bundle renders every case through the D00 polyphonic manager (src/gf180_dx7/model/poly.py) around the integrated single-note composition (src/gf180_dx7/model/integrated.py); the build additionally asserts byte-equality of the two layers on the single-note dev cases.",
+
+  "dev_set": {
+    "definition": "The N06-exact single-note registry set (docs/N06-INTEGRATED-MODEL.md section 4.2, 23 cases) plus the N07 wrapper-valid poly set (docs/N07-POLY-MODEL.md section 4, 4 registry cases + 3 dev32 velocity-contrast entries).",
+    "registry_single_note": [
+      "dir-base",
+      "osc-fixed-carrier",
+      "bd-coarse0",
+      "bd-coarse31",
+      "bd-detune0",
+      "bd-detune14",
+      "alg4-fb0",
+      "alg4-fb3",
+      "alg4-fb7",
+      "alg6-fb0",
+      "alg6-fb3",
+      "alg6-fb7",
+      "codec-name-a",
+      "codec-name-b",
+      "ev-sustain-no-pedal",
+      "ev-sustain-pedal",
+      "ev-all-sound-off",
+      "ev-all-notes-off",
+      "ev-pitch-bend-up",
+      "ev-pitch-bend-down",
+      "ev-pitch-bend-center",
+      "ev-modwheel-127",
+      "ev-modwheel-0"
+    ],
+    "registry_poly": [
+      "ev-repeated-note",
+      "ev-retrigger",
+      "ev-sum-15",
+      "ev-steal-16"
+    ],
+    "dev32_indices": [3, 6, 30],
+    "dev32_note": "dev32-03/06/30 are the velocity_contrast corpus entries proven EXACT at N07. Their voice bytes resolve from the pinned DX7_AllTheWeb archive (canonical-hash checked; bytes are never redistributed), so these three rows are archive-gated everywhere: the committed vectors are intact regardless, but re-rendering them in a fresh environment is guarded NOT_RUN unless the pinned archive is present. This is the declared environment boundary, never a silent pass."
+  },
+
+  "challenge_set": {
+    "definition": "Preregistered registry cases NOT used for development, chosen for axis diversity to catch overfitting of the freeze process. Purely synthetic (all render from the registry synthetic_base), so the challenge is reproducible in any environment. Single-note only: the registry contains no fresh synthetic polyphonic case beyond the dev set; polyphonic challenge coverage is a recorded gap (see known_gaps).",
+    "selection_rationale": "Axes: algorithms not in the dev registry set (5, 16, 31); oscillator fine frequency (bd-fine99); envelope timing shapes (delayed attack, rising segment, slow rate-3, nonzero final, fast release, rate scaling); LFO waveforms and delay with key-sync 1 determinacy (waves 1 and 5, delay 99, pitch-mod sensitivity); the amp-mod sensitivity path with a non-inert LFO (ampmod-ams3, the exact combination N06 declared NO_VERDICT); keyboard right-side scaling (kbd-right-c3); velocity sensitivity boundaries (kvs7 at velocity 30, kvs0 at velocity 127); pitch EG (peg-up); the repeated-note osc-key-sync phrase (osc-keysync0, pairs with the registry's observed-identical osc-keysync1); and the pinned-wrapper transpose finding (perf-transpose-12).",
+    "registry_cases": [
+      {"id": "alg-05", "axis": "algorithm 5 (not in dev registry set)"},
+      {"id": "alg-16", "axis": "algorithm 16"},
+      {"id": "alg-31", "axis": "algorithm 31 (extreme)"},
+      {"id": "bd-fine99", "axis": "oscillator fine frequency 99"},
+      {"id": "bd-delayed-attack", "axis": "delayed-attack envelope (silent onset window)"},
+      {"id": "bd-rising-env", "axis": "rising envelope segment"},
+      {"id": "bd-slow-rate3", "axis": "slow rate-3 decay"},
+      {"id": "bd-nonzero-final", "axis": "nonzero final level tail"},
+      {"id": "bd-fast-release", "axis": "fast release, silent at end"},
+      {"id": "bd-rs3", "axis": "keyboard rate scaling 3"},
+      {"id": "lfo-wave1", "axis": "LFO waveform 1 (keysync 1, determinate)"},
+      {"id": "lfo-wave5", "axis": "LFO waveform 5 sample-hold (keysync 1, determinate)"},
+      {"id": "lfo-delay99", "axis": "maximum LFO delay ramp (keysync 1, determinate)"},
+      {"id": "lfo-pm-sens7", "axis": "LFO pitch-mod sensitivity 7 at speed 99"},
+      {"id": "ampmod-ams3", "axis": "amp-mod sensitivity 3 with non-inert LFO (N06 NO_VERDICT combination; strongest overfitting probe)"},
+      {"id": "kbd-right-c3", "axis": "keyboard right-side scaling curve 3"},
+      {"id": "vel-kvs7-30", "axis": "velocity 30 with velocity sensitivity 7"},
+      {"id": "vel-kvs0-127", "axis": "velocity 127 with velocity sensitivity 0 (identity partner vel-kvs0-30 in dev)"},
+      {"id": "peg-up", "axis": "pitch EG rising shape"},
+      {"id": "osc-keysync0", "axis": "repeated-note phrase with osc key sync off (registry observed-identical partner osc-keysync1)"},
+      {"id": "perf-transpose-12", "axis": "pinned-wrapper transpose finding (patch transpose ignored; bounded R06 finding)"}
+    ]
+  },
+
+  "excluded_cases": [
+    {
+      "id": "lfo-keysync0",
+      "reason": "Reference-side indeterminacy (N06 finding F-4 / R05): keysync 0 with the LFO reaching the PCM carries a C++-indeterminate LFO phase, so no derivable oracle value exists. The case is not oracle-comparable and is excluded from the bundle entirely; an owner ruling defining the reference behavior is a prerequisite for ever freezing it."
+    },
+    {
+      "id": "ev-steal-17",
+      "reason": "Documented policy divergence (N07): the model steals per D00 DEC-017 while the pinned wrapper drops the 17th note. No equality budget may be declared on this case; freezing a model-only vector would be legal but is excluded to keep every bundle row oracle-comparable or explicitly archived-gated-dev."
+    },
+    {
+      "id": "ev-aftertouch",
+      "reason": "Registry BLOCKED: the pinned oracle grammar has no aftertouch event, so no executable reference render exists (R06 performance_controls status blocked; DEC-006 coverage tracked in R06)."
+    },
+    {
+      "id": "ev-volume-cc7",
+      "reason": "Registry BLOCKED: the pinned oracle CC subset has no volume (CC 7) event (R06 performance_controls status blocked)."
+    },
+    {
+      "id": "ev-patch-change-held",
+      "reason": "Registry BLOCKED at the oracle (single voice file per render); the D00 'patch <n>' event is model grammar only (DEC-019), so the case has no oracle-comparable reference."
+    },
+    {
+      "id": "corpus-alg4-oocuter / corpus-alg6-belandbiwa / corpus-highfb-mellowsolo",
+      "reason": "Corpus-selector cases (archive-gated voice bytes). Excluded from the challenge set to keep the challenge reproducible in any environment; their axes (algorithms 4/6, high feedback) are already covered by dev and dev32 rows. Not a judgment about their value as future challenge material."
+    }
+  ],
+
+  "thresholds": {
+    "vector_conformance": {
+      "kind": "sha256_exact",
+      "applies": "every bundle case: the committed vector file bytes, the model re-render at verification time, and any future RTL render (claim 1: RTL-vs-frozen-model must be EXACT; no numeric tolerance exists or is tolerated)",
+      "event_trace": "exact_match",
+      "event_trace_applies": "the block-level event application log recorded per case must reproduce exactly at every verification"
+    },
+    "model_vs_oracle": {
+      "kind": "byte_identical_f32le",
+      "max_abs_error": 0.0,
+      "mismatch_count": 0,
+      "applies": "challenge rows with oracle_comparable=true, evaluated ONCE at the frozen challenge run (claim 2: model reproduces the pinned software reference). Any non-exact row is a bounded finding recorded in reference/release/challenge-results.json and the release notes at these frozen thresholds - it never retunes the threshold, never swaps the case, and never blocks the RTL-vs-model claim"
+    },
+    "verification_exit_codes": {
+      "0": "bundle intact and every performed check passes (NOT_RUN rows reported loudly, never as passes)",
+      "1": "tamper, drift, or a failed threshold; the failing case is named",
+      "2": "could not run (bundle/manifest missing or unreadable)"
+    }
+  },
+  "thresholds_frozen_before_challenge": true,
+
+  "binding": {
+    "note": "sha256 of the exact inputs this preregistration was frozen against. The builder and verifier re-check these; any drift is STALE and requires a conscious re-freeze.",
+    "registry_path": "spec/compatibility-registry-v1.json",
+    "registry_sha256": "39c79f71618cf7ea32f231d990ce5d4671561b8fe6dc87a52673542c407e6693",
+    "numeric_profile_path": "spec/numeric-profile-v1.json",
+    "numeric_profile_sha256": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
+    "dev32_path": "corpus/dev32.json",
+    "dev32_sha256": "ad0a30ac43801af3f86a466c5a8d498c7425d0ac2bfc813e512b480a81a7f3c0",
+    "model_modules": {
+      "src/gf180_dx7/__init__.py": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
+      "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+      "src/gf180_dx7/model/__init__.py": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+      "src/gf180_dx7/model/operator.py": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+      "src/gf180_dx7/model/envelope.py": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+      "src/gf180_dx7/model/algorithm.py": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+      "src/gf180_dx7/model/pitch.py": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+      "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+      "src/gf180_dx7/model/integrated.py": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
+      "src/gf180_dx7/model/poly.py": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12"
+    }
+  },
+
+  "known_gaps": [
+    "No polyphonic challenge case: the registry's polyphonic cases beyond the dev set are either the documented ev-steal-17 divergence or archive-gated corpus material; the challenge set is single-note. Polyphonic model semantics are covered by the dev set plus the N07 evidence, not by an independent challenge.",
+    "dev32-03/06/30 rows are archive-gated for re-rendering (voice bytes never redistributed); their committed vectors are environment-independent.",
+    "Amp-mod sensitivity with a non-inert LFO (ampmod-ams3) is deliberately in the challenge set despite the N06 NO_VERDICT flag: it is the strongest overfitting probe available. A failure there is a recorded bounded finding at the frozen thresholds, not a threshold change."
+  ],
+
+  "claims_boundary": "This release freezes claim-1 material (the model is the exact RTL oracle) and records claim-2 evidence (model vs pinned software reference at frozen thresholds). It establishes nothing about original-DX7 fidelity, RTL conformance itself, synthesis, fit, or audibility (DEC-001, DEC-024, plan section 7)."
+}

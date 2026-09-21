@@ -1,0 +1,81 @@
+{
+  "schema": "gf180-dx7.n08-mutation-results/1",
+  "bundle_sha256": "81bcc43cd49a29f35b21370733bb9888dd5641862501b441136e122485f54f8c",
+  "results": [
+    {
+      "id": "param_shuffle",
+      "description": "operator envelope rates/levels reversed per op (wrong operator -> envelope parameter mapping)",
+      "seam": "gf180_dx7.model.algorithm.derive_op_envelope_params (+ integrated namespace)",
+      "cases_rendered": [
+        "dir-base",
+        "ev-repeated-note"
+      ],
+      "verify_exit": 1,
+      "mismatching_cases": [
+        "dir-base",
+        "ev-repeated-note"
+      ],
+      "detected": true
+    },
+    {
+      "id": "wrong_gain",
+      "description": "output conversion shifts >>8 instead of >>9 (+6 dB datapath gain error)",
+      "seam": "gf180_dx7.model.operator.clip_val_domain (all importer namespaces)",
+      "cases_rendered": [
+        "dir-base",
+        "ev-pitch-bend-up"
+      ],
+      "verify_exit": 1,
+      "mismatching_cases": [
+        "dir-base",
+        "ev-pitch-bend-up"
+      ],
+      "detected": true
+    },
+    {
+      "id": "broken_feedback",
+      "description": "per-note feedback history delayed by one block (block N+1 reads block N-1's history)",
+      "seam": "gf180_dx7.model.algorithm.AlgorithmRouter.render fb_buf handling",
+      "cases_rendered": [
+        "dir-base",
+        "alg4-fb7"
+      ],
+      "verify_exit": 1,
+      "mismatching_cases": [
+        "alg4-fb7",
+        "dir-base"
+      ],
+      "detected": true
+    },
+    {
+      "id": "silent_stub",
+      "description": "every voice frame renders exact silence (dead or stale module stub)",
+      "seam": "gf180_dx7.model.poly.PolyManager.compute_frame",
+      "cases_rendered": [
+        "dir-base",
+        "ev-sustain-pedal"
+      ],
+      "verify_exit": 1,
+      "mismatching_cases": [
+        "dir-base",
+        "ev-sustain-pedal"
+      ],
+      "detected": true
+    },
+    {
+      "id": "voice_sum_order_swap",
+      "description": "mix pipeline order swapped: voices summed raw then clipped once, instead of the frozen per-voice clip then exact integer sum",
+      "seam": "gf180_dx7.model.poly.PolyManager._block_clips",
+      "cases_rendered": [
+        "ev-sum-15"
+      ],
+      "verify_exit": 1,
+      "mismatching_cases": [
+        "ev-sum-15"
+      ],
+      "detected": true
+    }
+  ],
+  "all_detected": true,
+  "negative_control_note": "each mutation is applied to the frozen model at runtime and must be caught by tools/n08_verify_release.py's re-render pass naming the case; a clean bundle alone proves nothing \u2014 this battery proves the verification fails loudly under realistic defect classes"
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "gf180-dx7.n06-integrated/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/22",
+  "model": "src/gf180_dx7/model/integrated.py (N06 integrated single-note fixed model)",
+  "comparator": "src/gf180_dx7/compare.py (exact mode, dry; docs/COMPARE-CONTRACT.md)",
+  "oracle": {
+    "identity_path": "reference/oracle-identity.json",
+    "pinned_sha256": "6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42",
+    "observed_sha256_match": true,
+    "n_renders": 3
+  },
+  "sample_rate": 48000,
+  "target": "EXACT (byte-identical); any deviation is localized and reported per property, never budgeted",
+  "summary": {
+    "cases_total": 0,
+    "by_verdict": {},
+    "exact": 0,
+    "fail": 0,
+    "n07_scope": 0,
+    "not_run": 0
+  },
+  "sections": {
+    "stubbed_cases": [
+      {
+        "id": "dir-base",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.0,
+        "stub": "envelope",
+        "oracle_pcm_sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+        "model_pcm_sha256": "fc19163704ecc69be50a8e020ab3e13120d3481da450f489a738d1469a568ac5",
+        "verdict": "FAIL",
+        "status": "FAIL",
+        "byte_identical": false,
+        "max_abs_error": 0.244293212890625,
+        "mismatch_count": 45606,
+        "first_divergent_sample": 2384,
+        "first_divergent_block": 37,
+        "hypothesis": {
+          "role": "HYPOTHESIS",
+          "module": "envelope (N03 seam: operator level_in composition, dx7note.cc:283)",
+          "behavior": "injected negative control: envelope seam replaced by a constant output",
+          "basis": "the stub was injected by the runner; the divergence is attributable to the stubbed seam by construction"
+        },
+        "input_fingerprint": "ca194d4e5dc895309f58485a1a7d1ab53455116039d82b951d7b5e277ca1ea54",
+        "expect_property": "non_silent_after_onset"
+      },
+      {
+        "id": "ev-pitch-bend-up",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "499a6d19f59f495d5713f8afaced4f5d83d7236e91cf78bad7bc8c02efeabc61",
+        "render_seconds": 1.0,
+        "stub": "envelope",
+        "oracle_pcm_sha256": "312488947bc8082e942ae86d9bcba84b37215e1ef6c59c2898a7f37e736d2e90",
+        "model_pcm_sha256": "e959bb076e1de782052cd035b04637e06ba3786011e8ba47620aa1565dc90802",
+        "verdict": "FAIL",
+        "status": "FAIL",
+        "byte_identical": false,
+        "max_abs_error": 0.244293212890625,
+        "mismatch_count": 45610,
+        "first_divergent_sample": 2384,
+        "first_divergent_block": 37,
+        "hypothesis": {
+          "role": "HYPOTHESIS",
+          "module": "envelope (N03 seam: operator level_in composition, dx7note.cc:283)",
+          "behavior": "injected negative control: envelope seam replaced by a constant output",
+          "basis": "the stub was injected by the runner; the divergence is attributable to the stubbed seam by construction"
+        },
+        "input_fingerprint": "70054c62effe2a501a3ef37eb3a392a6a67a0fbe4d428367466d0a61b6745af4",
+        "expect_property": "distinct_hash_vs:ev-pitch-bend-center"
+      },
+      {
+        "id": "ev-all-sound-off",
+        "voice_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events_sha256": "b64be3d405f92daeac9e31295b87fcfae2d0f905e7407934c6758876a2520230",
+        "render_seconds": 1.0,
+        "stub": "envelope",
+        "oracle_pcm_sha256": "164634421ea9b536874fbf1572971b7a6b55d73cc76cfbce7498fa5ddafbef31",
+        "model_pcm_sha256": "f22c77616f4f68bf9477deb783ca6fefeb78a0ff2dd59331c36d609497645177",
+        "verdict": "FAIL",
+        "status": "FAIL",
+        "byte_identical": false,
+        "max_abs_error": 0.244293212890625,
+        "mismatch_count": 21612,
+        "first_divergent_sample": 2384,
+        "first_divergent_block": 37,
+        "hypothesis": {
+          "role": "HYPOTHESIS",
+          "module": "envelope (N03 seam: operator level_in composition, dx7note.cc:283)",
+          "behavior": "injected negative control: envelope seam replaced by a constant output",
+          "basis": "the stub was injected by the runner; the divergence is attributable to the stubbed seam by construction"
+        },
+        "input_fingerprint": "c100694024049f83720960dcefa2bf95870aa0eedb5752ac8b5b8409f24a2add",
+        "expect_property": "silent_after_cc120"
+      }
+    ]
+  },
+  "fidelity_note": "Software-reference agreement only (pinned Dexed Mark I oracle); not original-DX7 fidelity, not RTL agreement, not a musical-quality claim (DEC-001).",
+  "control": {
+    "stub": "envelope",
+    "seam": "envelope (N03 seam: operator level_in composition, dx7note.cc:283)",
+    "all_cases_fail": true,
+    "localization_names_stubbed_seam": true,
+    "control_fired": true
+  }
+}

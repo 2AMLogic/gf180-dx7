@@ -1440,6 +1440,41 @@
       "path": "docs/N04-ALGORITHM-MODEL.md",
       "sha256": "99138af716d18a4ec761ac55c919d0264f36ed141fe702ba9abe99844fff24a0",
       "reason": "locally authored N04 derivation and results record (issue #18)"
+    },
+    {
+      "path": "src/gf180_dx7/model/integrated.py",
+      "sha256": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
+      "reason": "locally authored N06 integrated single-note model (issue #22); composes the merged N02-N05 modules and mirrors the pinned wrapper's block loop as semantic facts (zero GPL bytes); carries the DR-0006 findings"
+    },
+    {
+      "path": "tools/n06_compare.py",
+      "sha256": "2f76e8abaf157451759cade62031129e52ae0e3131911bcde360b590812ebf60",
+      "reason": "locally authored N06 case runner (issue #22); pinned-oracle vs integrated-model exact comparison over the dev32 + registry single-note suites with per-property localization and the stub negative control"
+    },
+    {
+      "path": "tests/test_integrated.py",
+      "sha256": "77d0c6f385ce80d837593a6329bdbca76d723e4a39d03c4a99cc2db94ae661e9",
+      "reason": "locally authored N06 test suite (issue #22); wrapper bookkeeping, composition semantics (bend/LFO/scope guard), stub seams, committed-evidence validation, guarded live oracle checks"
+    },
+    {
+      "path": "docs/N06-INTEGRATED-MODEL.md",
+      "sha256": "a3511af08677f109582c99cc5b86b7926921918819b5ed0937a4bb28e74dd475",
+      "reason": "locally authored N06 derivation and results record (issue #22): composition order, event semantics, evidence tables, findings F-1..F-5"
+    },
+    {
+      "path": "docs/decision-records/0006-n06-integration-findings.md",
+      "sha256": "2671359e30a3bfd5a2a73102a3204e32e500ee09a234ade1dd7a5d79d71c3905",
+      "reason": "locally authored decision record for the N06 integration findings (issue #22, stop/escalate clause)"
+    },
+    {
+      "path": "reference/evidence/n06-integrated/dev32-subset.json",
+      "sha256": "d135fd41ad7f629708d68df47fa5546a850f109fb7b2aa464424e06d0c9040eb",
+      "reason": "committed N06 evidence (issue #22): oracle-vs-model verdicts and diagnostics for the dev32 subset + registry single-note cases"
+    },
+    {
+      "path": "reference/evidence/n06-integrated/negative-control.json",
+      "sha256": "60e0ed8affc922a529e32bba74f743fa32332ff938581556901ad71030cc19de",
+      "reason": "committed N06 negative control (issue #22): envelope-seam stub makes the case set fail and localize the stubbed module"
     }
   ]
 }

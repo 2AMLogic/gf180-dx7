@@ -1425,6 +1425,21 @@
       "path": "tests/test_h01.py",
       "sha256": "8d34a6e1d04eccb2f83eb12e51aca0320eed3feb44e16bd57f3fb229a9aae89f",
       "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes"
+    },
+    {
+      "path": "src/gf180_dx7/model/algorithm.py",
+      "sha256": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+      "reason": "locally authored N04 integer algorithm/feedback model (issue #18); routing table values adopted as numeric facts from the pinned msfa citation with clean re-implementation, zero GPL bytes"
+    },
+    {
+      "path": "tests/test_algorithm.py",
+      "sha256": "733f778ba5ef7fc7ab605fe6da92ee42a5316204cb12cf6ac01843e87439ac0a",
+      "reason": "locally authored N04 test suite (issue #18); hand-derived wiring table re-derived from the citation, scripted-source battery, oracle sweep, three negative controls"
+    },
+    {
+      "path": "docs/N04-ALGORITHM-MODEL.md",
+      "sha256": "99138af716d18a4ec761ac55c919d0264f36ed141fe702ba9abe99844fff24a0",
+      "reason": "locally authored N04 derivation and results record (issue #18)"
     }
   ]
 }

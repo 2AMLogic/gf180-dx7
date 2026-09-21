@@ -1,0 +1,3241 @@
+{
+  "schema": "gf180-dx7.release-vectors-manifest/1",
+  "release_id": "release-vectors-v1",
+  "covered": {
+    "schema": "gf180-dx7.release-vectors-manifest/1",
+    "release_id": "release-vectors-v1",
+    "issue": "https://github.com/2AMLogic/gf180-dx7/issues/24",
+    "sample_rate": 48000,
+    "model_identity": {
+      "modules": {
+        "src/gf180_dx7/__init__.py": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
+        "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+        "src/gf180_dx7/model/__init__.py": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+        "src/gf180_dx7/model/operator.py": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+        "src/gf180_dx7/model/envelope.py": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+        "src/gf180_dx7/model/algorithm.py": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+        "src/gf180_dx7/model/pitch.py": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+        "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+        "src/gf180_dx7/model/integrated.py": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
+        "src/gf180_dx7/model/poly.py": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12"
+      },
+      "renderer": "src/gf180_dx7/model/poly.py PolyManager around src/gf180_dx7/model/integrated.py (the frozen N06+N07 tree)"
+    },
+    "numeric_profile": {
+      "path": "spec/numeric-profile-v1.json",
+      "sha256": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370"
+    },
+    "spec": {
+      "path": "spec/release-vectors-v1.json",
+      "sha256": "5848fbfd031521599ab001dec325d1a1d8b6bdb08102475a53a95ef26474230d"
+    },
+    "thresholds": {
+      "vector_conformance": {
+        "kind": "sha256_exact",
+        "applies": "every bundle case: the committed vector file bytes, the model re-render at verification time, and any future RTL render (claim 1: RTL-vs-frozen-model must be EXACT; no numeric tolerance exists or is tolerated)",
+        "event_trace": "exact_match",
+        "event_trace_applies": "the block-level event application log recorded per case must reproduce exactly at every verification"
+      },
+      "model_vs_oracle": {
+        "kind": "byte_identical_f32le",
+        "max_abs_error": 0.0,
+        "mismatch_count": 0,
+        "applies": "challenge rows with oracle_comparable=true, evaluated ONCE at the frozen challenge run (claim 2: model reproduces the pinned software reference). Any non-exact row is a bounded finding recorded in reference/release/challenge-results.json and the release notes at these frozen thresholds - it never retunes the threshold, never swaps the case, and never blocks the RTL-vs-model claim"
+      },
+      "verification_exit_codes": {
+        "0": "bundle intact and every performed check passes (NOT_RUN rows reported loudly, never as passes)",
+        "1": "tamper, drift, or a failed threshold; the failing case is named",
+        "2": "could not run (bundle/manifest missing or unreadable)"
+      }
+    },
+    "thresholds_frozen_before_challenge": true,
+    "threshold_source_note": "thresholds are copied verbatim from the preregistration spec (sha256 bound above); they were frozen before the challenge run",
+    "error_budgets": {
+      "claim_1_rtl_vs_model": {
+        "budget": "EXACT (sha256-identical PCM); no numeric budget exists or is tolerated (plan section 7)"
+      },
+      "claim_2_model_vs_reference": {
+        "source": "spec/numeric-profile-v1.json decision_index + float_gated_reference_spots (sha256 recorded in covered.numeric_profile)",
+        "decisions": [
+          {
+            "id": "NUM-001",
+            "title": "adopt pinned-oracle integer semantics; regenerate tables; copy no bytes",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction for mirrored integer paths; float-gated spots bounded in NUM-008"
+          },
+          {
+            "id": "NUM-002",
+            "title": "N=64 frames; per-frame control cadence",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction"
+          },
+          {
+            "id": "NUM-003",
+            "title": "32-bit phase, 2^32/cycle; Q24 logfreq + 1025-entry Freqlut",
+            "error_class": "derived",
+            "error_estimate": "exact accumulator; regenerated lut drift <= 1 phase-increment LSB on rare pitches (derived)"
+          },
+          {
+            "id": "NUM-004",
+            "title": "Mark I mkiSin: 10-bit log-sin + 10-bit sin-exp, 14-bit env gain, multiply-free",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction (same tables, same integer ops)"
+          },
+          {
+            "id": "NUM-005",
+            "title": "DX envelope: 4x4 segments, Q24-log level, per-frame step, linear intra-frame gain ramp",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction"
+          },
+          {
+            "id": "NUM-006",
+            "title": "Feedback: 2x int32 history, (y0+y) >> (shift+1), 8-bit depth, algo 4/6 serial (+2 shift)",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction"
+          },
+          {
+            "id": "NUM-007",
+            "title": "LFO: 6 waveforms, per-frame sample + delay, sine via msfa table (unit_48k = 33587)",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction"
+          },
+          {
+            "id": "NUM-008",
+            "title": "Pitch EG (unit_48k = 1050) + declared float-gated spots with derived bounds",
+            "error_class": "mixed_derived_and_no_verdict",
+            "error_estimate": "bend <= +1 logfreq count (derived); ampmod exp NO_VERDICT (measure at N02); event-time pitch math <= 1 phase-increment LSB (derived)"
+          },
+          {
+            "id": "NUM-009",
+            "title": "Routing table + Mark I gate (thresh 16284, <=, ENV_MAX-1 zero-gain substitution, has_contents)",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction"
+          },
+          {
+            "id": "NUM-010",
+            "title": ">>4 -> clip +/-2^24 -> >>9 -> 16-bit; integer mix bit-exact vs float mix; f32le dry comparisons",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction (exactness proof in doc section 4; N02 confirms byte-identity)"
+          },
+          {
+            "id": "NUM-011",
+            "title": "Events commit at 64-sample frame boundaries; DEC-014 queue/backpressure rules unchanged",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact vs oracle event policy"
+          },
+          {
+            "id": "NUM-012",
+            "title": "Silence floor: 6-op release-to-16<<16 predicate, 64-frame hold, output-neutral reclamation (DEC-021 numbers)",
+            "error_class": "exact_by_construction",
+            "error_estimate": "exact_by_construction (integer predicate; audio provably identical)"
+          }
+        ],
+        "float_gated_spots": [
+          {
+            "id": "float-gated:pitch_bend_scaling",
+            "cadence": "per frame when bend active",
+            "model_policy": "reproduce float formulas in model; RTL consumes frozen integer results",
+            "error_estimate": "float32 relative error <= 2^-24 on |pb| <= 2^24 => <= +1 logfreq count; dF/F <= ln2 * 2^-22 ~= 1.7e-7"
+          },
+          {
+            "id": "float-gated:ampmod_sensitivity_exp",
+            "cadence": "per frame, only when ampmodsens != 0",
+            "model_policy": "reproduce float formulas in model",
+            "error_estimate": "NO_VERDICT (measure at N02), patch-gated"
+          },
+          {
+            "id": "float-gated:event_time_pitch_math",
+            "cadence": "per event/init (osc_freq detune/fine, LFO unit, Freqlut init, sr_multiplier)",
+            "model_policy": "host/control-side float math off the audio frame budget",
+            "error_estimate": "Freqlut regeneration drift <= a few LSB at top entries => <= 1 phase-increment LSB on rare pitches; counted by N02"
+          }
+        ],
+        "challenge_evaluation": "byte-identical (max_abs_error 0.0) at the frozen thresholds on every oracle-comparable row; non-exact rows are bounded findings, never budgets"
+      }
+    },
+    "excluded_cases": [
+      {
+        "id": "lfo-keysync0",
+        "reason": "Reference-side indeterminacy (N06 finding F-4 / R05): keysync 0 with the LFO reaching the PCM carries a C++-indeterminate LFO phase, so no derivable oracle value exists. The case is not oracle-comparable and is excluded from the bundle entirely; an owner ruling defining the reference behavior is a prerequisite for ever freezing it."
+      },
+      {
+        "id": "ev-steal-17",
+        "reason": "Documented policy divergence (N07): the model steals per D00 DEC-017 while the pinned wrapper drops the 17th note. No equality budget may be declared on this case; freezing a model-only vector would be legal but is excluded to keep every bundle row oracle-comparable or explicitly archived-gated-dev."
+      },
+      {
+        "id": "ev-aftertouch",
+        "reason": "Registry BLOCKED: the pinned oracle grammar has no aftertouch event, so no executable reference render exists (R06 performance_controls status blocked; DEC-006 coverage tracked in R06)."
+      },
+      {
+        "id": "ev-volume-cc7",
+        "reason": "Registry BLOCKED: the pinned oracle CC subset has no volume (CC 7) event (R06 performance_controls status blocked)."
+      },
+      {
+        "id": "ev-patch-change-held",
+        "reason": "Registry BLOCKED at the oracle (single voice file per render); the D00 'patch <n>' event is model grammar only (DEC-019), so the case has no oracle-comparable reference."
+      },
+      {
+        "id": "corpus-alg4-oocuter / corpus-alg6-belandbiwa / corpus-highfb-mellowsolo",
+        "reason": "Corpus-selector cases (archive-gated voice bytes). Excluded from the challenge set to keep the challenge reproducible in any environment; their axes (algorithms 4/6, high feedback) are already covered by dev and dev32 rows. Not a judgment about their value as future challenge material."
+      }
+    ],
+    "cases": [
+      {
+        "id": "dir-base",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "ca194d4e5dc895309f58485a1a7d1ab53455116039d82b951d7b5e277ca1ea54",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "osc-fixed-carrier",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_mode": 1
+          }
+        },
+        "patch_sha256": "9c9cc58155a7bfce72a76bc862d3dbb5c5d5938fed70e6f610c99f4d740fcd59",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "88921b5dbd1a2335c0a305369e3307f02c06a15ad195d0d8b75209c6b7e26275",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "4ec7765388e9695d54f722a09b68b52bc00b9904f48553520a24208c4f677047",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "bd-coarse0",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_freq_coarse": 0
+          }
+        },
+        "patch_sha256": "5c4de4262aafc1932967b800993790d54390ca63479286e83b7367c35d4e34c3",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "6b54762362e47e4ff80a5ea73d808df7ed3b12f6732e42fde46150bd08878d7f",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "248aad924fd117d64024963782cc3682aae3d9f9f27d496cbf52dc43739240eb",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "bd-coarse31",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_freq_coarse": 31
+          }
+        },
+        "patch_sha256": "433f720a168da2794451bcf4f023209da07a18392e4a37e931fc3c5c9a902b7b",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "9ac3590a8bbe55dd279644390a8d9c097b21ebfbb40c6523fe9c6521c7440f20",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "bd82c784badf6f1d8e8fb8bc7b7dccd0093467d9e1b0515bf1d062e2563c9d8e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "bd-detune0",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_detune": 0
+          }
+        },
+        "patch_sha256": "540717d9f8635a9be9d2c78c66390dd098f87f96d1823430fd54113bf9c39cdb",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "acffd154a08fb39b0a5a5bdca99082330bce3cd2c5341d5910eea90f65b8b07c",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "7a0b685f992a15ebdf791eabf3703aa62696810ef18a4406e0afec29fd369c3b",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "bd-detune14",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_detune": 14
+          }
+        },
+        "patch_sha256": "4a1e12a35bc64e671b6567d28aa7160c46a46f156694baedde5c52dad29e537a",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "29896e0c8a59f99f76efa8b336cce1b53a772989d6d885ea98929838c037e69d",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "88700e2c6999ac189bcc02ee25650864a4b8a9986ae1dee64ea908ab7a72447b",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg4-fb0",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 4,
+            "feedback": 0
+          }
+        },
+        "patch_sha256": "c0915fc3739bbaba6312f743397e4ac7cca315ccc0ccb98803aaf3575df47823",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "f58ab7e4dbba987884b452bc33f704b6e672eae198cbc15cdf457e60dfe9cd28",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "a64ba46828d598fdae3916218dec7ae056ddc299189bb608855a2241a9ab8213",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg4-fb3",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 4,
+            "feedback": 3
+          }
+        },
+        "patch_sha256": "e36232e1cf6f314a6d3f32d132a6eff55eb63cd48f1dc1e19d506589a2d4239d",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "ecdcca478a8e92b4ce3a2f8fac88e377b79c460f69941775b34d08017d6b2e8d",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "4f348d948749d486cf089ca8e7647404fbb8bf9a9af0949882dcfa01e762c790",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg4-fb7",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 4,
+            "feedback": 7
+          }
+        },
+        "patch_sha256": "6f1e2404ef7b07129a38cd4693ceea35e81b58d54f4dc1b4911e3d924b9d1664",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "7bc7bde8641873e46ebcc7ef206303d72c9278d0ac879a2451f82f50198a15ca",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "442caf3f49d99c8f66522f0a8a704acdad62555ab94b57a23d0b1082afee0922",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg6-fb0",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 6,
+            "feedback": 0
+          }
+        },
+        "patch_sha256": "d92b04503450763677913562f94e74674df7ca0c91c4c9fa3f71924ff44b9e96",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "452cc5f39cae2a20648b0f7c39914e5ea514cb1e7a2e30e71a68cb24cfd74cf9",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "2a565732901b4f6830b9b561dbade58a70a00605d75e9c5219c73b22242050c9",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg6-fb3",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 6,
+            "feedback": 3
+          }
+        },
+        "patch_sha256": "f9577bb47db1cee34b6d0520272be259db6daf7a7de9ae835dc28cfad2fa419c",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "b32b33c480343d18d29afdb6031a44daeaa80241113413bd921e7ef71ecea251",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "ad6c84da4d72594ff10e372169dd94a668c700464555d2031bd2444227ea45f5",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "alg6-fb7",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 6,
+            "feedback": 7
+          }
+        },
+        "patch_sha256": "c135de08388a991bd4050aa7e7a820eda667d42f65a1f8dbe4268a80ab1d4370",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "be5003661d2e120563e31b3a7a3415b21e22ebd7438550609edd51b5041adabd",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "e86299e7999f8a11df5c347b0d7d93035026a1e9d80492a347f946435c08ad3e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "codec-name-a",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {},
+          "name": "CASE-A"
+        },
+        "patch_sha256": "fc20e382508515c082409325ff4f0646905159b4235c242f620f4e512f28816c",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.0,
+        "expected_pcm_sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+        "samples": 48000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "e507dcad976fc64c30fb00561717e4104fd32b50248df6ec4852c8e31923278e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "codec-name-b",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {},
+          "name": "CASE-B"
+        },
+        "patch_sha256": "61b0fb54c6b5499b96a9d1a24f66063016903d3085b49a4ceeb4cd68a1d8c06c",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.0,
+        "expected_pcm_sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+        "samples": 48000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "6a710feb9951fed3858148ce7fc51d8bd9bc93563639506f0ab846495cc03ec8",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-sustain-no-pedal",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "4800 note_on 60 100",
+          "24000 note_off 60"
+        ],
+        "events_sha256": "aeebc9c6f2a29a8f37fdc40101e3cf0de922b1f77440da314ae31480e0d52d82",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "74226b8489929f6b626cb9df8072a45a7d8aad656843e608ea288b0da340a733",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 75,
+            "event": "4800 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 note_off 60"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "1b769f94ac085f86d6f4f447bbacb165a4bdb073d1a5dbdfb4f92a2ba6379cfc",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-sustain-pedal",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "0 cc 64 127",
+          "4800 note_on 60 100",
+          "24000 note_off 60",
+          "48000 cc 64 0"
+        ],
+        "events_sha256": "1432421eb7c18376e8ceabb8ecfba3cd4febe33db3547876cb83ae7aa4d553c9",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "b8125d1089a2b1bec7e3da5b8b1b204372d99b7747a3666e3296992548954592",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 0,
+            "event": "0 cc 64 127"
+          },
+          {
+            "block": 75,
+            "event": "4800 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 note_off 60"
+          },
+          {
+            "block": 750,
+            "event": "48000 cc 64 0"
+          }
+        ],
+        "events_applied": 4,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "b020bb5ff1697fc77c8b896f6b537f8a090bb1e60e02d4bbdbca33316851e194",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-all-sound-off",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "24000 cc 120 0"
+        ],
+        "events_sha256": "b64be3d405f92daeac9e31295b87fcfae2d0f905e7407934c6758876a2520230",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "70c9c153d8cc8ee462168f9b606f48c2190827fe1f36d87e496422e2b4d9b6e7",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 cc 120 0"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "c100694024049f83720960dcefa2bf95870aa0eedb5752ac8b5b8409f24a2add",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-all-notes-off",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "24000 cc 123 0"
+        ],
+        "events_sha256": "812f073889634610122ddaf307003e2b623bc57132ef5b638436570765238b3f",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "20197a1310e5c2e8dabece2d305e8a958eb2cbbf22f4828056f0c758dc77434a",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 cc 123 0"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "5869b56adfaa6ace440c055ca3e9323c453764eb40801f637a1ac13ee33a1b7e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-pitch-bend-up",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "4800 pb 127 127"
+        ],
+        "events_sha256": "499a6d19f59f495d5713f8afaced4f5d83d7236e91cf78bad7bc8c02efeabc61",
+        "render_seconds": 0.8,
+        "expected_pcm_sha256": "ad741f854c824d8ffdeef91663c095613a630bbed986209bf5ec8aaaf89688c9",
+        "samples": 38400,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 75,
+            "event": "4800 pb 127 127"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "70054c62effe2a501a3ef37eb3a392a6a67a0fbe4d428367466d0a61b6745af4",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-pitch-bend-down",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "4800 pb 0 0"
+        ],
+        "events_sha256": "f835d3cdd4e54d3e45038c4a7838a4263832cf5c706fb27a5eccb96f6029332a",
+        "render_seconds": 0.8,
+        "expected_pcm_sha256": "ade84a083f80a5f20ad2273bd9579c5776417c0e1ac0fe4e64e947a09c9ce47c",
+        "samples": 38400,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 75,
+            "event": "4800 pb 0 0"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "50a85507ef1f1782feee20629c40b721c00b8bf669a5d612d3fdfecb739d3ff9",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-pitch-bend-center",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "4800 pb 0 64"
+        ],
+        "events_sha256": "51c7ee97a85bd6a4365c0098ab21300cdfa9ce6c39011b09dcbc47a0f8b9a42f",
+        "render_seconds": 0.8,
+        "expected_pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 75,
+            "event": "4800 pb 0 64"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "83a241e2dc0968cabc17dec39c8da2139d528f485106f317f1c28068ea3f680e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-modwheel-127",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "4800 cc 1 127"
+        ],
+        "events_sha256": "4b32a5c1f13e267d8a22703ce5c5f9c15061d5511ebd392d2597a709ecf1524a",
+        "render_seconds": 0.8,
+        "expected_pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 75,
+            "event": "4800 cc 1 127"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "3989a500c8682ce683f2c2b4d5ba89fe92d6f9b65134495bc335add5d159d789",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-modwheel-0",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "4800 cc 1 0"
+        ],
+        "events_sha256": "95c24e61d129a01dbe635487d31806b30dff019fba6f5740ddc8c15533299d96",
+        "render_seconds": 0.8,
+        "expected_pcm_sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 75,
+            "event": "4800 cc 1 0"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "1425585f330117c1433765f19250cce3bdd13762f1d8ba59126388d135633290",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ],
+        "integrated_equal": true
+      },
+      {
+        "id": "ev-repeated-note",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "24000 note_on 60 100"
+        ],
+        "events_sha256": "185ff82b6f8b15a965a5c808f598cf6cac5bba63fa9e4f8d91d649a9dbc6f390",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "72057d03bbcbfb54734494efcf24a68e25f8ec4f7fd54803eb9f265f5b963493",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 note_on 60 100"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "03275eedffc4741304c540fa5138285951ff2b0256fb0861801e23a2ac35301e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "ev-retrigger",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "12000 note_off 60",
+          "14400 note_on 60 100"
+        ],
+        "events_sha256": "a3945c17b3d605c90697ac99909ab396b242759e51615adbdb8ac2844791ce0d",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "f18effc2030e59b8a39874474631115ea0d5cc72478ca36fa084f05d866903d7",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 187,
+            "event": "12000 note_off 60"
+          },
+          {
+            "block": 225,
+            "event": "14400 note_on 60 100"
+          }
+        ],
+        "events_applied": 3,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "05292b3387f48f53fd4da04cb7f7b6c5e2284592657381b4fd45efd99008a738",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "ev-sum-15",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "2500 note_on 61 100",
+          "2600 note_on 62 100",
+          "2700 note_on 63 100",
+          "2800 note_on 64 100",
+          "2900 note_on 65 100",
+          "3000 note_on 66 100",
+          "3100 note_on 67 100",
+          "3200 note_on 68 100",
+          "3300 note_on 69 100",
+          "3400 note_on 70 100",
+          "3500 note_on 71 100",
+          "3600 note_on 72 100",
+          "3700 note_on 73 100",
+          "3800 note_on 74 100",
+          "72000 note_off 60",
+          "72000 note_off 61",
+          "72000 note_off 62",
+          "72000 note_off 63",
+          "72000 note_off 64",
+          "72000 note_off 65",
+          "72000 note_off 66",
+          "72000 note_off 67",
+          "72000 note_off 68",
+          "72000 note_off 69",
+          "72000 note_off 70",
+          "72000 note_off 71",
+          "72000 note_off 72",
+          "72000 note_off 73",
+          "72000 note_off 74"
+        ],
+        "events_sha256": "856cfd64e8bccab49b2164e651e617c0bf9c8f48b201a216892e0851823770e4",
+        "render_seconds": 2.0,
+        "expected_pcm_sha256": "aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a",
+        "samples": 96000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 39,
+            "event": "2500 note_on 61 100"
+          },
+          {
+            "block": 40,
+            "event": "2600 note_on 62 100"
+          },
+          {
+            "block": 42,
+            "event": "2700 note_on 63 100"
+          },
+          {
+            "block": 43,
+            "event": "2800 note_on 64 100"
+          },
+          {
+            "block": 45,
+            "event": "2900 note_on 65 100"
+          },
+          {
+            "block": 46,
+            "event": "3000 note_on 66 100"
+          },
+          {
+            "block": 48,
+            "event": "3100 note_on 67 100"
+          },
+          {
+            "block": 50,
+            "event": "3200 note_on 68 100"
+          },
+          {
+            "block": 51,
+            "event": "3300 note_on 69 100"
+          },
+          {
+            "block": 53,
+            "event": "3400 note_on 70 100"
+          },
+          {
+            "block": 54,
+            "event": "3500 note_on 71 100"
+          },
+          {
+            "block": 56,
+            "event": "3600 note_on 72 100"
+          },
+          {
+            "block": 57,
+            "event": "3700 note_on 73 100"
+          },
+          {
+            "block": 59,
+            "event": "3800 note_on 74 100"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 60"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 61"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 62"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 63"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 64"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 65"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 66"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 67"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 68"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 69"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 70"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 71"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 72"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 73"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 74"
+          }
+        ],
+        "events_applied": 30,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "71986652a0ec01df724a3b0c5508ac4648ed5f1ae6f40583272b4efa11950c42",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 61,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 3,
+            "slot": 2,
+            "kind": "fresh",
+            "midi_note": 62,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 4,
+            "slot": 3,
+            "kind": "fresh",
+            "midi_note": 63,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 5,
+            "slot": 4,
+            "kind": "fresh",
+            "midi_note": 64,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 6,
+            "slot": 5,
+            "kind": "fresh",
+            "midi_note": 65,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 7,
+            "slot": 6,
+            "kind": "fresh",
+            "midi_note": 66,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 8,
+            "slot": 7,
+            "kind": "fresh",
+            "midi_note": 67,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 9,
+            "slot": 8,
+            "kind": "fresh",
+            "midi_note": 68,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 10,
+            "slot": 9,
+            "kind": "fresh",
+            "midi_note": 69,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 11,
+            "slot": 10,
+            "kind": "fresh",
+            "midi_note": 70,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 12,
+            "slot": 11,
+            "kind": "fresh",
+            "midi_note": 71,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 13,
+            "slot": 12,
+            "kind": "fresh",
+            "midi_note": 72,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 14,
+            "slot": 13,
+            "kind": "fresh",
+            "midi_note": 73,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 15,
+            "slot": 14,
+            "kind": "fresh",
+            "midi_note": 74,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "ev-steal-16",
+        "set": "dev",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {}
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "2500 note_on 61 100",
+          "2600 note_on 62 100",
+          "2700 note_on 63 100",
+          "2800 note_on 64 100",
+          "2900 note_on 65 100",
+          "3000 note_on 66 100",
+          "3100 note_on 67 100",
+          "3200 note_on 68 100",
+          "3300 note_on 69 100",
+          "3400 note_on 70 100",
+          "3500 note_on 71 100",
+          "3600 note_on 72 100",
+          "3700 note_on 73 100",
+          "3800 note_on 74 100",
+          "3900 note_on 75 100",
+          "72000 note_off 60",
+          "72000 note_off 61",
+          "72000 note_off 62",
+          "72000 note_off 63",
+          "72000 note_off 64",
+          "72000 note_off 65",
+          "72000 note_off 66",
+          "72000 note_off 67",
+          "72000 note_off 68",
+          "72000 note_off 69",
+          "72000 note_off 70",
+          "72000 note_off 71",
+          "72000 note_off 72",
+          "72000 note_off 73",
+          "72000 note_off 74",
+          "72000 note_off 75"
+        ],
+        "events_sha256": "a67d90ebbe173be9716148074ee0e4fa25df312c0dd881d9c59ec47bf4f55e35",
+        "render_seconds": 2.0,
+        "expected_pcm_sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+        "samples": 96000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 39,
+            "event": "2500 note_on 61 100"
+          },
+          {
+            "block": 40,
+            "event": "2600 note_on 62 100"
+          },
+          {
+            "block": 42,
+            "event": "2700 note_on 63 100"
+          },
+          {
+            "block": 43,
+            "event": "2800 note_on 64 100"
+          },
+          {
+            "block": 45,
+            "event": "2900 note_on 65 100"
+          },
+          {
+            "block": 46,
+            "event": "3000 note_on 66 100"
+          },
+          {
+            "block": 48,
+            "event": "3100 note_on 67 100"
+          },
+          {
+            "block": 50,
+            "event": "3200 note_on 68 100"
+          },
+          {
+            "block": 51,
+            "event": "3300 note_on 69 100"
+          },
+          {
+            "block": 53,
+            "event": "3400 note_on 70 100"
+          },
+          {
+            "block": 54,
+            "event": "3500 note_on 71 100"
+          },
+          {
+            "block": 56,
+            "event": "3600 note_on 72 100"
+          },
+          {
+            "block": 57,
+            "event": "3700 note_on 73 100"
+          },
+          {
+            "block": 59,
+            "event": "3800 note_on 74 100"
+          },
+          {
+            "block": 60,
+            "event": "3900 note_on 75 100"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 60"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 61"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 62"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 63"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 64"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 65"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 66"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 67"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 68"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 69"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 70"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 71"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 72"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 73"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 74"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_off 75"
+          }
+        ],
+        "events_applied": 32,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "2e5291bbb1adb499aceaa05a11a566fa834c389fcc51f84ea8b967a3f4147372",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 61,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 3,
+            "slot": 2,
+            "kind": "fresh",
+            "midi_note": 62,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 4,
+            "slot": 3,
+            "kind": "fresh",
+            "midi_note": 63,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 5,
+            "slot": 4,
+            "kind": "fresh",
+            "midi_note": 64,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 6,
+            "slot": 5,
+            "kind": "fresh",
+            "midi_note": 65,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 7,
+            "slot": 6,
+            "kind": "fresh",
+            "midi_note": 66,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 8,
+            "slot": 7,
+            "kind": "fresh",
+            "midi_note": 67,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 9,
+            "slot": 8,
+            "kind": "fresh",
+            "midi_note": 68,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 10,
+            "slot": 9,
+            "kind": "fresh",
+            "midi_note": 69,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 11,
+            "slot": 10,
+            "kind": "fresh",
+            "midi_note": 70,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 12,
+            "slot": 11,
+            "kind": "fresh",
+            "midi_note": 71,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 13,
+            "slot": 12,
+            "kind": "fresh",
+            "midi_note": 72,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 14,
+            "slot": 13,
+            "kind": "fresh",
+            "midi_note": 73,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 15,
+            "slot": 14,
+            "kind": "fresh",
+            "midi_note": 74,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 16,
+            "slot": 15,
+            "kind": "fresh",
+            "midi_note": 75,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "dev32-03",
+        "set": "dev",
+        "origin": "dev32",
+        "patch": {
+          "selector": "corpus",
+          "canonical_hash": "8a1cf76a93bfb102e9ffb4d5a9c21c438714c5dedae874d89464fb5d475e9722",
+          "dev32_index": 3,
+          "dev32_name": "PROPHETess"
+        },
+        "patch_sha256": "4c8aef2501bb8c09dd5646f7ff7b276cb263a64f63e0406b249f2f14f1731882",
+        "events": [
+          "4800 note_on 60 100",
+          "48000 note_off 60",
+          "72000 note_on 60 30",
+          "120000 note_off 60"
+        ],
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "expected_pcm_sha256": "e21505ca0e4faa52931f907713dddfcd74d6b623ea1a3807e54292e1ceb9a666",
+        "samples": 192000,
+        "event_trace": [
+          {
+            "block": 75,
+            "event": "4800 note_on 60 100"
+          },
+          {
+            "block": 750,
+            "event": "48000 note_off 60"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_on 60 30"
+          },
+          {
+            "block": 1875,
+            "event": "120000 note_off 60"
+          }
+        ],
+        "events_applied": 4,
+        "oracle_comparable": true,
+        "oracle_note": "determinate reference render (N07 cross-checked wrapper-valid)",
+        "input_fingerprint": "46e3d137ff224dcc930e9317641433f07e0ac592209731395d889cb20b7a4e1b",
+        "dev32_index": 3,
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 30,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "dev32-06",
+        "set": "dev",
+        "origin": "dev32",
+        "patch": {
+          "selector": "corpus",
+          "canonical_hash": "65a17a76bdbf0c5302835e43952e840c1df3a6839d6a7345a50be3dc6d683f7f",
+          "dev32_index": 6,
+          "dev32_name": "belandBIWA"
+        },
+        "patch_sha256": "8ddc3920cbb07c690b111a6267f45b6b4b5b500a3e37da60b4fb8bcc2aff7ddf",
+        "events": [
+          "4800 note_on 60 100",
+          "48000 note_off 60",
+          "72000 note_on 60 30",
+          "120000 note_off 60"
+        ],
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "expected_pcm_sha256": "f507b0f4c7ddf5d4b4d6369feb8fe6ce675fce3678b29be2cc898d86d8ccbdf9",
+        "samples": 192000,
+        "event_trace": [
+          {
+            "block": 75,
+            "event": "4800 note_on 60 100"
+          },
+          {
+            "block": 750,
+            "event": "48000 note_off 60"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_on 60 30"
+          },
+          {
+            "block": 1875,
+            "event": "120000 note_off 60"
+          }
+        ],
+        "events_applied": 4,
+        "oracle_comparable": true,
+        "oracle_note": "determinate reference render (N07 cross-checked wrapper-valid)",
+        "input_fingerprint": "c553aedf0dc859f0aded801a71528def568d6e21477f96318fc0a2304d292504",
+        "dev32_index": 6,
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 30,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "dev32-30",
+        "set": "dev",
+        "origin": "dev32",
+        "patch": {
+          "selector": "corpus",
+          "canonical_hash": "3f57cc96e63cc107ce995d987c86f6f462952225b1cd3a26b138e82c5ecd8cd9",
+          "dev32_index": 30,
+          "dev32_name": "SOFT TOUCH"
+        },
+        "patch_sha256": "f92d822da86f111577813187fa8aa4b31d3d58f5fd4112cc32c8a75c5353c2fa",
+        "events": [
+          "4800 note_on 60 100",
+          "48000 note_off 60",
+          "72000 note_on 60 30",
+          "120000 note_off 60"
+        ],
+        "events_sha256": "53b39a66095fe22e341b43bf4a9e4cf52b402a2c9560681e0e7a8bcb3ec0696e",
+        "render_seconds": 4.0,
+        "expected_pcm_sha256": "777aa7a1254d485805dfa70a511e073befe2862bdd8fd4b7cbe1f24ccf63c484",
+        "samples": 192000,
+        "event_trace": [
+          {
+            "block": 75,
+            "event": "4800 note_on 60 100"
+          },
+          {
+            "block": 750,
+            "event": "48000 note_off 60"
+          },
+          {
+            "block": 1125,
+            "event": "72000 note_on 60 30"
+          },
+          {
+            "block": 1875,
+            "event": "120000 note_off 60"
+          }
+        ],
+        "events_applied": 4,
+        "oracle_comparable": true,
+        "oracle_note": "determinate reference render (N07 cross-checked wrapper-valid)",
+        "input_fingerprint": "b15fcc19453d50b23cdc4b421607c4c47479ac762834dd15eb2dd043721565bf",
+        "dev32_index": 30,
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 30,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "alg-05",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 5
+          }
+        },
+        "patch_sha256": "81a65e817fca1ee1ce29ac289bfebedd513115baf34c8eeca24590c6bc9abc0e",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "1f10a8d14928e1fbf376313c90952acf693496d07ed2a639322c3a3d4121d48c",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "41a0b54cdda1242ab6e36dc6c434ed3a47c80131b83821201fa14460af058f2a",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "alg-16",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 16
+          }
+        },
+        "patch_sha256": "6873fad03e263aff96785535f39912bdc090348de9e8b8833ad247b0ea37c421",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "62e74c023b58517d0d00527b5d2e155aefaaa3a00c853d45172a861162dd077c",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "def8e35fd970f4c7171c2f2022e9de404a1cdca59b65b3b81d72f410ff736275",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "alg-31",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "algorithm": 31
+          }
+        },
+        "patch_sha256": "91eeb5127be3bd2624ed08a93d70bed0c03c3b2f1950bb5ef81758b85376dc2f",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "c7f863e31bcceb34c1e17ee2a174f28470c8fa7d593df305eab39f3c6d5e9eb3",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "bd3324909e70f9663b82cc4b619b21b36e047821dd25c2cb9cf1c65bffb64fff",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-fine99",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.osc_freq_fine": 99
+          }
+        },
+        "patch_sha256": "b255868142e81d9feafb1d2ae6be4ef365f5968cc115fe7c66bd75643cc2adcc",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "f789f85646e7d5dedd76ab74d029725cfc015fde40e53bdea9352567f460723d",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "d39b7fe324633d3e34601259babac7960db4d459fb97ee6ed72c03f7f22f2247",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-delayed-attack",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.rate_1": 1,
+            "op.level_1": 0,
+            "op.rate_2": 45
+          }
+        },
+        "patch_sha256": "c5d0bf1e3d7bc5e879b4c2bfd9e3268da38b4e7ad1b71d5a674b80ef02a8e780",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 2.0,
+        "expected_pcm_sha256": "c12dbb76813b0a49183b347c7c4707164aca3c88386ec22a0e8ad562e131bd0f",
+        "samples": 96000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "eb1e81948df1ce375fafcde229a1a04608bfe96ab5be44e3133d1a356281e909",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-rising-env",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.level_1": 20,
+            "op1.level_2": 99,
+            "op1.rate_2": 15,
+            "op1.rate_3": 99,
+            "op1.level_3": 99
+          }
+        },
+        "patch_sha256": "9cfa0f005e71b498bff9b4582c6a83703c3628f0aa722347709729127d8df76d",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 2.0,
+        "expected_pcm_sha256": "6e46a45cd48a3e933c25f279e52b77b73d75d50d830d71e22b4384ac585a970d",
+        "samples": 96000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "d70a6fdf93f3ec85e2adf8016ff94bc46dba70a2194d244dbf563b18cfc4017e",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-slow-rate3",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.rate_3": 1,
+            "op.level_3": 20
+          }
+        },
+        "patch_sha256": "772f1c6068c7139132d493c9e10021537d2630e3683cfb59c13ab236e50cb171",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "4c22dec281a129bf1791f429a00c3b564992db28598f9b96c3afe46c852c46fb",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "cd19a7a1f4b2021066f16a1261ff95ec0e0a069a7ad519d8f7b1ed808a43a29f",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-nonzero-final",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.level_4": 99,
+            "op.rate_4": 1
+          }
+        },
+        "patch_sha256": "10ad8dec2b4335ba1d26a0bd8abf9ba5dfe10af8807da267428447870427eaab",
+        "events": [
+          "2400 note_on 60 100",
+          "24000 note_off 60"
+        ],
+        "events_sha256": "ed50ab867c0c2335433088021dc1400dd1c1f3feee5e0b4c1dc612f207fb3045",
+        "render_seconds": 1.0,
+        "expected_pcm_sha256": "fb682f4eb3346a571c32a24fca531c3c548727592e2fc0240c0511159012510b",
+        "samples": 48000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 note_off 60"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "2c362454055b38186b1d3e6c7a36742f7633bce6ce165d6d103594bd79f1f9ec",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-fast-release",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.level_4": 0,
+            "op.rate_4": 99
+          }
+        },
+        "patch_sha256": "fcd32766ccd9d90ea0cb05a58e608dfdab770e4a7ba18aded65abf26af4cf53e",
+        "events": [
+          "2400 note_on 60 100",
+          "24000 note_off 60"
+        ],
+        "events_sha256": "ed50ab867c0c2335433088021dc1400dd1c1f3feee5e0b4c1dc612f207fb3045",
+        "render_seconds": 1.0,
+        "expected_pcm_sha256": "0d9379a6bba0b30fd6d1519913a4f9ca7e06b5e0957bf52ebdd4d5e7da55f4f8",
+        "samples": 48000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 375,
+            "event": "24000 note_off 60"
+          }
+        ],
+        "events_applied": 2,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "21466e8ff1e1c53d28e3c35e9f105e32ba76ecf7008d5c8f4c787ffe6b8ce128",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "bd-rs3",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.rate_scaling": 3,
+            "op1.rate_1": 60
+          }
+        },
+        "patch_sha256": "b204829fc52e9e804fe9ecc33092272bab140672d13349852972def4f75d2d66",
+        "events": [
+          "2400 note_on 36 100"
+        ],
+        "events_sha256": "41887d5fc3d3055c04c7831e1eb1fb5a4305e7170f665acd038a795a30e0e0d4",
+        "render_seconds": 1.0,
+        "expected_pcm_sha256": "2308f83be828a8a3e9efd0a193b0c7b5df223349a9816224035922678bcfc722",
+        "samples": 48000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 36 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "631eb49f77ed0c443cc06b8b8f96ce3afe0680aac64ee1f45c57a8dc845d53a1",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 36,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "lfo-wave1",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "lfo_wave": 1,
+            "lfo_pitch_mod_depth": 99,
+            "lfo_pitch_mod_sensitivity": 7,
+            "lfo_speed": 99
+          }
+        },
+        "patch_sha256": "6c9a8661f0529cc903b5b536afa303bc6f9dc28ff85b2d89108ba85f7930863a",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "a614df096a730ecc573d2d3220412b629c965022e8fb8ae7a4e33a6d237a6236",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "8885dfada5b2cb4fbdc0794da31caa147c0edc91c6d10819001a0a6e0ebae6f0",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "lfo-wave5",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "lfo_wave": 5,
+            "lfo_pitch_mod_depth": 99,
+            "lfo_pitch_mod_sensitivity": 7,
+            "lfo_speed": 99
+          }
+        },
+        "patch_sha256": "0dafa5b8d9e38e9e635ec178a03980f586b353b7cd206a3d0305912f9f011bf9",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "aa6aa98dd40197ab3bbc7516896eae60c7806f842048fbf7ef237261ba1d215d",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "d88a869fd294b10ef0c59bd1e1b8d7482b4a4c5b790fb65ec4ed6ccbfeea9880",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "lfo-delay99",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "lfo_delay": 99,
+            "lfo_pitch_mod_depth": 99,
+            "lfo_pitch_mod_sensitivity": 7,
+            "lfo_speed": 99
+          }
+        },
+        "patch_sha256": "3839e2420f18709cc8b779fb61a6460146cd4f66ff0e8f7305f73b004773e00a",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "db2017623ef2f017457900699a39e635c1903467a032d92b47a8158280d51d42",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "lfo-pm-sens7",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "lfo_pitch_mod_depth": 99,
+            "lfo_pitch_mod_sensitivity": 7,
+            "lfo_speed": 99
+          }
+        },
+        "patch_sha256": "e9dcba76134231333154e6846511bd1c0d3353daa66af0287b7e434bac02c989",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "60da62f4ae990129f0e0eda9df8826ac0f7a4f5bba0b1f9cbebe9a1e9fe8bc04",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "546aca71145092d07b650593b08b497b84bf96e31a74d3563649a59d6ed57886",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "ampmod-ams3",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "lfo_amp_mod_depth": 99,
+            "op1.amp_mod_sensitivity": 3,
+            "lfo_speed": 99
+          }
+        },
+        "patch_sha256": "52acbd0b332eb6d3b37d3393160c1b3db9b14c4db3871fabd314df4ecdd776ea",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "c3fa95d1c1cba9545131c906be6ccd6f023990ea056ebc1dfa2901f5d0afb0ae",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "9783ea79c67b9d3c06656517caac40c4debb6228e1f58ccd13112009992feaed",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "kbd-right-c3",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op1.output_level": 60,
+            "op1.scale_right_depth": 99,
+            "op1.break_point": 48,
+            "op1.scale_left_depth": 0,
+            "op1.scale_right_curve": 3
+          }
+        },
+        "patch_sha256": "d2114e210b60797e8a44e6c4c574e5f7f5eb9cbfc1d4377709d5af670a8c3bb0",
+        "events": [
+          "2400 note_on 84 100"
+        ],
+        "events_sha256": "9e4188bf362fadb9078282b906b2a120158f13065d83ffe0e9dfabefc835fc7a",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "00902374f1caed88bf48b072618eb87057aea7f09f41d29a1deb236392863eea",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 84 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "2bbbc335b80ba979d4d23faa6af8344f655f68604ea9b388fa4ce33a0306999f",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 84,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "vel-kvs7-30",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.key_velocity_sensitivity": 7
+          }
+        },
+        "patch_sha256": "5f9f3743c2e49601ab14a7ed3a22824c0fae2b69d23caeb6b7e3a8194fd10c47",
+        "events": [
+          "2400 note_on 60 30"
+        ],
+        "events_sha256": "1abb879362038d090168e3443b3caa49e85b6df865d7a772df088a25eb85522e",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "1d8c5c9f6ae68f2b343803e58dd1d413dacfe7dc04204dc6f68867e6e835915f",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 30"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "1476036d6eeba825dced5d97968df4d408dd4bae252d76a3a6eff347e5212a10",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 30,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "vel-kvs0-127",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "op.key_velocity_sensitivity": 0
+          }
+        },
+        "patch_sha256": "a1163b23ee14ceac5b911d989808d2905db872a6743f8a453a2db0c6c5acb371",
+        "events": [
+          "2400 note_on 60 127"
+        ],
+        "events_sha256": "ff6fa5013eca238350e49469faccd14ad303a935b52958770e034686890470ca",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "44e01cd35658e66389cccdaefefb8208529099f74d20f9a6adbe72a5f5a256e1",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 127"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "471c0f26c924cc0c42dc162bbf432eccd86b6fd84f11f11351862fb8c84f5e14",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 127,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "peg-up",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "pitch_eg_rate_1": 99,
+            "pitch_eg_rate_2": 30,
+            "pitch_eg_rate_3": 99,
+            "pitch_eg_rate_4": 99,
+            "pitch_eg_level_1": 90,
+            "pitch_eg_level_2": 20,
+            "pitch_eg_level_3": 50,
+            "pitch_eg_level_4": 50
+          }
+        },
+        "patch_sha256": "c33e9e6e8c524f03c80cd4c7bb3de11732e83086411c416c8d06e892cfa4e1fa",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "8f24a7e3538732caae37268130f0392df83e0769bd04b4cd41bf1f96243809b6",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "21452fc013e6707e771a7cb5e767606dc12ee2abe00f4385b59af1d94ee560b3",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "osc-keysync0",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "osc_key_sync": 0
+          }
+        },
+        "patch_sha256": "257913276beae26cf4bd64f91b840c7ec3329bfbf631b62e278f48a260150ea0",
+        "events": [
+          "2400 note_on 60 100",
+          "36000 note_off 60",
+          "48000 note_on 60 100"
+        ],
+        "events_sha256": "92d1d0f269a58b1c935ed77e27c006dca42507f86f641d7608bf1c942aa7fcc0",
+        "render_seconds": 2.0,
+        "expected_pcm_sha256": "d960830240edd38c303e38c288e9684bf2adfb5f37872c37ad340ebad6f133a4",
+        "samples": 96000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          },
+          {
+            "block": 562,
+            "event": "36000 note_off 60"
+          },
+          {
+            "block": 750,
+            "event": "48000 note_on 60 100"
+          }
+        ],
+        "events_applied": 3,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "e0936b743643b85ca0f67736abdb4b8a0122f82b025348c4e48c00c10e1865a5",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          },
+          {
+            "seq": 2,
+            "slot": 1,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      },
+      {
+        "id": "perf-transpose-12",
+        "set": "challenge",
+        "origin": "registry",
+        "patch": {
+          "selector": "synthetic",
+          "overrides": {
+            "transpose": 12
+          }
+        },
+        "patch_sha256": "b2ec9a53e3003b19de821fb123cdce14d7631b6e5bfa367d7de222ae2ac2fd2c",
+        "events": [
+          "2400 note_on 60 100"
+        ],
+        "events_sha256": "ebf3eb0e478ccef629a9e56c10acc12ae94fa51ae4622327d8c62ca69fb49f23",
+        "render_seconds": 1.5,
+        "expected_pcm_sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "event_trace": [
+          {
+            "block": 37,
+            "event": "2400 note_on 60 100"
+          }
+        ],
+        "events_applied": 1,
+        "oracle_comparable": true,
+        "oracle_note": "wrapper-valid single-note registry case (determinate)",
+        "input_fingerprint": "36419d5bb3f258dfe426e4f40da55f48bb3ee2aa5ff299d942979903176a25cd",
+        "alloc_log": [
+          {
+            "seq": 1,
+            "slot": 0,
+            "kind": "fresh",
+            "midi_note": 60,
+            "velocity": 100,
+            "patch_index": 0
+          }
+        ]
+      }
+    ],
+    "vectors": {
+      "dir-base": {
+        "file": "vectors/dir-base.f32",
+        "sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "osc-fixed-carrier": {
+        "file": "vectors/osc-fixed-carrier.f32",
+        "sha256": "88921b5dbd1a2335c0a305369e3307f02c06a15ad195d0d8b75209c6b7e26275",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-coarse0": {
+        "file": "vectors/bd-coarse0.f32",
+        "sha256": "6b54762362e47e4ff80a5ea73d808df7ed3b12f6732e42fde46150bd08878d7f",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-coarse31": {
+        "file": "vectors/bd-coarse31.f32",
+        "sha256": "9ac3590a8bbe55dd279644390a8d9c097b21ebfbb40c6523fe9c6521c7440f20",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-detune0": {
+        "file": "vectors/bd-detune0.f32",
+        "sha256": "acffd154a08fb39b0a5a5bdca99082330bce3cd2c5341d5910eea90f65b8b07c",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-detune14": {
+        "file": "vectors/bd-detune14.f32",
+        "sha256": "29896e0c8a59f99f76efa8b336cce1b53a772989d6d885ea98929838c037e69d",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg4-fb0": {
+        "file": "vectors/alg4-fb0.f32",
+        "sha256": "f58ab7e4dbba987884b452bc33f704b6e672eae198cbc15cdf457e60dfe9cd28",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg4-fb3": {
+        "file": "vectors/alg4-fb3.f32",
+        "sha256": "ecdcca478a8e92b4ce3a2f8fac88e377b79c460f69941775b34d08017d6b2e8d",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg4-fb7": {
+        "file": "vectors/alg4-fb7.f32",
+        "sha256": "7bc7bde8641873e46ebcc7ef206303d72c9278d0ac879a2451f82f50198a15ca",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg6-fb0": {
+        "file": "vectors/alg6-fb0.f32",
+        "sha256": "452cc5f39cae2a20648b0f7c39914e5ea514cb1e7a2e30e71a68cb24cfd74cf9",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg6-fb3": {
+        "file": "vectors/alg6-fb3.f32",
+        "sha256": "b32b33c480343d18d29afdb6031a44daeaa80241113413bd921e7ef71ecea251",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg6-fb7": {
+        "file": "vectors/alg6-fb7.f32",
+        "sha256": "be5003661d2e120563e31b3a7a3415b21e22ebd7438550609edd51b5041adabd",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "codec-name-a": {
+        "file": "vectors/codec-name-a.f32",
+        "sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+        "samples": 48000,
+        "bytes": 192000
+      },
+      "codec-name-b": {
+        "file": "vectors/codec-name-b.f32",
+        "sha256": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+        "samples": 48000,
+        "bytes": 192000
+      },
+      "ev-sustain-no-pedal": {
+        "file": "vectors/ev-sustain-no-pedal.f32",
+        "sha256": "74226b8489929f6b626cb9df8072a45a7d8aad656843e608ea288b0da340a733",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-sustain-pedal": {
+        "file": "vectors/ev-sustain-pedal.f32",
+        "sha256": "b8125d1089a2b1bec7e3da5b8b1b204372d99b7747a3666e3296992548954592",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-all-sound-off": {
+        "file": "vectors/ev-all-sound-off.f32",
+        "sha256": "70c9c153d8cc8ee462168f9b606f48c2190827fe1f36d87e496422e2b4d9b6e7",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-all-notes-off": {
+        "file": "vectors/ev-all-notes-off.f32",
+        "sha256": "20197a1310e5c2e8dabece2d305e8a958eb2cbbf22f4828056f0c758dc77434a",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-pitch-bend-up": {
+        "file": "vectors/ev-pitch-bend-up.f32",
+        "sha256": "ad741f854c824d8ffdeef91663c095613a630bbed986209bf5ec8aaaf89688c9",
+        "samples": 38400,
+        "bytes": 153600
+      },
+      "ev-pitch-bend-down": {
+        "file": "vectors/ev-pitch-bend-down.f32",
+        "sha256": "ade84a083f80a5f20ad2273bd9579c5776417c0e1ac0fe4e64e947a09c9ce47c",
+        "samples": 38400,
+        "bytes": 153600
+      },
+      "ev-pitch-bend-center": {
+        "file": "vectors/ev-pitch-bend-center.f32",
+        "sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "bytes": 153600
+      },
+      "ev-modwheel-127": {
+        "file": "vectors/ev-modwheel-127.f32",
+        "sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "bytes": 153600
+      },
+      "ev-modwheel-0": {
+        "file": "vectors/ev-modwheel-0.f32",
+        "sha256": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+        "samples": 38400,
+        "bytes": 153600
+      },
+      "ev-repeated-note": {
+        "file": "vectors/ev-repeated-note.f32",
+        "sha256": "72057d03bbcbfb54734494efcf24a68e25f8ec4f7fd54803eb9f265f5b963493",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-retrigger": {
+        "file": "vectors/ev-retrigger.f32",
+        "sha256": "f18effc2030e59b8a39874474631115ea0d5cc72478ca36fa084f05d866903d7",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ev-sum-15": {
+        "file": "vectors/ev-sum-15.f32",
+        "sha256": "aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a",
+        "samples": 96000,
+        "bytes": 384000
+      },
+      "ev-steal-16": {
+        "file": "vectors/ev-steal-16.f32",
+        "sha256": "8112af3ac0054c50eabf369e7fbc7d60f51ff2bdd56c95dc885a87957f452955",
+        "samples": 96000,
+        "bytes": 384000
+      },
+      "dev32-03": {
+        "file": "vectors/dev32-03.f32",
+        "sha256": "e21505ca0e4faa52931f907713dddfcd74d6b623ea1a3807e54292e1ceb9a666",
+        "samples": 192000,
+        "bytes": 768000
+      },
+      "dev32-06": {
+        "file": "vectors/dev32-06.f32",
+        "sha256": "f507b0f4c7ddf5d4b4d6369feb8fe6ce675fce3678b29be2cc898d86d8ccbdf9",
+        "samples": 192000,
+        "bytes": 768000
+      },
+      "dev32-30": {
+        "file": "vectors/dev32-30.f32",
+        "sha256": "777aa7a1254d485805dfa70a511e073befe2862bdd8fd4b7cbe1f24ccf63c484",
+        "samples": 192000,
+        "bytes": 768000
+      },
+      "alg-05": {
+        "file": "vectors/alg-05.f32",
+        "sha256": "1f10a8d14928e1fbf376313c90952acf693496d07ed2a639322c3a3d4121d48c",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg-16": {
+        "file": "vectors/alg-16.f32",
+        "sha256": "62e74c023b58517d0d00527b5d2e155aefaaa3a00c853d45172a861162dd077c",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "alg-31": {
+        "file": "vectors/alg-31.f32",
+        "sha256": "c7f863e31bcceb34c1e17ee2a174f28470c8fa7d593df305eab39f3c6d5e9eb3",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-fine99": {
+        "file": "vectors/bd-fine99.f32",
+        "sha256": "f789f85646e7d5dedd76ab74d029725cfc015fde40e53bdea9352567f460723d",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-delayed-attack": {
+        "file": "vectors/bd-delayed-attack.f32",
+        "sha256": "c12dbb76813b0a49183b347c7c4707164aca3c88386ec22a0e8ad562e131bd0f",
+        "samples": 96000,
+        "bytes": 384000
+      },
+      "bd-rising-env": {
+        "file": "vectors/bd-rising-env.f32",
+        "sha256": "6e46a45cd48a3e933c25f279e52b77b73d75d50d830d71e22b4384ac585a970d",
+        "samples": 96000,
+        "bytes": 384000
+      },
+      "bd-slow-rate3": {
+        "file": "vectors/bd-slow-rate3.f32",
+        "sha256": "4c22dec281a129bf1791f429a00c3b564992db28598f9b96c3afe46c852c46fb",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "bd-nonzero-final": {
+        "file": "vectors/bd-nonzero-final.f32",
+        "sha256": "fb682f4eb3346a571c32a24fca531c3c548727592e2fc0240c0511159012510b",
+        "samples": 48000,
+        "bytes": 192000
+      },
+      "bd-fast-release": {
+        "file": "vectors/bd-fast-release.f32",
+        "sha256": "0d9379a6bba0b30fd6d1519913a4f9ca7e06b5e0957bf52ebdd4d5e7da55f4f8",
+        "samples": 48000,
+        "bytes": 192000
+      },
+      "bd-rs3": {
+        "file": "vectors/bd-rs3.f32",
+        "sha256": "2308f83be828a8a3e9efd0a193b0c7b5df223349a9816224035922678bcfc722",
+        "samples": 48000,
+        "bytes": 192000
+      },
+      "lfo-wave1": {
+        "file": "vectors/lfo-wave1.f32",
+        "sha256": "a614df096a730ecc573d2d3220412b629c965022e8fb8ae7a4e33a6d237a6236",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "lfo-wave5": {
+        "file": "vectors/lfo-wave5.f32",
+        "sha256": "aa6aa98dd40197ab3bbc7516896eae60c7806f842048fbf7ef237261ba1d215d",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "lfo-delay99": {
+        "file": "vectors/lfo-delay99.f32",
+        "sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "lfo-pm-sens7": {
+        "file": "vectors/lfo-pm-sens7.f32",
+        "sha256": "60da62f4ae990129f0e0eda9df8826ac0f7a4f5bba0b1f9cbebe9a1e9fe8bc04",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "ampmod-ams3": {
+        "file": "vectors/ampmod-ams3.f32",
+        "sha256": "c3fa95d1c1cba9545131c906be6ccd6f023990ea056ebc1dfa2901f5d0afb0ae",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "kbd-right-c3": {
+        "file": "vectors/kbd-right-c3.f32",
+        "sha256": "00902374f1caed88bf48b072618eb87057aea7f09f41d29a1deb236392863eea",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "vel-kvs7-30": {
+        "file": "vectors/vel-kvs7-30.f32",
+        "sha256": "1d8c5c9f6ae68f2b343803e58dd1d413dacfe7dc04204dc6f68867e6e835915f",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "vel-kvs0-127": {
+        "file": "vectors/vel-kvs0-127.f32",
+        "sha256": "44e01cd35658e66389cccdaefefb8208529099f74d20f9a6adbe72a5f5a256e1",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "peg-up": {
+        "file": "vectors/peg-up.f32",
+        "sha256": "8f24a7e3538732caae37268130f0392df83e0769bd04b4cd41bf1f96243809b6",
+        "samples": 72000,
+        "bytes": 288000
+      },
+      "osc-keysync0": {
+        "file": "vectors/osc-keysync0.f32",
+        "sha256": "d960830240edd38c303e38c288e9684bf2adfb5f37872c37ad340ebad6f133a4",
+        "samples": 96000,
+        "bytes": 384000
+      },
+      "perf-transpose-12": {
+        "file": "vectors/perf-transpose-12.f32",
+        "sha256": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+        "samples": 72000,
+        "bytes": 288000
+      }
+    }
+  },
+  "bundle_sha256": "81bcc43cd49a29f35b21370733bb9888dd5641862501b441136e122485f54f8c",
+  "provenance": {
+    "built_at_commit": "35e2c97f86ad2fc55876619aaf1b792732eb3147",
+    "builder": "tools/n08_build_release.py",
+    "builder_sha256": "b6315c8919b651c8fe4ba43d2ab826e5c14fb376d402ae253cc1723848fe7ecc",
+    "python": "3.14.7",
+    "note": "provenance is NOT covered by the bundle hash; the covered content above is the frozen identity"
+  }
+}

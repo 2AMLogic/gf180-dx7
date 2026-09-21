@@ -1500,6 +1500,61 @@
       "path": "reference/evidence/n07-poly/evidence.json",
       "sha256": "4c1e9806f5b164138c33e6bee07d1be96642faab5b67fb1dec39fd81a50982d6",
       "reason": "committed N07 evidence (issue #23): 7/7 wrapper-valid EXACT cross-checks and the documented ev-steal-17 divergence measurements"
+    },
+    {
+      "path": "spec/release-vectors-v1.json",
+      "sha256": "5848fbfd031521599ab001dec325d1a1d8b6bdb08102475a53a95ef26474230d",
+      "reason": "N08 preregistration (issue #24): dev/challenge selection, frozen thresholds, and binding hashes, frozen before any challenge render was inspected"
+    },
+    {
+      "path": "tools/n08_build_release.py",
+      "sha256": "b6315c8919b651c8fe4ba43d2ab826e5c14fb376d402ae253cc1723848fe7ecc",
+      "reason": "locally authored N08 bundle builder (issue #24): deterministic vector+manifest build enforcing the preregistration binding (refuses on drift)"
+    },
+    {
+      "path": "tools/n08_verify_release.py",
+      "sha256": "88b4808146608922f38328472390513d25fe72d57e1252e03b8e0e620703b80f",
+      "reason": "locally authored N08 release verifier (issue #24): bundle hash, vector/model-identity/STALE checks, and the re-render gate H-series RTL conformance runs against"
+    },
+    {
+      "path": "tools/n08_mutations.py",
+      "sha256": "8a299d854c4d753f9f4d23508f883d4ad464574c7d3ad51e960a9ae9e62ceee6",
+      "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle"
+    },
+    {
+      "path": "tools/n08_challenge.py",
+      "sha256": "c4ec82e4cb932e4c185169c49e8f5e1a836c4215d1b6dea011f7a84466c3fc61",
+      "reason": "locally authored N08 challenge runner (issue #24): renders the preregistered challenge set and compares vs the pinned oracle at the frozen thresholds"
+    },
+    {
+      "path": "tests/test_n08_release.py",
+      "sha256": "0d29ef3bae35b2b309c65911e969849a979160fac8df329ecd93b57eab16e3f1",
+      "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation"
+    },
+    {
+      "path": "docs/decision-records/0007-release-freeze-v1.md",
+      "sha256": "015bb8f9888b4fade73a62e0d1fcb229e5372d172bb99ba01172fd56a7a46d32",
+      "reason": "locally authored freeze decision record (issue #24): frozen contents, challenge protocol ordering, STALE rules, H03+ authorization statement"
+    },
+    {
+      "path": "docs/N08-RELEASE.md",
+      "sha256": "7188af87668373eec224b58e3ddc4bc9c56688b6818007110175369c6db10af1",
+      "reason": "locally authored N08 release notes (issue #24): contents, verification commands, mutation coverage, challenge results, bounded findings and exclusions"
+    },
+    {
+      "path": "reference/release/manifest.json",
+      "sha256": "4eab072416e75e37a3c9ff328bba625a2f7f11d14dc40949c6b0366f52246d38",
+      "reason": "committed N08 release manifest (issue #24): per-case vector shas + block-level event traces, model identity, arithmetic-profile pointer, frozen thresholds, derived error budgets, bundle hash"
+    },
+    {
+      "path": "reference/release/challenge-results.json",
+      "sha256": "ad9cba1b2cb0f1f529b1d9147c1977b7b476559c0f7893be70c564e48b768198",
+      "reason": "committed N08 challenge record (issue #24): 21/21 preregistered challenge cases AGREE_EXACT at the frozen thresholds, bound to the bundle hash"
+    },
+    {
+      "path": "reference/release/mutation-results.json",
+      "sha256": "8c7741511b5ba8df8ed0bd617d5988c5493a4066f7e83f358f8993933444a900",
+      "reason": "committed N08 mutation results (issue #24): 5/5 mutations detected by the release verification, bound to the bundle hash"
     }
   ]
 }

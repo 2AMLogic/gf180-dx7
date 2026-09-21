@@ -1720,6 +1720,21 @@
       "path": "tests/test_u02_kit.py",
       "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
       "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
+    },
+    {
+      "path": "rtl/dx7_core.v",
+      "sha256": "ebe463b1a6fe500a2ae3d39bdb06e84d47dc86cae964dcca63b9cb81a2243279",
+      "reason": "locally authored H07 integrated 16-note core (issue #29, WIP bring-up revision): SPI slave + skid/event queues, atomic patch commit, DEC-015..021 allocator, 96 env_unit slices, shared per-note pitch path (H06 semantics), shared H05 router around a combinational H01 kernel, NUM-010 unclamped mixer, I2S master, four negative-control ifdefs; composed from landed in-repo modules only, no upstream bytes"
+    },
+    {
+      "path": "rtl/tb_dx7_core.v",
+      "sha256": "5dc2c74e4383f0ef856df98391edeb4e3955e11de06a313d7618348459fceb2e",
+      "reason": "locally authored H07 host-side bench (issue #29, WIP): SPI master at SCK=clk/16 for the contracted 48-bit frame, model-block event pacing, I2S DAC-model decoder + PCM dump via the mixer-load tap; no upstream bytes"
+    },
+    {
+      "path": "docs/H07-CORE.md",
+      "sha256": "a481edb738c7b2053081beda92ec6dac48447ad94c77318a907e5718e04a4a61",
+      "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
     }
   ]
 }

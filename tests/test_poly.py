@@ -501,7 +501,8 @@ class TestOverloadDeterminismAndIsolation(_Base):
         self.assertEqual(both[:prefix], alone[:prefix])
 
     def test_pinned_sum_is_stored_unclamped(self):
-        """Measured pinned semantics (oracle 15-voice peak 1.0985): the
+        """Measured pinned semantics (oracle 15-voice peak
+        1.317626953125, corrected per judge review on #63): the
         per-voice clip_val clipping is the only saturation; the summed
         mix is stored raw. 16 voices of this patch exceed ±1.0 and the
         model must NOT clamp them."""

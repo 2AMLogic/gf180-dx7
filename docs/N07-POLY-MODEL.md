@@ -104,8 +104,11 @@ Empirical checks (tests/test_poly.py, `TestOverloadDeterminismAndIsolation`):
    couples voices (it happens per voice before the mix).
 
 **Measured pinned mixing semantics (finding N07-F1).** The pinned wrapper
-stores the summed mix **unclamped**: an oracle ev-sum-15 render peaks at
-1.0985 (> ±1.0). The model therefore converts the integer mix as
+stores the summed mix **unclamped**: an oracle ev-sum-15 render
+(oracle_pcm_sha256 `aa3f0ebd0df0139bba2d2c454445487fca570f037a3ae5794bd8d4048cb2824a`)
+peaks at 1.317626953125 (> ±1.0; corrected per judge review on #63 — the
+previously recorded 1.0985 did not reproduce). The model therefore converts
+the integer mix as
 `sum × 2⁻¹⁵` raw (the 0x8000 quirk is +32768 in the integer domain and maps
 to +1.0 per voice exactly as `c / 32768.0`). The N06 single-note path never
 exercised this (one voice ⇒ |f| ≤ 1) and is unchanged. This is the

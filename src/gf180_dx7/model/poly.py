@@ -641,7 +641,8 @@ def _sum_to_f32(c: int) -> float:
     """Mix conversion (NUM-010, measured multi-voice semantics): the mix
     is the exact integer sum x 2^-15 stored raw — the pinned wrapper
     clamps NOTHING at the sum (per-voice clip_val clipping is the only
-    saturation; measured oracle peak 1.0985 on a 15-voice render). The
+    saturation; measured oracle peak 1.317626953125 on the committed
+    ev-sum-15 evidence render; corrected per judge review on #63). The
     0x8000 quirk value is +32768 in the integer domain and maps to +1.0
     per voice exactly as c / 32768.0."""
     return c / 32768.0

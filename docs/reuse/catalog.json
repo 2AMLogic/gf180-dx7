@@ -1478,7 +1478,7 @@
     },
     {
       "path": "src/gf180_dx7/model/poly.py",
-      "sha256": "8de6a8318f19fc77a654f763735d772adba23e62c3ad24a359d0c3d27bb730af",
+      "sha256": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12",
       "reason": "N07 D00 polyphonic state/event manager (issue #23): 16 independent voice slots, DEC-015/016/017/018/019 policy, NUM-012 reclamation, isolation negative-control seams"
     },
     {
@@ -1488,12 +1488,12 @@
     },
     {
       "path": "tests/test_poly.py",
-      "sha256": "1ff741a3299f19ff0d73e41d251d01ebbed38d288635e519e807478ad708fd0c",
+      "sha256": "35bd7b96857a93316c9da450fb636b9f31181a1fce114e24174876aa2198bac1",
       "reason": "N07 test suite (issue #23): D00 policy battery, isolation additivity, live negative controls, committed-evidence validation, guarded live-oracle checks"
     },
     {
       "path": "docs/N07-POLY-MODEL.md",
-      "sha256": "63a7e5575c5c56e615e06f0d42ecaf171177a89c62cf7717662018de8a429943",
+      "sha256": "0f0b8eb5e05f8d8d6ced09cad6f746008aa852e046eacd1c2b46312e95b89965",
       "reason": "N07 model doc (issue #23): D00 policy mapping, DEC-016 reading record, isolation methodology, wrapper-validity boundary, divergence documentation"
     },
     {

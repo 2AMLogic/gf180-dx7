@@ -1,0 +1,125 @@
+{
+ "claim_boundary": "RTL-vs-frozen-model bit-exactness + measured step-cycle bound only; no synthesis, timing, fit, or audibility claim",
+ "equivalence": {
+  "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual.txt",
+  "actual_rows": 27931,
+  "bench_cmds": 27933,
+  "bench_hazard": "ok",
+  "bench_max_cmd_cycles": 13,
+  "bench_max_step_cycles": 13,
+  "bench_steps": 24639,
+  "expected_rows": 27931,
+  "first_mismatch": null,
+  "hazard_check": "ok",
+  "mismatches": 0,
+  "status": "PASS",
+  "step_cycle_gate": {
+   "basis": "H03 spec/core-contract-v1.json budget row env_steps (derived_estimate 24 clk/op/frame worst case incl. segment advance); measured over the directed set incl. worst-rate updates",
+   "bound_clks": 24,
+   "measured_clks": 13,
+   "status": "PASS"
+  },
+  "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
+ },
+ "expected_sha256": "fbe0569eb94a4cd0c341fadc54beda927e09eaa4ad5fe40ce1a0befd4e3dc71a",
+ "issue": 26,
+ "negative_controls": {
+  "srm": {
+   "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual_srm.txt",
+   "bench_cmds": 27933,
+   "bench_hazard": "ok",
+   "bench_max_cmd_cycles": 13,
+   "bench_max_step_cycles": 13,
+   "bench_steps": 24639,
+   "define": "H04_MUTATE_SRM",
+   "description": "sr_multiplier - 1 (N03 section 6: reachable inc_ coefficients flip)",
+   "first_mismatch": {
+    "actual": [
+     "0",
+     "f000000",
+     "66e665",
+     "0",
+     "0",
+     "1",
+     "1"
+    ],
+    "cmd_index": 1,
+    "command": "I",
+    "expected": [
+     "0",
+     "f000000",
+     "66e666",
+     "0",
+     "0",
+     "1",
+     "1"
+    ],
+    "fields": [
+     "inc"
+    ]
+   },
+   "mismatches": 6958,
+   "status": "MET (mutant fails equivalence as required)",
+   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
+  },
+  "timing": {
+   "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual_timing.txt",
+   "bench_cmds": 27933,
+   "bench_hazard": "ok",
+   "bench_max_cmd_cycles": 13,
+   "bench_max_step_cycles": 13,
+   "bench_steps": 24639,
+   "define": "H04_MUTATE_STEP_SKEW",
+   "description": "update shifted one frame late (movement commit deferred to the next step's capture)",
+   "first_mismatch": {
+    "actual": [
+     "0",
+     "f000000",
+     "66e666",
+     "0",
+     "0",
+     "1",
+     "1"
+    ],
+    "cmd_index": 2,
+    "command": "S",
+    "expected": [
+     "ab8fffc",
+     "f000000",
+     "66e666",
+     "0",
+     "0",
+     "1",
+     "1"
+    ],
+    "fields": [
+     "level"
+    ]
+   },
+   "mismatches": 18784,
+   "status": "MET (mutant fails equivalence as required)",
+   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1210450 (1s)"
+  }
+ },
+ "planning_id": "H04",
+ "schema": "h04-compare-report/1",
+ "status": "PASS",
+ "tool_identity": {
+  "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
+  "python": "3.14.7",
+  "rtl": {
+   "rtl/env_unit.v": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+   "rtl/tb_env_unit.v": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72"
+  },
+  "sr_multiplier": 15414067
+ },
+ "vector_stats": {
+  "advance_steps": 788,
+  "commands": 27931,
+  "double_steps": 1,
+  "keyedge_advances": 493,
+  "min_evals_required": 3000,
+  "steps": 24639
+ },
+ "vectors_sha256": "8a8cdf7789dad398e6782cb5a20e503ea982d3e963b23db0be06506e5cd23802"
+}

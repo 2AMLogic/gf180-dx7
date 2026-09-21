@@ -1,0 +1,160 @@
+{
+ "claim_boundary": "mapped cell/flop/area cost of the routing probe only; no place-and-route, no timing closure, no fit claim, no audibility claim; RTL-vs-model agreement is tools/h05_compare.py's result and is not implied by any number here",
+ "declared_vs_mapped_state": {
+  "declared_bits": 7403,
+  "declared_detail": {
+   "declared": {
+    "add_eff_q": 1,
+    "alg_q": 5,
+    "bus1_obs": 32,
+    "bus1_q": 2048,
+    "bus2_obs": 32,
+    "bus2_q": 2048,
+    "bus_form_q": 1,
+    "dg1_w": 16,
+    "dg2_w": 16,
+    "eff_shift_q": 5,
+    "fb0_q": 32,
+    "fb1_q": 32,
+    "fb_form_q": 1,
+    "fbshift_q": 5,
+    "freq_q": 192,
+    "g1_w": 16,
+    "g2_w": 16,
+    "gaino_q": 96,
+    "hc0_q": 1,
+    "hc1_q": 1,
+    "hc2_q": 1,
+    "i_q": 7,
+    "inbus_q": 2,
+    "level_q": 168,
+    "nout_obs": 32,
+    "nout_q": 2048,
+    "obs_q": 1,
+    "og1_q": 15,
+    "og2_q": 15,
+    "op_q": 3,
+    "outbus_q": 2,
+    "pend0_q": 32,
+    "pend1_q": 32,
+    "pend_v_q": 1,
+    "phase_q": 192,
+    "s_ph1": 32,
+    "s_ph2": 32,
+    "ser2_q": 1,
+    "ser3_q": 1,
+    "state_q": 3,
+    "w_dgain_q": 10,
+    "w_gain": 17,
+    "w_ph": 32,
+    "y0_w": 32,
+    "y1_w": 32,
+    "y_mid1": 32,
+    "y_mid2": 32
+   },
+   "excluded_non_flop": {
+    "alg_rom": 1536,
+    "rd_data_r": 32
+   }
+  },
+  "mapped_flops_full": 7407,
+  "note": "mapped differs from declared by a few bits and that is expected and behavior-preserving (yosys exploits constant/unused-bit structure and dfflibmap may replicate registers). The contract the mapping must preserve is RTL behavior, proven bit-exact to the frozen model by tools/h05_compare.py on the pre-synthesis RTL."
+ },
+ "gates": {
+  "full": {
+   "cell_total": 37930,
+   "chip_area_um2": 1148899.6288,
+   "mapped_flops": 7407,
+   "requirement": "mapped flops > 4096 (the two persistent 64x32 interconnect bus buffers are irreducible N04 state) and chip area > 0 and sequential area > 0 and cells > 0",
+   "seq_area_um2": 471535.5456,
+   "status": "PASS"
+  },
+  "strip_negative_control": {
+   "mapped_flops": 0,
+   "requirement": "strip-observability must make the flop gate FAIL (all state removed)",
+   "status": "MET (gate fails as required)"
+  }
+ },
+ "issue": 27,
+ "planning_id": "H05",
+ "runs": {
+  "full": {
+   "cell_total": 37930,
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 308,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 81,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 4,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 252,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 1260,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 559,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 153,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 940,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 525,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 7407,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 753,
+    "gf180mcu_fd_sc_mcu7t5v0__mux4_1": 1461,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 9199,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 693,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 11,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 895,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 68,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 19,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 573,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 7478,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 97,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 61,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 59,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 31,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 234,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 15,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_1": 2,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 108,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 47,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 1761,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 2876
+   },
+   "chip_area_um2": 1148899.6288,
+   "dff_cells": {
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 7407
+   },
+   "flop_total": 7407,
+   "mode": "full",
+   "rom_representation": {
+    "detail": "the 32x6 x 8-bit connection table dissolves to combinational gates (yosys MEMORY_MAP; no BRAM in this flow); final stat shows no memory cells",
+    "evidence": {
+     "memory_cells_in_final_stat": 0,
+     "memory_map_pass_ran": true
+    },
+    "representation": "logic"
+   },
+   "seq_area_um2": 471535.5456
+  },
+  "strip": {
+   "cell_total": 0,
+   "cells_by_name": {},
+   "chip_area_um2": null,
+   "dff_cells": {},
+   "flop_total": 0,
+   "mode": "strip",
+   "seq_area_um2": null
+  }
+ },
+ "schema": "h05-synth-report/1",
+ "status": "PASS",
+ "tool_identity": {
+  "conformance_harness": "tools/h05_compare.py (golden: src/gf180_dx7/model/algorithm.py)",
+  "constraints": "no SDC: probe flow per issue #27 (read_verilog; synth -top; dfflibmap; abc; stat), no clock defined",
+  "dont_use_policy": "none: *_1 drive cells allowed (declared per D01 section 4/section 10.3)",
+  "liberty": {
+   "corner": "tt_025C_5v00",
+   "library": "gf180mcu_fd_sc_mcu7t5v0 (7t, 5 metal)",
+   "path": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+   "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+  },
+  "rtl": {
+   "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+   "rtl/tb_alg_router.v": "755fe45c69efae64ad69f05b0916f9574445b8b90d417b573ea073d1b3c5de32"
+  },
+  "yosys": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"
+ }
+}

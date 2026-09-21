@@ -1,0 +1,10 @@
+{
+  "bits": 8,
+  "entries": 192,
+  "generator": "tools/h05_compare.py --gen-tables",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/27",
+  "schema": "gf180-dx7/table-manifest-v1",
+  "sha256": "2d9abc6abcd070fb1fc7f79be425fd8aea8e182e90915653f1b6b7f36b6fcf78",
+  "source": "src/gf180_dx7/model/algorithm.py ALGORITHMS (fm_core.cc:29-62 facts); regenerated, never copied (NUM-001); parasynth gen_tables discipline",
+  "table": "alg_table"
+}

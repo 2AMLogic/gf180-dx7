@@ -1580,6 +1580,36 @@
       "path": "docs/decision-records/0008-core-schedule-contract.md",
       "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
       "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
+    },
+    {
+      "path": "rtl/env_unit.v",
+      "sha256": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+      "reason": "locally authored H04 envelope/state RTL (issue #26): the N03 integer operator envelope as a synthesizable micro-sequencer, exact to src/gf180_dx7/model/envelope.py by semantic re-implementation from docs/N03-ENVELOPE-MODEL.md (Apache-2.0 semantic facts only, no bytes copied); derived sr_multiplier 15414067 constant, H02-style bank slot with H03 read-old/write-new hazard rules, and three in-file negative controls (step-skew, sr_multiplier-1, strip observability)"
+    },
+    {
+      "path": "rtl/tb_env_unit.v",
+      "sha256": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72",
+      "reason": "locally authored H04 equivalence bench (issue #26): drives the directed command stream, dumps committed slot state per command for bit-exact comparison, measures per-command cycles (H03 env_steps budget gate), and self-checks the H03 read-old/write-new hazard rule before the stream; no upstream bytes"
+    },
+    {
+      "path": "tools/h04_compare.py",
+      "sha256": "4ced08b0644ff4be0924ddde442c6b401b33833eeb806be2408117603a81f731",
+      "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls"
+    },
+    {
+      "path": "tools/h04_synth.py",
+      "sha256": "e15c0b9d524bd782d59413b63b720bb3b2fca14fc27c7a3b0d057892999fba13",
+      "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes"
+    },
+    {
+      "path": "tests/test_h04.py",
+      "sha256": "5b59faa9fe95043ecb00e94fd62201ca22dfac9422dac6c284610e866390e236",
+      "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes"
+    },
+    {
+      "path": "docs/H04-ENV-RTL.md",
+      "sha256": "7a8d986d4ee5d02763235da6c278119789252ff8583d955fb72907bd693d641f",
+      "reason": "locally authored H04 report (issue #26): unit structure and micro-sequencer, bit-exact conformance results (27,931 commands / 24,639 frame steps, 0 mismatches), measured 13-clk worst step vs the contracted 24-clk H03 slot, hazard verification, mapped area (0.179 mm2, 480 flops, strip control at 0), and the claim boundary"
     }
   ]
 }

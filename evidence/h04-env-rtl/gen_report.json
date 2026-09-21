@@ -1,0 +1,18 @@
+{
+ "expected_sha256": "fbe0569eb94a4cd0c341fadc54beda927e09eaa4ad5fe40ce1a0befd4e3dc71a",
+ "golden": "src/gf180_dx7/model/envelope.py (gf180-dx7-integer-v1, N03)",
+ "issue": 26,
+ "planning_id": "H04",
+ "schema": "h04-gen-report/1",
+ "sr_multiplier": 15414067,
+ "sr_multiplier_formula": "uint32 truncation of (44100.0/sample_rate)*(1<<24); at 48 kHz: floor(15414067.2)",
+ "stats": {
+  "advance_steps": 788,
+  "commands": 27931,
+  "double_steps": 1,
+  "keyedge_advances": 493,
+  "min_evals_required": 3000,
+  "steps": 24639
+ },
+ "vectors_sha256": "8a8cdf7789dad398e6782cb5a20e503ea982d3e963b23db0be06506e5cd23802"
+}

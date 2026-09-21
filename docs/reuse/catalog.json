@@ -1610,6 +1610,46 @@
       "path": "docs/H04-ENV-RTL.md",
       "sha256": "7a8d986d4ee5d02763235da6c278119789252ff8583d955fb72907bd693d641f",
       "reason": "locally authored H04 report (issue #26): unit structure and micro-sequencer, bit-exact conformance results (27,931 commands / 24,639 frame steps, 0 mismatches), measured 13-clk worst step vs the contracted 24-clk H03 slot, hazard verification, mapped area (0.179 mm2, 480 flops, strip control at 0), and the claim boundary"
+    },
+    {
+      "path": "reference/tables/alg_table.hex",
+      "sha256": "2d9abc6abcd070fb1fc7f79be425fd8aea8e182e90915653f1b6b7f36b6fcf78",
+      "reason": "generated H05 artifact (issue #27): the 32-row connection table regenerated from src/gf180_dx7/model/algorithm.py ALGORITHMS so the model and rtl/alg_router.v share ONE table artifact (parasynth gen_tables discipline); bytes pinned by reference/tables/alg_manifest.json and tools/h05_compare.py --check-tables"
+    },
+    {
+      "path": "reference/tables/alg_manifest.json",
+      "sha256": "65088680bc045352272c0ef9dc5655ae19dd31d359b044f8aff41ad196ae8977",
+      "reason": "generated H05 table manifest (issue #27): sha256/entries/bits pin for alg_table.hex; verified before every simulation"
+    },
+    {
+      "path": "rtl/alg_router.v",
+      "sha256": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+      "reason": "locally authored H05 routing/feedback RTL (issue #27); Mark I router semantics mirrored from the frozen N04 model (algorithm.py) as facts with citations, ROM $readmemh-loads the generated shared alg_table.hex, delayed-commit fb history per the H03 contract, negative-control ifdefs, no upstream bytes"
+    },
+    {
+      "path": "rtl/tb_alg_router.v",
+      "sha256": "755fe45c69efae64ad69f05b0916f9574445b8b90d417b573ea073d1b3c5de32",
+      "reason": "locally authored H05 iverilog conformance driver (issue #27); drives the directed program and streams eval/output/state records for the Python judge with the same scripted source as the golden, no upstream bytes"
+    },
+    {
+      "path": "tools/h05_compare.py",
+      "sha256": "35a285d859b7b575e49a0706f7b8b9f8b71023bce8f53b90f21ff1243118518f",
+      "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tools/h05_synth.py",
+      "sha256": "28ca0c4b921c56f3995a7c65e75ae52eeae6b8674f6452d85d2ec8dd937a759b",
+      "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes"
+    },
+    {
+      "path": "tests/test_h05.py",
+      "sha256": "d196b793a47c3381d6a7ad493b188bd6c0109b54b28c23ef8105051fd07fafc7",
+      "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes"
+    },
+    {
+      "path": "docs/H05-ROUTING-RTL.md",
+      "sha256": "67d0b08891b37fd646bee210b76c85599f48b30c8b86786777e398243876765d",
+      "reason": "locally authored H05 derivation and results record (issue #27): table regeneration identity, structure, schedule-delay handling, conformance matrix, mapped area, controls, claim boundary"
     }
   ]
 }

@@ -1,0 +1,1285 @@
+# yosys script (cwd=/private/tmp/opencode/wt-h06-pitch-rtl): read_verilog -DH06_STRIP_OBSERVABILITY /private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v; hierarchy -check -top pitch_mod; synth -top pitch_mod; dfflibmap -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; abc -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; stat -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+
+-- Running command `read_verilog -DH06_STRIP_OBSERVABILITY /private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v; hierarchy -check -top pitch_mod; synth -top pitch_mod; dfflibmap -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; abc -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib; stat -liberty /Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib' --
+
+1. Executing Verilog-2005 frontend: /private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v
+Parsing Verilog input from `/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v' to AST representation.
+Generating RTLIL representation for module `\pitch_mod'.
+Warning: Replacing memory \act_fterm with list of registers. See /private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:665
+Warning: Replacing memory \act_opcfg with list of registers. See /private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:665
+Successfully finished Verilog frontend.
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \pitch_mod
+
+2.2. Analyzing design hierarchy..
+Top module:  \pitch_mod
+Removed 0 unused modules.
+
+3. Executing SYNTH pass.
+
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+
+3.1.1. Analyzing design hierarchy..
+Top module:  \pitch_mod
+
+3.1.2. Analyzing design hierarchy..
+Top module:  \pitch_mod
+Removed 0 unused modules.
+
+3.2. Executing PROC pass (convert processes to netlists).
+
+3.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:233$937'.
+Found and cleaned up 2 empty switches in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+Cleaned up 2 empty switches.
+
+3.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$934 in module pitch_mod.
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$931 in module pitch_mod.
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$928 in module pitch_mod.
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$925 in module pitch_mod.
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$922 in module pitch_mod.
+Marked 1 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$919 in module pitch_mod.
+Marked 2 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$911 in module pitch_mod.
+Marked 35 switch rules as full_case in process $proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231 in module pitch_mod.
+Removed a total of 0 dead cases.
+
+3.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 1 redundant assignment.
+Promoted 135 assignments to connections.
+
+3.2.4. Executing PROC_INIT pass (extract init attributes).
+
+3.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+3.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 12 switches.
+<suppressed ~33 debug messages>
+
+3.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$934'.
+     1/1: $1$mem2reg_rd$\act_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$44_DATA[31:0]$936
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$931'.
+     1/1: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$43_DATA[31:0]$933
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$928'.
+     1/1: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$42_DATA[31:0]$930
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$925'.
+     1/1: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$41_DATA[31:0]$927
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$922'.
+     1/1: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$40_DATA[31:0]$924
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$919'.
+     1/1: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$39_DATA[31:0]$921
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$911'.
+     1/2: $1\coarsemul_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$38.$result[31:0]$918
+     2/2: $1$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$45_DATA[31:0]$917
+Creating decoders for process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+     1/352: $4\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.$result[7:0]$698
+     2/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.$result[7:0]$697
+     3/352: $4\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.$result[7:0]$693
+     4/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.$result[7:0]$692
+     5/352: $4\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.$result[7:0]$689
+     6/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.$result[7:0]$688
+     7/352: $3\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.$result[31:0]$682
+     8/352: $3\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.$result[7:0]$684
+     9/352: $3\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.i[6:0]$685
+    10/352: $3\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.r[7:0]$683
+    11/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.$result[7:0]$679
+    12/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.i[1:0]$681
+    13/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.w[31:0]$680
+    14/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.$result[31:0]$674
+    15/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.t[7:0]$676
+    16/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.$result[7:0]$677
+    17/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.i[6:0]$678
+    18/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.lvl[6:0]$675
+    19/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.$result[7:0]$671
+    20/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.i[1:0]$673
+    21/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.w[31:0]$672
+    22/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.$result[31:0]$666
+    23/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.t[7:0]$668
+    24/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.$result[7:0]$669
+    25/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.i[6:0]$670
+    26/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.lvl[6:0]$667
+    27/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.$result[7:0]$663
+    28/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.i[1:0]$665
+    29/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.w[31:0]$664
+    30/352: $4\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.$result[7:0]$659
+    31/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.$result[7:0]$658
+    32/352: $4\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.$result[7:0]$655
+    33/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.$result[7:0]$654
+    34/352: $4\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.$result[7:0]$652
+    35/352: $4\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.$result[7:0]$651
+    36/352: $3\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.$result[31:0]$647
+    37/352: $3\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.$result[7:0]$649
+    38/352: $3\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.i[6:0]$650
+    39/352: $3\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.r[7:0]$648
+    40/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.$result[7:0]$645
+    41/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.w[31:0]$646
+    42/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.$result[31:0]$640
+    43/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.t[7:0]$642
+    44/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.$result[7:0]$643
+    45/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.i[6:0]$644
+    46/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.lvl[6:0]$641
+    47/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.$result[7:0]$638
+    48/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.w[31:0]$639
+    49/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.$result[31:0]$633
+    50/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.t[7:0]$635
+    51/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.$result[7:0]$636
+    52/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.i[6:0]$637
+    53/352: $3\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.lvl[6:0]$634
+    54/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.$result[7:0]$631
+    55/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.w[31:0]$632
+    56/352: $3\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.$result[7:0]$624
+    57/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.$result[7:0]$623
+    58/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.$result[7:0]$620
+    59/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.$result[7:0]$619
+    60/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.$result[7:0]$617
+    61/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.$result[7:0]$616
+    62/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.$result[7:0]$614
+    63/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.$result[7:0]$613
+    64/352: $3\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.$result[7:0]$611
+    65/352: $3\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.$result[7:0]$610
+    66/352: $2$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_EN[31:0]$585
+    67/352: $2$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_DATA[31:0]$584
+    68/352: $2$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_ADDR[2:0]$583
+    69/352: $2$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_EN[31:0]$582
+    70/352: $2$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_DATA[31:0]$581
+    71/352: $2$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_ADDR[2:0]$580
+    72/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.i[6:0]$579
+    73/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.$result[7:0]$578
+    74/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.r[7:0]$577
+    75/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.$result[31:0]$576
+    76/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.i[1:0]$575
+    77/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.w[31:0]$574
+    78/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.$result[7:0]$573
+    79/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.i[6:0]$572
+    80/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.$result[7:0]$571
+    81/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.t[7:0]$570
+    82/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.lvl[6:0]$569
+    83/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.$result[31:0]$568
+    84/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.i[1:0]$567
+    85/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.w[31:0]$566
+    86/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.$result[7:0]$565
+    87/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.i[6:0]$564
+    88/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.$result[7:0]$563
+    89/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.t[7:0]$562
+    90/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.lvl[6:0]$561
+    91/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.$result[31:0]$560
+    92/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.i[1:0]$559
+    93/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.w[31:0]$558
+    94/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.$result[7:0]$557
+    95/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.i[6:0]$556
+    96/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.$result[7:0]$555
+    97/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.r[7:0]$554
+    98/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.$result[31:0]$553
+    99/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.w[31:0]$552
+   100/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.$result[7:0]$551
+   101/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.i[6:0]$550
+   102/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.$result[7:0]$549
+   103/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.t[7:0]$548
+   104/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.lvl[6:0]$547
+   105/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.$result[31:0]$546
+   106/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.w[31:0]$545
+   107/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.$result[7:0]$544
+   108/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.i[6:0]$543
+   109/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.$result[7:0]$542
+   110/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.t[7:0]$541
+   111/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.lvl[6:0]$540
+   112/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.$result[31:0]$539
+   113/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.w[31:0]$538
+   114/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.$result[7:0]$537
+   115/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.i[6:0]$536
+   116/352: $2\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.$result[7:0]$535
+   117/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.r[7:0]$534
+   118/352: $2\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.$result[31:0]$533
+   119/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.w[31:0]$532
+   120/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.$result[7:0]$531
+   121/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.i[6:0]$530
+   122/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.$result[7:0]$529
+   123/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.i[6:0]$528
+   124/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.$result[7:0]$527
+   125/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.t[7:0]$526
+   126/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.lvl[6:0]$525
+   127/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.$result[31:0]$524
+   128/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.w[31:0]$523
+   129/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.$result[7:0]$522
+   130/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.t[7:0]$521
+   131/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.lvl[6:0]$520
+   132/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.$result[31:0]$519
+   133/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.w[31:0]$518
+   134/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.$result[7:0]$517
+   135/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.i[6:0]$516
+   136/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.$result[7:0]$515
+   137/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.t[7:0]$514
+   138/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.lvl[6:0]$513
+   139/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.$result[31:0]$512
+   140/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.w[31:0]$511
+   141/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.$result[7:0]$510
+   142/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.i[6:0]$509
+   143/352: $2\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.$result[7:0]$508
+   144/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.t[7:0]$507
+   145/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.lvl[6:0]$506
+   146/352: $2\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.$result[31:0]$505
+   147/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.w[31:0]$504
+   148/352: $2\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.$result[7:0]$503
+   149/352: $2\i[31:0]
+   150/352: $3$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_EN[31:0]$502
+   151/352: $3$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_DATA[31:0]$501
+   152/352: $3$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_ADDR[2:0]$500
+   153/352: $3$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_EN[31:0]$496
+   154/352: $3$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_DATA[31:0]$495
+   155/352: $3$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_ADDR[2:0]$494
+   156/352: $3$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_EN[31:0]$490
+   157/352: $3$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_DATA[31:0]$489
+   158/352: $3$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_ADDR[2:0]$488
+   159/352: $2$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_EN[31:0]$484
+   160/352: $2$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_DATA[31:0]$483
+   161/352: $2$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_ADDR[2:0]$482
+   162/352: $2$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_EN[31:0]$481
+   163/352: $2$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_DATA[31:0]$480
+   164/352: $2$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_ADDR[2:0]$479
+   165/352: $2$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_EN[31:0]$478
+   166/352: $2$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_DATA[31:0]$477
+   167/352: $2$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_ADDR[2:0]$476
+   168/352: $0\obs_q[0:0]
+   169/352: $1\i[31:0]
+   170/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$75_EN[31:0]$460
+   171/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$74_EN[31:0]$459
+   172/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$73_EN[31:0]$458
+   173/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$72_EN[31:0]$457
+   174/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$71_EN[31:0]$456
+   175/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$70_EN[31:0]$455
+   176/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$69_EN[31:0]$454
+   177/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$68_EN[31:0]$453
+   178/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$67_EN[31:0]$452
+   179/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$66_EN[31:0]$451
+   180/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$65_EN[31:0]$450
+   181/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$64_EN[31:0]$449
+   182/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$63_EN[31:0]$448
+   183/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$62_EN[31:0]$447
+   184/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$61_EN[31:0]$446
+   185/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$60_EN[31:0]$445
+   186/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$59_EN[31:0]$444
+   187/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$58_EN[31:0]$443
+   188/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$57_EN[31:0]$442
+   189/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$56_EN[31:0]$441
+   190/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$55_EN[31:0]$440
+   191/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$54_EN[31:0]$439
+   192/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$53_EN[31:0]$438
+   193/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$52_EN[31:0]$437
+   194/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$51_EN[31:0]$436
+   195/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$50_EN[31:0]$435
+   196/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$49_EN[31:0]$434
+   197/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$48_EN[31:0]$433
+   198/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$47_EN[31:0]$432
+   199/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$46_EN[31:0]$431
+   200/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_EN[31:0]$475
+   201/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_DATA[31:0]$474
+   202/352: $1$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_ADDR[2:0]$473
+   203/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_EN[31:0]$472
+   204/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_DATA[31:0]$471
+   205/352: $1$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_ADDR[2:0]$470
+   206/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_EN[31:0]$469
+   207/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_DATA[31:0]$468
+   208/352: $1$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_ADDR[2:0]$467
+   209/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_EN[31:0]$466
+   210/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_DATA[31:0]$465
+   211/352: $1$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_ADDR[2:0]$464
+   212/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_EN[31:0]$463
+   213/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_DATA[31:0]$462
+   214/352: $1$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_ADDR[2:0]$461
+   215/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.i[6:0]$430
+   216/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.$result[7:0]$429
+   217/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.r[7:0]$428
+   218/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.$result[31:0]$427
+   219/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.i[1:0]$426
+   220/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.w[31:0]$425
+   221/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.$result[7:0]$424
+   222/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.i[6:0]$423
+   223/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.$result[7:0]$422
+   224/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.t[7:0]$421
+   225/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.lvl[6:0]$420
+   226/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.$result[31:0]$419
+   227/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.i[1:0]$418
+   228/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.w[31:0]$417
+   229/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.$result[7:0]$416
+   230/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.i[6:0]$415
+   231/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.$result[7:0]$414
+   232/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.t[7:0]$413
+   233/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.lvl[6:0]$412
+   234/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.$result[31:0]$411
+   235/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.i[1:0]$410
+   236/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.w[31:0]$409
+   237/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.$result[7:0]$408
+   238/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.i[6:0]$407
+   239/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.$result[7:0]$406
+   240/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.r[7:0]$405
+   241/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.$result[31:0]$404
+   242/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.w[31:0]$403
+   243/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.$result[7:0]$402
+   244/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.i[6:0]$401
+   245/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.$result[7:0]$400
+   246/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.t[7:0]$399
+   247/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.lvl[6:0]$398
+   248/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.$result[31:0]$397
+   249/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.w[31:0]$396
+   250/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.$result[7:0]$395
+   251/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.i[6:0]$394
+   252/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.$result[7:0]$393
+   253/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.t[7:0]$392
+   254/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.lvl[6:0]$391
+   255/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.$result[31:0]$390
+   256/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.w[31:0]$389
+   257/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.$result[7:0]$388
+   258/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.i[6:0]$387
+   259/352: $1\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.$result[7:0]$386
+   260/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.r[7:0]$385
+   261/352: $1\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.$result[31:0]$384
+   262/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.w[31:0]$383
+   263/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.$result[7:0]$382
+   264/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.i[6:0]$381
+   265/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.$result[7:0]$380
+   266/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.i[6:0]$379
+   267/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.$result[7:0]$378
+   268/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.t[7:0]$377
+   269/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.lvl[6:0]$376
+   270/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.$result[31:0]$375
+   271/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.w[31:0]$374
+   272/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.$result[7:0]$373
+   273/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.t[7:0]$372
+   274/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.lvl[6:0]$371
+   275/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.$result[31:0]$370
+   276/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.w[31:0]$369
+   277/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.$result[7:0]$368
+   278/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.i[6:0]$367
+   279/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.$result[7:0]$366
+   280/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.t[7:0]$365
+   281/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.lvl[6:0]$364
+   282/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.$result[31:0]$363
+   283/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.w[31:0]$362
+   284/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.$result[7:0]$361
+   285/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.i[6:0]$360
+   286/352: $1\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.$result[7:0]$359
+   287/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.t[7:0]$358
+   288/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.lvl[6:0]$357
+   289/352: $1\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.$result[31:0]$356
+   290/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.w[31:0]$355
+   291/352: $1\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.$result[7:0]$354
+   292/352: $1\obs_next[0:0]
+   293/352: $0\act_fterm[5][31:0]
+   294/352: $0\act_fterm[4][31:0]
+   295/352: $0\act_fterm[3][31:0]
+   296/352: $0\act_fterm[2][31:0]
+   297/352: $0\act_fterm[1][31:0]
+   298/352: $0\act_fterm[0][31:0]
+   299/352: $0\act_opcfg[5][31:0]
+   300/352: $0\act_opcfg[4][31:0]
+   301/352: $0\act_opcfg[3][31:0]
+   302/352: $0\act_opcfg[2][31:0]
+   303/352: $0\act_opcfg[1][31:0]
+   304/352: $0\act_opcfg[0][31:0]
+   305/352: $0\out_valid_q[0:0]
+   306/352: $0\opix[2:0]
+   307/352: $0\phase[3:0]
+   308/352: $0\fsh_q[8:0]
+   309/352: $0\flsb_q[13:0]
+   310/352: $0\faddr_q[9:0]
+   311/352: $0\amd_q[31:0]
+   312/352: $0\pitch_base_q[31:0]
+   313/352: $0\pm_nobase_q[31:0]
+   314/352: $0\peg_out_q[31:0]
+   315/352: $0\peg_ix[2:0]
+   316/352: $0\peg_down[0:0]
+   317/352: $0\peg_rising[0:0]
+   318/352: $0\peg_inc[31:0]
+   319/352: $0\peg_tgt[31:0]
+   320/352: $0\peg_lvl[31:0]
+   321/352: $0\lfo_del_q[24:0]
+   322/352: $0\lfo_val_q[24:0]
+   323/352: $0\lfo_rand[7:0]
+   324/352: $0\lfo_dinc2[31:0]
+   325/352: $0\lfo_dinc1[31:0]
+   326/352: $0\lfo_dstate[31:0]
+   327/352: $0\lfo_delta[31:0]
+   328/352: $0\lfo_phase[31:0]
+   329/352: $0\opmode_q[5:0]
+   330/352: $0\note_logfreq_q[31:0]
+   331/352: $0\cmd_note[7:0]
+   332/352: $0\pend_note[1:0]
+   333/352: $0\pend_commit[0:0]
+   334/352: $0\eg_mod[31:0]
+   335/352: $0\ctrl_am[31:0]
+   336/352: $0\ctrl_pm[31:0]
+   337/352: $0\master_tune[31:0]
+   338/352: $0\bend_pb[31:0]
+   339/352: $0\act_amdep[31:0]
+   340/352: $0\act_trans[7:0]
+   341/352: $0\act_pmsens[31:0]
+   342/352: $0\act_pmdep[31:0]
+   343/352: $0\act_lfop[31:0]
+   344/352: $0\act_pegl[31:0]
+   345/352: $0\act_pegr[31:0]
+   346/352: $0\shd_amdep[31:0]
+   347/352: $0\shd_trans[7:0]
+   348/352: $0\shd_pmsens[31:0]
+   349/352: $0\shd_pmdep[31:0]
+   350/352: $0\shd_lfop[31:0]
+   351/352: $0\shd_pegl[31:0]
+   352/352: $0\shd_pegr[31:0]
+
+3.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$44_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$934'.
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$43_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$931'.
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$42_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$928'.
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$41_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$925'.
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$40_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$922'.
+No latch inferred for signal `\pitch_mod.$mem2reg_rd$\act_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$39_DATA' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$919'.
+No latch inferred for signal `\pitch_mod.\coarsemul_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$4.$result' from process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$911'.
+
+3.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\pitch_mod.\i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4603' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_pegr' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4604' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_pegl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4605' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_lfop' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4606' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_pmdep' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4607' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_pmsens' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4608' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_trans' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4609' with positive edge clock.
+Creating register for signal `\pitch_mod.\shd_amdep' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4610' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_pegr' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4611' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_pegl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4612' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_lfop' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4613' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_pmdep' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4614' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_pmsens' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4615' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_trans' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4616' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_amdep' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4617' with positive edge clock.
+Creating register for signal `\pitch_mod.\bend_pb' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4618' with positive edge clock.
+Creating register for signal `\pitch_mod.\master_tune' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4619' with positive edge clock.
+Creating register for signal `\pitch_mod.\ctrl_pm' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4620' with positive edge clock.
+Creating register for signal `\pitch_mod.\ctrl_am' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4621' with positive edge clock.
+Creating register for signal `\pitch_mod.\eg_mod' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4622' with positive edge clock.
+Creating register for signal `\pitch_mod.\pend_commit' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4623' with positive edge clock.
+Creating register for signal `\pitch_mod.\pend_note' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4624' with positive edge clock.
+Creating register for signal `\pitch_mod.\cmd_note' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4625' with positive edge clock.
+Creating register for signal `\pitch_mod.\note_logfreq_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4626' with positive edge clock.
+Creating register for signal `\pitch_mod.\opmode_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4627' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_phase' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4628' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_delta' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4629' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_dstate' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4630' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_dinc1' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4631' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_dinc2' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4632' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_rand' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4633' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_val_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4634' with positive edge clock.
+Creating register for signal `\pitch_mod.\lfo_del_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4635' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4636' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tgt' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4637' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_inc' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4638' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rising' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4639' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_down' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4640' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_ix' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4641' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_out_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4642' with positive edge clock.
+Creating register for signal `\pitch_mod.\pm_nobase_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4643' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitch_base_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4644' with positive edge clock.
+Creating register for signal `\pitch_mod.\amd_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4645' with positive edge clock.
+Creating register for signal `\pitch_mod.\faddr_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4646' with positive edge clock.
+Creating register for signal `\pitch_mod.\flsb_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4647' with positive edge clock.
+Creating register for signal `\pitch_mod.\fsh_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4648' with positive edge clock.
+Creating register for signal `\pitch_mod.\phase' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4649' with positive edge clock.
+Creating register for signal `\pitch_mod.\opix' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4650' with positive edge clock.
+Creating register for signal `\pitch_mod.\out_valid_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4651' with positive edge clock.
+Creating register for signal `\pitch_mod.\obs_next' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4652' with positive edge clock.
+Creating register for signal `\pitch_mod.\obs_q' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4653' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4654' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$5.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4655' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4656' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4657' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:768$6.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4658' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4659' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$7.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4660' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4661' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$8.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4662' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4663' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4664' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:769$9.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4665' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4666' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$10.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4667' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4668' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$11.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4669' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4670' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4671' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:770$12.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4672' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4673' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$13.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4674' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4675' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4676' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:771$14.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4677' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4678' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$15.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4679' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4680' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$16.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4681' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4682' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$17.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4683' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4684' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:772$18.r' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4685' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4686' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$19.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4687' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4688' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$20.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4689' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4690' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4691' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:799$21.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4692' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4693' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$22.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4694' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4695' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$23.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4696' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4697' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4698' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:800$24.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4699' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4700' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$25.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4701' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4702' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$26.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4703' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4704' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:802$27.r' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4705' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4706' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$28.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4707' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4708' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4709' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$29.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4710' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4711' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4712' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:824$30.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4713' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4714' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$31.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4715' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4716' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4717' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$32.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4718' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4719' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.lvl' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4720' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_tab19$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:825$33.t' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4721' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4722' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_tab_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:503$34.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4723' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4724' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.w' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4725' with positive edge clock.
+Creating register for signal `\pitch_mod.\bsel$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$35.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4726' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4727' with positive edge clock.
+Creating register for signal `\pitch_mod.\peg_rate_inc$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:827$36.r' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4728' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.$result' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4729' with positive edge clock.
+Creating register for signal `\pitch_mod.\pitchenv_rate_lut$func$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:510$37.i' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4730' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[0]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4731' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[1]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4732' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[2]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4733' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[3]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4734' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[4]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4735' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_opcfg[5]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4736' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[0]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4737' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[1]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4738' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[2]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4739' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[3]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4740' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[4]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4741' with positive edge clock.
+Creating register for signal `\pitch_mod.\act_fterm[5]' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4742' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$46_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4743' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$47_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4744' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$48_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4745' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$49_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4746' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$50_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4747' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$51_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4748' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$52_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4749' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$53_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4750' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$54_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4751' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$55_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4752' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$56_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4753' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$57_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4754' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$58_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4755' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$59_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4756' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$60_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4757' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$61_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4758' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$62_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4759' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$63_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4760' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$64_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4761' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$65_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4762' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$66_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4763' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$67_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4764' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$68_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4765' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$69_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4766' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$70_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4767' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$71_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4768' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:664$72_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4769' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$73_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4770' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:666$74_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4771' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:667$75_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4772' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_ADDR' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4773' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_DATA' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4774' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_opcfg$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:723$76_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4775' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_ADDR' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4776' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_DATA' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4777' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\shd_fterm$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:725$77_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4778' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_ADDR' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4779' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_DATA' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4780' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\pend_delta$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:727$78_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4781' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_ADDR' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4782' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_DATA' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4783' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\basepitch_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:787$79_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4784' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_ADDR' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4785' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_DATA' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4786' with positive edge clock.
+Creating register for signal `\pitch_mod.$memwr$\freq_q$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:854$80_EN' using process `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+  created $dff cell `$procdff$4787' with positive edge clock.
+
+3.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$934'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:654$934'.
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$931'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:653$931'.
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$928'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:643$928'.
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$925'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:642$925'.
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$922'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$922'.
+Found and cleaned up 1 empty switch in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$919'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:641$919'.
+Found and cleaned up 2 empty switches in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$911'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:652$911'.
+Found and cleaned up 37 empty switches in `\pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+Removing empty process `pitch_mod.$proc$/private/tmp/opencode/wt-h06-pitch-rtl/rtl/pitch_mod.v:661$231'.
+Cleaned up 45 empty switches.
+
+3.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+<suppressed ~45 debug messages>
+
+3.3. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+<suppressed ~21 debug messages>
+
+3.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+Removed 1624 unused cells and 2658 unused wires.
+<suppressed ~1827 debug messages>
+
+3.5. Executing CHECK pass (checking for obvious problems).
+Checking module pitch_mod...
+Found and reported 0 problems.
+
+3.6. Executing OPT pass (performing simple optimizations).
+
+3.6.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.6.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.6.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \pitch_mod..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+3.6.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \pitch_mod.
+Performed a total of 0 changes.
+
+3.6.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.6.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.6.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.6.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.6.9. Finished fast OPT passes. (There is nothing left to do.)
+
+3.7. Executing FSM pass (extract and optimize FSM).
+
+3.7.1. Executing FSM_DETECT pass (finding FSMs in design).
+
+3.7.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+3.7.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+3.7.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.7.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+3.7.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+3.7.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+3.7.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+3.8. Executing OPT pass (performing simple optimizations).
+
+3.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \pitch_mod..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+3.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \pitch_mod.
+Performed a total of 0 changes.
+
+3.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.8.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.8.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.8.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.8.9. Finished fast OPT passes. (There is nothing left to do.)
+
+3.9. Executing WREDUCE pass (reducing word size of cells).
+
+3.10. Executing PEEPOPT pass (run peephole optimizers).
+
+3.11. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.12. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module pitch_mod:
+  created 0 $alu and 0 $macc cells.
+
+3.13. Executing SHARE pass (SAT-based resource sharing).
+
+3.14. Executing OPT pass (performing simple optimizations).
+
+3.14.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.14.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.14.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \pitch_mod..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+3.14.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \pitch_mod.
+Performed a total of 0 changes.
+
+3.14.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.14.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.14.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.14.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.14.9. Finished fast OPT passes. (There is nothing left to do.)
+
+3.15. Executing MEMORY pass.
+
+3.15.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+3.15.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+3.15.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+3.15.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+3.15.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+3.15.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.15.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+3.15.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+3.15.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.15.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.17. Executing OPT pass (performing simple optimizations).
+
+3.17.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+<suppressed ~6 debug messages>
+
+3.17.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.17.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.17.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.17.5. Finished fast OPT passes.
+
+3.18. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+3.19. Executing OPT pass (performing simple optimizations).
+
+3.19.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.19.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.19.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \pitch_mod..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+3.19.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \pitch_mod.
+Performed a total of 0 changes.
+
+3.19.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.19.6. Executing OPT_SHARE pass.
+
+3.19.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.19.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.19.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.19.10. Finished fast OPT passes. (There is nothing left to do.)
+
+3.20. Executing TECHMAP pass (map to technology primitives).
+
+3.20.1. Executing Verilog-2005 frontend: /opt/homebrew/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/opt/homebrew/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `$__div_mod_u'.
+Generating RTLIL representation for module `$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Generating RTLIL representation for module `$connect'.
+Generating RTLIL representation for module `$input_port'.
+Successfully finished Verilog frontend.
+
+3.20.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~77 debug messages>
+
+3.21. Executing OPT pass (performing simple optimizations).
+
+3.21.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.21.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.21.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.21.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.21.5. Finished fast OPT passes.
+
+3.22. Executing ABC pass (technology mapping using ABC).
+
+3.22.1. Extracting gate netlist of module `\pitch_mod' to `<abc-temp-dir>/input.blif'..
+
+3.22.1.1. Executed ABC.
+Extracted 0 gates and 0 wires to a netlist network with 0 inputs and 0 outputs.
+Don't call ABC as there is nothing to map.
+Removing temp directory.
+Removing global temp directory.
+
+3.23. Executing OPT pass (performing simple optimizations).
+
+3.23.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module pitch_mod.
+
+3.23.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\pitch_mod'.
+Computing hashes of 0 cells of `\pitch_mod'.
+Finding duplicate cells in `\pitch_mod'.
+Removed a total of 0 cells.
+
+3.23.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.23.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \pitch_mod..
+
+3.23.5. Finished fast OPT passes.
+
+3.24. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `pitch_mod'. Setting top module to pitch_mod.
+
+3.24.1. Analyzing design hierarchy..
+Top module:  \pitch_mod
+
+3.24.2. Analyzing design hierarchy..
+Top module:  \pitch_mod
+Removed 0 unused modules.
+
+3.25. Printing statistics.
+
+=== pitch_mod ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       29 wires
+      652 wire bits
+       29 public wires
+      652 public wire bits
+       19 ports
+      353 port bits
+
+3.26. Executing CHECK pass (checking for obvious problems).
+Checking module pitch_mod...
+Found and reported 0 problems.
+
+4. Executing DFFLIBMAP pass (mapping DFF/DLATCH cells to sequential cells from liberty file).
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnq_1 (noninv, pins=3, area=65.86) is a direct match for cell type $_DFF_N_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffq_1 (noninv, pins=3, area=63.66) is a direct match for cell type $_DFF_P_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnrnq_1 (noninv, pins=4, area=74.64) is a direct match for cell type $_DFF_NN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnsnq_1 (noninv, pins=4, area=79.03) is a direct match for cell type $_DFF_NN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffrnq_1 (noninv, pins=4, area=74.64) is a direct match for cell type $_DFF_PN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffsnq_1 (noninv, pins=4, area=79.03) is a direct match for cell type $_DFF_PN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffnrsnq_1 (noninv, pins=5, area=94.39) is a direct match for cell type $_DFFSR_NNN_.
+  cell gf180mcu_fd_sc_mcu7t5v0__dffrsnq_1 (noninv, pins=5, area=85.61) is a direct match for cell type $_DFFSR_PNN_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latq_1 (noninv, pins=3, area=43.90) is a direct match for cell type $_DLATCH_P_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latrnq_1 (noninv, pins=4, area=48.29) is a direct match for cell type $_DLATCH_PN0_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latsnq_1 (noninv, pins=4, area=46.10) is a direct match for cell type $_DLATCH_PN1_.
+  cell gf180mcu_fd_sc_mcu7t5v0__latrsnq_1 (noninv, pins=5, area=52.68) is a direct match for cell type $_DLATCHSR_PNN_.
+  final dff/dlatch cell mappings:
+    \gf180mcu_fd_sc_mcu7t5v0__dffnq_1 _DFF_N_ (.CLKN( C), .D( D), .Q( Q));
+    \gf180mcu_fd_sc_mcu7t5v0__dffq_1 _DFF_P_ (.CLK( C), .D( D), .Q( Q));
+    \gf180mcu_fd_sc_mcu7t5v0__dffnrnq_1 _DFF_NN0_ (.CLKN( C), .D( D), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__dffnsnq_1 _DFF_NN1_ (.CLKN( C), .D( D), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DFF_NP0_
+    unmapped dff/dlatch cell: $_DFF_NP1_
+    \gf180mcu_fd_sc_mcu7t5v0__dffrnq_1 _DFF_PN0_ (.CLK( C), .D( D), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__dffsnq_1 _DFF_PN1_ (.CLK( C), .D( D), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DFF_PP0_
+    unmapped dff/dlatch cell: $_DFF_PP1_
+    unmapped dff/dlatch cell: $_DFFE_NN_
+    unmapped dff/dlatch cell: $_DFFE_NP_
+    unmapped dff/dlatch cell: $_DFFE_PN_
+    unmapped dff/dlatch cell: $_DFFE_PP_
+    \gf180mcu_fd_sc_mcu7t5v0__dffnrsnq_1 _DFFSR_NNN_ (.CLKN( C), .D( D), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DFFSR_NNP_
+    unmapped dff/dlatch cell: $_DFFSR_NPN_
+    unmapped dff/dlatch cell: $_DFFSR_NPP_
+    \gf180mcu_fd_sc_mcu7t5v0__dffrsnq_1 _DFFSR_PNN_ (.CLK( C), .D( D), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DFFSR_PNP_
+    unmapped dff/dlatch cell: $_DFFSR_PPN_
+    unmapped dff/dlatch cell: $_DFFSR_PPP_
+    unmapped dff/dlatch cell: $_DLATCH_N_
+    \gf180mcu_fd_sc_mcu7t5v0__latq_1 _DLATCH_P_ (.D( D), .E( E), .Q( Q));
+    unmapped dff/dlatch cell: $_DLATCH_NN0_
+    unmapped dff/dlatch cell: $_DLATCH_NN1_
+    unmapped dff/dlatch cell: $_DLATCH_NP0_
+    unmapped dff/dlatch cell: $_DLATCH_NP1_
+    \gf180mcu_fd_sc_mcu7t5v0__latrnq_1 _DLATCH_PN0_ (.D( D), .E( E), .Q( Q), .RN( R));
+    \gf180mcu_fd_sc_mcu7t5v0__latsnq_1 _DLATCH_PN1_ (.D( D), .E( E), .Q( Q), .SETN( R));
+    unmapped dff/dlatch cell: $_DLATCH_PP0_
+    unmapped dff/dlatch cell: $_DLATCH_PP1_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPP_
+    \gf180mcu_fd_sc_mcu7t5v0__latrsnq_1 _DLATCHSR_PNN_ (.D( D), .E( E), .Q( Q), .RN( R), .SETN( S));
+    unmapped dff/dlatch cell: $_DLATCHSR_PNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPP_
+
+4.1. Executing DFFLEGALIZE pass (convert FFs and LATCHes to types supported by the target).
+<suppressed ~12 debug messages>
+Mapping DFF/DLATCH cells in module `\pitch_mod':
+
+5. Executing ABC pass (technology mapping using ABC).
+
+5.1. Extracting gate netlist of module `\pitch_mod' to `<abc-temp-dir>/input.blif'..
+ABC: using cached merged SCL: /var/folders/fb/l4j31ymn3bn0mc6v1qbvvl8c0000gn/T/yosys-liberty-scl-cache-501/yosys_merged_d72b0919.scl (1 files)
+
+5.1.1. Executed ABC.
+Extracted 0 gates and 0 wires to a netlist network with 0 inputs and 0 outputs.
+Don't call ABC as there is nothing to map.
+Removing temp directory.
+Removing global temp directory.
+
+6. Printing statistics.
+
+=== pitch_mod ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       29 wires
+      652 wire bits
+       29 public wires
+      652 public wire bits
+       19 ports
+      353 port bits
+
+Warnings: 2 unique messages, 2 total
+End of script. Logfile hash: 361d23e029, time: 3.55s, user: 0.86s, system: 0.07s, MEM: 72.72 MB peak
+Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+Time spent: 41% 1x proc_mux (0 sec), 21% 3x read_verilog (0 sec), ...

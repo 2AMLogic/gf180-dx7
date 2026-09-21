@@ -1,0 +1,141 @@
+{
+ "claim_boundary": "mapped area/cell cost of the pitch/mod unit only; no place-and-route, no timing closure, no fit claim, no audibility claim; RTL-vs-model agreement is tools/h06_compare.py's result",
+ "control_tail_cycles": {
+  "h03_rows_covered": "budget_worst_case rows pitch_eg_steps (12 derived), lfo_frame (100 derived), pitch_mod_application (8 derived), freq_updates (8/op derived); the measured per-frame total is the H04/H07 integration input -- this probe does not re-run the budget tool (no contract edit)",
+  "measured_source": "evidence/h06-pitch-rtl/compare_report.json (bench maxcycles; worst frame over the 4,332-frame directed suite)"
+ },
+ "declared_vs_mapped_state": {
+  "declared_bits": 1559,
+  "declared_detail": {
+   "act_amdep": 32,
+   "act_fterm[]": 192,
+   "act_opcfg[]": 192,
+   "act_trans": 8,
+   "basepitch_q[]": 192,
+   "cmd_note": 8,
+   "faddr_q": 10,
+   "flsb_q": 14,
+   "freq_q[]": 192,
+   "fsh_q": 9,
+   "lfo_rand": 8,
+   "note_logfreq_q": 32,
+   "obs_next": 1,
+   "obs_q": 1,
+   "opix": 3,
+   "opmode_q": 6,
+   "out_valid_q": 1,
+   "peg_ix": 3,
+   "peg_out_q": 32,
+   "pend_commit": 1,
+   "pend_delta[]": 192,
+   "pend_note": 2,
+   "phase": 4,
+   "shd_amdep": 32,
+   "shd_fterm[]": 192,
+   "shd_opcfg[]": 192,
+   "shd_trans": 8
+  },
+  "mapped_flops_full": 2459,
+  "note": "mapped < declared is expected and behavior-preserving: yosys exploits reset-value constants (never-written high bits of peg/inc registers) and ROM-content redundancy, replacing redundant flops with wires. The contract the mapping must preserve is RTL behavior, proven bit-exact to the frozen model by tools/h06_compare.py.",
+  "rom_init_bits": 86048
+ },
+ "gates": {
+  "full": {
+   "cell_total": 58904,
+   "chip_area_um2": 1195376.4032,
+   "mapped_flops": 2459,
+   "requirement": "mapped flops > 192 (six registered 32-bit phase-increment outputs are irreducible) and chip area > 0 and sequential area > 0 and cells > 0",
+   "seq_area_um2": 156541.9072,
+   "status": "PASS"
+  },
+  "strip_negative_control": {
+   "mapped_flops": 0,
+   "requirement": "strip-observability must make the flop gate FAIL (all state removed)",
+   "status": "MET (gate fails as required)"
+  }
+ },
+ "issue": 28,
+ "planning_id": "H06",
+ "runs": {
+  "full": {
+   "cell_total": 58904,
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 1868,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 173,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 61,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 351,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 3838,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 792,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 58,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 1793,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 3844,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 2459,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 311,
+    "gf180mcu_fd_sc_mcu7t5v0__mux4_1": 97,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 14958,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 1715,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 297,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 6260,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 399,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 82,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 544,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 4021,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 199,
+    "gf180mcu_fd_sc_mcu7t5v0__oai222_1": 5,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 743,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 235,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 229,
+    "gf180mcu_fd_sc_mcu7t5v0__oai33_1": 14,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 1118,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 210,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_1": 17,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 3144,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 537,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 6531,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 2001
+   },
+   "chip_area_um2": 1195376.4032,
+   "dff_cells": {
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 2459
+   },
+   "flop_total": 2459,
+   "mode": "full",
+   "rom_representation": {
+    "detail": "the 1025x32 freqlut ROM and the 2048x26 LFO sine ROM dissolve to combinational gates (yosys MEMORY_MAP; no BRAM in this flow); final stat shows no memory cells",
+    "evidence": {
+     "memory_cells_in_final_stat": 0,
+     "memory_map_pass_ran": true
+    },
+    "representation": "logic"
+   },
+   "seq_area_um2": 156541.9072
+  },
+  "strip": {
+   "cell_total": 0,
+   "cells_by_name": {},
+   "chip_area_um2": null,
+   "dff_cells": {},
+   "flop_total": 0,
+   "mode": "strip",
+   "seq_area_um2": null
+  }
+ },
+ "schema": "h06-synth-report/1",
+ "status": "PASS",
+ "tool_identity": {
+  "constraints": "no SDC: probe flow per issue #28 (read_verilog; synth -top; dfflibmap; abc; stat), no clock defined",
+  "dont_use_policy": "none: *_1 drive cells allowed (declared per D01 section 4/section 10.3)",
+  "equivalence_harness": "tools/h06_compare.py (golden: src/gf180_dx7/model/pitch.py)",
+  "liberty": {
+   "corner": "tt_025C_5v00",
+   "library": "gf180mcu_fd_sc_mcu7t5v0 (7t, 5 metal)",
+   "path": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+   "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+  },
+  "rtl": {
+   "rtl/pitch_mod.v": "e84051493e0f99575c022f53ae429c966e7d830fbe2e3f92ced3908c345750de",
+   "rtl/tb_pitch_mod.v": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2"
+  },
+  "yosys": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"
+ }
+}

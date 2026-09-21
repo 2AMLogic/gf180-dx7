@@ -1580,6 +1580,41 @@
       "path": "docs/decision-records/0008-core-schedule-contract.md",
       "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
       "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
+    },
+    {
+      "path": "rtl/pitch_mod.v",
+      "sha256": "e84051493e0f99575c022f53ae429c966e7d830fbe2e3f92ced3908c345750de",
+      "reason": "locally authored H06 pitch/modulation RTL unit (issue #28): per-note pitch path exact to the frozen N05 model under the H03 split - pitch-EG stepping, LFO (six waveforms + regenerated SIN table + delay ramp + keysync), PM/AM composition, documented-mode transpose, freqlut lookups; per-event frozen-integer host interface with five negative-control ifdefs; no upstream bytes"
+    },
+    {
+      "path": "rtl/tb_pitch_mod.v",
+      "sha256": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2",
+      "reason": "locally authored H06 conformance bench (issue #28): drives the contracted W/F vector stream, dumps per-frame increments + boundary values, measures worst control-tail latency; stdlib-free Verilog-2001"
+    },
+    {
+      "path": "tools/h06_compare.py",
+      "sha256": "259de1f5e4c4dd792b7b12529dc001bc0bee96d461e27661e4964a5dcc197381",
+      "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only"
+    },
+    {
+      "path": "tools/h06_synth.py",
+      "sha256": "fbdf7e2e60376ce5648291bad8b01f91560898e5320b4995d48153760aea5150",
+      "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes"
+    },
+    {
+      "path": "tests/test_h06.py",
+      "sha256": "7da7588827d6a0c159053115e67be00ece49984b39876504ce6e5d4a14f18178",
+      "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only"
+    },
+    {
+      "path": "reference/tables/lfo_sin_table.hex",
+      "sha256": "5c27ce7f40ea8f4272a65414b9fa7d85ef0c2f030f460de5e4dcae8e103b3223",
+      "reason": "regenerated LFO sine table (issue #28): 2048-entry SIN_DELTA form rebuilt from build_sintab() following sin.cc:31-56 operation order (no bytes copied); byte-verified on every harness run and consumed by the RTL via $readmemh"
+    },
+    {
+      "path": "docs/H06-PITCH-RTL.md",
+      "sha256": "f9522a0c4fac19d8d713b7e3aec43b626e4212bd7a7d8f1d783ca0132a0be136",
+      "reason": "locally authored H06 report (issue #28): split decisions table with DEC/NUM citations, transpose ruling cross-ref, detune-delta exactness argument, link budget, bit-exact conformance results, negative controls, mapped area, claim boundary"
     }
   ]
 }

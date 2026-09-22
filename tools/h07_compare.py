@@ -634,6 +634,10 @@ def build_stress_vector(spec: dict, bodies: list[list[int]],
 def tool_bin(tool: str) -> str:
     import shutil
     b = "iverilog" if tool == "iverilog" else "verilator"
+    home = os.environ.get("HOME", "")
+    preferred = os.path.join(home, "oss-cad-suite", "bin", b)
+    if os.path.isfile(preferred) and os.access(preferred, os.X_OK):
+        return preferred
     path = shutil.which(b)
     if path is None:
         raise CouldNotRun(f"{b} not found on PATH")

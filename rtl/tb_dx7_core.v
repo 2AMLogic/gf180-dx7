@@ -231,6 +231,15 @@ module tb_dx7_core;
                     if (ndig(line, p0, 2) > 0)
                         wait_until(base_frame + dec_at(line, p0, 2));
                     spi_write(1'b0, 8'h0F, 32'h0);
+                end else if (tok == "T") begin
+                    // boundary write: ONE event write issued in the last
+                    // sample of the CURRENT wire frame so its skid drain
+                    // lands at the closing tick (the H07_MUTATE_TICK_SKEW
+                    // control's delivery point)
+                    addr = chex(line, p0, 2, 2);
+                    data = chex(line, p0, 5, 8);
+                    wait_tick_boundary();
+                    spi_write(1'b0, addr[7:0], data[31:0]);
                 end else if (tok == "R") begin
                     vdec = dec_at(line, p0, 2);
                     wait_frames(vdec);
@@ -300,6 +309,16 @@ module tb_dx7_core;
     function integer frame_ctr_now;
         frame_ctr_now = dut.frame_ctr;
     endfunction
+
+    // block until the last sample of the wire frame, ~200 clks (one SPI
+    // write) before the closing tick
+    task wait_tick_boundary;
+        begin
+            @(negedge clk);
+            while (dut.sample_idx != 6'd63 || dut.sample_clk < 9'd315)
+                @(negedge clk);
+        end
+    endtask
 
     // field parsers: scan the decimal/hex fields after the leading token
     function [7:0] ch(input [255:0] l, input integer pbase,
@@ -373,7 +392,7 @@ module tb_dx7_core;
 
     // watchdog
     initial begin
-        #200_000_000_000;  // far beyond any contracted render
+        #(64'd200_000_000_000);  // far beyond any contracted render
         $display("FAIL tb_dx7_core (watchdog timeout)");
         $finish;
     end

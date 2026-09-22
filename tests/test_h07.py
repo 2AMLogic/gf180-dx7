@@ -99,7 +99,7 @@ def remote_reachable():
 # conformance harness uses)
 # ---------------------------------------------------------------------------
 
-def build_small_case(note_block=2, frames=8, note=60, velocity=100,
+def build_small_case(note_block=2, frames=16, note=60, velocity=100,
                      cid="dir-base"):
     """One small single-note vector + its exact model golden."""
     import h07_compare as H
@@ -159,9 +159,12 @@ def build_small_multivoice(frames=14):
     return "\n".join(lines) + "\n", clips
 
 
-def build_small_burst(frames=8):
-    """Two note_ons in ONE block: the tick-skew mutant (stale read
-    pointer drops the final write of a burst window) must diverge."""
+def build_small_burst(frames=24):
+    """A 167-write burst in ONE inter-frame window (16 note-ons x 7 writes
+    + 55 inert CC1s): the tick-skew mutant's stale read pointer re-pops
+    one event past the queue end on the final 1-cycle pop, striking a
+    spurious velocity-0 note (the evq slot past the last write is
+    zero in simulation) -- the clean build must not."""
     import h07_compare as H
     from gf180_dx7 import sysex
     from gf180_dx7.model.algorithm import voice_patch
@@ -171,14 +174,18 @@ def build_small_burst(frames=8):
     voice = sysex.decode_voice(vb)
     body = voice_patch(voice)
     mgr = PolyManager([voice])
-    events = ("128 note_on 60 100\n" "192 note_on 67 100\n")
+    notes = [(36 + 2 * k, 100) for k in range(16)]
+    events = "".join(f"128 note_on {n} {v}\n" for n, v in notes)
     clips = mgr.render_clips(events, (frames * 64) / 48000.0)
     lines = [f"P {a:02X} {d:08X}" for a, d in H.page_writes(body)]
     lines.append("C")
-    for blk, note in ((2, 60), (3, 67)):
-        for a, d in H.note_on_writes(body, note, 100):
-            lines.append(f"E {blk} {a:02X} {d:08X}")
-    lines.append(f"W {(2 + frames + 2 - 3) * 64}")
+    for n, v in notes:
+        for a, d in H.note_on_writes(body, n, v):
+            lines.append(f"E 2 {a:02X} {d:08X}")
+    for _ in range(55):                      # inert writes; the LAST is a
+        a, d = H.event_write((1 << 8) | 1, H.EA_CC)   # 1-cycle pop
+        lines.append(f"E 2 {a:02X} {d:08X}")
+    lines.append(f"W {(2 + frames + 2 - 2) * 64}")
     return "\n".join(lines) + "\n", clips
 
 
@@ -287,9 +294,10 @@ class TestNegativeControls(unittest.TestCase):
         mm = first_mismatch(acts, self.clips, base)
         self.assertIsNotNone(
             mm, "glitch mutant must FAIL the bit-exact compare")
-        # localization: the injected glitch is frame 12 (wire) sample 17
-        # of the compute that streams there => golden block 12-(base+1)-1
-        want_index = (base + 2 + (12 - (base + 1) - 1)) * 64 + 17
+        # localization: the glitch injects during WIRE frame 12's eval
+        # (compute 12 = golden block 12-(base+1)); its sample 17 streams
+        # at dump index (base+2)*64 + (12-(base+1))*64 + 17
+        want_index = (base + 2 + (12 - (base + 1))) * 64 + 17
         self.assertEqual(
             mm["index"], want_index,
             f"comparator must localize the glitch to sample {want_index}")
@@ -318,8 +326,8 @@ class TestNegativeControls(unittest.TestCase):
         with open(os.path.join(REPO, "rtl", "dx7_core.v")) as f:
             text = f.read()
         m = re.search(r"module dx7_core \((.*?)\);", text, re.S)
-        ports = set(re.findall(r"(\w+)\s*(?:,|$)", m.group(1), re.M))
-        ports = {p for p in ports if not p.startswith("//")}
+        body_text = re.sub(r"//.*", "", m.group(1))
+        ports = set(re.findall(r"(\w+)\s*(?:,|$)", body_text, re.M))
         expected = {"clk", "rst_n", "spi_sck", "spi_mosi", "spi_cs_n",
                     "spi_miso", "i2s_bclk", "i2s_lrclk", "i2s_d",
                     "tap_frame", "tap_live", "tap_mix", "tap_mix_valid",

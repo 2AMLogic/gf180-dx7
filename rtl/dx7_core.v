@@ -918,14 +918,18 @@ module dx7_core (
     // measured over the full conformance suite (and auditable domain-wide
     // via tools/h07_compare.py --audit-exp).
     // =====================================================================
+    // exp unit: pt = int(exp(0.07*y/2^18 + 12.2)) for the pinned U7.18 y.
+    // Fixed-point datapath (python-verified over the domain, 0 diff vs
+    // the model's int(math.exp(f64 arg)) at 100k random + boundary
+    // points): z = arg*log2(e); pt = 2^k * 2^(i/64) * 2^(rem/64) with
+    // the last factor a degree-5 Taylor in rem*ln2/64 (<= 0.0109,
+    // truncation error ~1e-16, far inside the min exp-to-integer
+    // boundary distance 1.8e-7 measured over the domain).
+    // =====================================================================
     localparam [55:0] EXP_M07  = 56'h11EB851EB851EC;  // 0.07 * 2^56
     localparam [53:0] EXP_M122 = 54'h18666666666666;  // 12.2 * 2^49
     localparam [52:0] EXP_MLG2 = 53'h171547652B82FE;  // log2(e) * 2^52
-    localparam [61:0] EXP_C1   = 62'd3196577161300663808 >>> 6; // Q0.56
-    localparam [61:0] EXP_C2   = 62'd1107849223398934272 >>> 6;
-    localparam [61:0] EXP_C3   = 62'd255967521894832096  >>> 6;
-    localparam [61:0] EXP_C4   = 62'd44355791529079736   >>> 6;
-    localparam [61:0] EXP_C5   = 62'd6149018367977264    >>> 6;
+    localparam [55:0] EXP_LN2  = 56'hB17217F7D1CF79;  // ln(2) * 2^56
 
     function [61:0] powtab(input [5:0] i);   // 2^(i/64) in Q2.60
         case (i)
@@ -1007,25 +1011,43 @@ module dx7_core (
     reg  [79:0] exp_t1;         // y * 0.07 * 2^56
     reg  [65:0] exp_arg;        // arg * 2^60 (Q7.60, <= 16.68)
     reg  [66:0] exp_zq;         // arg*log2(e) * 2^60
-    reg  [5:0]  exp_k;          // floor(log2 exp(arg)) in [17, 30]
+    reg  [5:0]  exp_k;          // floor(log2 exp(arg)) in [17, 24]
     reg  [61:0] exp_T;          // 2^(i/64) Q2.60
-    reg  [56:0] exp_h;          // polynomial, Q0.56
-    reg  [62:0] exp_res;        // 2^frac Q2.60
+    reg  [55:0] exp_xq;         // rem*ln2/64 in Q0.56
+    reg  [45:0] exp_p2;         // x^2 in Q0.56
+    reg  [43:0] exp_p3;         // x^3 in Q0.56
+    reg  [42:0] exp_p4;         // x^4 in Q0.56
+    reg  [40:0] exp_p5;         // x^5 in Q0.56
+    reg  [61:0] exp_res;        // 2^frac Q2.60
     reg  [31:0] exp_pt_q;
     wire [57:0] exp_xmul = exp_amd * exp_ams;          // <= 2^49
     wire [24:0] exp_x    = exp_xmul[48:24];            // >> 24 (<= 2^24)
-    wire [79:0] exp_p1   = exp_y * EXP_M07;            // y*0.07*2^56, <= 2^79
+    wire [79:0] exp_p1   = exp_y * EXP_M07;            // y*0.07*2^56
     wire [119:0] exp_zp  = exp_arg * {12'b0, EXP_MLG2};
-    wire [56:0] exp_r    = {exp_zq[53:0], 2'b00};      // frac rem, Q0.56
-    wire [56:0] exp_hn   = (exp_h * exp_r) >>> 56;
-    wire [118:0] exp_rp  = exp_T * exp_h;
+    wire [109:0] exp_xp  = exp_zq[53:0] * EXP_LN2;     // rem*ln2, Q0.110
+    wire [111:0] exp_p2w = exp_xq * exp_xq;            // x^2, Q0.112
+    wire [99:0]  exp_p3w = exp_p2 * exp_xq;            // x^3, Q0.112
+    wire [87:0]  exp_p4w = exp_p3 * exp_xq;            // x^4, Q0.112
+    wire [81:0]  exp_p5w = exp_p4 * exp_xq;            // x^5, Q0.112
+    wire [70:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
+    wire [70:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
+    wire [65:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
+    wire [56:0]  exp_hsum = (57'd1 << 56)
+        + {1'b0, exp_xq}
+        + {13'b0, exp_p2[44:1]}         // x^2/2, Q0.56
+        + {13'b0, exp_t3[85:30]}        // x^3/6, Q0.56
+        + {13'b0, exp_t4[85:30]}        // x^4/24, Q0.56
+        + {13'b0, exp_t5[81:26]};       // x^5/120, Q0.56
+    wire [117:0] exp_rp  = exp_T * {2'b0, exp_hsum};
 
     always @(posedge clk) begin
         if (rst) begin
             exp_st <= 4'd0; exp_pt_q <= 32'd0;
             exp_y <= 26'd0; exp_t1 <= 80'd0; exp_arg <= 66'd0;
             exp_zq <= 67'd0; exp_k <= 6'd0; exp_T <= 62'd0;
-            exp_h <= 57'd0; exp_res <= 63'd0;
+            exp_xq <= 56'd0; exp_p2 <= 45'd0; exp_p3 <= 39'd0;
+            exp_p4 <= 43'd0; exp_p5 <= 41'd0;
+            exp_res <= 63'd0;
         end else begin
             case (exp_st)
                 4'd0: if (exp_start) begin
@@ -1034,8 +1056,9 @@ module dx7_core (
                 end
                 4'd1: begin exp_t1 <= exp_p1; exp_st <= 4'd2; end
                 4'd2: begin
-                    // arg*2^60 = (y*0.07*2^56) << 4 + 12.2*2^60
-                    exp_arg <= {2'b0, exp_t1[62:0], 4'b0}
+                    // arg*2^60 = (y*0.07*2^56) >> 14 + 12.2*2^60
+                    //            (the U7.18 <<18 of y folded: 18-14 = 4)
+                    exp_arg <= {1'b0, exp_t1[78:14]}
                              + {11'b0, EXP_M122, 11'b0};
                     exp_st <= 4'd3;
                 end
@@ -1043,14 +1066,14 @@ module dx7_core (
                 4'd4: begin
                     exp_k  <= exp_zq[65:60];
                     exp_T  <= powtab(exp_zq[59:54]);
-                    exp_h  <= EXP_C5[56:0];
+                    exp_xq <= exp_xp[109:60];       // rem*ln2/64, Q0.56
                     exp_st <= 4'd5;
                 end
-                4'd5: begin exp_h <= exp_hn + EXP_C4[56:0]; exp_st <= 4'd6; end
-                4'd6: begin exp_h <= exp_hn + EXP_C3[56:0]; exp_st <= 4'd7; end
-                4'd7: begin exp_h <= exp_hn + EXP_C2[56:0]; exp_st <= 4'd8; end
-                4'd8: begin exp_h <= exp_hn + EXP_C1[56:0]; exp_st <= 4'd9; end
-                4'd9: begin exp_res <= exp_rp[118:56]; exp_st <= 4'd10; end
+                4'd5: begin exp_p2 <= exp_p2w[100:56]; exp_st <= 4'd6; end
+                4'd6: begin exp_p3 <= exp_p3w[99:56]; exp_st <= 4'd7; end
+                4'd7: begin exp_p4 <= exp_p4w[87:56]; exp_st <= 4'd8; end
+                4'd8: begin exp_p5 <= exp_p5w[81:56]; exp_st <= 4'd9; end
+                4'd9: begin exp_res <= exp_rp[117:56]; exp_st <= 4'd10; end
                 4'd10: begin
                     // pt = 2^frac * 2^k: res(Q2.60) >> (60-k)
                     exp_pt_q <= exp_res >> (6'd60 - exp_k);

@@ -1685,6 +1685,26 @@
       "path": "docs/H06-PITCH-RTL.md",
       "sha256": "f9522a0c4fac19d8d713b7e3aec43b626e4212bd7a7d8f1d783ca0132a0be136",
       "reason": "locally authored H06 report (issue #28): split decisions table with DEC/NUM citations, transpose ruling cross-ref, detune-delta exactness argument, link budget, bit-exact conformance results, negative controls, mapped area, claim boundary"
+    },
+    {
+      "path": "src/gf180_dx7/mock_core.py",
+      "sha256": "af0efe9c66a4a141dfda1a5b879aa6902dbeafbf5f35fe58140b7c65aa1797de",
+      "reason": "locally authored U04 mock core (issue #37): contract-faithful H03 link model (48-bit frames, depth-8 skid FIFO with explicit-rejection overflow, shadow/commit with load-digest gate, 4-entry generation ring, 0xD7110001-shaped status word, pad/soft reset) plus failure injection (truncated transfer, bad checksum, queue overflow, drain stall, overrun, reset mid-transfer) with fault records kept as evidence; stdlib only"
+    },
+    {
+      "path": "src/gf180_dx7/host.py",
+      "sha256": "4e7457a852227afd66f0502bfbe85dd92955144e232274a0063958261d3022fc",
+      "reason": "locally authored U04 embedded host (issue #37): MIDI-event to core-transaction scheduling per H03 (frame-window capacity with explicit BackpressureRefused, DEC-014 overflow retry), patch load from P01 Voice/bank bytes with atomic digest-gated commit, frozen integers mirroring model/pitch.py, reset/boot/recall protocol with FRAME-regression reset detection, link-budget accounting vs the 216-write bound and the parasynth 182-write family anchor; stdlib only"
+    },
+    {
+      "path": "tests/test_host_mock.py",
+      "sha256": "8e7dc849c4e5f7b029ec8e2aa90f9f9ce02a6713525b6ffb35d85bab16c627db",
+      "reason": "locally authored U04 acceptance suite (issue #37): burst timing at both clocks, frame-boundary semantics, generation-ring patch-change-while-held, boot/recall with hashed transaction logs, truncated/bad-checksum partial transfers with stale-state detection, malformed SysEx propagation, write-cost accounting, failure-injection matrix, and live negative-control stubs (NaiveLoader, DeafHost, bare-commit refusal)"
+    },
+    {
+      "path": "docs/U04-HOST-MOCK.md",
+      "sha256": "e97d62763d1d8e472d9b7d4b9bbcb8003027b6e7c6368582a39da993d6f5fb4d",
+      "reason": "locally authored U04 report (issue #37): transaction map, link-budget measurements against the H03 rows and the parasynth boot-image family anchor (182 writes ~= 4.43 ms at 2 MHz), failure-injection matrix with results, negative controls, claim boundary"
     }
   ]
 }

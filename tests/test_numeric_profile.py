@@ -61,12 +61,17 @@ def run_checker_on(profile):
     failures += CHK.check_decisions(profile)
     failures += CHK.check_provisional_tables(profile)
     failures += CHK.check_event_timing(profile, CONTRACT)
-    hashes, err = CHK.load_manifest_hashes()
-    if err:
-        raise AssertionError(err)
-    cite_failures, _ = CHK.check_citations(
-        profile, str(DEXED_ROOT), str(ORACLE_ROOT), hashes)
-    return failures + cite_failures
+    # Citation checks need the pinned dexed/oracle trees; on machines without
+    # them the dedicated tests above skip (unittest.skipUnless), so the
+    # mutation harness must skip citations too rather than fail spuriously.
+    if DEXED_ROOT.is_dir():
+        hashes, err = CHK.load_manifest_hashes()
+        if err:
+            raise AssertionError(err)
+        cite_failures, _ = CHK.check_citations(
+            profile, str(DEXED_ROOT), str(ORACLE_ROOT), hashes)
+        failures += cite_failures
+    return failures
 
 
 class TestProfileSchema(unittest.TestCase):

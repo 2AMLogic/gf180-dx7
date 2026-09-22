@@ -1,0 +1,1452 @@
+{
+  "schema": "gf180-dx7.u02-candidates/1",
+  "issue": "https://github.com/2AMLogic/gf180-dx7/issues/35",
+  "plan_reference": "docs/dx7-chip-plan-v0.1-2026-09-20.md section 6 (issue #35)",
+  "generated_utc": "2026-09-22T16:55:26Z",
+  "counts": {
+    "candidates": 24,
+    "families": 8,
+    "per_family": 3
+  },
+  "selection": {
+    "tool": "tools/u02_candidates.py",
+    "tool_sha256": "ba7b0aca2303d5d004cb6bb2c8a0b03634f84f882b0b18ec72f13d338e37c74e",
+    "catalog": {
+      "path": "corpus/archive-catalogs/alltheweb-catalog.json",
+      "schema": "gf180-dx7.archive-catalog/1",
+      "snapshot_sha256": "9bfe25ca706f15f603fc5ca22c13bb1b22697eae0830e71939181622e00af216"
+    },
+    "archive": {
+      "filename": "DX7_AllTheWeb.zip",
+      "size_bytes": 26330401,
+      "sha256": "c2c47bd1aa29ab07bdf5e6ec8a25faa1b10e06ea0bcf57f6a83d8363051ed6ef",
+      "entry_count": 13124
+    },
+    "exclusions": {
+      "dev32": {
+        "path": "corpus/dev32.json",
+        "hashes": 32,
+        "reason": "already exercised by the development corpus"
+      },
+      "favorites": {
+        "path": "corpus/favorites.json",
+        "hashes": 1,
+        "reason": "already audited favorites"
+      }
+    },
+    "candidate_universe": {
+      "clean_instances": 161925,
+      "distinct_clean_hashes": 15209,
+      "decoded_hashes": 15209,
+      "eligible_after_exclusions": 15176,
+      "scope": "standalone voice entries + bank slot rows with anomaly_count == 0; stream-class instances excluded (documented scope, as in R03)"
+    },
+    "identity_rule": "selection and rendering are keyed by the P02 canonical hash; names are display sugar only",
+    "heuristics": {
+      "ep-tine": {
+        "hard": [
+          "exactly two live carriers",
+          "feedback within 0-5",
+          "velocity-sensitive"
+        ],
+        "scored": [
+          {
+            "desc": "exactly two live carriers (algorithm {alg})",
+            "points": 2
+          },
+          {
+            "desc": "moderate feedback {fb}",
+            "points": 1
+          },
+          {
+            "desc": "decaying sustain (loudest carrier {l1} -> {l4})",
+            "points": 1
+          },
+          {
+            "desc": "medium attack (loudest carrier rate1 {r1})",
+            "points": 1
+          },
+          {
+            "desc": "velocity-sensitive carrier",
+            "points": 1
+          },
+          {
+            "desc": "tine-like release (loudest carrier rate4 <= 60)",
+            "points": 1
+          }
+        ]
+      },
+      "bass": {
+        "hard": [
+          "fast attack (every live carrier rate1 >= 55)",
+          "single dominant carrier (loudest >= 60, gap >= 20)",
+          "feedback within 0-6"
+        ],
+        "scored": [
+          {
+            "desc": "single dominant carrier (loudest level >= 60)",
+            "points": 2
+          },
+          {
+            "desc": "fast attack (all live carriers rate1 >= 60)",
+            "points": 1
+          },
+          {
+            "desc": "low output tilt: modulator mass {mm} >= carrier mass {cm}",
+            "points": 1
+          },
+          {
+            "desc": "decayed sustain (loudest carrier level4 {l4} <= 45)",
+            "points": 1
+          },
+          {
+            "desc": "tight growl (feedback {fb} <= 3)",
+            "points": 1
+          }
+        ]
+      },
+      "bell-mallet": {
+        "hard": [
+          "long release (min live-carrier rate4 <= 45)",
+          "decays to near-silence (min live-carrier level4 <= 30)",
+          "high modulation index (max modulator level >= 70)"
+        ],
+        "scored": [
+          {
+            "desc": "high modulation index (max modulator level {maxmod})",
+            "points": 2
+          },
+          {
+            "desc": "inharmonic partials (non-unison ratio/detune)",
+            "points": 1
+          },
+          {
+            "desc": "struck attack (all live carriers rate1 >= 60)",
+            "points": 1
+          },
+          {
+            "desc": "long decay to silence (min carrier level4 {ml4} <= 15)",
+            "points": 1
+          },
+          {
+            "desc": "long release tail (min carrier rate4 {mr4} <= 35)",
+            "points": 1
+          }
+        ]
+      },
+      "organ": {
+        "hard": [
+          "sustained carriers (min live-carrier level4 >= 65)",
+          "immediate attack (max live-carrier rate1 >= 60)",
+          "low feedback (<= 2)"
+        ],
+        "scored": [
+          {
+            "desc": "sustained carriers (min level4 {ml4})",
+            "points": 2
+          },
+          {
+            "desc": "drawbar stack ({n} live carriers)",
+            "points": 1
+          },
+          {
+            "desc": "same-pitch carriers (unison drawbars)",
+            "points": 1
+          },
+          {
+            "desc": "no decay sag (level3 == level4 on all carriers)",
+            "points": 1
+          },
+          {
+            "desc": "clean tone (feedback {fb} <= 1)",
+            "points": 1
+          }
+        ]
+      },
+      "brass-reed": {
+        "hard": [
+          "sustained carriers (min live-carrier level4 >= 50)",
+          "medium attack (max live-carrier rate1 35-90)",
+          "some feedback (>= 1)"
+        ],
+        "scored": [
+          {
+            "desc": "sustained carriers (min level4 {ml4})",
+            "points": 1
+          },
+          {
+            "desc": "1-2 carrier voicing ({n})",
+            "points": 1
+          },
+          {
+            "desc": "feedback growl ({fb})",
+            "points": 1
+          },
+          {
+            "desc": "medium attack (max carrier rate1 {xr1})",
+            "points": 1
+          },
+          {
+            "desc": "velocity dynamics present",
+            "points": 1
+          },
+          {
+            "desc": "deep modulation (max modulator level {maxmod} >= 60)",
+            "points": 1
+          }
+        ]
+      },
+      "pluck": {
+        "hard": [
+          "fast attack (every live carrier rate1 >= 65)",
+          "percussive decay (min live-carrier level4 <= 35)"
+        ],
+        "scored": [
+          {
+            "desc": "percussive attack (all live carriers rate1 >= 70)",
+            "points": 1
+          },
+          {
+            "desc": "steep decay (loudest carrier {l1} -> {l4})",
+            "points": 1
+          },
+          {
+            "desc": "high modulation index (max modulator level {maxmod} >= 70)",
+            "points": 1
+          },
+          {
+            "desc": "velocity dynamics present",
+            "points": 1
+          },
+          {
+            "desc": "ring-out release (max carrier rate4 {xr4} <= 60)",
+            "points": 1
+          }
+        ]
+      },
+      "pad-string": {
+        "hard": [
+          "slow attack (max live-carrier rate1 <= 50)",
+          "sustained carriers (min live-carrier level4 >= 55)"
+        ],
+        "scored": [
+          {
+            "desc": "slow attack (max carrier rate1 {xr1})",
+            "points": 2
+          },
+          {
+            "desc": "sustained carriers (min level4 {ml4} >= 55)",
+            "points": 1
+          },
+          {
+            "desc": "detuned carriers (width/beating)",
+            "points": 1
+          },
+          {
+            "desc": "wide voicing ({n} live carriers)",
+            "points": 1
+          },
+          {
+            "desc": "vibrato wired (LFO pitch-mod depth {lfo_pm} >= 15)",
+            "points": 1
+          }
+        ]
+      },
+      "perc-texture": {
+        "hard": [
+          "fixed-frequency operators (>= 2) or extreme feedback (>= 6)"
+        ],
+        "scored": [
+          {
+            "desc": "fixed-frequency operators ({fixed})",
+            "points": 2
+          },
+          {
+            "desc": "one fixed-frequency operator",
+            "points": 1
+          },
+          {
+            "desc": "extreme feedback ({fb})",
+            "points": 2
+          },
+          {
+            "desc": "high modulation index (max modulator level {maxmod} >= 85)",
+            "points": 1
+          },
+          {
+            "desc": "fast strike (all live carriers rate1 >= 60)",
+            "points": 1
+          },
+          {
+            "desc": "pitch-EG sweep present",
+            "points": 1
+          },
+          {
+            "desc": "inharmonic partials (non-unison ratio/detune)",
+            "points": 1
+          }
+        ]
+      }
+    },
+    "ranking": "per family: hard-constraint pass first, then (-score, catalog sort key (zip path, standalone-first then slot, catalog order), canonical hash); top 3 distinct hashes; shortfalls relax the hard constraints and are marked",
+    "no_taste": "heuristics shortlist, humans decide; this tool records zero listening judgments"
+  },
+  "coverage": {
+    "families": {
+      "ep-tine": {
+        "label": "EPs/tines",
+        "selected": 3,
+        "strict_pool": 1736,
+        "relaxed": false,
+        "hole": false
+      },
+      "bass": {
+        "label": "basses",
+        "selected": 3,
+        "strict_pool": 1103,
+        "relaxed": false,
+        "hole": false
+      },
+      "bell-mallet": {
+        "label": "bells/mallets",
+        "selected": 3,
+        "strict_pool": 5601,
+        "relaxed": false,
+        "hole": false
+      },
+      "organ": {
+        "label": "organs",
+        "selected": 3,
+        "strict_pool": 6,
+        "relaxed": false,
+        "hole": false
+      },
+      "brass-reed": {
+        "label": "brass/reeds",
+        "selected": 3,
+        "strict_pool": 13,
+        "relaxed": false,
+        "hole": false
+      },
+      "pluck": {
+        "label": "plucks",
+        "selected": 3,
+        "strict_pool": 8426,
+        "relaxed": false,
+        "hole": false
+      },
+      "pad-string": {
+        "label": "pads/strings",
+        "selected": 3,
+        "strict_pool": 45,
+        "relaxed": false,
+        "hole": false
+      },
+      "perc-texture": {
+        "label": "percussion/textures",
+        "selected": 3,
+        "strict_pool": 10366,
+        "relaxed": false,
+        "hole": false
+      }
+    },
+    "families_missing": []
+  },
+  "candidates": [
+    {
+      "index": 0,
+      "family": "ep-tine",
+      "canonical_hash": "6002d15640741b78ff3da098e540eeb562cf107f620dd2431894091ca1010977",
+      "name": "voices#3  ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/108.syx",
+        "slot": 30
+      },
+      "heuristics": {
+        "score": 7,
+        "matched": [
+          "exactly two live carriers (algorithm 1)",
+          "moderate feedback 2",
+          "decaying sustain (loudest carrier 99 -> 0)",
+          "medium attack (loudest carrier rate1 53)",
+          "velocity-sensitive carrier",
+          "tine-like release (loudest carrier rate4 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/108.syx",
+          30,
+          10
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 0,
+        "algorithm_1based": 1,
+        "feedback": 2,
+        "carriers_1based": [
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 91,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/6002d1564074-voices-3"
+    },
+    {
+      "index": 1,
+      "family": "ep-tine",
+      "canonical_hash": "18d9f4cc17ccc0c342968ecb72191eaa10ae68d02232b6d8e6547b230b67c7bd",
+      "name": "UltraBasso",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/110.syx",
+        "slot": 29
+      },
+      "heuristics": {
+        "score": 7,
+        "matched": [
+          "exactly two live carriers (algorithm 4)",
+          "moderate feedback 2",
+          "decaying sustain (loudest carrier 99 -> 0)",
+          "medium attack (loudest carrier rate1 49)",
+          "velocity-sensitive carrier",
+          "tine-like release (loudest carrier rate4 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/110.syx",
+          29,
+          13
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 3,
+        "algorithm_1based": 4,
+        "feedback": 2,
+        "carriers_1based": [
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          94,
+          99
+        ],
+        "max_modulator_level": 95,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/18d9f4cc17cc-UltraBasso"
+    },
+    {
+      "index": 2,
+      "family": "ep-tine",
+      "canonical_hash": "6e3287174ffb876d413acaeba3bf01f64e0393fccd8a554f7f1fc78fdf57729c",
+      "name": "GIZMO.....",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/115.syx",
+        "slot": 8
+      },
+      "heuristics": {
+        "score": 7,
+        "matched": [
+          "exactly two live carriers (algorithm 4)",
+          "moderate feedback 3",
+          "decaying sustain (loudest carrier 98 -> 0)",
+          "medium attack (loudest carrier rate1 44)",
+          "velocity-sensitive carrier",
+          "tine-like release (loudest carrier rate4 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/115.syx",
+          8,
+          18
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 3,
+        "algorithm_1based": 4,
+        "feedback": 3,
+        "carriers_1based": [
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 90,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/6e3287174ffb-GIZMO"
+    },
+    {
+      "index": 3,
+      "family": "bass",
+      "canonical_hash": "25e891d215f2ba8c28a46634221bfdfb1c521af0f25ba41cb3536a04a17bd354",
+      "name": "DUBBS BASS",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/100.syx",
+        "slot": 0
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "single dominant carrier (loudest level >= 60)",
+          "fast attack (all live carriers rate1 >= 60)",
+          "low output tilt: modulator mass 301 >= carrier mass 99",
+          "decayed sustain (loudest carrier level4 0 <= 45)",
+          "tight growl (feedback 0 <= 3)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/100.syx",
+          0,
+          2
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 17,
+        "algorithm_1based": 18,
+        "feedback": 0,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/25e891d215f2-DUBBS-BASS"
+    },
+    {
+      "index": 4,
+      "family": "bass",
+      "canonical_hash": "d3a8b5667f0c3c9ea4c0ede902be41891cda300e3234e9e53ad3884494a4c290",
+      "name": "GUNSHOT   ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/106.syx",
+        "slot": 0
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "single dominant carrier (loudest level >= 60)",
+          "fast attack (all live carriers rate1 >= 60)",
+          "low output tilt: modulator mass 423 >= carrier mass 99",
+          "decayed sustain (loudest carrier level4 0 <= 45)",
+          "tight growl (feedback 3 <= 3)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/106.syx",
+          0,
+          8
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 3,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/d3a8b5667f0c-GUNSHOT"
+    },
+    {
+      "index": 5,
+      "family": "bass",
+      "canonical_hash": "516191b9dacb3759bef8ee4ca0b206d3f2075ff54acd2ec120364326f958b8e5",
+      "name": "EXPLOSION ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/106.syx",
+        "slot": 1
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "single dominant carrier (loudest level >= 60)",
+          "fast attack (all live carriers rate1 >= 60)",
+          "low output tilt: modulator mass 423 >= carrier mass 70",
+          "decayed sustain (loudest carrier level4 0 <= 45)",
+          "tight growl (feedback 3 <= 3)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/106.syx",
+          1,
+          8
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 3,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          70
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/516191b9dacb-EXPLOSION"
+    },
+    {
+      "index": 6,
+      "family": "bell-mallet",
+      "canonical_hash": "09300a23928905296a192dffe230669929800cb5da1246942ee0b093c447b744",
+      "name": "SUS ROADS ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/101.syx",
+        "slot": 20
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "high modulation index (max modulator level 91)",
+          "inharmonic partials (non-unison ratio/detune)",
+          "struck attack (all live carriers rate1 >= 60)",
+          "long decay to silence (min carrier level4 0 <= 15)",
+          "long release tail (min carrier rate4 33 <= 35)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/101.syx",
+          20,
+          3
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 4,
+        "algorithm_1based": 5,
+        "feedback": 6,
+        "carriers_1based": [
+          5,
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99,
+          99
+        ],
+        "max_modulator_level": 91,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/09300a239289-SUS-ROADS"
+    },
+    {
+      "index": 7,
+      "family": "bell-mallet",
+      "canonical_hash": "ff8eae17223174eb5c59523d70f58fcba6efddc3db9e094b254193b5ba95034e",
+      "name": "ZIMBALONE ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/105.syx",
+        "slot": 5
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "high modulation index (max modulator level 99)",
+          "inharmonic partials (non-unison ratio/detune)",
+          "struck attack (all live carriers rate1 >= 60)",
+          "long decay to silence (min carrier level4 0 <= 15)",
+          "long release tail (min carrier rate4 35 <= 35)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/105.syx",
+          5,
+          7
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 5,
+        "algorithm_1based": 6,
+        "feedback": 7,
+        "carriers_1based": [
+          5,
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          83,
+          85,
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/ff8eae172231-ZIMBALONE"
+    },
+    {
+      "index": 8,
+      "family": "bell-mallet",
+      "canonical_hash": "269b629d92c1428b97cb88aeb76d84a7146866fd8041e0792142391904fffe1d",
+      "name": "THUNDER-R ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/106.syx",
+        "slot": 2
+      },
+      "heuristics": {
+        "score": 6,
+        "matched": [
+          "high modulation index (max modulator level 99)",
+          "inharmonic partials (non-unison ratio/detune)",
+          "struck attack (all live carriers rate1 >= 60)",
+          "long decay to silence (min carrier level4 0 <= 15)",
+          "long release tail (min carrier rate4 18 <= 35)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/106.syx",
+          2,
+          8
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 3,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/269b629d92c1-THUNDER-R"
+    },
+    {
+      "index": 9,
+      "family": "organ",
+      "canonical_hash": "c4d246ec787753d5622cfcf641e6f5c6f11aeab608eeddad1fc9daf5d8e7cd31",
+      "name": "Downstairs",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/70.syx",
+        "slot": 0
+      },
+      "heuristics": {
+        "score": 3,
+        "matched": [
+          "sustained carriers (min level4 96)",
+          "clean tone (feedback 1 <= 1)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/70.syx",
+          0,
+          137
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 1,
+        "algorithm_1based": 2,
+        "feedback": 1,
+        "carriers_1based": [
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 96,
+        "lfo_wave": 1,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/c4d246ec7877-Downstairs"
+    },
+    {
+      "index": 10,
+      "family": "organ",
+      "canonical_hash": "3a6e9efb4e47588974fe3567d9ee8ef0b8f600c2e345eb489c114eaaca258922",
+      "name": "MajecFlute",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 12 TX7/TX7-3/TX7-36.SYX",
+        "slot": 10
+      },
+      "heuristics": {
+        "score": 3,
+        "matched": [
+          "sustained carriers (min level4 80)",
+          "clean tone (feedback 0 <= 1)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 12 TX7/TX7-3/TX7-36.SYX",
+          10,
+          1526
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 3,
+        "algorithm_1based": 4,
+        "feedback": 0,
+        "carriers_1based": [
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          92,
+          92
+        ],
+        "max_modulator_level": 76,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 4,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/3a6e9efb4e47-MajecFlute"
+    },
+    {
+      "index": 11,
+      "family": "organ",
+      "canonical_hash": "73b49d47568f8a8dc18b67313c065458816e42144ce7ecfbc24c191829d64b0c",
+      "name": "Akano.Yoru",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Dexed v1_0 (Black Winny)/!Unsorted/Tim Garrett/TX7-18C.SYX",
+        "slot": 11
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "sustained carriers (min level4 99)",
+          "drawbar stack (3 live carriers)",
+          "no decay sag (level3 == level4 on all carriers)",
+          "clean tone (feedback 0 <= 1)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Dexed v1_0 (Black Winny)/!Unsorted/Tim Garrett/TX7-18C.SYX",
+          11,
+          9167
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 4,
+        "algorithm_1based": 5,
+        "feedback": 0,
+        "carriers_1based": [
+          5,
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          90,
+          90,
+          83
+        ],
+        "max_modulator_level": 89,
+        "lfo_wave": 2,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 5,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/73b49d47568f-Akano-Yoru"
+    },
+    {
+      "index": 12,
+      "family": "brass-reed",
+      "canonical_hash": "f821a61b8b7a4e7d47bac2eb44348f8f4f74c551cfc79fe6c4f64ef05c34aac7",
+      "name": "MOSQUITO  ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Big Mamma/100 through 360/NEWFI197.SYX",
+        "slot": 20
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "sustained carriers (min level4 85)",
+          "1-2 carrier voicing (1)",
+          "medium attack (max carrier rate1 48)",
+          "velocity dynamics present",
+          "deep modulation (max modulator level 99 >= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Big Mamma/100 through 360/NEWFI197.SYX",
+          20,
+          566
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 16,
+        "algorithm_1based": 17,
+        "feedback": 7,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 5,
+        "lfo_pitch_mod_depth": 82,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 1,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/f821a61b8b7a-MOSQUITO"
+    },
+    {
+      "index": 13,
+      "family": "brass-reed",
+      "canonical_hash": "b31f6215dcc750ef537928d130244b36f017cf8bb8ee6f2c7ac5bd925d03a1c3",
+      "name": "FALLSTAIRS",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 20 Collection Specific/T Garrett/GARRETT3.SYX",
+        "slot": 18
+      },
+      "heuristics": {
+        "score": 4,
+        "matched": [
+          "sustained carriers (min level4 96)",
+          "1-2 carrier voicing (2)",
+          "velocity dynamics present",
+          "deep modulation (max modulator level 96 >= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 20 Collection Specific/T Garrett/GARRETT3.SYX",
+          18,
+          2395
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 1,
+        "algorithm_1based": 2,
+        "feedback": 1,
+        "carriers_1based": [
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 96,
+        "lfo_wave": 1,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/b31f6215dcc7-FALLSTAIRS"
+    },
+    {
+      "index": 14,
+      "family": "brass-reed",
+      "canonical_hash": "0dff9feb46b854f5fcbcaf2eb0bcde3e815b72de128098d90da273455630f744",
+      "name": "LFO.Pulse ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Dexed v1_0 (Black Winny)/!Unsorted/Tim Garrett/TX7-45C.SYX",
+        "slot": 7
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "sustained carriers (min level4 96)",
+          "1-2 carrier voicing (2)",
+          "feedback growl (4)",
+          "velocity dynamics present",
+          "deep modulation (max modulator level 96 >= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Dexed v1_0 (Black Winny)/!Unsorted/Tim Garrett/TX7-45C.SYX",
+          7,
+          9247
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 1,
+        "algorithm_1based": 2,
+        "feedback": 4,
+        "carriers_1based": [
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 96,
+        "lfo_wave": 1,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/0dff9feb46b8-LFO-Pulse"
+    },
+    {
+      "index": 15,
+      "family": "pluck",
+      "canonical_hash": "c32a0cd1a1c685d63b343dc509d93111b72d01a2f43701ce1124f05d6e71efb6",
+      "name": "TOUCHSYNTH",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/101.syx",
+        "slot": 21
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "percussive attack (all live carriers rate1 >= 70)",
+          "steep decay (loudest carrier 99 -> 0)",
+          "high modulation index (max modulator level 99 >= 70)",
+          "velocity dynamics present",
+          "ring-out release (max carrier rate4 50 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/101.syx",
+          21,
+          3
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 4,
+        "algorithm_1based": 5,
+        "feedback": 6,
+        "carriers_1based": [
+          5,
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99,
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/c32a0cd1a1c6-TOUCHSYNTH"
+    },
+    {
+      "index": 16,
+      "family": "pluck",
+      "canonical_hash": "280c2bebe099f2ba76de0b81488634227dfebe211bb8f553476aa6812a1ca8af",
+      "name": "CLAV 7    ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/103.syx",
+        "slot": 2
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "percussive attack (all live carriers rate1 >= 70)",
+          "steep decay (loudest carrier 99 -> 0)",
+          "high modulation index (max modulator level 95 >= 70)",
+          "velocity dynamics present",
+          "ring-out release (max carrier rate4 57 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/103.syx",
+          2,
+          5
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 3,
+        "algorithm_1based": 4,
+        "feedback": 2,
+        "carriers_1based": [
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          99
+        ],
+        "max_modulator_level": 95,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/280c2bebe099-CLAV-7"
+    },
+    {
+      "index": 17,
+      "family": "pluck",
+      "canonical_hash": "979cbade04e091e4df66324757ecceed5361b80e67f57802b289ffa645456bf9",
+      "name": "PIANO C3  ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/103.syx",
+        "slot": 9
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "percussive attack (all live carriers rate1 >= 70)",
+          "steep decay (loudest carrier 99 -> 0)",
+          "high modulation index (max modulator level 86 >= 70)",
+          "velocity dynamics present",
+          "ring-out release (max carrier rate4 50 <= 60)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/103.syx",
+          9,
+          5
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 3,
+        "algorithm_1based": 4,
+        "feedback": 5,
+        "carriers_1based": [
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          93
+        ],
+        "max_modulator_level": 86,
+        "lfo_wave": 3,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 0,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/979cbade04e0-PIANO-C3"
+    },
+    {
+      "index": 18,
+      "family": "pad-string",
+      "canonical_hash": "ac157b81027718a0d6e04cdd4680d1c76565faaf8c8f4101f39eea3a17aea546",
+      "name": "OUTERLIMIT",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/69.syx",
+        "slot": 2
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "slow attack (max carrier rate1 35)",
+          "sustained carriers (min level4 99 >= 55)",
+          "wide voicing (3 live carriers)",
+          "vibrato wired (LFO pitch-mod depth 99 >= 15)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/69.syx",
+          2,
+          135
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 4,
+        "algorithm_1based": 5,
+        "feedback": 0,
+        "carriers_1based": [
+          5,
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          90,
+          90,
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 99,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 4,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/ac157b810277-OUTERLIMIT"
+    },
+    {
+      "index": 19,
+      "family": "pad-string",
+      "canonical_hash": "0cf036d5c5b75382eb1860fed27e1fde490856f21adde00f24302c10fc8dd4d0",
+      "name": "STORM    2",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Atari/EFFECTEN.SYX",
+        "slot": 3
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "slow attack (max carrier rate1 22)",
+          "sustained carriers (min level4 99 >= 55)",
+          "detuned carriers (width/beating)",
+          "vibrato wired (LFO pitch-mod depth 99 >= 15)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Atari/EFFECTEN.SYX",
+          3,
+          240
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 11,
+        "algorithm_1based": 12,
+        "feedback": 7,
+        "carriers_1based": [
+          3,
+          1
+        ],
+        "carrier_output_levels": [
+          99,
+          87
+        ],
+        "max_modulator_level": 93,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 99,
+        "pitch_eg_present": false,
+        "fixed_mode_operators": 4,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/0cf036d5c5b7-STORM-2"
+    },
+    {
+      "index": 20,
+      "family": "pad-string",
+      "canonical_hash": "768debf14d5953a88b42092dfcfccf8a24a52425ed150213e4603322af8eff00",
+      "name": "WhosTardis",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 12 TX7/TX7-3/TX7-42.SYX",
+        "slot": 7
+      },
+      "heuristics": {
+        "score": 5,
+        "matched": [
+          "slow attack (max carrier rate1 26)",
+          "sustained carriers (min level4 99 >= 55)",
+          "wide voicing (3 live carriers)",
+          "vibrato wired (LFO pitch-mod depth 99 >= 15)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Bridge Music Recording Studio/Sysex/Set 12 TX7/TX7-3/TX7-42.SYX",
+          7,
+          1544
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 18,
+        "algorithm_1based": 19,
+        "feedback": 7,
+        "carriers_1based": [
+          5,
+          4,
+          1
+        ],
+        "carrier_output_levels": [
+          84,
+          99,
+          99
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 4,
+        "lfo_pitch_mod_depth": 99,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 6,
+        "velocity_sensitive": false
+      },
+      "render_dir": "corpus/u02-candidates/renders/768debf14d59-WhosTardis"
+    },
+    {
+      "index": 21,
+      "family": "perc-texture",
+      "canonical_hash": "d6f570e72e7e75af2d7f3db61c0e01cfecf8ed9f56d5ef12a26085476a47607c",
+      "name": "MOOG PIANO",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/106.syx",
+        "slot": 30
+      },
+      "heuristics": {
+        "score": 8,
+        "matched": [
+          "fixed-frequency operators (2)",
+          "extreme feedback (7)",
+          "high modulation index (max modulator level 99 >= 85)",
+          "fast strike (all live carriers rate1 >= 60)",
+          "pitch-EG sweep present",
+          "inharmonic partials (non-unison ratio/detune)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/106.syx",
+          30,
+          8
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 7,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          92
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 5,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/d6f570e72e7e-MOOG-PIANO"
+    },
+    {
+      "index": 22,
+      "family": "perc-texture",
+      "canonical_hash": "00b9712f8ac746d0aea89142959e4d55e1df79152bf6016408182f58a0f59bee",
+      "name": "SUNSCREAM ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/107.syx",
+        "slot": 11
+      },
+      "heuristics": {
+        "score": 8,
+        "matched": [
+          "fixed-frequency operators (2)",
+          "extreme feedback (7)",
+          "high modulation index (max modulator level 99 >= 85)",
+          "fast strike (all live carriers rate1 >= 60)",
+          "pitch-EG sweep present",
+          "inharmonic partials (non-unison ratio/detune)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/107.syx",
+          11,
+          9
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 7,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          92
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 0,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/00b9712f8ac7-SUNSCREAM"
+    },
+    {
+      "index": 23,
+      "family": "perc-texture",
+      "canonical_hash": "d314d74e19b1c1586d5a4135e4a434b8a6dd6acf12d51e4b60d10c8600fcf591",
+      "name": "SUNSCREAM ",
+      "catalog": {
+        "path": "DX7_AllTheWeb/Aminet/107.syx",
+        "slot": 12
+      },
+      "heuristics": {
+        "score": 8,
+        "matched": [
+          "fixed-frequency operators (2)",
+          "extreme feedback (7)",
+          "high modulation index (max modulator level 99 >= 85)",
+          "fast strike (all live carriers rate1 >= 60)",
+          "pitch-EG sweep present",
+          "inharmonic partials (non-unison ratio/detune)"
+        ],
+        "hard_constraints_met": true,
+        "rank_sort_key": [
+          "DX7_AllTheWeb/Aminet/107.syx",
+          12,
+          9
+        ]
+      },
+      "voice_summary": {
+        "algorithm": 15,
+        "algorithm_1based": 16,
+        "feedback": 7,
+        "carriers_1based": [
+          1
+        ],
+        "carrier_output_levels": [
+          92
+        ],
+        "max_modulator_level": 99,
+        "lfo_wave": 0,
+        "lfo_pitch_mod_depth": 5,
+        "pitch_eg_present": true,
+        "fixed_mode_operators": 2,
+        "velocity_sensitive": true
+      },
+      "render_dir": "corpus/u02-candidates/renders/d314d74e19b1-SUNSCREAM"
+    }
+  ]
+}

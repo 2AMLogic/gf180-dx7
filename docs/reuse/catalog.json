@@ -1710,6 +1710,16 @@
       "path": "tools/test_fast.sh",
       "sha256": "736f5e09c2361d2756c679d4d59ee19bd0b762f418e769be8341247004220cdb",
       "reason": "locally authored fast-lane gate (DR-0009 test tiering)"
+    },
+    {
+      "path": "tools/u02_candidates.py",
+      "sha256": "ba7b0aca2303d5d004cb6bb2c8a0b03634f84f882b0b18ec72f13d338e37c74e",
+      "reason": "locally authored U02 candidate pre-selection + one-sitting listening-kit tool (issue #35): deterministic documented heuristics over decoded catalog parameters, kit emission, render-kit driver around the external GPL oracle via tools/audition.py; no taste judgments, no upstream bytes"
+    },
+    {
+      "path": "tests/test_u02_kit.py",
+      "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
+      "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
     }
   ]
 }

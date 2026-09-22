@@ -11,24 +11,38 @@
 //
 // Vector records (whitespace separated, '#' comments):
 //   P <addr hex2> <data hex8>    patch-page write (SEC=1)
-//   C                            commit write (SEC=1 addr 0x42); the bench
-//                                records the arrival frame (base alignment)
+//   C [block]                    commit write (SEC=1 addr 0x42); with a
+//                                block argument the write is paced to
+//                                ARRIVE during wire frame base+block (a
+//                                mid-render patch commit); each commit's
+//                                arrival frame is recorded in the meta
+//                                file (the comparator's segment bases)
 //   E <block dec> <addr hex2> <data hex8>
 //                                event write (SEC=0), delivered so it
-//                                ARRIVES during wire frame base+block-1
-//                                (block 0: immediately, with the patch)
-//   S                            soft-reset write (SEC=0 addr 0x0F)
+//                                ARRIVES during wire frame base+block
+//                                (block 0: immediately, with the patch);
+//                                it pops at that frame's closing tick and
+//                                gates the compute whose output streams
+//                                in wire frame base+block+2 -- the H03
+//                                [(64-p), (64-p)+65] latency window
+//   S [block]                    soft-reset write (SEC=0 addr 0x0F),
+//                                paced like E
 //   R <frames dec>               run n wire frames
+//   W                            run until the dumped sample count
+//                                reaches +expect=N (plusarg), then one
+//                                extra wire frame (the flush margin)
 // Output:
 //   +actual=<file>  raw little-endian int32 per decoded left sample (the
 //                   22-bit mix sign-extended), from wire frame 0 onward
-//   +meta=<file>    text: base frame, frames run, final flags, samples
+//   +meta=<file>    text: base frame, frames run, final flags, samples,
+//                   per-commit arrival frames
 //
 // Usage (from the repository root so the ROM paths resolve):
 //   iverilog -g2012 -o tb.vvp rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v \
 //            rtl/tb_dx7_core.v
 //   vvp tb.vvp +vectors=<file> +actual=<file> +meta=<file>
 `default_nettype none
+`timescale 1ns/1ps
 
 module tb_dx7_core;
 
@@ -58,27 +72,28 @@ module tb_dx7_core;
 
     always #5 clk = ~clk;   // 10 ns period; timing is irrelevant to the check
 
-    // SPI master: 48-bit frame, MSB first, mode 0 (mosi stable before the
-    // sck rising edge; sck period 16 clks <= clk/4 contracted bound).
+    // SPI master: 48-bit frame, MSB first, mode 0.  SCK = clk/4 (half
+    // period 2 clks): the CONTRACTED burst bound the event queue is sized
+    // for (48-bit frame + 2-cycle gap = 194 clk/transaction, 168
+    // writes/frame).  Slower SCK physically cannot deliver a burst block
+    // inside one wire frame.
     integer bit_i;
     reg [47:0] tx_frame;
     reg [31:0] rx_status;
     task spi_xfer(input [47:0] f);
         begin
-            $display("%0t XFER enter %h", $time, f);
             tx_frame = f;
             @(negedge clk);
             spi_cs_n = 1'b0;
             for (bit_i = 47; bit_i >= 0; bit_i = bit_i - 1) begin
                 spi_mosi = tx_frame[bit_i];
-                spi_sck = 1'b0; #40;   // sck low 8 clks
-                spi_sck = 1'b1; #40;   // sck high 8 clks (rise samples mosi)
+                spi_sck = 1'b0; #20;   // sck low 2 clks
+                spi_sck = 1'b1; #20;   // sck high 2 clks (rise samples mosi)
             end
             spi_sck = 1'b0;
             #20;
             spi_cs_n = 1'b1;
-            #100;                      // inter-transaction gap
-            $display("%0t XFER done", $time);
+            #20;                       // inter-transaction gap (2 clks)
         end
     endtask
 
@@ -101,6 +116,9 @@ module tb_dx7_core;
     integer fi;
     reg [22:0] samp;
     reg eof;
+    integer commit_list[0:15];  // per-commit arrival frames (segment bases)
+    integer commit_n;
+    integer expect_samples;
 
     // I2S DAC-model decoder: sample on i2s_bclk rising edges; the sample
     // value spans rising edges 2..25 of each LEFT half (24 bits, MSB first)
@@ -161,6 +179,10 @@ module tb_dx7_core;
         samples = 0;
         base_frame = -1;
         frames_run = 0;
+        commit_n = 0;
+        expect_samples = 0;
+        if (!$value$plusargs("expect=%d", expect_samples))
+            expect_samples = 0;
         dec_cnt = 0; dec_left = 0; dec_sh = 24'd0; lr_d = 1'b1;
         // reset
         repeat (10) @(negedge clk);
@@ -184,11 +206,18 @@ module tb_dx7_core;
                     data = chex(line, p0, 5, 8);
                     spi_write(1'b1, addr[7:0], data[31:0]);
                 end else if (tok == "C") begin
+                    // optional block argument: pace a mid-render commit
+                    if (ndig(line, p0, 2) > 0)
+                        wait_until(base_frame + dec_at(line, p0, 2));
                     spi_write(1'b1, 8'h42, 32'h0);
                     base_frame = dut.frame_ctr;
+                    commit_list[commit_n] = base_frame;
+                    commit_n = commit_n + 1;
                 end else if (tok == "E") begin
                     // E <block> <addr> <data>: delivered so it ARRIVES in
-                    // wire frame base+block-1 (block 0: immediately)
+                    // wire frame base+block (block 0: immediately).  It
+                    // pops at that frame's closing tick, gates the next
+                    // compute, and reaches SDATA in base+block+2.
                     pd = 2;
                     vdec = dec_at(line, p0, pd);
                     block = vdec;
@@ -196,13 +225,22 @@ module tb_dx7_core;
                     addr = chex(line, p0, pd, 2);
                     data = chex(line, p0, pd + 3, 8);
                     if (block > 0)
-                        wait_until(base_frame + block - 1);
+                        wait_until(base_frame + block);
                     spi_write(1'b0, addr[7:0], data[31:0]);
                 end else if (tok == "S") begin
+                    if (ndig(line, p0, 2) > 0)
+                        wait_until(base_frame + dec_at(line, p0, 2));
                     spi_write(1'b0, 8'h0F, 32'h0);
                 end else if (tok == "R") begin
                     vdec = dec_at(line, p0, 2);
                     wait_frames(vdec);
+                end else if (tok == "W") begin
+                    // run until the dump grows by <n> samples (or reaches
+                    // +expect=N for a bare W), then one flush frame
+                    if (ndig(line, p0, 2) > 0)
+                        wait_until_samples(samples + dec_at(line, p0, 2));
+                    else
+                        wait_until_samples(expect_samples);
                 end
                 // comments ('#') and blank lines fall through
             end
@@ -212,6 +250,10 @@ module tb_dx7_core;
         // impractical; samples are written live below (see sample_writer)
         $fclose(afd);
         $fdisplay(mfd, "base_frame %0d", base_frame);
+        $write(mfd, "commits");
+        for (fi = 0; fi < commit_n; fi = fi + 1)
+            $write(mfd, " %0d", commit_list[fi]);
+        $write(mfd, "\n");
         $fdisplay(mfd, "overrun %0d", status_overrun);
         $fdisplay(mfd, "overflow %0d", status_overflow);
         $fdisplay(mfd, "frame %0d", dut.frame_ctr);
@@ -228,23 +270,36 @@ module tb_dx7_core;
     task wait_frames(input integer n);
         integer k;
         begin
-            $display("%0t WF enter n=%0d sc=%0d si=%0d", $time, n, dut.sample_clk, dut.sample_idx);
             for (k = 0; k < n; k = k + 1) begin
                 @(negedge clk);
                 while (dut.sample_clk != 9'd511 || dut.sample_idx != 6'd62)
                     @(negedge clk);
             end
-            $display("WF done frame=%0d", dut.frame_ctr);
         end
     endtask
 
     task wait_until(input integer fr);
         begin
             @(negedge clk);
-            while (dut.frame_ctr < fr)
+            while (frame_ctr_now() < fr)
                 @(negedge clk);
         end
     endtask
+
+    // run until `target` samples have been dumped, plus one flush wire
+    // frame so the final I2S half completes
+    task wait_until_samples(input integer target);
+        begin
+            @(negedge clk);
+            while (samples < target)
+                @(negedge clk);
+            wait_frames(1);
+        end
+    endtask
+
+    function integer frame_ctr_now;
+        frame_ctr_now = dut.frame_ctr;
+    endfunction
 
     // field parsers: scan the decimal/hex fields after the leading token
     function [7:0] ch(input [255:0] l, input integer pbase,

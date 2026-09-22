@@ -474,7 +474,7 @@ module dx7_core (
             assign c_detune[gk] = cmt_opitch[gk][31:24];
         end
     endgenerate
-    wire [2:0] c_pmsens_idx = cmt_globA[10:8];   // byte & 7
+    wire [2:0] c_pmsens_idx = cmt_globA[2:0];    // byte0 & 7 (patch[143])
     // forward declaration for the frame-controller commit cycle
     wire        fc_commit;
     wire [7:0] c_amdep_src  = cmt_globA[15:8];
@@ -1258,22 +1258,28 @@ module dx7_core (
     wire [1:0]  dv_curve  = dv_pos ? dv_rcur : dv_lcur;
     wire [20:0] dv_linp   = dv_g * dv_depth * 21'd329;   // <= 1,042,752
     wire [22:0] dv_expp   = exp_scale_data(dv_g) * dv_depth * 16'd329;
+    // scale_curve (dx7note.cc:101-116): curves 0/3 linear, 1/2 exponential;
+    // curve bit 1 is the SIGN (0: negative, 1: positive) in the model --
+    // 0: -lin, 1: -exp, 2: +exp, 3: +lin.
+    wire signed [21:0] dv_lin_s = $signed({5'b0, dv_linp[20:12]});
+    wire signed [23:0] dv_exp_s = $signed({7'b0, dv_expp[22:15]});
     wire signed [15:0] dv_scaleS =
         (dv_curve == 2'd0 || dv_curve == 2'd3)
-        ? $signed({5'b0, dv_linp[20:12]})                   // >> 12
-        : (dv_curve[0] ? $signed({7'b0, dv_expp[22:15]})    // >> 15
-                       : -$signed({7'b0, dv_expp[22:15]}));
+        ? (dv_curve[1] ? $signed({9'b0, dv_lin_s}) : -$signed({9'b0, dv_lin_s}))
+        : (dv_curve[1] ? $signed({9'b0, dv_exp_s}) : -$signed({9'b0, dv_exp_s}));
     wire signed [13:0] dv_ols_pre = $signed({6'b0, levellut(dv_out_byte[6:0])})
                                   + dv_scaleS;
     wire signed [13:0] dv_ols = (dv_ols_pre > 14'sd127) ? 14'sd127
                                                         : dv_ols_pre;
     wire signed [8:0] dv_velval = $signed({1'b0,
         vel_data(dv_vel[6:1])}) - 9'sd239;
-    wire signed [15:0] dv_velsc = (({6'b0, dv_kvs} * dv_velval) + 16'sd7)
-                                  >>> 3;
-    wire signed [13:0] dv_olsum = $signed({1'b0, dv_ols[12:0], 5'b0})
+    // scale_velocity (dx7note.cc:75-80): ((sens*velval + 7) >> 3) << 4 --
+    // the << 4 is part of the model's velocity scaling (microstep units)
+    wire signed [19:0] dv_velsc = ((({6'b0, dv_kvs} * dv_velval)
+                                    + 16'sd7) >>> 3) <<< 4;
+    wire signed [15:0] dv_olsum = $signed({1'b0, dv_ols[12:0], 5'b0})
                                 + dv_velsc;
-    assign dv_outlevel = (dv_olsum < 14'sd0) ? 13'd0 : dv_olsum[12:0];
+    assign dv_outlevel = (dv_olsum < 16'sd0) ? 13'd0 : dv_olsum[12:0];
     // scale_rate (dx7note.cc:82-94)
     wire [6:0] dv_srx = (dv_note >= 7'd21) ? ((dv_note / 7'd3) - 7'd7) : 7'd0;
     wire [6:0] dv_srx_c = (dv_srx > 7'd31) ? 7'd31 : dv_srx;
@@ -1462,6 +1468,12 @@ module dx7_core (
     // =====================================================================
     assign fc_commit = (fc_state == F_COMMIT);
 
+    // env command handshake: a command is accepted only while the target
+    // unit is idle (one-command interface), so every issue point waits
+    wire [5:0] tgt_busy  = env_busy[tgt*6 +: 6];
+    wire [5:0] nn_busy   = env_busy[nn*6 +: 6];
+    wire [5:0] scan_busy = env_busy[scan*6 +: 6];
+
     integer fi, fj;
 
     always @(posedge clk) begin
@@ -1612,40 +1624,11 @@ module dx7_core (
                                     fc_state <= F_EVPOP;
                                 end
                                 8'd123: begin
-                                    // all-notes-off: note_off semantics per
-                                    // keydown slot (sustain aware, DEC-018)
-                                    for (fi = 0; fi < 16; fi = fi + 1) begin
-                                        if (n_keydown[fi]) begin
-                                            n_keydown[fi] <= 1'b0;
-                                            if (sustain) begin
-                                                n_sustained[fi] <= 1'b1;
-                                            end else begin
-                                                for (fj = 0; fj < 6;
-                                                     fj = fj + 1) begin
-                                                    env_cmd[fi*6+fj]
-                                                        <= EC_KEYDOWN;
-                                                    env_cmd_data[fi*6+fj]
-                                                        <= 133'd0;
-                                                    env_cmd_en[fi*6+fj]
-                                                        <= 1'b1;
-                                                end
-                                                if (n_pegdwn[fi]) begin
-                                                    n_pegdwn[fi] <= 1'b0;
-                                                    n_pegix[fi] <= 3'd3;
-                                                    n_pegtgt[fi] <=
-                                                      peg_tab19(n_pegl[fi][3]);
-                                                    n_pegris[fi] <=
-                                                      (peg_tab19(n_pegl[fi][3])
-                                                       > $signed(
-                                                         n_peglvl[fi]));
-                                                    n_peginc[fi] <=
-                                                      peg_rate_inc(
-                                                        n_pegr[fi][3]);
-                                                end
-                                            end
-                                        end
-                                    end
-                                    fc_state <= F_EVPOP;
+                                    // all-notes-off: walk the banks, key_up
+                                    // per keydown slot (sustain aware,
+                                    // DEC-018); commands need idle units
+                                    scan <= 4'd0;
+                                    fc_state <= F_ANO;
                                 end
                                 default: fc_state <= F_EVPOP;
                             endcase
@@ -1708,7 +1691,15 @@ module dx7_core (
                     endcase
                 end else begin
                     // queue drained: control tail
-                    fc_state <= refresh_pending ? F_REFSEL : F_ENVGO;
+                    if (refresh_pending) begin
+                        scan <= 4'd0;
+                        nn <= 4'd0;
+                        fc_state <= F_REFSEL;
+                    end else begin
+                        scan <= 4'd0;
+                        opk <= 3'd0;
+                        fc_state <= F_ENVGO;
+                    end
                 end
             end
             // ---------------------------------------------------- allocation
@@ -1768,47 +1759,63 @@ module dx7_core (
             end
             // ------------------------------------- strike: env params x6
             F_NN_ENVP: begin
-                env_cmd[tgt*6+opk]  <= EC_PARAM;
-                env_cmd_data[tgt*6+opk] <=
-                    {dv_r0, dv_r1, dv_r2, dv_r3,
-                     dv_l0, dv_l1, dv_l2, dv_l3,
-                     dv_outlevel, dv_rs_eff};
-                env_cmd_en[tgt*6+opk] <= 1'b1;
-                if (opk == 3'd5) begin
-                    opk <= 3'd0;
-                    fc_state <= (kind == 2'd0) ? F_NN_ENVI : F_NN_ENVK;
-                end else
-                    opk <= opk + 3'd1;
+                if (env_busy[tgt*6+opk]) begin
+                    // wait: the unit may still be executing a prior command
+                end else begin
+                    env_cmd[tgt*6+opk]  <= EC_PARAM;
+                    env_cmd_data[tgt*6+opk] <=
+                        {dv_r0, dv_r1, dv_r2, dv_r3,
+                         dv_l0, dv_l1, dv_l2, dv_l3,
+                         dv_outlevel, dv_rs_eff};
+                    env_cmd_en[tgt*6+opk] <= 1'b1;
+                    if (opk == 3'd5) begin
+                        opk <= 3'd0;
+                        fc_state <= (kind == 2'd0) ? F_NN_ENVI : F_NN_ENVK;
+                    end else
+                        opk <= opk + 3'd1;
+                end
             end
             // ------------------------- free slot strike: Env::init x6
             F_NN_ENVI: begin
-                for (fi = 0; fi < 6; fi = fi + 1) begin
-                    env_cmd[tgt*6+fi]  <= EC_INIT;
-                    env_cmd_en[tgt*6+fi] <= 1'b1;
+                if (|tgt_busy) begin
+                    // wait for the param writes to land
+                end else begin
+                    for (fi = 0; fi < 6; fi = fi + 1) begin
+                        env_cmd[tgt*6+fi]  <= EC_INIT;
+                        env_cmd_en[tgt*6+fi] <= 1'b1;
+                    end
+                    fc_state <= F_NN_PEG;
                 end
-                fc_state <= F_NN_PEG;
             end
             // ----------------- retrigger strike: forced down edge x6
             F_NN_ENVK: begin
-                env_cmd[tgt*6+opk]  <= EC_LOAD;
-                // keep committed level/target/inc/static/ix/rising,
-                // force down_ = 0 (DEC-015 edge precondition)
-                env_cmd_data[tgt*6+opk] <=
-                    {env_rd[tgt*6+opk][132:1], 1'b0};
-                env_cmd_en[tgt*6+opk] <= 1'b1;
-                if (opk == 3'd5) begin
-                    opk <= 3'd0;
-                    fc_state <= F_NN_ENVK4;
-                end else
-                    opk <= opk + 3'd1;
+                if (env_busy[tgt*6+opk]) begin
+                    // wait
+                end else begin
+                    env_cmd[tgt*6+opk]  <= EC_LOAD;
+                    // keep committed level/target/inc/static/ix/rising,
+                    // force down_ = 0 (DEC-015 edge precondition)
+                    env_cmd_data[tgt*6+opk] <=
+                        {env_rd[tgt*6+opk][132:1], 1'b0};
+                    env_cmd_en[tgt*6+opk] <= 1'b1;
+                    if (opk == 3'd5) begin
+                        opk <= 3'd0;
+                        fc_state <= F_NN_ENVK4;
+                    end else
+                        opk <= opk + 3'd1;
+                end
             end
             F_NN_ENVK4: begin
-                for (fi = 0; fi < 6; fi = fi + 1) begin
-                    env_cmd[tgt*6+fi]  <= EC_KEYDOWN;
-                    env_cmd_data[tgt*6+fi] <= 133'd1;  // keydown(True)
-                    env_cmd_en[tgt*6+fi] <= 1'b1;
+                if (|tgt_busy) begin
+                    // wait for the LOAD writes to land
+                end else begin
+                    for (fi = 0; fi < 6; fi = fi + 1) begin
+                        env_cmd[tgt*6+fi]  <= EC_KEYDOWN;
+                        env_cmd_data[tgt*6+fi] <= 133'd1;  // keydown(True)
+                        env_cmd_en[tgt*6+fi] <= 1'b1;
+                    end
+                    fc_state <= F_NN_PEG;
                 end
-                fc_state <= F_NN_PEG;
             end
             // ------------------------------------------ strike: pitch EG
             F_NN_PEG: begin
@@ -1882,48 +1889,87 @@ module dx7_core (
                 end
             end
             F_OFFAPPLY: begin
-                n_keydown[tgt] <= 1'b0;
-                if (sustain) begin
-                    n_sustained[tgt] <= 1'b1;   // DEC-018: deferred keyup
+                if (|tgt_busy) begin
+                    // wait: the slot's units may still be executing this
+                    // tick's strike/update commands
                 end else begin
-                    for (fi = 0; fi < 6; fi = fi + 1) begin
-                        env_cmd[tgt*6+fi]  <= EC_KEYDOWN;
-                        env_cmd_data[tgt*6+fi] <= 133'd0;  // keydown(False)
-                        env_cmd_en[tgt*6+fi] <= 1'b1;
+                    n_keydown[tgt] <= 1'b0;
+                    if (sustain) begin
+                        n_sustained[tgt] <= 1'b1;   // DEC-018: deferred keyup
+                    end else begin
+                        for (fi = 0; fi < 6; fi = fi + 1) begin
+                            env_cmd[tgt*6+fi]  <= EC_KEYDOWN;
+                            env_cmd_data[tgt*6+fi] <= 133'd0;  // keydown(False)
+                            env_cmd_en[tgt*6+fi] <= 1'b1;
+                        end
+                        // PitchEnv.keydown(False): advance(3) on the edge
+                        if (n_pegdwn[tgt]) begin
+                            n_pegdwn[tgt] <= 1'b0;
+                            n_pegix[tgt]  <= 3'd3;
+                            n_pegtgt[tgt] <= peg_tab19(n_pegl[tgt][3]);
+                            n_pegris[tgt] <= (peg_tab19(n_pegl[tgt][3])
+                                              > $signed(n_peglvl[tgt]));
+                            n_peginc[tgt] <= peg_rate_inc(n_pegr[tgt][3]);
+                        end
                     end
-                    // PitchEnv.keydown(False): advance(3) on the edge
-                    if (n_pegdwn[tgt]) begin
-                        n_pegdwn[tgt] <= 1'b0;
-                        n_pegix[tgt]  <= 3'd3;
-                        n_pegtgt[tgt] <= peg_tab19(n_pegl[tgt][3]);
-                        n_pegris[tgt] <= (peg_tab19(n_pegl[tgt][3])
-                                          > $signed(n_peglvl[tgt]));
-                        n_peginc[tgt] <= peg_rate_inc(n_pegr[tgt][3]);
-                    end
+                    fc_state <= F_EVPOP;
                 end
-                fc_state <= F_EVPOP;
             end
             // ---------------------------------------- sustain pedal release
             F_PEDUP: begin
-                for (fi = 0; fi < 16; fi = fi + 1) begin
-                    if (n_sustained[fi] && !n_keydown[fi]) begin
-                        n_sustained[fi] <= 1'b0;
+                if (scan == 4'd15 && !(n_sustained[15] && !n_keydown[15])) begin
+                    fc_state <= F_EVPOP;
+                end else if (!n_sustained[scan] || n_keydown[scan]) begin
+                    scan <= scan + 4'd1;
+                end else if (|scan_busy) begin
+                    // wait: this tick's commands may still be in flight
+                end else begin
+                    n_sustained[scan] <= 1'b0;
+                    for (fj = 0; fj < 6; fj = fj + 1) begin
+                        env_cmd[scan*6+fj]  <= EC_KEYDOWN;
+                        env_cmd_data[scan*6+fj] <= 133'd0;
+                        env_cmd_en[scan*6+fj] <= 1'b1;
+                    end
+                    if (n_pegdwn[scan]) begin
+                        n_pegdwn[scan] <= 1'b0;
+                        n_pegix[scan]  <= 3'd3;
+                        n_pegtgt[scan] <= peg_tab19(n_pegl[scan][3]);
+                        n_pegris[scan] <= (peg_tab19(n_pegl[scan][3])
+                                           > $signed(n_peglvl[scan]));
+                        n_peginc[scan] <= peg_rate_inc(n_pegr[scan][3]);
+                    end
+                    scan <= scan + 4'd1;
+                end
+            end
+            // ---------------------------------------- all-notes-off (CC123)
+            F_ANO: begin
+                if (scan == 4'd15 && !n_keydown[15]) begin
+                    fc_state <= F_EVPOP;
+                end else if (!n_keydown[scan]) begin
+                    scan <= scan + 4'd1;
+                end else if (|scan_busy) begin
+                    // wait: this tick's commands may still be in flight
+                end else begin
+                    n_keydown[scan] <= 1'b0;
+                    if (sustain) begin
+                        n_sustained[scan] <= 1'b1;
+                    end else begin
                         for (fj = 0; fj < 6; fj = fj + 1) begin
-                            env_cmd[fi*6+fj]  <= EC_KEYDOWN;
-                            env_cmd_data[fi*6+fj] <= 133'd0;
-                            env_cmd_en[fi*6+fj] <= 1'b1;
+                            env_cmd[scan*6+fj]  <= EC_KEYDOWN;
+                            env_cmd_data[scan*6+fj] <= 133'd0;
+                            env_cmd_en[scan*6+fj] <= 1'b1;
                         end
-                        if (n_pegdwn[fi]) begin
-                            n_pegdwn[fi] <= 1'b0;
-                            n_pegix[fi]  <= 3'd3;
-                            n_pegtgt[fi] <= peg_tab19(n_pegl[fi][3]);
-                            n_pegris[fi] <= (peg_tab19(n_pegl[fi][3])
-                                             > $signed(n_peglvl[fi]));
-                            n_peginc[fi] <= peg_rate_inc(n_pegr[fi][3]);
+                        if (n_pegdwn[scan]) begin
+                            n_pegdwn[scan] <= 1'b0;
+                            n_pegix[scan]  <= 3'd3;
+                            n_pegtgt[scan] <= peg_tab19(n_pegl[scan][3]);
+                            n_pegris[scan] <= (peg_tab19(n_pegl[scan][3])
+                                               > $signed(n_peglvl[scan]));
+                            n_peginc[scan] <= peg_rate_inc(n_pegr[scan][3]);
                         end
                     end
+                    scan <= scan + 4'd1;
                 end
-                fc_state <= F_EVPOP;
             end
             // --------------------------------------------------- soft reset
             F_SOFT: begin
@@ -1954,9 +2000,10 @@ module dx7_core (
             end
             // ------------------------- first-block refresh (wrapper quirk)
             F_REFSEL: begin
-                if (nn == 4'd0) scan <= 4'd0;
                 if (scan == 4'd15 && !n_live[scan]) begin
                     refresh_pending <= 1'b0;
+                    scan <= 4'd0;
+                    opk <= 3'd0;
                     fc_state <= F_ENVGO;
                 end else if (n_live[scan]) begin
                     nn <= scan;
@@ -1967,21 +2014,27 @@ module dx7_core (
                 end
             end
             F_REFOP: begin
-                env_cmd[nn*6+opk]  <= EC_UPDATE;
-                env_cmd_data[nn*6+opk] <=
-                    {dv_r0, dv_r1, dv_r2, dv_r3,
-                     dv_l0, dv_l1, dv_l2, dv_l3,
-                     dv_outlevel, dv_rs_eff};
-                env_cmd_en[nn*6+opk] <= 1'b1;
-                if (opk == 3'd5) begin
-                    opk <= 3'd0;
-                    fc_state <= F_REFOP2;
-                end else
-                    opk <= opk + 3'd1;
+                if (env_busy[nn*6+opk]) begin
+                    // wait for the unit's earlier command to land
+                end else begin
+                    env_cmd[nn*6+opk]  <= EC_UPDATE;
+                    env_cmd_data[nn*6+opk] <=
+                        {dv_r0, dv_r1, dv_r2, dv_r3,
+                         dv_l0, dv_l1, dv_l2, dv_l3,
+                         dv_outlevel, dv_rs_eff};
+                    env_cmd_en[nn*6+opk] <= 1'b1;
+                    if (opk == 3'd5) begin
+                        opk <= 3'd0;
+                        fc_state <= F_REFOP2;
+                    end else
+                        opk <= opk + 3'd1;
+                end
             end
             F_REFOP2: begin
                 if (scan == 4'd15) begin
                     refresh_pending <= 1'b0;
+                    scan <= 4'd0;
+                    opk <= 3'd0;
                     fc_state <= F_ENVGO;
                 end else begin
                     scan <= scan + 4'd1;
@@ -1989,16 +2042,31 @@ module dx7_core (
                 end
             end
             // ------------------------------------ parallel envelope stepping
+            // (walked per unit: a command is accepted only while idle, so
+            // each unit is stepped as soon as its previous command landed)
             F_ENVGO: begin
-                for (fi = 0; fi < 16; fi = fi + 1) begin
-                    if (n_live[fi]) begin
-                        for (fj = 0; fj < 6; fj = fj + 1) begin
-                            env_cmd[fi*6+fj]  <= EC_STEP;
-                            env_cmd_en[fi*6+fj] <= 1'b1;
+                if (!n_live[scan]) begin
+                    if (scan == 4'd15) begin
+                        fc_state <= F_ENVW;
+                    end else begin
+                        scan <= scan + 4'd1;
+                    end
+                end else if (env_busy[scan*6+opk]) begin
+                    // wait for this unit's earlier command to land
+                end else begin
+                    env_cmd[scan*6+opk]  <= EC_STEP;
+                    env_cmd_en[scan*6+opk] <= 1'b1;
+                    if (opk == 3'd5) begin
+                        opk <= 3'd0;
+                        if (scan == 4'd15) begin
+                            fc_state <= F_ENVW;
+                        end else begin
+                            scan <= scan + 4'd1;
                         end
+                    end else begin
+                        opk <= opk + 3'd1;
                     end
                 end
-                fc_state <= F_ENVW;
             end
             F_ENVW: begin
                 if (env_busy == 96'd0)
@@ -2169,11 +2237,12 @@ module dx7_core (
                 end
             end
             F_EVALRB: begin
-                // rd 64..69 phase, 70..75 gain_out (op = rb order), 76/77 fb
+                // rd 64..69 phase, 70..75 gain_out (op = rb order:
+                // rd-64 / rd-70 is the op index), 76/77 fb
                 if (r_rd_addr < 7'd70)
-                    op_ph[nn][r_rd_addr[2:0]] <= ar_rd_data;
+                    op_ph[nn][r_rd_addr - 7'd64] <= ar_rd_data;
                 else if (r_rd_addr < 7'd76)
-                    op_go[nn][r_rd_addr[2:0]] <= ar_rd_data[15:0];
+                    op_go[nn][r_rd_addr - 7'd70] <= ar_rd_data[15:0];
                 else if (r_rd_addr == 7'd76)
                     n_fb0[nn] <= ar_rd_data;
                 else begin
@@ -2261,16 +2330,18 @@ module dx7_core (
     assign i2s_lrclk = lr_q;
     assign i2s_d     = i2s_sh[23];
     wire mix_load = (half_cnt == 8'd255) && !lr_q;
+    // tap: the exact sample the wire carries in this slot (the value being
+    // loaded at the mix_load edge, seen one cycle early in the clk domain)
+    wire [5:0] tap_smp = i2s_smp;
+    assign tap_mix         = mix_load ? {1'b0, mixbuf[out_sel][tap_smp]}
+                             : 23'd0;
+    assign tap_mix_valid   = mix_load;
 
     // =====================================================================
     // Taps + observability (H03 4.6: read-only, non-invasive; load-bearing)
     // =====================================================================
     assign tap_frame       = frame_ctr;
     assign tap_live        = n_live;
-    assign tap_mix         = mix_load ? {1'b0, mixbuf[out_sel][
-                               (i2s_smp == 6'd0) ? 6'd63 : i2s_smp - 6'd1]}
-                             : 23'd0;
-    assign tap_mix_valid   = mix_load;
     assign status_overrun  = st_overrun;
     assign status_overflow = st_overflow;
 

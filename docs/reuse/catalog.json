@@ -1158,8 +1158,8 @@
     },
     {
       "path": "tools/check_reuse.py",
-      "sha256": "dff695f77de7d2925bab8430ccca21a71fb721da3cda55b87ce4657e2a04b3b9",
-      "reason": "locally authored governance checker (this catalog's negative control)"
+      "sha256": "78cd8ba47e28264ae35f941e77742f87a1198fe0f096e611e698de65e87118f0",
+      "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
     },
     {
       "path": "tools/check_all.sh",
@@ -1705,6 +1705,11 @@
       "path": "docs/U04-HOST-MOCK.md",
       "sha256": "e97d62763d1d8e472d9b7d4b9bbcb8003027b6e7c6368582a39da993d6f5fb4d",
       "reason": "locally authored U04 report (issue #37): transaction map, link-budget measurements against the H03 rows and the parasynth boot-image family anchor (182 writes ~= 4.43 ms at 2 MHz), failure-injection matrix with results, negative controls, claim boundary"
+    },
+    {
+      "path": "tools/test_fast.sh",
+      "sha256": "736f5e09c2361d2756c679d4d59ee19bd0b762f418e769be8341247004220cdb",
+      "reason": "locally authored fast-lane gate (DR-0009 test tiering)"
     }
   ]
 }

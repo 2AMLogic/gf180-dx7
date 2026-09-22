@@ -656,7 +656,9 @@ def build_sim(tool: str, workdir: Path, defines: list[str]) -> Path:
         return out
     out = workdir / "verilator_tb"
     cmd = [tool_bin(tool), "--binary", "--timing", "-j", "4",
-           "--Wno-fatal", "--Mdir", str(out), "-o", "simtb",
+           "--Wno-fatal", "--timescale-override", "1ns/1ps",
+           "--x-initial", "0", "--x-assign", "unique",
+           "--Mdir", str(out), "-o", "simtb",
            "--top-module", "tb_dx7_core"]
     for d in defines:
         cmd.append(f"+define+{d}")
@@ -692,7 +694,7 @@ def play_sim(tool: str, binary: Path, vtext: str,
                               f"{proc.stderr[-2000:]}")
     else:
         cmd = [str(binary), f"+vectors={vfile}", f"+actual={afile}",
-               f"+meta={mfile}"]
+               f"+meta={mfile}", "+verilator+rand+reset+0"]
         proc = subprocess.run(cmd, cwd=str(REPO), capture_output=True,
                               text=True)
         if proc.returncode != 0 or "DONE" not in proc.stdout:

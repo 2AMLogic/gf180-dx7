@@ -164,3 +164,40 @@ No conformance claim, no synthesis/timing/fit claim, no latency claim, no
 board/P&R claim, no original-DX7 fidelity or musical-usefulness claim.
 The smoke run proves the design runs its schedule and allocates voices —
 it says nothing about numeric agreement with the frozen model.
+
+## 6. Session notes (orchestrator, 2026-09-22): extracted packer map + remote runbook
+
+### Host-side word packing (verified against dx7_core.v decode logic)
+
+- `0x10+k` OP_PITCH[k]: [7:0]=mode, [15:8]=coarse, [23:16]=fine, [31:24]=detune
+- `0x18+k` OP_FTERM[k]: signed addend applied **only when fine != 0**
+  (`dx7_core.v` ~1350: `dv_bpr = (dv_fine != 0) ? dv_bpr1 + fterm : dv_bpr1`);
+  ratio-mode/fine-0 ops take 0. Fine terms per dx7note.cc:46-53 via
+  h06_compare.py's functions.
+- `0x20+k` ERATES[k]: [7:0]=R1, [15:8]=R2, [23:16]=R3, [31:24]=R4 (raw bytes, 7-bit)
+- `0x28+k` ELEVELS[k]: L1 [6:0], L2 [14:8], L3 [22:16], L4 [30:24]
+- `0x30+k` SCALE_A[k]: [7:0]=breakpoint, [10:8]=kvs, [12:11]=right curve,
+  [14:13]=left curve, [22:15]=right depth, [30:23]=left depth
+- `0x38+k` SCALE_B[k]: [7:0]=output level, [15:8]=rate scaling
+- `0x40` GLOB_A: [2:0]=pm-sens idx (patch[143]&7), [15:8]=am depth,
+  [23:16]=pm depth, [31:24]=transpose (stored, NOT applied — pinned-wrapper semantics)
+- `0x41` GLOB_B: [7:0]=lfo rate, [15:8]=lfo delay, [16]=lfo sync,
+  [19:17]=lfo wave, [20]=osc key sync, [23:21]=feedback, [28:24]=algorithm
+- `0x43` GLOB_C: per-op AMS, 2 bits each: ams_k at [2k+1:2k], k=0..5
+- `0x44`/`0x45` PEG rates/levels (4×7-bit packed, LSB-first per index)
+- `0x42` COMMIT; env block index = **5−k** (doc §5 mapping)
+- events (page 0): NOTEON D=[14:8]=vel,[6:0]=note; NOTEOFF D=[6:0]=note;
+  CC/PB per tb; DD0-5 = per-note frozen detune deltas (NUM-008)
+
+### Remote runbook (AWS repo-remote, 2am#999 path)
+
+- Box: `ssh repo-remote-gf180-dx7` (i-0c0a073ffb9db41d5, m5.2xlarge, 8 vCPU/30 GB;
+  EBS survives idle-shutdown stops; restart via
+  `.claude/skills/repo/scripts/repo-remote.sh up --yes --json` — IP may change).
+- Toolchain: `export PATH=$HOME/oss-cad-suite/bin:$PATH` (Verilator 5.041,
+  yosys, iverilog). Sync: `rsync -az --delete --exclude .git <worktree>/ repo-remote-gf180-dx7:~/h07/`.
+- Compile proven on-box: `iverilog -g2012 -o /tmp/smoke.vvp rtl/dx7_core.v rtl/env_unit.v
+  rtl/alg_router.v rtl/tb_dx7_core.v` (run from repo root so ROM paths resolve).
+- Efficiency rules: heavy sim/synth ONLY remote; sweeps under Verilator, final
+  acceptance shadow under iverilog (klayout-tools #2223 convention); local runs
+  limited to `make test-fast` + affected module (DR-0009).

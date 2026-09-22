@@ -412,6 +412,8 @@ class TestNegativeControls(unittest.TestCase):
         self.assertTrue(any("regenerated sha256" in f for f in failures),
                         failures)
 
+    @unittest.skipUnless(DEXED_ROOT.is_dir(),
+                         "pinned dexed clone unavailable")
     def test_citation_line_rot_fails(self):
         profile = copy.deepcopy(PROFILE)
         for dec in profile["decision_index"]:

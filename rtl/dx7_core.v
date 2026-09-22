@@ -121,9 +121,6 @@
 `ifndef H07_FREQLUT_HEX
 `define H07_FREQLUT_HEX "reference/tables/freqlut_table.hex"
 `endif
-`ifndef H07_LFO_SIN_HEX
-`define H07_LFO_SIN_HEX "reference/tables/lfo_sin_table.hex"
-`endif
 
 // ---------------------------------------------------------------------------
 // h07_op_kernel: the H01 Mark I operator arithmetic as a combinational
@@ -601,24 +598,17 @@ module dx7_core (
     wire [31:0] l_dinc1_w = (l_a0 == 8'd99) ? 32'hFFFFFFFF : (LFO_UNIT * l_a1);
     wire [31:0] l_dinc2_w = (l_a0 == 8'd99) ? 32'hFFFFFFFF : (LFO_UNIT * l_a2);
 
-    reg [25:0] lfo_sin_rom [0:2047];
-    initial begin
-        $readmemh(`H07_LFO_SIN_HEX, lfo_sin_rom);
-    end
-    // LFO step combinational (post-advance phase), identical to pitch_mod.v
+    // LFO step combinational (post-advance phase), identical to
+    // pitch_mod.v EXCEPT wave 4, which mirrors the frozen model's
+    // PinnedWrapperLfo (integrated.py:109-130): the pinned wrapper's
+    // State.init never calls Sin::init(), so its LFO sine waveform
+    // outputs the constant 1 << 23 (finding 8). The phase register still
+    // advances exactly like the reference.
     wire [31:0] l_ph_n    = lfo_phase + lfo_delta;
     wire [23:0] l_tri     = l_ph_n[31] ? ~l_ph_n[30:7] : l_ph_n[30:7];
     wire [23:0] l_sawdn   = ((~l_ph_n) ^ 32'h80000000) >> 8;
     wire [23:0] l_sawup   = (l_ph_n ^ 32'h80000000) >> 8;
     wire [24:0] l_square  = l_ph_n[31] ? 25'd0 : 25'd16777216;
-    wire [23:0] l_p8      = l_ph_n[31:8];
-    wire [10:0] l_spi     = {l_p8[23:14], 1'b0};
-    wire [13:0] l_slow    = l_p8[13:0];
-    wire signed [25:0] l_dy  = $signed(lfo_sin_rom[l_spi]);
-    wire signed [25:0] l_y0  = $signed(lfo_sin_rom[l_spi + 11'd1]);
-    wire signed [39:0] l_prod = l_dy * $signed({26'b0, l_slow});
-    wire signed [31:0] l_sval = l_y0 + $signed(l_prod >>> 14);
-    wire [24:0] l_sine    = 32'sd8388608 + (l_sval >>> 1);
     wire        l_wrap    = (l_ph_n < lfo_delta);
     wire [7:0]  l_rs_hit  = (lfo_rand * 8'd179) + 8'd17;
     wire [7:0]  l_rand_nx = l_wrap ? l_rs_hit : lfo_rand;
@@ -629,7 +619,7 @@ module dx7_core (
         (c_lfo_wave == 3'd1) ? {1'b0, l_sawdn} :
         (c_lfo_wave == 3'd2) ? {1'b0, l_sawup} :
         (c_lfo_wave == 3'd3) ? l_square        :
-        (c_lfo_wave == 3'd4) ? l_sine          :
+        (c_lfo_wave == 3'd4) ? 25'd8388608     :
         (c_lfo_wave == 3'd5) ? l_sh_v          : 25'd8388608;
     wire [31:0] l_dsel    = lfo_dstate[31] ? lfo_dinc2 : lfo_dinc1;
     wire [32:0] l_dsum    = {1'b0, lfo_dstate} + {1'b0, l_dsel};

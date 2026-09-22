@@ -58,3 +58,12 @@ polyphony, one timbre, 48 kHz, external host/controller/DAC/storage.
 <!-- BEGIN LOOM ORCHESTRATION (AGENTS) -->
 This repository uses [Loom](https://github.com/rjwalters/loom) for AI-powered development orchestration (dual-runtime: Claude Code reads `CLAUDE.md`; OpenAI Codex CLI and other AGENTS.md-aware runtimes read this file). See the Loom repository for the full guide (roles, labels, worktrees, configuration). When installed, Loom also writes a locally-substituted copy of the runtime-neutral guide to `.loom/AGENTS.md`.
 <!-- END LOOM ORCHESTRATION (AGENTS) -->
+
+<!-- BEGIN REPO-SKILLS -->
+This repository has [Repo Skills](https://github.com/rjwalters/repo) v0.11.18 installed —
+general repository hygiene and environment commands invoked as `/repo:<command>`. Run
+`/repo:help` for the command list, or see `.claude/skills/repo/SKILL.md` for the full
+guide. Hygiene commands apply safe, reversible fixes by default and report each
+change; run with `--ask` to review first, and `--prune` to allow irreversible
+removals. Managed by `install.sh` — edit outside the markers only.
+<!-- END REPO-SKILLS -->

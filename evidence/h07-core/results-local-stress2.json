@@ -1,0 +1,174 @@
+{
+ "cases": {
+  "stress-burst": {
+   "actual_sha256": "6e705b584712528fbd486f1e39e76c5965b7e4c7788daf356d3ab00312e3a7ca",
+   "checked": 1536,
+   "commits": [
+    "0"
+   ],
+   "id": "stress-burst",
+   "mismatches": [],
+   "overflow": 0,
+   "overrun": 0,
+   "pass": true
+  },
+  "stress-patchcommit": {
+   "actual_sha256": "a98d0ee7372304ff8518b7dff1bdd4a4c6fb6185b503b96b4acfc050938c9cd7",
+   "checked": 2560,
+   "commits": [
+    "0",
+    "13"
+   ],
+   "id": "stress-patchcommit",
+   "mismatch_count": ">=8",
+   "mismatches": [
+    {
+     "actual": 105,
+     "block": 16,
+     "golden": 107,
+     "index": 1165,
+     "sample": 13
+    },
+    {
+     "actual": 26,
+     "block": 16,
+     "golden": 28,
+     "index": 1166,
+     "sample": 14
+    },
+    {
+     "actual": -1285,
+     "block": 16,
+     "golden": -1283,
+     "index": 1167,
+     "sample": 15
+    },
+    {
+     "actual": -3629,
+     "block": 16,
+     "golden": -3627,
+     "index": 1168,
+     "sample": 16
+    },
+    {
+     "actual": -3636,
+     "block": 16,
+     "golden": -3632,
+     "index": 1169,
+     "sample": 17
+    },
+    {
+     "actual": -1041,
+     "block": 16,
+     "golden": -1037,
+     "index": 1170,
+     "sample": 18
+    },
+    {
+     "actual": 125,
+     "block": 16,
+     "golden": 131,
+     "index": 1171,
+     "sample": 19
+    },
+    {
+     "actual": -1256,
+     "block": 16,
+     "golden": -1250,
+     "index": 1172,
+     "sample": 20
+    }
+   ],
+   "overflow": 0,
+   "overrun": 0,
+   "pass": false
+  },
+  "stress-reset": {
+   "actual_sha256": "1d2ba714132a7c906c80df11c4f21495e42243f5083f2110df841842cff9f15e",
+   "checked": 1664,
+   "commits": [
+    "0",
+    "14"
+   ],
+   "id": "stress-reset",
+   "mismatch_count": ">=8",
+   "mismatches": [
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 2,
+     "index": 1359,
+     "sample": 15
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 2,
+     "index": 1360,
+     "sample": 16
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 2,
+     "index": 1361,
+     "sample": 17
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 2,
+     "index": 1362,
+     "sample": 18
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 4,
+     "index": 1363,
+     "sample": 19
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 4,
+     "index": 1364,
+     "sample": 20
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 6,
+     "index": 1365,
+     "sample": 21
+    },
+    {
+     "actual": 0,
+     "block": 5,
+     "golden": 8,
+     "index": 1366,
+     "sample": 22
+    }
+   ],
+   "overflow": 0,
+   "overrun": 0,
+   "pass": false
+  },
+  "stress-sum16": {
+   "actual_sha256": "6b307fbfb8f951ffcfb6547561686e3313e056e5d44f8cdb266741ec58e8139b",
+   "checked": 3584,
+   "commits": [
+    "0"
+   ],
+   "id": "stress-sum16",
+   "mismatches": [],
+   "overflow": 0,
+   "overrun": 0,
+   "pass": true
+  }
+ },
+ "latency_contract": "H03 section 4.5: [(64-p), (64-p)+65]",
+ "rtl_sha256": "bd58fd4522bd0d4ea1f4dc1db71ce4cc8c08905be1575e5e2ecf676b5610be54",
+ "tag": "local-stress2",
+ "tool": "verilator"
+}

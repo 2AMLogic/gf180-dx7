@@ -1274,8 +1274,10 @@ module dx7_core (
     wire signed [8:0] dv_velval = $signed({1'b0,
         vel_data(dv_vel[6:1])}) - 9'sd239;
     // scale_velocity (dx7note.cc:75-80): ((sens*velval + 7) >> 3) << 4 --
-    // the << 4 is part of the model's velocity scaling (microstep units)
-    wire signed [19:0] dv_velsc = ((({6'b0, dv_kvs} * dv_velval)
+    // the << 4 is part of the model's velocity scaling (microstep units);
+    // BOTH operands must be signed (negative velval is in-domain)
+    wire signed [8:0] dv_kvs_s = $signed({1'b0, dv_kvs});
+    wire signed [19:0] dv_velsc = (((dv_kvs_s * dv_velval)
                                     + 16'sd7) >>> 3) <<< 4;
     wire signed [15:0] dv_olsum = $signed({1'b0, dv_ols[12:0], 5'b0})
                                 + dv_velsc;
@@ -1642,7 +1644,7 @@ module dx7_core (
                         end
                         EA_DD0, EA_DD0+5'd1, EA_DD0+5'd2, EA_DD0+5'd3,
                         EA_DD0+5'd4, EA_DD0+5'd5: begin
-                            stg_dd[ev_a[2:0]] <= ev_d;
+                            stg_dd[ev_a - 5'd4] <= ev_d;   // op = addr-DD0
                             evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
                                                               : evq_rp + 8'd1;
                             evq_cnt <= evq_cnt - 9'd1;
@@ -1727,8 +1729,10 @@ module dx7_core (
                 n_fbs[tgt]     <= (c_feedback == 3'd0) ? 5'd16
                                                        : (5'd8 - {2'b0,
                                                             c_feedback});
-                n_pmdep[tgt]   <= (c_pmdep_src * 9'd165) >> 6;
-                n_amdep[tgt]   <= (c_amdep_src * 9'd165) >> 6;
+                // (depth*165)>>6 with the product computed at full width
+                // (a sized 9'd165 operand would truncate the multiply)
+                n_pmdep[tgt]   <= 8'((c_pmdep_src * 17'd165) >> 6);
+                n_amdep[tgt]   <= 8'((c_amdep_src * 17'd165) >> 6);
                 n_pmsens[tgt]  <= pmsens_tab(c_pmsens_idx);
                 n_ams[tgt][0]  <= ampsens_tab(c_ams0);
                 n_ams[tgt][1]  <= ampsens_tab(c_ams1);
@@ -1993,11 +1997,10 @@ module dx7_core (
                     end
                 end
                 for (fj = 0; fj < 64; fj = fj + 1) begin
-                    mixbuf[0][fj] <= 33'sd0;
-                    mixbuf[1][fj] <= 33'sd0;
-                end
-                fc_state <= F_EVPOP;
-            end
+                    mixbuf[in_sel][fj] <= 33'sd0;  // compute buffer only:
+                end                                // the previous frame's
+                fc_state <= F_EVPOP;               // output must still
+            end                                    // stream (H03 4.5)
             // ------------------------- first-block refresh (wrapper quirk)
             F_REFSEL: begin
                 if (scan == 4'd15 && !n_live[scan]) begin

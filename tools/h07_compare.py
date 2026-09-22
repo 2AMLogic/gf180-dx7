@@ -44,6 +44,7 @@ what is missing).  Stdlib only.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import math
@@ -108,6 +109,13 @@ class CouldNotRun(Exception):
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def rtl_fingerprint() -> str:
+    h = hashlib.sha256()
+    for rel in ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]:
+        h.update((REPO / rel).read_bytes())
+    return h.hexdigest()
 
 
 def i32(x: int) -> int:
@@ -365,12 +373,10 @@ def _stress_voice(cid: str) -> bytes:
     the patch-commit case the frozen lfo-pm-sens7 voice as patch 1 (both
     registry-pinned, so both goldens derive from preregistered bytes)."""
     reg = CaseSource()
-    selector = "dir-base" if cid != "stress-patchcommit" else None
-    if selector is None:
-        a = reg.resolve("dir-base", "registry")["voice_bytes"]
-        b = reg.resolve("lfo-pm-sens7", "registry")["voice_bytes"]
-        return a + b
-    return reg.resolve("dir-base", "registry")["voice_bytes"]
+    if cid != "stress-patchcommit":
+        return reg.resolve("dir-base", "registry")["voice_bytes"]
+    return (reg.resolve("dir-base", "registry")["voice_bytes"]
+            + reg.resolve("lfo-pm-sens7", "registry")["voice_bytes"])
 
 
 def model_module_hashes() -> dict:
@@ -395,7 +401,7 @@ def render_stress_golden(spec: dict) -> dict:
     {segments: [{ints, blocks}], events (lines), n_samples_total}."""
     vbs = _stress_voice(spec["id"])
     voices = []
-    per = sysex.VOICE_DATA_LEN + 10  # full message length per voice
+    per = len(vbs) // spec["voices"]
     for i in range(spec["voices"]):
         voices.append(sysex.decode_voice(vbs[i * per:(i + 1) * per]))
     bodies = [voice_patch_bytes(v) for v in voices]
@@ -408,7 +414,7 @@ def render_stress_golden(spec: dict) -> dict:
     for (pos, cmd, args) in spec.get("events2", []):
         lines.append((pos, " ".join([cmd] + [str(a) for a in args])))
     lines.sort(key=lambda e: e[0])
-    ev_text = "\n".join(l for _, l in lines) + "\n"
+    ev_text = "\n".join(f"{pos} {l}" for pos, l in lines) + "\n"
     segments = []
     if spec["id"] == "stress-reset":
         # segment A: blocks [0, reset_block) -- render, then cut
@@ -501,7 +507,8 @@ def vector_text(page: list[tuple[int, int]], events: list[tuple[int, int,
     return "\n".join(lines) + "\n"
 
 
-def build_dev_vector(case: dict, body: list[int]) -> tuple[str, int]:
+def build_dev_vector(case: dict, body: list[int],
+                     frames: int = 0) -> tuple[str, int]:
     """Dev case -> (vector text, golden sample count).  Events come from
     the frozen application trace (block = the model block the event
     precedes); every event of a block must fit one wire frame at the
@@ -536,6 +543,8 @@ def build_dev_vector(case: dict, body: list[int]) -> tuple[str, int]:
             "clk/4 (finding, not a loosened check)")
     last_block = max(writes_per_block) if writes_per_block else 0
     total_frames = (case["_n"] + N - 1) // N
+    if frames:
+        total_frames = min(total_frames, frames)
     remain_blocks = 2 + total_frames + 2 - last_block
     tail = f"W {max(0, remain_blocks) * N}"
     return vector_text(page_writes(body), events, tail), case["_n"]
@@ -580,16 +589,16 @@ def build_stress_vector(spec: dict, bodies: list[list[int]],
         total += len(segs[0])
         # soft reset arrives in wire frame base + reset_block
         ev(spec["reset_block"], [event_write(0, EA_SOFT)])
-        # segment B: page + paced commit (the tb rebases on every C)
+        # segment B: page + paced commit (the tb rebases on every C);
+        # segment-B event blocks are RELATIVE to the new commit
         page(bodies[0])
         tail_block = spec["reset_block"] + 4
         lines.append(f"C {tail_block}")
         for (pos, cmd, args) in spec["events_b"]:
-            ev(tail_block + (pos - spec["reset_block"] * N) // N,
+            ev((pos - spec["reset_block"] * N) // N,
                batch_for(bodies[0], cmd, args))
         total += len(segs[1])
-        last_b = tail_block + (spec["events_b"][0][0]
-                               - spec["reset_block"] * N) // N
+        last_b = (spec["events_b"][0][0] - spec["reset_block"] * N) // N
         remain = 2 + spec["blocks_b"] + 3
         lines.append(f"W {max(0, remain - last_b) * N}")
         return "\n".join(lines) + "\n", total
@@ -601,14 +610,16 @@ def build_stress_vector(spec: dict, bodies: list[list[int]],
                   + list(spec.get("events2", [])))
     all_events.sort(key=lambda e: e[0])
     cur_patch = 0
-    for (pos, cmd, args) in all_events:
-        b = pos // N
-        if cmd == "patch":
+    commit_abs = 0          # absolute model block of the latest commit;
+    for (pos, cmd, args) in all_events:   # later events emit RELATIVE so
+        b = pos // N                      # the tb's wait_until(base+block)
+        if cmd == "patch":                # lands on the right wire frame
             cur_patch = args[0]
             page(bodies[cur_patch])
+            commit_abs = b
             lines.append(f"C {b}")
             continue
-        ev(b, batch_for(bodies[cur_patch], cmd, args))
+        ev(b - commit_abs, batch_for(bodies[cur_patch], cmd, args))
     last_block = max(divmod(e[0], N)[0] for e in all_events)
     remain_blocks = 2 + spec["blocks"] + 2 - last_block
     lines.append(f"W {max(0, remain_blocks) * N}")
@@ -659,8 +670,8 @@ def run(cmd: list[str]) -> subprocess.CompletedProcess:
     return proc
 
 
-def play_sim(tool: str, binary: Path, vtext: str, tag: str,
-             expect: int) -> tuple[Path, Path, dict]:
+def play_sim(tool: str, binary: Path, vtext: str,
+             tag: str) -> tuple[Path, Path, dict]:
     rdir = OUTDIR / "runs" / tag
     rdir.mkdir(parents=True, exist_ok=True)
     vfile = rdir / "vector.txt"
@@ -669,7 +680,7 @@ def play_sim(tool: str, binary: Path, vtext: str, tag: str,
     vfile.write_text(vtext, encoding="utf-8")
     if tool == "iverilog":
         cmd = ["vvp", str(binary), f"+vectors={vfile}", f"+actual={afile}",
-               f"+meta={mfile}", f"+expect={expect}"]
+               f"+meta={mfile}"]
         proc = subprocess.run(cmd, cwd=str(REPO), capture_output=True,
                               text=True)
         if proc.returncode != 0 or "DONE" not in proc.stdout:
@@ -677,7 +688,7 @@ def play_sim(tool: str, binary: Path, vtext: str, tag: str,
                               f"{proc.stderr[-2000:]}")
     else:
         cmd = [str(binary), f"+vectors={vfile}", f"+actual={afile}",
-               f"+meta={mfile}", f"+expect={expect}"]
+               f"+meta={mfile}"]
         proc = subprocess.run(cmd, cwd=str(REPO), capture_output=True,
                               text=True)
         if proc.returncode != 0 or "DONE" not in proc.stdout:
@@ -688,10 +699,7 @@ def play_sim(tool: str, binary: Path, vtext: str, tag: str,
         parts = line.split()
         if len(parts) >= 2:
             meta[parts[0]] = parts[1:]
-    return afile, mfile, meta
-
-
-# ---------------------------------------------------------------------------
+    return afile, mfile, meta# ---------------------------------------------------------------------------
 # comparison
 # ---------------------------------------------------------------------------
 
@@ -703,6 +711,8 @@ def compare_case(segments: list[dict], actual_path: Path,
     n_words = len(data) // 4
     acts = struct.unpack("<%di" % n_words, data[:n_words * 4])
     commits = [int(x) for x in meta.get("commits", [])]
+    if not commits and "base_frame" in meta:
+        commits = [int(meta["base_frame"][0])]   # single-commit fallback
     if len(commits) < len(segments):
         raise CheckFailure(
             f"meta records {len(commits)} commits, {len(segments)} "
@@ -772,6 +782,19 @@ def main() -> int:
                     help="NUM-008 exp-boundary audit sweep: report the "
                          "minimum distance of int(exp(arg)) boundary "
                          "values over the pinned amp-mod domain")
+    ap.add_argument("--jobs", type=int, default=1,
+                    help="parallel simulations (each case is an "
+                         "independent simulator process; artifacts are "
+                         "per-case)")
+    ap.add_argument("--frames", type=int, default=0,
+                    help="cap every case at N render frames (0 = full): "
+                         "the iverilog canonical shadow runs bounded "
+                         "prefix slices; the compare window is the first "
+                         "N golden blocks")
+    ap.add_argument("--embed-prior", default=None,
+                    help="embed a prior results file's per-case "
+                         "actual_sha256 as determinism_run2 (the two "
+                         "clean runs' artifact-hash identity)")
     ap.add_argument("--refresh-cache", action="store_true",
                     help="re-resolve every dev case's voice bytes (needs "
                          "the pinned archive for dev32 rows) into "
@@ -794,6 +817,7 @@ def main() -> int:
         if args.audit_exp:
             return audit_exp()
         only = set(args.cases.split(",")) if args.cases else None
+        cap = args.frames
 
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         cache = json.loads(CACHE.read_text(encoding="utf-8")) \
@@ -806,66 +830,119 @@ def main() -> int:
         if args.set in ("dev", "both"):
             work = OUTDIR / "sim" / f"{tag}-build"
             binary = build_sim(tool, work, [])
-            for case in load_dev_cases():
+
+            def run_dev(case):
                 cid = case["id"]
-                if only and cid not in only:
-                    continue
-                vb = case_voice_bytes(case, cache)
-                from gf180_dx7.model.algorithm import voice_patch
-                body = voice_patch(sysex.decode_voice(vb))
-                vtext, nsamp = build_dev_vector(case, body)
-                ints = golden_ints_from_f32(case["_f32"], case["_sha"],
-                                            case["_n"])
-                afile, mfile, meta = play_sim(tool, binary, vtext,
-                                              f"{tag}-dev-{cid}")
-                res = compare_case([{"ints": ints}], afile, meta)
-                res["id"] = cid
-                res["actual_sha256"] = sha256_file(afile)
-                res["overrun"] = int(meta.get("overrun", ["1"])[0])
-                res["overflow"] = int(meta.get("overflow", ["1"])[0])
-                res["commits"] = meta.get("commits", [])
-                res["latency"] = measure_latencies(
-                    [(t["block"], t["event"]) for t in
-                     case["event_trace"]], res["commits"], None)
-                res["pass"] = res["pass"] and res["overrun"] == 0 \
-                    and res["overflow"] == 0 \
-                    and all(l["in_window"] for l in res["latency"])
-                results["cases"][cid] = res
-                if not res["pass"]:
-                    failures += 1
-                print(("PASS " if res["pass"] else "FAIL ") + cid
-                      + ("" if res["pass"] else
-                         f" first@{res['mismatches'][0]['index']}"
-                         f" golden={res['mismatches'][0]['golden']}"
-                         f" actual={res['mismatches'][0]['actual']}"),
-                      flush=True)
+                try:
+                    vb = case_voice_bytes(case, cache)
+                    from gf180_dx7.model.algorithm import voice_patch
+                    body = voice_patch(sysex.decode_voice(vb))
+                    n = case["_n"]
+                    if cap:
+                        n = min(n, cap * N)
+                    vtext, nsamp = build_dev_vector(case, body,
+                                                    frames=cap)
+                    ints = golden_ints_from_f32(case["_f32"], case["_sha"],
+                                                case["_n"])[:n]
+                    afile, mfile, meta = play_sim(tool, binary, vtext,
+                                                  f"{tag}-dev-{cid}")
+                    res = compare_case([{"ints": ints}], afile, meta)
+                    res["id"] = cid
+                    res["actual_sha256"] = sha256_file(afile)
+                    res["overrun"] = int(meta.get("overrun", ["1"])[0])
+                    res["overflow"] = int(meta.get("overflow", ["1"])[0])
+                    res["commits"] = meta.get("commits", [])
+                    res["latency"] = measure_latencies(
+                        [(t["block"], t["event"]) for t in
+                         case["event_trace"]], res["commits"], None)
+                    res["pass"] = res["pass"] and res["overrun"] == 0 \
+                        and res["overflow"] == 0 \
+                        and all(l["in_window"] for l in res["latency"])
+                    return res
+                except (CheckFailure, CouldNotRun) as exc:
+                    return {"id": cid, "pass": False, "error": str(exc)}
+
+            todo = [c for c in load_dev_cases()
+                    if not only or c["id"] in only]
+            with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=args.jobs) as pool:
+                for res in pool.map(run_dev, todo):
+                    results["cases"][res["id"]] = res
+                    if not res["pass"]:
+                        failures += 1
+                    if "error" in res:
+                        print(f"FAIL {res['id']}: {res['error']}",
+                              flush=True)
+                    else:
+                        print(("PASS " if res["pass"] else "FAIL ")
+                              + res["id"]
+                              + ("" if res["pass"] else
+                                 f" first@{res['mismatches'][0]['index']}"
+                                 f" golden={res['mismatches'][0]['golden']}"
+                                 f" actual={res['mismatches'][0]['actual']}"),
+                              flush=True)
 
         if args.set in ("stress", "both"):
             work = OUTDIR / "sim" / f"{tag}-build-stress"
             binary = build_sim(tool, work, [])
-            for spec in STRESS_SET[1]:
+
+            def run_stress(spec):
                 sid = spec["id"]
-                if only and sid not in only:
-                    continue
-                golden = stress_golden(spec)
-                vtext, _ = build_stress_vector(spec, golden["bodies"],
-                                               golden["segments"])
-                segs = [{"ints": (list(s) if isinstance(s, tuple) else s)}
-                        for s in golden["segments"]]
-                afile, mfile, meta = play_sim(tool, binary, vtext,
-                                              f"{tag}-{sid}")
-                res = compare_case(segs, afile, meta)
-                res["id"] = sid
-                res["actual_sha256"] = sha256_file(afile)
-                res["overrun"] = int(meta.get("overrun", ["1"])[0])
-                res["overflow"] = int(meta.get("overflow", ["1"])[0])
-                results["cases"][sid] = res
-                if not res["pass"]:
-                    failures += 1
-                print(("PASS " if res["pass"] else "FAIL ") + sid,
-                      flush=True)
+                try:
+                    golden = stress_golden(spec)
+                    if cap:
+                        spec = dict(spec)
+                        if spec.get("blocks"):
+                            spec["blocks"] = min(spec["blocks"], cap)
+                        if spec.get("blocks_b"):
+                            spec["blocks_b"] = min(spec["blocks_b"], cap)
+                    vtext, _ = build_stress_vector(spec, golden["bodies"],
+                                                   golden["segments"])
+                    segs = [{"ints": s[:cap * N] if cap else s}
+                            for s in golden["segments"]]
+                    afile, mfile, meta = play_sim(tool, binary, vtext,
+                                                  f"{tag}-{sid}")
+                    res = compare_case(segs, afile, meta)
+                    res["id"] = sid
+                    res["actual_sha256"] = sha256_file(afile)
+                    res["overrun"] = int(meta.get("overrun", ["1"])[0])
+                    res["overflow"] = int(meta.get("overflow", ["1"])[0])
+                    res["commits"] = meta.get("commits", [])
+                    res["pass"] = res["pass"] and res["overrun"] == 0 \
+                        and res["overflow"] == 0
+                    return res
+                except (CheckFailure, CouldNotRun) as exc:
+                    return {"id": sid, "pass": False, "error": str(exc)}
+
+            todo = [s for s in STRESS_SET[1]
+                    if not only or s["id"] in only]
+            with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=args.jobs) as pool:
+                for res in pool.map(run_stress, todo):
+                    results["cases"][res["id"]] = res
+                    if not res["pass"]:
+                        failures += 1
+                    if "error" in res:
+                        print(f"FAIL {res['id']}: {res['error']}",
+                              flush=True)
+                    else:
+                        print(("PASS " if res["pass"] else "FAIL ")
+                              + res["id"]
+                              + ("" if res["pass"] else
+                                 f" first@{res['mismatches'][0]['index']}"
+                                 f" golden={res['mismatches'][0]['golden']}"
+                                 f" actual={res['mismatches'][0]['actual']}"),
+                              flush=True)
 
         OUTDIR.mkdir(parents=True, exist_ok=True)
+        results["rtl_sha256"] = rtl_fingerprint()
+        if args.embed_prior:
+            prior = json.loads(Path(args.embed_prior)
+                               .read_text(encoding="utf-8"))
+            results["determinism_run2"] = {
+                cid: res.get("actual_sha256")
+                for cid, res in prior.get("cases", {}).items()
+                if "actual_sha256" in res}
         rpath = OUTDIR / f"results-{tag}.json"
         rpath.write_text(json.dumps(results, indent=1, sort_keys=True) + "\n",
                          encoding="utf-8")

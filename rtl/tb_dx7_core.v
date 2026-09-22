@@ -250,10 +250,10 @@ module tb_dx7_core;
         // impractical; samples are written live below (see sample_writer)
         $fclose(afd);
         $fdisplay(mfd, "base_frame %0d", base_frame);
-        $write(mfd, "commits");
+        $fwrite(mfd, "commits");
         for (fi = 0; fi < commit_n; fi = fi + 1)
-            $write(mfd, " %0d", commit_list[fi]);
-        $write(mfd, "\n");
+            $fwrite(mfd, " %0d", commit_list[fi]);
+        $fwrite(mfd, "\n");
         $fdisplay(mfd, "overrun %0d", status_overrun);
         $fdisplay(mfd, "overflow %0d", status_overflow);
         $fdisplay(mfd, "frame %0d", dut.frame_ctr);

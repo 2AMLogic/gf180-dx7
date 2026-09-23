@@ -1,0 +1,314 @@
+{
+ "chassis_synth": {
+  "status": "PASS",
+  "meaning": "Gate ran to completion 2026-09-23 as the wave-gate re-check on repo-remote-gf180-dx7 (m5.2xlarge): yosys 0.57+72 sha1 fa02d71f6 (the H07 report's own build) + pinned 7t liberty 330aa9439255e387, RTL byte-identical (git archive, file sha256 verified on the box). Full build = 138,490 mapped flops / 36,803 mapped cells / 1,158,154.592 um2 chip area, exactly the committed H07 core full build (0 flops culled, 0 cells culled, 0 overhead); strip negative control MET (mapped flops -> 0 under -DH07_STRIP_OBSERVABILITY); wrapper structural check PASS (one core instance, no procedural logic, all nine pads). The builder's on-host attempt was NOT_RUN under ~100x CPU oversubscription; that honest record is preserved in evidence/h08-chassis/NOT_RUN-note.json and superseded for the gate by the measured run in evidence/h08-chassis/synth_report.json (log sha256s recorded therein).",
+  "recheck": "python3 tools/h08_synth.py --from-logs (re-parse the committed logs); full re-run: python3 tools/h08_synth.py --liberty <sha-pinned 7t liberty>"
+ },
+ "iverilog_elaboration": "PASS (re-verified 2026-09-23, this host): iverilog 13.0 (homebrew) elaborates the full pin set (dx7_core + env_unit + alg_router + synth_top + tb_synth_top, -g2012) at rc=0 to a valid vvp binary; only the known sized hex-constant warnings. The earlier 'codegen crash' observation (prior session record) did not reproduce.",
+ "iverilog_reason": "Icarus shadow execution is not viable for the 16-case matrix in budget: measured vvp throughput - a 2688-sample (42-frame) prefix of one case was still incomplete after 25 minutes (killed; the same prefix runs in seconds under Verilator 5.052), so the full matrix under vvp would take days. Elaboration passes (see iverilog_elaboration); Verilator is the sole executing tool. A test that cannot run is never a pass.",
+ "iverilog_shadow": "NOT_RUN",
+ "runs": {
+  "alg4-fb0": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "alg4-fb3": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "alg4-fb7": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "alg6-fb0": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "alg6-fb3": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "alg6-fb7": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "bd-coarse0": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "bd-coarse31": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "bd-detune0": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "bd-detune14": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "dir-base": {
+   "flat_samples": "72319",
+   "pin_overflow": "0",
+   "pin_overrun": "0",
+   "pin_qread_last": "0xd7100025",
+   "pin_samples": "72319",
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  },
+  "inj-f0": {
+   "pin_vs_ctrl": [
+    "identical",
+    289276
+   ]
+  },
+  "inj-freshctl": {
+   "qreads_f0": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7110000",
+    "0xd7110000",
+    "0xd7110000"
+   ],
+   "qreads_wr": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7100000",
+    "0xd7100000",
+    "0xd7100000"
+   ]
+  },
+  "inj-ovf": {
+   "qreads": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7160001",
+    "0xd7120001",
+    "0x00000000",
+    "0xd7110000",
+    "0xd7110000"
+   ]
+  },
+  "inj-partial": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_full": [
+    "diff",
+    10048
+   ]
+  },
+  "inj-trunc47": {
+   "frc_ctrl": 48,
+   "frc_trunc": 48,
+   "pin_vs_ctrl": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ]
+  }
+ },
+ "verdicts": [
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:dir-base",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg4-fb0",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg4-fb3",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg4-fb7",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg6-fb0",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg6-fb3",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:alg6-fb7",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:bd-coarse0",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:bd-coarse31",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:bd-detune0",
+   "status": "PASS"
+  },
+  {
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical",
+   "name": "case:bd-detune14",
+   "status": "PASS"
+  },
+  {
+   "detail": "47-bit frame latches nothing: stream==control==flat, latches 48==48",
+   "name": "inj:trunc47",
+   "status": "PASS"
+  },
+  {
+   "detail": "F=0 frame is a no-op (stream==control)",
+   "name": "inj:f0",
+   "status": "PASS"
+  },
+  {
+   "detail": "FRESH stays 1 (F=0-only), clears on accepted write",
+   "name": "inj:freshctl",
+   "status": "PASS"
+  },
+  {
+   "detail": "EVQ overfill sets sticky OVERFLOW (qread2/3=1); pad reset clears (qread4+), FRESH restored; OVERRUN never (forensic 0)",
+   "name": "inj:ovf",
+   "status": "PASS"
+  },
+  {
+   "detail": "partial image observable (diff@10048) and pin==flat",
+   "name": "inj:partial",
+   "status": "PASS"
+  }
+ ]
+}

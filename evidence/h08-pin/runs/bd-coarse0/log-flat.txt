@@ -1,0 +1,5 @@
+DONE tb_dx7_core base=0 frames=1129 samples=72319 overrun=0 overflow=0
+- /Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-30/rtl/tb_dx7_core.v:276: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.052 2026-09-05
+- Verilator: $finish at 370ms; walltime 70.819 s; speed 5.228 ms/s
+- Verilator: cpu 67.073 s on 1 threads; allocated 2 MB

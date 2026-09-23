@@ -1,0 +1,15 @@
+qread 0xd7100025
+stun 0
+queue 0
+overflow 0
+fresh 0
+overrun 0
+frame 37
+samples 72319
+lr_edges 72319
+frames_run 1129
+base_frame 0
+commits 0
+bclk_period 8
+lr_period 512
+first_bit_delay 6

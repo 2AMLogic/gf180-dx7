@@ -1,0 +1,8 @@
+WARN tb_synth_top (qread 0x00000000 pre-protocol or pre-write)
+WARN tb_synth_top (qread 0x00000000 pre-protocol or pre-write)
+FORENSICS frame_latches=330
+DONE samples=127
+- /Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-30/rtl/tb_synth_top.v:811: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.052 2026-09-05
+- Verilator: $finish at 653us; walltime 0.266 s; speed 2.457 ms/s
+- Verilator: cpu 0.218 s on 1 threads; allocated 3 MB

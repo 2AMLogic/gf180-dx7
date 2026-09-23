@@ -1,0 +1,21 @@
+qread 0x00000000
+qread 0xd7110000
+qread 0xd7160001
+qread 0xd7120001
+qread 0x00000000
+qread 0xd7110000
+qread 0xd7110000
+stun 0
+queue 0
+overflow 0
+fresh 1
+overrun 0
+frame 0
+samples 127
+lr_edges 127
+frames_run 1
+base_frame -1
+commits
+bclk_period 8
+lr_period 512
+first_bit_delay 6

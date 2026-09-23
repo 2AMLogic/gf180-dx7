@@ -422,21 +422,22 @@
         "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
       },
       "destination": [
-        "rtl/synth_top.v",
-        "tb/tb_top_bx.v",
-        "tb/verify_synth_top.py"
+        "rtl/synth_top.v"
       ],
       "maintainer": "loom-builder + owner review",
       "requalification": {
-        "check": "blackbox pin-level co-sim: RTL vs model at 48 kHz, every decoded I2S word checked; cycle budget per frame asserted",
-        "result": "NOT_RUN (import pending)"
+        "check": "blackbox pin-level co-sim: decoded I2S stream byte-identical to the H07 flat-interface stream on every committed H07 vector + corrupted-transaction injection suite (H08, issue #30)",
+        "result": "PASS (H08, issue #30): 11 committed H07 vectors byte-exact pin==flat; injection suite PASS; BCLK/LRCLK structural law asserted every run"
       },
       "negative_control": "a datapath that misses its frame deadline must fail the cycle-budget assertion",
-      "notes": "The chassis/wiring pattern is reusable; its DSP contents are rejected (see sibling DSP entries).",
+      "notes": "Imported at H08 as the 9-pad chassis (rtl/synth_top.v): dx7_core instant with every DUT port tied to a pad, internal tap/status ports unconnected. The sibling bench/test files were reference-only for the adaptation; they are not imported (H08 authored its own bench).",
       "adaptations": [
         "keep single-clock 256-cycle frame chassis: tick/go, overrun status, I2S strobe timing",
         "replace the sibling DSP instances (voice/drum/modal) with the FM operator array; no DSP semantics inherited"
-      ]
+      ],
+      "adapted_sha256": {
+        "rtl/synth_top.v": "1fb6b7bdee430a70a131f25f391e5d47492c0e807816edc66ad9709ae278f87b"
+      }
     },
     {
       "component": "negative-control-stub-pattern",
@@ -1708,8 +1709,8 @@
     },
     {
       "path": "tools/test_fast.sh",
-      "sha256": "736f5e09c2361d2756c679d4d59ee19bd0b762f418e769be8341247004220cdb",
-      "reason": "locally authored fast-lane gate (DR-0009 test tiering)"
+      "sha256": "fa8d7468b74deebe68cf2ac45d0b1c76074b2f6137db2230b75c2fdfe15bd43e",
+      "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned\n    after H08 added the h08 fast subset (issue #30)"
     },
     {
       "path": "tools/u02_candidates.py",
@@ -1750,6 +1751,31 @@
       "path": "tests/test_h07.py",
       "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; no upstream bytes",
       "sha256": "30c4dc075eadb9bb5be841c0669e966ed9c19c070242598987a18f1a6dc9f35e"
+    },
+    {
+      "path": "rtl/tb_synth_top.v",
+      "sha256": "8ab92be516f075be1fcd6c9fcd8f5dccc659391461836ad20c537b0923da856d",
+      "reason": "locally authored H08 pin-level bench (issue #30): timed SPI master +\n    BCLK/LRCLK/D wire decoder (empirically mapped against a verbatim model\n    of the dx7_core I2S TX), structural period/phase assertions, injection\n    directives (X truncated / V F=0 / Y rate-violation / Z pad reset / Q\n    status read), forensic frame-latch + st_overrun witnesses; pattern\n    adapted from rtl/tb_dx7_core.v (this repo, H07)"
+    },
+    {
+      "path": "tools/h08_pin_check.py",
+      "sha256": "9dfdabf2193c797eaa33aaafb0d9ff0316d7b0681094306d4f710fc29c4fc642",
+      "reason": "locally authored H08 evidence runner (issue #30): per-case\n    pin-vs-flat byte-exact conformance over the committed H07 vectors +\n    corrupted-transaction injection suite + qread/status lifecycle checks;\n    runner pattern follows tools/h07_compare.py (this repo, H07)"
+    },
+    {
+      "path": "tests/test_h08.py",
+      "sha256": "973ca4006b31264d6ab331a0797816ad9218aadabcba75382c7e79036c571384",
+      "reason": "locally authored H08 tests (issue #30): core sha pin (H08 changes no\n    core lines), committed-evidence recomputation, catalog pins, live\n    undersized-frame/F=0/FRESH/OVERFLOW negative controls (wall-heavy\n    pattern per H07); Icarus shadow recorded NOT_RUN with reason"
+    },
+    {
+      "path": "docs/H08-PIN.md",
+      "sha256": "e015c1912f80fc4a16ec155f37bccf6abeb9ef7fa70927656bfaefb4d6d3e78d",
+      "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings"
+    },
+    {
+      "path": "tools/h08_synth.py",
+      "sha256": "138d141cc6a5641b8e1d0c87a5025825aab0a887114f7c0e51fa3629fac77c36",
+      "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/"
     }
   ]
 }

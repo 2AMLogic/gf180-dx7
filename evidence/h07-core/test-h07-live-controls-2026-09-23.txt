@@ -1,0 +1,48 @@
+test_dev_vectors_respect_burst_bound (tests.test_h07.TestConformanceEvidence)
+Every committed dev vector fits the contracted 168-write frame ... /home/ubuntu/h07/tests/test_h07.py:440: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/cases.json' mode='r' encoding='UTF-8'>
+  cache = json.load(open(os.path.join(EVIDENCE, "cases.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_results_match_frozen_vectors_and_current_rtl (tests.test_h07.TestConformanceEvidence) ... ok
+test_two_clean_runs_artifact_hash_identical (tests.test_h07.TestConformanceEvidence) ... ok
+test_golden_loader_rejects_drifted_vector (tests.test_h07.TestHarnessMachinery) ... /home/ubuntu/h07/tests/test_h07.py:467: ResourceWarning: unclosed file <_io.BufferedWriter name='/tmp/tmpokcqvd81/x.f32'>
+  open(bad, "wb").write(b"\x00" * 256)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_latency_window_math (tests.test_h07.TestHarnessMachinery) ... ok
+test_stress_golden_is_frozen_and_fresh (tests.test_h07.TestHarnessMachinery) ... ok
+/home/ubuntu/h07/tests/test_h07.py:109: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/cases.json' mode='r' encoding='UTF-8'>
+  cache = json.load(open(os.path.join(EVIDENCE, "cases.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/ubuntu/h07/tests/test_h07.py:133: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/cases.json' mode='r' encoding='UTF-8'>
+  cache = json.load(open(os.path.join(EVIDENCE, "cases.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/ubuntu/h07/tests/test_h07.py:172: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/cases.json' mode='r' encoding='UTF-8'>
+  cache = json.load(open(os.path.join(EVIDENCE, "cases.json")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_clean_build_passes_all_three_small_vectors (tests.test_h07.TestNegativeControls) ... /home/ubuntu/h07/tests/test_h07.py:224: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/sim/test-cache/clean-1ecf9f89046d/.built' mode='w' encoding='UTF-8'>
+  open(marker, "w").write(fp)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_glitch_mutant_fails_and_localizes (tests.test_h07.TestNegativeControls) ... /home/ubuntu/h07/tests/test_h07.py:224: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/sim/test-cache/H07_MUTATE_GLITCH-1ecf9f89046d/.built' mode='w' encoding='UTF-8'>
+  open(marker, "w").write(fp)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_interface_is_exactly_contracted (tests.test_h07.TestNegativeControls)
+No per-sample host data path (DEC-010, H03 4.7). ... ok
+test_sum_order_mutant_fails (tests.test_h07.TestNegativeControls) ... /home/ubuntu/h07/tests/test_h07.py:224: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/sim/test-cache/H07_MUTATE_SUM_ORDER-1ecf9f89046d/.built' mode='w' encoding='UTF-8'>
+  open(marker, "w").write(fp)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_tick_skew_mutant_fails (tests.test_h07.TestNegativeControls) ... /home/ubuntu/h07/tests/test_h07.py:224: ResourceWarning: unclosed file <_io.TextIOWrapper name='/home/ubuntu/h07/evidence/h07-core/sim/test-cache/H07_MUTATE_TICK_SKEW-1ecf9f89046d/.built' mode='w' encoding='UTF-8'>
+  open(marker, "w").write(fp)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_doc_records_the_required_anchors (tests.test_h07.TestReportDoc) ... ok
+test_committed_synth_report_gates (tests.test_h07.TestStripObsControl) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 251.609s
+
+OK
+UNITTEST-EXIT 0

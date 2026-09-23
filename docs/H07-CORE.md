@@ -285,3 +285,50 @@ the earlier session, pre-detune-fix tree) were consumed by the tree
 re-sync; their findings are recorded in the b06696e/af780eb commit
 messages and finding 8 above. The committed acceptance evidence is the
 fixed-RTL run pair + shadow only.
+### 2026-09-23 re-verification session (pi-h07; PR #73 tip d88ccae)
+
+* Triage of the two uncommitted leftovers from the prior session:
+  (a) the work tree held a partial ~265-line "AWS pivot" rewrite of
+  `tools/h07_compare.py` replacing the committed 1035-line harness
+  (broken/incomplete: guessed `f32~2^15` amplitude slice instead of the
+  exact dyadic x32768; latency pinned from data in 64-sample steps instead
+  of the H03 section 4.5 window; no CC/PB/soft-reset, stress,
+  OVERRUN/OVERFLOW, or artifact-hash support) — discarded, committed
+  harness restored; (b) the untracked scratch dir `evidence/h07-core/run/`
+  (prior single-case probe artifacts) was moved out of the tree. No RTL or
+  comparison logic changed in this session.
+* Acceptance re-run from the clean tree: the remote execution box's tree was
+  rsynced and sha256-verified byte-identical (4 RTL files, release manifest,
+  case cache, results). Two clean full Verilator runs (tags
+  `verilog-accept-lh07-r1`, `-r2`; --jobs 4, Verilator 5.041): 34/34 dev +
+  stress bit-exact, 2,361,344 compared samples per run, OVERRUN/OVERFLOW 0
+  everywhere, 113/113 latency events in-window at distance exactly
+  128 - p. Every per-case dump-artifact sha256 in BOTH runs is identical to
+  the original pair (`verilog-accept[-run2]`) committed with the evidence;
+  consolidated run-manifest sha256 = 81d1ec68b2714a41083b71b17ff4fc37d822d6b933b1d952f1125a627101bd6b
+  for both new runs (== original pair) — the artifacts are a deterministic
+  function of (tree, vector, toolchain).
+* iverilog shadow (24 frames, tag `iverilog-shadow-lh07`): not recorded from this session: the fresh 24-frame shadow re-run was still in flight (27/34 as of 11:37Z) under sustained shared-box contention when the evidence commit was made; the committed `results-iverilog-shadow.json` (34/34, same tree bytes) remains the standing shadow record..
+* Live negative controls from this tree (`python3 -m unittest tests.test_h07 -v`,
+  remote box): glitch injects a one-sample +1 at frame 12 / sample 17 and the
+  clean comparator FAILS and localizes exactly that sample; sum-order mutant
+  (clip-then-sum vs sum-then-clip of the same 4 I32 partials) FAILS on the
+  clipping burst vector; strip-observability synthesis gate maps 0 flops.
+  Full transcript: `evidence/h07-core/test-h07-live-controls-2026-09-23.txt`.
+* Venue + timing: this session's local host measured load ~122 on 10 CPUs
+  (sim-infeasible in budget); heavy runs used the already-running repo-remote
+  m5.2xlarge (per execution-venue rules; no new provisioning). r1 06:52-08:17Z
+  (85 min), r2 08:17-09:33Z (76 min), under ongoing shared-box contention
+  from a concurrent H08 builder's sim sweep (its runs live under its own
+  tags/trees; none of this session's artifacts touched them).
+* Shared-host findings (environment, no action on this PR's claims):
+  (i) an unattributed working-tree edit of `tools/n08_build_release.py`
+  (DX7_ARCHIVE env fallback, inert to conformance — the cache resolves all
+  dev32 rows and no archive is opened) appeared at ~06:11Z and was reverted;
+  (ii) the worktree directory was removed externally at ~08:05Z (branch
+  intact; restored via `git worktree add` — file-set re-checked out from the
+  same commit, so committed bytes were unaffected);
+  (iii) the branch was force-rebased onto updated main (U02 prep #72) between
+  sessions — verified: H07-relevant diff 884a7fa..d88ccae is exactly 0 bytes
+  (rtl/, tools/h07*, tests/test_h07.py, evidence/h07-core/, H07 docs, release
+  manifest), so pre-rebase run outputs remain valid evidence for the tip.

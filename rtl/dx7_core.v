@@ -382,9 +382,7 @@ module dx7_core (
             evq_wp <= 8'd0; evq_rp <= 8'd0; evq_cnt <= 9'd0;
         end else if (skid_pop) begin
             if (dr_sec) begin
-                if (dr_a == 8'h42) begin
-                    shd_commit <= 1'b1;
-                end else begin
+                if (dr_a != 8'h42) begin
                     case (dr_a)
                         8'h40: shd_globA <= dr_d;
                         8'h41: shd_globB <= dr_d;
@@ -406,16 +404,26 @@ module dx7_core (
                     if (dr_a >= 8'h38 && dr_a <= 8'h3D)
                         shd_scaleB[dr_a[2:0]] <= dr_d;
                 end
-            end else begin
-                if (evq_full)
-                    st_overflow <= 1'b1;
-                else begin
-                    evq[evq_wp] <= {dr_a[4:0], dr_d};
-                    evq_wp  <= (evq_wp == EVQ_DEPTH-1) ? 8'd0 : evq_wp + 8'd1;
-                    evq_cnt <= evq_cnt + 9'd1;
-                end
+            end else if (evq_full)
+                st_overflow <= 1'b1;
+            else begin
+                evq[evq_wp] <= {dr_a[4:0], dr_d};
+                evq_wp  <= (evq_wp == EVQ_DEPTH-1) ? 8'd0 : evq_wp + 8'd1;
             end
         end
+        // Single-driver merge (H10): the frame-commit FSM (fc_state) and this
+        // config/push block used to write shd_commit/evq_rp/evq_cnt from two
+        // always blocks — multiple drivers on one register, which simulators
+        // silently time-multiplex but yosys rejects (check -assert). Same-cycle
+        // semantics are now explicit: push and pop each count once; a commit
+        // clear in the same cycle as a set wins the clear.
+        if (wc_pop_fire)
+            evq_rp <= wc_rp_next;
+        evq_cnt <= evq_cnt + (skid_pop && !dr_sec && !evq_full ? 9'd1 : 9'd0)
+                             - (wc_pop_fire ? 9'd1 : 9'd0);
+        shd_commit <= ((fc_state == F_COMMIT) && shd_commit) ? 1'b0
+                     : (skid_pop && dr_sec && (dr_a == 8'h42)) ? 1'b1
+                     : shd_commit;
     end
 `ifdef H07_MUTATE_TICK_SKEW
     // NEGATIVE CONTROL: stale schedule. Event application observes the
@@ -430,6 +438,10 @@ module dx7_core (
     wire [36:0] evq_out = evq[evq_rp];
     wire [4:0]  ev_a    = evq_out[36:32];
     wire [31:0] ev_d    = evq_out[31:0];
+    // Pop event and next pointer captured here, written only by the
+    // config/push block above (single-driver merge, H10 — see comment there).
+    wire       wc_pop_fire = (fc_state == F_EVPOP) && !evq_peek_empty;
+    wire [7:0] wc_rp_next  = (evq_rp == EVQ_DEPTH-1) ? 8'd0 : evq_rp + 8'd1;
 
     // event addresses (page 0)
     localparam [4:0] EA_NOTEON = 5'h00, EA_NOTEOFF = 5'h01, EA_CC = 5'h02,
@@ -1586,7 +1598,8 @@ module dx7_core (
                     lfo_delta <= l_delta_w;    // DEC-019/DEC-020: no phase
                     lfo_dinc1 <= l_dinc1_w;    // reset, params from the
                     lfo_dinc2 <= l_dinc2_w;    // incoming image
-                    shd_commit <= 1'b0;
+                    // shd_commit cleared by the config/push block (single-driver
+                    // merge, H10); the captures above observe it this cycle.
                 end
                 fc_state <= F_EVPOP;
             end
@@ -1597,26 +1610,17 @@ module dx7_core (
                         EA_NOTEON: begin
                             stg_note <= ev_d[6:0];
                             stg_vel  <= ev_d[14:8];
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_ALLOC;
+                                                        fc_state <= F_ALLOC;
                         end
                         EA_NOTEOFF: begin
                             stg_note <= ev_d[6:0];
                             scan <= 4'd0;
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_OFFFIND;
+                                                        fc_state <= F_OFFFIND;
                         end
                         EA_CC: begin
                             stg_ctrl <= ev_d[7:0];
                             stg_val  <= ev_d[15:8];
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            case (ev_d[7:0])
+                                                        case (ev_d[7:0])
                                 8'd64: begin
                                     sustain <= (ev_d[15:8] > 8'd63);
                                     if (!(ev_d[15:8] > 8'd63)) begin
@@ -1650,58 +1654,34 @@ module dx7_core (
                         end
                         EA_PB: begin
                             bend_pb <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_DD0, EA_DD0+5'd1, EA_DD0+5'd2, EA_DD0+5'd3,
                         EA_DD0+5'd4, EA_DD0+5'd5: begin
                             stg_dd[ev_a - 5'd4] <= ev_d;   // op = addr-DD0
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_MTUNE: begin
                             master_tune <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_CTRLPM: begin
                             ctrl_pm <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_CTRLAM: begin
                             ctrl_am <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_EGMOD: begin
                             eg_mod <= ev_d;
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_SOFT: begin
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_SOFT;
+                                                        fc_state <= F_SOFT;
                         end
                         default: begin
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                     endcase
                 end else begin

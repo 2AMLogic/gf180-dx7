@@ -304,5 +304,6 @@
   }
  },
  "iverilog_shadow": "NOT_RUN",
- "iverilog_reason": "iverilog 13.0 and 14.0-devel both crash during codegen on dx7_core elaboration ('Code generator failure: -1'); reproduces on the committed H07-benched core, so this is a pre-existing environment regression, not an H08 defect. Verilator 5.052 is the sole executing tool."
+ "iverilog_reason": "Icarus shadow execution is not viable for the 16-case matrix in budget: measured vvp throughput - a 2688-sample (42-frame) prefix of one case was still incomplete after 25 minutes (killed; the same prefix runs in seconds under Verilator 5.052), so the full matrix under vvp would take days. Elaboration passes (see iverilog_elaboration); Verilator is the sole executing tool. A test that cannot run is never a pass.",
+ "iverilog_elaboration": "PASS (re-verified 2026-09-23, this host): iverilog 13.0 (homebrew) elaborates the full pin set (dx7_core + env_unit + alg_router + synth_top + tb_synth_top, -g2012) at rc=0 to a valid vvp binary; only the known sized hex-constant warnings. The earlier 'codegen crash' observation (prior session record) did not reproduce."
 }

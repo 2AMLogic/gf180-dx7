@@ -1,6 +1,8 @@
 # H08 — SPI/I2S pin-level integration
 
-Issue #30, branch `loom/h08-spi` (base `loom/h07-core` @ `884a7fa`).
+Issue #30, branch `loom/h08-spi` (rebases onto `origin/main`; core
+lineage is the H07 record, PRs #73/#75/#76 — the hash-pinned core is the
+same bytes H07 benched).
 
 ## Scope and shape of the change
 
@@ -22,7 +24,9 @@ New files (all H08-owned):
 |---|---|
 | `rtl/synth_top.v` | 9-pad chassis: `clk`/`rst` (pad reset, active-high, active from t=100 ps), SPI slave pads `cs_n`/`sck`/`mosi`/`miso`, I2S master pads `bclk`/`lrclk`/`d`. One `u_core` instance; every DUT port tied to a pad; tap, status and debug/internal ports left unconnected. |
 | `rtl/tb_synth_top.v` | Pin-level bench. Drives SPI transactions with timing, decodes I2S back to the 32-bit sample stream, reports structural BCLK/LRCLK measures, and asserts live negative controls (see below). Same vector protocol as the H07 bench plus injection directives (`X` truncated frame, `V` F=0 frame, `Y` rate-violating burst, `Z` pad reset, `Q` status read). |
-| `tools/h08_pin_check.py` | Evidence runner: for every committed H07 case it runs the flat bench and the pin bench on the **same** vector, requires the streams to match byte-for-byte, cross-checks run metadata (samples, overrun/overflow, structural periods), then runs the corrupted-transaction injection suite. Writes `evidence/h08-pin/runs/<case>/…` and `results/h08/summary.json`. |
+| `tools/h08_synth.py` | Chassis synthesis gate: yosys (0.69 + abc) over the chassis top (`synth_top`) against the named ciel `gf180mcu` 7t liberty, same script shape as `tools/h07_synth.py`, plus the `-DH07_STRIP_OBSERVABILITY` strip build as the resolution-proving negative control. Writes `evidence/h08-chassis/` (report + yosys log). No PnR, no timing closure, no fit claim (that is H10). |
+| `tests/test_h08.py` | Evidence recompute (byte-level, recomputed *in the test*, not read from the summary) + live negative controls built on demand into the git-ignored `build/` tree. |
+| `docs/reuse/catalog.json` | + `tools/h08_synth.py` and the re-pinned H08 report (local originals); the `synth-top-chassis` component carries the adapted `rtl/synth_top.v` hash and its requalification result. |
 
 The H07 evidence tree (`evidence/h07-core/`) is **untouched** — the
 runner only reads from it (committed vectors and goldens).
@@ -65,7 +69,33 @@ The H08-specific acceptances and their status (final numbers in
   checks); truncated frames are counted against a forensic
   `frame_reg_v` latch counter and must not change the stream. Each
   control demonstrably fails when the DUT misbehaves (the D-transition
-  control alone trips on a single-cycle glitch).
+  control alone trips on a single-cycle glitch). The `trunc47` control
+  also runs live in the fast lane (self-built bench, compact vector).
+- **A6 — note-on latency stays inside the H03 §4.5 window `[(64-p),
+  (64-p)+65]` (p = 32 → [32, 97] samples after the event).** Reported
+  by carry, not re-measured: H08 changes no core logic (the event
+  application timing is the H07 record), and the pin stream is
+  byte-identical to the flat stream on all 11 committed vectors, so the
+  first-voiced-sample index per event — the latency — is identical. The
+  per-event H07 records (`evidence/h07-core/results-verilog-accept*.json`,
+  `latency[].in_window = true` for every event on every case) therefore
+  carry over to the pin path unmodified.
+- **A7 — the synthesized chassis meets the resource target (chassis
+  overhead vs the core evidenced, not estimated).** A passive pin map
+  adds *zero* state and *zero* logic: `tools/h08_synth.py`
+  synthesizes the chassis top with the same script shape and liberty as
+  the committed H07 build and gates on (a) mapped flops above H02's
+  38,781 floor (state present, not optimized away), (b) mapped flops
+  and cell total **not exceeding** H07's core full build (138,490
+  flops / 36,803 cells; any shortfall is reported as *connection-state
+  pruning of the unconnected tap/status/debug outputs* — the H08 top
+  exposes fewer ports than the H07 core-top build — never as overhead),
+  and (c) the committed wrapper source being structurally a pin map
+  (one core instance, no procedural logic, all nine pads mapped). The
+  strip build (`-DH07_STRIP_OBSERVABILITY`) must collapse the flop
+  count — the negative control proving this measurement has
+  resolution. Mapped area/cell numbers only: **no PnR, no timing
+  closure, no fit, no board claim** (H10).
 
 ## I2S format: contract vs as-built (the finding record)
 
@@ -88,10 +118,13 @@ digital front end):
   exactly that and byte-matches the H07 golden on the flat interface,
   which is the proof the pin path introduces **no further** divergence.
 - **F-OVF-1 (deviation, as-built):** the `st_overflow` flag is sticky
-  until a pad reset; the depth-7 skid FIFO overflow is unreachable at
-  any SCK rate (it is drained every `clk`, pushed at ≥194 clk/tx) —
-  overflow can only occur via the event queue overfill (`Y` burst),
-  which the injection suite exercises.
+  until a **pad reset** — the contract's DEC-014 "cleared on read"
+  policy is not the as-built behavior (the `ovf` injection's qread
+  map shows `OVERFLOW=1` on two consecutive reads, then the pad-reset
+  canary, then `OVERFLOW=0` with FRESH restored). The depth-7 skid
+  FIFO overflow is unreachable at any SCK rate (it is drained every
+  `clk`, pushed at ≥194 clk/tx) — overflow can only occur via the event
+  queue overfill (`Y` burst), which the injection suite exercises.
 - **F-I2S-3 (deviation, as-built):** the H07 bench's own I2S decoder is
   dead code (it never ran; the flat-interface golden was produced from
   the direct tap port). H08's decoder is the **first** decoder that
@@ -156,16 +189,69 @@ at index 2508 with the dir-base P+C+E block, matching the committed
 stream), and the same event path is the one the `ovf` burst
 overfills.
 
+## Transport spec (DR-0007 / contract §4.2–4.3) mapping
+
+The transport H08 verifies is the contract's DR-0007-adapted SPI/I2S
+front end (gf180-parasynth DR-0007 is the transport spec; its register
+semantics are sibling-specific and were **not** imported — catalog
+note on the `synth-top-chassis` component):
+
+- **Frame:** 48-bit `{F, 6'b0, SEC, ADDR[7:0], DATA[31:0]}`, MSB-first,
+  latched on the 48th SCK rising edge (`cs_n` falling loads the status
+  word onto MISO for the next read). Mode-0 shape (SCK idle-low,
+  sample on the rising edge), matching the spec-0007 transport; the
+  bench drives it timing-true so the phase law is exercised, not
+  assumed.
+- **SCK bound:** contract §4.2 says SCK ≤ f_core/4 (6.144 MHz at the
+  24.576 MHz design point), i.e. ≥4 core clocks per SCK bit. The bench's
+  normal transactions run at exactly the compliant edge (1 write per
+  194 core clocks: 48 bits × 4 + 2-cycle CS gap); the `Y` burst is the
+  deliberate rate violation that demonstrates the explicit-rejection
+  policy instead of a silent drop.
+- **Event application timing (DEC-014):** an event received during frame
+  *N* applies before the first sample of frame *N+1* — worst-case core
+  commit latency one frame. Directly observed through the pads: the
+  compact H08 probe (static patch + commit + the dir-base `E` block
+  only) lands the first voiced sample at pin-derived index 2508, and
+  the same event path is the one the `Y` burst overfills.
+- **Status word (contract §4.3, adapted from the sibling §4 word
+  `{0x4D, VERSION, overrun, queue_nonempty, overflow, fresh, frame}`):**
+  `{MAGIC=0xD7, VERSION=0x1, OVERRUN, QUEUE, OVERFLOW, FRESH,
+  FRAME[15:0]}`, 32 bits on MISO, loaded at CS_N fall. The bench's `Q`
+  readbacks decode exactly this map (field positions asserted in
+  `tests/test_h08.py`). Two as-built deviations from the contractual
+  assumptions are recorded, not absorbed: F-STA-1 (reads are
+  stale-by-one — the contract's *first read after reset returns a
+  `0xD711_0001`-shaped word* is not the as-built behavior; the canary
+  `0x00000000` comes first) and F-OVF-1 (OVERFLOW does not clear on
+  read; pad reset only). A fix for either is a core change and is out
+  of H08 scope (the core is hash-pinned).
+- **FRESH/FRAME brown-out protocol (sibling ARCHITECTURE §7):** boot on
+  `fresh = 1`, re-send the image whenever `fresh` later reads 1. The
+  `freshctl`/`ovf` injections verify the lifecycle end-to-end through
+  the pad (see the Status/FRESH section).
+
 ## Tooling / environment
 
-- Verilator 5.052 is the sole executing tool. Icarus (iverilog
-  13.0 stable and 14.0-devel) **crashes in codegen** on `dx7_core`
-  elaboration (`Code generator failure: -1`); it reproduces both
-  before and after the H08 change on the committed H07-benched core —
-  this is a
-  pre-existing environment regression, not an H08 defect, and the Icarus
-  shadow is reported as `NOT_RUN` (a test that cannot run is never a
-  pass).
+- Verilator 5.052 is the sole **executing** tool. Icarus: the earlier
+  session record claimed iverilog (13.0 stable and 14.0-devel) crashed
+  in codegen on `dx7_core` elaboration; **that did not reproduce on
+  this host (2026-09-23 re-check)** — `iverilog -g2012 -o x.vvp
+  rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v rtl/synth_top.v
+  rtl/tb_synth_top.v` completes at rc=0 to a valid ~7.2 MB `vvp`
+  binary, with only the known sized hex-constant warnings from the core.
+  Icarus therefore serves as a second **elaboration** check: PASS (the
+  command above is the re-check; it is fast and does not render audio).
+  It is not viable as the *shadow execution* tool for the 16-case
+  matrix: measured `vvp` throughput — a 2,688-sample (42-frame) prefix
+  of one case was still incomplete after 25 minutes (killed; the same
+  prefix runs in seconds under Verilator), so the full matrix under vvp
+  would take days, not hours. The Icarus shadow is therefore still
+  reported as `NOT_RUN` with a reason in `results/h08/summary.json` (a
+  test that cannot run is never a pass), and the reason text was
+  updated to the measured, reproducible shape: elaboration PASS,
+  execution infeasible in budget. The prior "codegen crash" note is
+  retained here as the superseded observation with its re-check record.
 - Fast lane (`tools/test_fast.sh`): H08 found the script's
   `discover | tail` pipeline (POSIX sh, no pipefail) masked unittest
   failures — the gate exited 0 on a red suite. It now captures
@@ -207,6 +293,7 @@ overfills.
 | `rtl/dx7_core.v` (SPI slave, I2S master) | H07, this repo, sha `335599ea…` | Apache-2.0 | unchanged | none | untouched by H08 (byte-identical to H07 commit) |
 | Pin bench `rtl/tb_synth_top.v` | Adapted from `rtl/tb_dx7_core.v` (H07, this repo) + structural measures from the plan's I2S section | Apache-2.0 | new file | flat-interface stimulus replaced by timed SPI transactions; tap-port golden replaced by BCLK/LRCLK/D wire decode; injection directives added | live-ran on every committed H07 vector + injection suite; byte-matches the flat bench, so the adaptation is behavior-preserving |
 | `tools/h08_pin_check.py` | New (runner pattern follows `tools/h07_compare.py`, this repo) | Apache-2.0 | new file | — | ran to completion on the full matrix |
+| `tools/h08_synth.py` | New (pattern follows `tools/h07_synth.py`, this repo; same ciel gf180mcu 7t liberty and script shape) | Apache-2.0 | new file | — | ran to completion on `synth_top` (full + strip negative control); evidence in `evidence/h08-chassis/` |
 | `rtl/synth_top.v` | Adapted from the sibling `synth-top-chassis` (gf180-parasynth, Apache-2.0, commit + path in `docs/reuse/catalog.json`) | Apache-2.0 | `rtl/synth_top.v` | sibling bench/test files reference-only; chassis reduced to the 9-pad map + reset (no DSP, no tick/go — the pinned core owns all timing) | `check_reuse.py` PASS incl. adapted-hash pin; pin co-sim byte-exact (this report) |
 
 No GPL-3.0/GPL-2.0 material is introduced (Dexed/VDX7/Hexter remain
@@ -222,7 +309,25 @@ repo-level Apache-2.0.
   `log-pin.txt`. For injections the corruption and control vectors are
   committed alongside (`vec-trunc.txt`, `vec-ctrl.txt`, etc.).
 - `results/h08/summary.json`: verdict per case/injection, the meta
-  cross-check fields, qread sequences, and the Icarus `NOT_RUN` record.
+  cross-check fields, qread sequences, and the Icarus record (elaboration
+  PASS + shadow `NOT_RUN` with reason).
+- `evidence/h08-chassis/`: `synth_report.json` (full + strip build: mapped
+  flop/cell/area stats vs the committed H07 report, gate verdicts,
+  wrapper structural no-logic check, log + liberty hashes, re-check
+  via `tools/h08_synth.py --from-logs`) and the raw `yosys_full.log` /
+  `yosys_strip.log`. **No PnR, no timing, no fit, no board claim (H10).**
+- **Freshness re-verification (2026-09-23, this host, identical
+  toolchain):** the committed batch was produced on this host by the
+  first two H08 sessions (2026-09-23 morning). The full longest matrix
+  case (`dir-base`, 72,319 samples) was re-run end to end today in both
+  bench modes and reproduces the committed `flat.i32` **and** `pin.i32`
+  byte-identically (zero diff, so the committed batch stands as the
+  record); the injection/forensic vectors are additionally re-run live
+  by `tests/test_h08.py` in the fast lane. The remaining ten matrix
+  cases' completeness is re-exercised at the judge wave gate
+  (`make test`, DR-0009), not assumed — a test that was not re-run is a
+  committed batch on the same host/toolchain, and it is reported as
+  such, not as freshly re-generated.
 - `tools/test_fast.sh` re-pinned to run the H08 harness on the
   `dir-base` fast subset with `--skip-inj` and to check the summary
   file; the full matrix + injections run at judge-approval wave.

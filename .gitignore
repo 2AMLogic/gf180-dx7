@@ -41,6 +41,12 @@ reports/*.rpt
 
 # repo-remote machine spec (machine-local)
 .env
+
+# U02 audition renders are machine-generated local audio, rebuilt with
+# `python3 tools/u02_candidates.py render-kit`; only candidates.json and
+# LISTENING-KIT.md are committed (164 MB of dry oracle renders otherwise).
+corpus/u02-candidates/renders/
+
 # >>> loom-managed (do not edit) >>>
 # Loom runtime state (don't commit these)
 .loom-in-use

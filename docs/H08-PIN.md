@@ -83,8 +83,12 @@ The H08-specific acceptances and their status (final numbers in
 - **A7 — the synthesized chassis meets the resource target (chassis
   overhead vs the core evidenced, not estimated).** A passive pin map
   adds *zero* state and *zero* logic: `tools/h08_synth.py`
-  synthesizes the chassis top with the same script shape and liberty as
-  the committed H07 build and gates on (a) mapped flops above H02's
+  synthesizes the chassis top with H07's pass shape (read; hierarchy;
+  synth; dfflibmap; abc; stat -- liberty file sha-identical to H07's,
+  `330aa943...`; but local yosys is 0.69+post vs H07's 0.57+72, so the
+  numeric comparison is a cross-version bound, while the zero-addition
+  property is tool-independent) and gates on (a) mapped flops above
+  H02's
   38,781 floor (state present, not optimized away), (b) mapped flops
   and cell total **not exceeding** H07's core full build (138,490
   flops / 36,803 cells; any shortfall is reported as *connection-state
@@ -96,6 +100,26 @@ The H08-specific acceptances and their status (final numbers in
   count — the negative control proving this measurement has
   resolution. Mapped area/cell numbers only: **no PnR, no timing
   closure, no fit, no board claim** (H10).
+
+  **Status on this host (2026-09-23): the yosys+abc run is NOT_RUN, not
+  a pass.** The shared host was ~100x CPU-oversubscribed (load ~100 on
+  10 cores, 64 users, parallel H10 wave); the job accumulated ~5.5
+  CPU-minutes in ~61 wall-minutes (~9% of one core) and was still
+  inside the internal `synth` pass, so the full+strip pipeline was
+  infeasible in session budget and was killed to release host CPU.
+  Machine-readable record with host diagnostics and the exact re-check
+  command: `evidence/h08-chassis/NOT_RUN-note.json`. What IS directly
+  established this session (and stands regardless of the run): (i) the
+  structural no-logic wrapper check PASS with live negative controls —
+  injecting a `reg` or an `always` block makes the checker FAIL (run
+  and recorded in the note); (ii) the local 7t liberty file is
+  sha-identical to H07's (`330aa943...`); (iii) all four RTL files are
+  sha-pinned (core trio via the H07 pins, the wrapper via this PR's
+  catalog pin). From (i)+(ii)+(iii) the zero-addition property follows
+  as a documented inference with its warrants — never reported as a
+  measured gate result. The full gate is re-checkable with one command:
+  `python3 tools/h08_synth.py` (and `--from-logs` once committed logs
+  exist).
 
 ## I2S format: contract vs as-built (the finding record)
 
@@ -311,11 +335,15 @@ repo-level Apache-2.0.
 - `results/h08/summary.json`: verdict per case/injection, the meta
   cross-check fields, qread sequences, and the Icarus record (elaboration
   PASS + shadow `NOT_RUN` with reason).
-- `evidence/h08-chassis/`: `synth_report.json` (full + strip build: mapped
-  flop/cell/area stats vs the committed H07 report, gate verdicts,
-  wrapper structural no-logic check, log + liberty hashes, re-check
-  via `tools/h08_synth.py --from-logs`) and the raw `yosys_full.log` /
-  `yosys_strip.log`. **No PnR, no timing, no fit, no board claim (H10).**
+- `evidence/h08-chassis/`: `NOT_RUN-note.json` (this session: the
+  yosys+abc gate run did not complete under ~100x host oversubscription;
+  the note carries the host diagnostics, the liberty/RTL identity
+  checks, the passing structural check with its negative controls, and
+  the exact re-check command). A completed gate run drops into the same
+  directory as `synth_report.json` + `yosys_full.log` /
+  `yosys_strip.log` and is re-checkable via
+  `tools/h08_synth.py --from-logs`. **No PnR, no timing, no fit, no
+  board claim (H10).**
 - **Freshness re-verification (2026-09-23, this host, identical
   toolchain):** the committed batch was produced on this host by the
   first two H08 sessions (2026-09-23 morning). The full longest matrix

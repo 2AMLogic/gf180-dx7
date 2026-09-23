@@ -33,9 +33,10 @@ runner only reads from it (committed vectors and goldens).
    H07 record, and H08 changes none of the hash-pinned core.
 2. **Model == pinned software reference (within budget).** Not re-proven
    here; same reason. H08 pins to the H07 golden files as the reference
-   record for *behavior*, and — see F-H07-STALE below — reports a
-   staleness finding where the committed golden no longer matches a
-   rerun of the flat bench against the pinned core.
+   record for *behavior*; batch-4 evidence shows the committed goldens
+   byte-match fresh flat-bench reruns of the pinned core on all 11
+   vectors (see the retracted F-H07-STALE note below for the early
+   false-positive that this supersedes).
 3. **Musical usefulness.** No claim. Renders are still dry.
 
 The H08-specific acceptances and their status (final numbers in
@@ -98,21 +99,27 @@ digital front end):
   only, no hierarchical reads expected from the DUT internals for the
   value stream — the `frame_reg_v`/`st_overrun` reads are forensic
   witnesses for the injection suite, not expectations).
-- **F-STA-1 (deviation, as-built, reported not fixed):** the MISO status
-  word is latched at `cs_fall` (end of the *previous* transaction), so
-  the first read after pad reset returns `0x0000_0000`, not the
-  configured word. The bench and runner account for this (first Q is
-  expected-stale); the fix would require a core change and is out of
-  H08 scope.
-- **F-H07-STALE (evidence finding, H07-side):** the committed H07
-  golden `evidence/h07-core/runs/verilog-accept-dev-dir-base/actual.i32`
-  diverges from a fresh `tb_dx7_core` run on the same pinned core
-  `335599ea…` and same committed vector. The flat bench itself is
-  deterministic (two flat runs are byte-identical), and the pin bench
-  byte-matches the flat bench, so the divergence is in the committed
-  golden file, not in the RTL or the H08 harness. This is reported here
-  because A1 compares pin vs a **rerun** of flat (the live flat stream),
-  not pin vs the stale committed file, so A1 is unaffected.
+- **F-STA-1 (deviation, as-built, reported not fixed):** status reads
+  are stable-by-one: a Q transaction returns the word latched at the
+  **previous** transaction's end (the DUT reloads `miso_sh` from
+  `status_real` at transaction end — `dx7_core.v` MISO FSM, the reload
+  arm is its named `cs_fall` condition). Additionally, the FSM's reset
+  arm zeros `miso_sh`, so the first read after **any** (pad) reset is
+  `0x00000000` (a canary, not a status word) and the real post-reset
+  word arrives one read later. Empirically fitted on three full runs
+  (batch 2/3 + standalone ovf) and enforced by the runner's qread index
+  map; the fix would require a core change and is out of H08 scope.
+- **F-H07-STALE (RETRACTED):** early batches (1–2) of this work showed
+  the flat bench's stream diverging from the committed dir-base golden
+  (first diff at byte 10033; one length mismatch). Investigation after
+  the harness stabilized: the committed golden files are unchanged
+  (sha256 `2df385e2…`, committed with H07 PR #73, mtimes intact, git
+  clean), and batch 4 — a single coherent run with the final harness —
+  shows the committed golden byte-matches both the flat bench rerun and
+  the pin bench stream on **all 11 vectors**. The early divergence was
+  an artifact of the in-development harness (stale/mid-write `flat.i32`
+  files from superseded builds), not an H07 discrepancy. No H07
+  escalation is required; the note is retained for audit trail.
 
 ## Injection suite (A2)
 
@@ -126,7 +133,7 @@ a clean DUT must produce byte-identical streams.
 | `trunc47` | 47-bit (undersized) frame: only 47 SCK rising edges, CS releases. The 48th edge is never seen, so the DUT's `bit_cnt` is reset by the next `cs_fall` and `frame_reg_v` never pulses for it. | stream == control == flat; `frame_latches` count unchanged | a DUT that "helpfully" latches a partial frame changes the stream and the latch count |
 | `f0` | Full 48-bit frame with F=0 in a write slot. `wr_wr = frame_reg_v & wr_f` → no-op. | stream == control; FRESH stays 1 | a DUT that commits on any frame drops FRESH and changes state |
 | `freshctl` | FRESH lifecycle: only-no-op frames vs one accepted write. | FRESH stays 1 after F=0-only, drops to 0 after the first accepted write, with OVERRUN/OVERFLOW both 0 | a DUT that clears FRESH for non-accepted frames, or never clears it, fails |
-| `ovf` | `Y 0 330 30 00000001`: 330 rate-violating frames at 98 clk/tx in one frame overfills the depth-168 event queue → OVERFLOW sticks; then `Z 60` pad-reset. | OVERFLOW=1 after the burst (and on re-read), =0 after pad reset with FRESH restored; OVERRUN never sets | a DUT that overflow-clears on re-read, or that sets OVERRUN, fails |
+| `ovf` | `Y 0 330 30 00000001`: 330 rate-violating frames at 98 clk/tx in one frame overfills the depth-168 event queue → OVERFLOW sticks; then `Z 60` pad-reset. | qread map (7 reads): [0] canary 0, [1] post-reset fresh=1, [2] post-burst **OVERFLOW=1**, [3] sticky **OVERFLOW=1**, [4] post-pad-reset **canary 0x00000000** (F-STA-1), [5] **FRESH=1, OVERFLOW=0**, [6] end-of-loop; OVERRUN (forensic) never sets | a DUT that overflow-clears on re-read, that does not re-arm FRESH at pad reset, or that sets OVERRUN, fails |
 | `partial` | Drop the first half of the patch block, keep the commit. | stream == flat (for that vector), and ≠ full-dir-base stream | a DUT that "helpfully" back-fills missing patch words would match the full stream and fail the ≠ check |
 
 ## Status / FRESH protocol (A4)
@@ -137,16 +144,37 @@ the data, not just claimed) and the decoded bit fields. The FRESH boot
 protocol is: after pad reset FRESH=1; the first *accepted* write (F=1,
 any SEC) drops it to 0; it is restored to 1 by the next pad reset. A
 write with F=0 never changes it (that is the `f0`/`freshctl` proof).
+Protocol note (validated in H08 probes): the FRESH flag tracks
+`wr_wr` (latched frame with F=1) only — any accepted F=1 frame
+(patch, commit, or event-slot) unfreshes it, and only a pad reset
+restores it (the `ovf` qread map shows fresh=0 after the accepted
+burst and fresh=1 after `Z`). Event frames (SEC=0 opcodes) are
+actuated on the event path **independently of the F bit**: `E`
+note events voice audio with F=0 (a static patch + commit alone
+voices nothing — an H08 compact probe lands the first voiced sample
+at index 2508 with the dir-base P+C+E block, matching the committed
+stream), and the same event path is the one the `ovf` burst
+overfills.
 
 ## Tooling / environment
 
 - Verilator 5.052 is the sole executing tool. Icarus (iverilog
   13.0 stable and 14.0-devel) **crashes in codegen** on `dx7_core`
-  elaboration (`Code generator failure: -1`) both before and after the
-  H08 change reproduces on the committed H07-benched core — this is a
+  elaboration (`Code generator failure: -1`); it reproduces both
+  before and after the H08 change on the committed H07-benched core —
+  this is a
   pre-existing environment regression, not an H08 defect, and the Icarus
   shadow is reported as `NOT_RUN` (a test that cannot run is never a
   pass).
+- Fast lane (`tools/test_fast.sh`): H08 found the script's
+  `discover | tail` pipeline (POSIX sh, no pipefail) masked unittest
+  failures — the gate exited 0 on a red suite. It now captures
+  discover's rc explicitly and fails with it. On this machine the
+  audition tamper test needs the pinned archive zip in `~/Downloads`,
+  where macOS TCC denies content reads (EPERM even to `shasum`); the
+  test now records that as a reason-carrying SKIP (NOT_RUN) instead of
+  an ERROR — an unreadable pinned asset is never a pass and never an
+  environment-shaped error. Every other fast-lane test is green.
 - Build: `verilator --binary --timing -j 4 --Wno-fatal
   --timescale-override 1ns/1ps --x-initial 0 --x-assign unique`.
 - The bench's plusarg strings are declared 128 bytes wide
@@ -168,9 +196,9 @@ write with F=0 never changes it (that is the `f0`/`freshctl` proof).
   invariant; they are never used to define a pass for the value stream.
 - The flat-to-pin comparison is against a **live rerun** of the flat
   bench, not against a stored file, so a stale golden cannot mask a
-  pin-path bug and vice versa. F-H07-STALE is the direct consequence of
-  that choice and is the reason the committed golden needs a follow-up
-  H07-side rerun, not an H08 fix.
+  pin-path bug and vice versa. Batch-4 additionally confirms the
+  committed H07 goldens are byte-identical to fresh flat reruns on all
+  11 vectors, so the rerun and the committed record agree.
 
 ## Reuse rulings (provenance)
 
@@ -205,5 +233,6 @@ repo-level Apache-2.0.
   core-observable behavior vs the H07 vectors, stop and block. Not
   triggered (the pin path is passive; the core is untouched; A1 is
   byte-exact on every committed vector).
-- **Escalated (not fixed, by scope):** F-H07-STALE → H07 follow-up
-  (rerun + replace the committed golden with a hash-matched pair).
+- **Escalated (not fixed, by scope):** none. (The early
+  F-H07-STALE escalation is retracted — see the findings list; it was
+  an in-development harness artifact, not an H07 defect.)

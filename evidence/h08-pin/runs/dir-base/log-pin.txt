@@ -1,0 +1,6 @@
+FORENSICS frame_latches=49
+DONE samples=72319
+- /Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-30/rtl/tb_synth_top.v:811: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.052 2026-09-05
+- Verilator: $finish at 370ms; walltime 72.756 s; speed 5.089 ms/s
+- Verilator: cpu 70.193 s on 1 threads; allocated 2 MB

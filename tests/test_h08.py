@@ -171,9 +171,11 @@ class TestH08Evidence(unittest.TestCase):
         self.assertGreaterEqual(len(st), 7)
         self.assertEqual(st[2]["ovf"], 1)
         self.assertEqual(st[3]["ovf"], 1)
+        self.assertEqual(mo["qreads"][4], "0x00000000",
+                         "post-pad-reset canary (F-STA-1)")
         for s in st[4:]:
             self.assertEqual(s["ovf"], 0)
-        self.assertEqual(st[4]["fresh"], 1)
+        self.assertEqual(st[5]["fresh"], 1)
         self.assertEqual(mo.get("overrun"), "0")
         # partial: pin==flat for the partial vector, != full stream
         d = os.path.join(RUNS, "inj-partial")
@@ -275,7 +277,7 @@ class TestH08LiveControls(unittest.TestCase):
                                              "vector.txt")).read().splitlines() if l]
         pidx = [i for i, l in enumerate(base) if l.startswith("P ")]
         ti = min(11, len(pidx) - 1)
-        ci = next(i for i, l in enumerate(base) if l.startswith("C "))
+        ci = next(i for i, l in enumerate(base) if l == "C" or l.startswith("C "))
         assert ti < ci
         addr, data = base[ti][2:4], base[ti][5:13]
         head = [l for i, l in enumerate(base)
@@ -299,15 +301,41 @@ class TestH08LiveControls(unittest.TestCase):
                             "control frames never latched (bench broken)")
 
     def test_live_f0_and_freshctl(self):
-        d = os.path.join(RUNS, "inj-f0")
+        # Live F=0 no-op + FRESH lifecycle (compact, self-built).
+        #  f0q: a single full 48-bit F=0 frame (V) at a valid write
+        #       address, no accepted writes. A clean DUT ignores the
+        #       F=0 frame: stream == control (frame absent) and FRESH
+        #       stays 1.
+        #  wrq: the full dir-base patch (all 41 P words) + commit + the
+        #       7 E note events (the actuated event path — a static
+        #       patch+commit alone voices nothing), then 3000 wired
+        #       samples; the first voiced sample lands at index 2508.
+        #       FRESH must clear to 0 and the stream must show audio
+        #       (unlike the silent ctrl/f0q baselines).
+        import tempfile
+        base = [l for l in open(os.path.join(H07, "verilog-accept-dev-dir-base",
+                                             "vector.txt")).read().splitlines() if l]
+        allp = [l for l in base if l.startswith("P ")]
+        alles = [l for l in base if l.startswith("E ")]
+        v_f0 = ["V 10 00000001", "W 512"]
+        v_ctrl = ["W 512"]
+        v_wr = allp + ["C "] + alles + ["W 3000"]
+        tmp = tempfile.mkdtemp(prefix="h08f0")
+        for nm, v in (("f0q", v_f0), ("f0c", v_ctrl), ("wrq", v_wr)):
+            open(os.path.join(tmp, nm + ".txt"), "w").write(
+                "\n".join(v) + "\n")
         out = os.path.join(REPO, "build", "h08", "live")
-        a, m, _ = self.runvec(os.path.join(d, "vec-f0.txt"), out, "f0")
-        self.assertEqual(sha(a), sha(os.path.join(d, "pin.i32")),
-                         "live f0 stream drift")
-        d = os.path.join(RUNS, "inj-freshctl")
-        a, m, _ = self.runvec(os.path.join(d, "vec-wr.txt"), out, "wr")
-        self.assertEqual(bits(meta(os.path.join(out, "wr.meta"))["qreads"][-1])
-                         ["fresh"], 0)
+        a, m, _ = self.runvec(os.path.join(tmp, "f0q.txt"), out, "f0q")
+        ac, mc, _ = self.runvec(os.path.join(tmp, "f0c.txt"), out, "f0c")
+        aw, mw, _ = self.runvec(os.path.join(tmp, "wrq.txt"), out, "wrq")
+        self.assertEqual(cmp16(a, ac), -1,
+                         "F=0 frame was not ignored (stream drift)")
+        self.assertEqual(meta(m)["fresh"], "1",
+                         "FRESH cleared by non-accepted F=0 frame")
+        self.assertEqual(meta(mw)["fresh"], "0",
+                         "FRESH not cleared by accepted write")
+        self.assertNotEqual(open(aw, "rb").read(), open(ac, "rb").read(),
+                            "full patch + commit + events voiced nothing")
 
     def test_live_ovf(self):
         d = os.path.join(RUNS, "inj-ovf")

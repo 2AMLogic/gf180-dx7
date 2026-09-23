@@ -1,0 +1,308 @@
+{
+ "verdicts": [
+  {
+   "name": "case:dir-base",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg4-fb0",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg4-fb3",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg4-fb7",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg6-fb0",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg6-fb3",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:alg6-fb7",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:bd-coarse0",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:bd-coarse31",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:bd-detune0",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "case:bd-detune14",
+   "status": "PASS",
+   "detail": "pin==flat byte-exact (72319 samples); committed golden identical"
+  },
+  {
+   "name": "inj:trunc47",
+   "status": "PASS",
+   "detail": "47-bit frame latches nothing: stream==control==flat, latches 48==48"
+  },
+  {
+   "name": "inj:f0",
+   "status": "PASS",
+   "detail": "F=0 frame is a no-op (stream==control)"
+  },
+  {
+   "name": "inj:freshctl",
+   "status": "PASS",
+   "detail": "FRESH stays 1 (F=0-only), clears on accepted write"
+  },
+  {
+   "name": "inj:ovf",
+   "status": "PASS",
+   "detail": "EVQ overfill sets sticky OVERFLOW (qread2/3=1); pad reset clears (qread4+), FRESH restored; OVERRUN never (forensic 0)"
+  },
+  {
+   "name": "inj:partial",
+   "status": "PASS",
+   "detail": "partial image observable (diff@10048) and pin==flat"
+  }
+ ],
+ "runs": {
+  "dir-base": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg4-fb0": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg4-fb3": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg4-fb7": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg6-fb0": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg6-fb3": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "alg6-fb7": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "bd-coarse0": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "bd-coarse31": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "bd-detune0": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "bd-detune14": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_committed_golden": [
+    "identical",
+    289276
+   ],
+   "pin_samples": "72319",
+   "flat_samples": "72319",
+   "pin_overrun": "0",
+   "pin_overflow": "0",
+   "pin_qread_last": "0xd7100025"
+  },
+  "inj-trunc47": {
+   "pin_vs_ctrl": [
+    "identical",
+    289276
+   ],
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "frc_trunc": 48,
+   "frc_ctrl": 48
+  },
+  "inj-f0": {
+   "pin_vs_ctrl": [
+    "identical",
+    289276
+   ]
+  },
+  "inj-freshctl": {
+   "qreads_f0": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7110000",
+    "0xd7110000",
+    "0xd7110000"
+   ],
+   "qreads_wr": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7100000",
+    "0xd7100000",
+    "0xd7100000"
+   ]
+  },
+  "inj-ovf": {
+   "qreads": [
+    "0x00000000",
+    "0xd7110000",
+    "0xd7160001",
+    "0xd7120001",
+    "0x00000000",
+    "0xd7110000",
+    "0xd7110000"
+   ]
+  },
+  "inj-partial": {
+   "pin_vs_flat": [
+    "identical",
+    289276
+   ],
+   "pin_vs_full": [
+    "diff",
+    10048
+   ]
+  }
+ },
+ "iverilog_shadow": "NOT_RUN",
+ "iverilog_reason": "iverilog 13.0 and 14.0-devel both crash during codegen on dx7_core elaboration ('Code generator failure: -1'); reproduces on the committed H07-benched core, so this is a pre-existing environment regression, not an H08 defect. Verilator 5.052 is the sole executing tool."
+}

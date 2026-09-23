@@ -181,6 +181,14 @@ module tb_synth_top;
         if (!rst_n) begin
             bclk_run = 0;
             lr_run = 0;
+            // re-arm the period monitors across a pad reset: the run
+            // counters zero above, so the prev/count state must too, or
+            // the first post-reset edge delta is computed across the
+            // reset and trips the assert (observed: -33856).
+            bclk_prev = -1;
+            lr_prev = -1;
+            bclk_count = 0;
+            lr_count = 0;
         end else begin
             bclk_run = bclk_run + 1;
             lr_run = lr_run + 1;
@@ -328,18 +336,12 @@ module tb_synth_top;
                 if (cnt % 4 == 2) begin
                     // full-register write (no variable part-select):
                     slotw <= (i2s_d ? (slotw | (64'h1 << (cnt >> 2))) : slotw);
-                    if (samples == 0 && cnt >= 82) begin
-                        $display("DBGALL cnt=%0d slot=%0d d=%b oldslot=%b s22=%b inhigh=%b armed=%b",
-                                 cnt, cnt >> 2, i2s_d, slotw[cnt >> 2], slotw[22], in_high, armed);
-                    end
-                    if (samples == 0 && cnt >= 74 && cnt <= 100) begin
-                        $display("DBGW cnt=%0d d=%b sh23=%b sh1=%b sh0=%b falls=%0d shb=%0b",
-                                 cnt, i2s_d, dut.u_core.i2s_sh[23], dut.u_core.i2s_sh[1],
-                                 dut.u_core.i2s_sh[0], dut.u_core.falls, dut.u_core.i2s_sh);
-                    end
-                    if (cnt == 2 && i2s_d !== msb) begin
-                        $display("FAIL tb_synth_top (I2S MSB unstable across the load window: %b vs %b)",
-                                 msb, i2s_d);
+                    if (cnt == 6 && i2s_d !== slotw[0]) begin
+                        // MSB duplication law at capture level: slot1
+                        // repeats slot0 (the 24-bit MSB); captured 2
+                        // clks apart so both operands are stable.
+                        $display("FAIL tb_synth_top (I2S slot1 != slot0 (MSB duplication): %b vs %b)",
+                                 i2s_d, slotw[0]);
                         $finish;
                     end
                 end

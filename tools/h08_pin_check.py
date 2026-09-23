@@ -134,7 +134,7 @@ def main():
     ap.add_argument("--skip-inj", action="store_true")
     ap.add_argument("--skip-build", action="store_true")
     args = ap.parse_args()
-    cases = args.cases.split(",")
+    cases = [c for c in args.cases.split(",") if c]
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(RES, exist_ok=True)
     if not args.skip_build:
@@ -206,7 +206,7 @@ def main():
         base_vec, _ = h07_vector("dir-base")
         lines = [l for l in open(base_vec).read().splitlines() if l]
         pidx = [i for i, l in enumerate(lines) if l.startswith("P ")]
-        ci = next(i for i, l in enumerate(lines) if l.startswith("C "))
+        ci = next(i for i, l in enumerate(lines) if l == "C" or l.startswith("C "))
         pblk = [i for i in pidx if i < ci]
 
         def pfields(line):
@@ -336,9 +336,15 @@ def main():
         open(os.path.join(r, "log.txt"), "w").write(pout)
         mo = parse_meta(os.path.join(r, "pin.meta"))
         st = [status_bits(q) for q in mo["qreads"]]
-        # qread index map: 0 stale-0, 1 post-reset, 2 post-burst (ovf=1),
-        # 3 sticky re-read (ovf=1), 4 post pad-reset (ovf=0 fresh=1),
-        # 5 re-read, 6 end-of-loop
+        # qread index map (F-STA-1, empirically fitted on 3 runs):
+        #  r[i] = the value latched at the PREVIOUS transaction end
+        #  (miso_sh reloads status at transaction end; the reset arm of
+        #  the DUT's miso_sh FSM re-arms the 0x00000000 canary, so the
+        #  first read after any (pad) reset is 0x00000000 and the real
+        #  post-reset word arrives one read later).
+        #  0 canary 0, 1 post-reset (fresh=1), 2 post-burst (ovf=1),
+        #  3 sticky re-read (ovf=1), 4 post-pad-reset canary 0,
+        #  5 post-reset re-arm (fresh=1, ovf=0), 6 end-of-loop
         bad = []
         if not pok:
             bad.append("rc/FAIL-flag")
@@ -353,12 +359,16 @@ def main():
             if st[3]["ovf"] != 1:
                 bad.append("OVERFLOW not sticky on re-read: %s"
                            % mo["qreads"][3])
-            if any(s["ovf"] != 0 for s in st[4:]):
-                bad.append("OVERFLOW not cleared by pad reset: %s"
-                           % mo["qreads"][4:])
-            if st[4]["fresh"] != 1:
-                bad.append("FRESH not restored by pad reset: %s"
+            if mo["qreads"][4] != "0x00000000":
+                bad.append("post-pad-reset canary not 0x00000000: %s"
                            % mo["qreads"][4])
+            if st[5]["fresh"] != 1 or st[5]["ovf"] != 0:
+                bad.append("FRESH not restored / OVERFLOW not cleared by "
+                           "pad reset: %s" % mo["qreads"][5])
+            for i in (4, 5, 6):
+                if st[i]["ovf"] != 0:
+                    bad.append("OVERFLOW still set post reset (idx %d): %s"
+                               % (i, mo["qreads"][i]))
         verdicts.append(("inj:ovf", "FAIL" if bad else "PASS",
                          "; ".join(bad) if bad else
                          "EVQ overfill sets sticky OVERFLOW (qread2/3=1); "

@@ -1315,7 +1315,7 @@
     {
       "path": "src/gf180_dx7/capabilities.py",
       "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md"
+      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md"
     },
     {
       "path": "tools/compile_capabilities.py",
@@ -1764,12 +1764,12 @@
     },
     {
       "path": "tests/test_h08.py",
-      "sha256": "cea96851a95ecd1822a67e965e6c0c9c98a92d824cba81223f2b9637863fefa8",
+      "sha256": "973ca4006b31264d6ab331a0797816ad9218aadabcba75382c7e79036c571384",
       "reason": "locally authored H08 tests (issue #30): core sha pin (H08 changes no\n    core lines), committed-evidence recomputation, catalog pins, live\n    undersized-frame/F=0/FRESH/OVERFLOW negative controls (wall-heavy\n    pattern per H07); Icarus shadow recorded NOT_RUN with reason"
     },
     {
       "path": "docs/H08-PIN.md",
-      "sha256": "0620f7b9ef79292ead364a947c6d45bef7e7f630f02a0e20a523c6953ad8b01f",
+      "sha256": "e015c1912f80fc4a16ec155f37bccf6abeb9ef7fa70927656bfaefb4d6d3e78d",
       "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings"
     },
     {

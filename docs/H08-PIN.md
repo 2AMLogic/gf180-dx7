@@ -121,6 +121,24 @@ The H08-specific acceptances and their status (final numbers in
   `python3 tools/h08_synth.py` (and `--from-logs` once committed logs
   exist).
 
+  **Gate result (2026-09-23, wave-gate re-check on `repo-remote`):**
+  the re-check command ran on `repo-remote-gf180-dx7`
+  (i-0c0a073ffb9db41d5, m5.2xlarge, 8 vCPU) with **yosys 0.57+72
+  (git sha1 fa02d71f6)** — the same build H07's committed report used,
+  so no cross-version qualification survives — and the pinned 7t
+  liberty (`330aa943...`, byte-identical, recorded in the report), over
+  the RTL synced byte-identical by `git archive` (file sha256 verified
+  on the box). `evidence/h08-chassis/synth_report.json` carries the
+  full+strip Yosys logs with their sha256s. **Full build = PASS:**
+  138,490 mapped flops, 36,803 mapped cells, 1,158,154.592 um² chip
+  area — exactly the committed H07 core full build (0 flops culled, 0
+  cells culled, 0 overhead: the pin map adds nothing, as required). The
+  **strip negative control = MET**: with
+  `-DH07_STRIP_OBSERVABILITY` the mapped flop count falls to 0, proving
+  the measurement has resolution. Wrapper structural check PASS (one
+  core instance, no procedural logic, all nine pads mapped). Chassis
+  overhead vs the H07 core is now **measured at zero, not inferred.**
+
 ## I2S format: contract vs as-built (the finding record)
 
 Measured against the frozen contract (48 kHz audio, 4× oversample, MSB

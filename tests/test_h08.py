@@ -240,6 +240,10 @@ class TestH08LiveControls(unittest.TestCase):
                           "executing-tool gate runs on hosts with Verilator "
                           "(NOT_RUN here, never a red error)")
         if not os.path.exists(BIN):
+            # Verilator does not create nested Mdir paths; a fresh checkout
+            # (CI runner, clean sync) has no build/ at all, so create it or
+            # the build dies with the misleading "Can't write file".
+            os.makedirs(os.path.dirname(BIN), exist_ok=True)
             cmd = ["verilator", "--binary", "--timing", "-j", "4",
                    "--Wno-fatal", "--timescale-override", "1ns/1ps",
                    "--x-initial", "0", "--x-assign", "unique",
@@ -251,8 +255,9 @@ class TestH08LiveControls(unittest.TestCase):
             r = subprocess.run(cmd, cwd=REPO, capture_output=True,
                                text=True)
             if r.returncode != 0 or not os.path.exists(BIN):
+                # Verilator reports to stderr; surface the real cause.
                 self.skipTest("verilator bench build failed: "
-                              + r.stdout[-500:])
+                              + ((r.stderr or r.stdout)[-500:]))
 
     def runvec(self, vecfile, outdir, tag):
         # keep every plusarg short and relative (absolute long paths get

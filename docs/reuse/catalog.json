@@ -1,1755 +1,1781 @@
 {
-  "schema_version": 1,
-  "date": "2026-09-19",
-  "issue": 39,
-  "decision_record": "docs/decision-records/0002-reuse-governance.md",
-  "rulings_enum": [
-    "adopt",
-    "adapt",
-    "reject",
-    "reference-only",
-    "external-oracle-only"
-  ],
-  "hash_method": "sha256 of `git -C <sibling-checkout> show <upstream.commit>:<path>` -- bytes at the pinned commit, not a moving branch. Verify with tools/check_reuse.py --verify-upstream when sibling checkouts are available.",
-  "maintainer": "loom-builder + owner review",
-  "components": [
-    {
-      "component": "reuse-governance-audit",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "docs/REUSE-AUDIT.md",
-          "docs/reuse-audit-sources.json",
-          "spec/decision-records/0005-pinned-substrate-reuse.md"
-        ]
-      },
-      "sha256": {
-        "docs/REUSE-AUDIT.md": "1637b47627995c712cfd7335f6dd6803a8ede28a023a254f624f255fe76cb5c0",
-        "docs/reuse-audit-sources.json": "8f9490827483be99247679bb6d699be9df06bd7f2661ad539a4efe21988963fb",
-        "spec/decision-records/0005-pinned-substrate-reuse.md": "d7b02feeeecf722aa824f87c721326ed3b1a7feaaf2676287e414ea9424e0c19"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "python3 -m unittest discover -s tests -v (this repo) and bash tools/check_all.sh",
-        "result": "PASS"
-      },
-      "negative_control": "tools/check_reuse.py must fail on an unrecorded governed source file and on hash drift (tests/test_check_reuse.py)",
-      "notes": "70-file sibling source catalog + governance DR. The audit's negative findings are inherited as adoption gates (see docs/REUSE-RULINGS.md).",
-      "adaptations": [
-        "method re-expressed locally as DR-0002, docs/reuse/, tools/check_reuse.py; no upstream bytes imported"
-      ]
-    },
-    {
-      "component": "trace-capture",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "src/torchsynth_voice/trace_capture.py",
-          "tools/qualify_trace_capture.py",
-          "tests/test_trace_capture.py"
-        ]
-      },
-      "sha256": {
-        "src/torchsynth_voice/trace_capture.py": "276c462ea09e46c61d14eb407a0c1629779a36ba8eee96133abc4e97427a5b54",
-        "tools/qualify_trace_capture.py": "c75f6027c7bc0f8de5c3ae9aa5383d301ce690de3096094489f6dd7a6edec6f0",
-        "tests/test_trace_capture.py": "16daa79fde4aebe016cf2b1b92d5d1d1ca47ae3a6eb2c8d9a02e509cc9fec8d1"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "an observer that mutates render state must fail the non-perturbation comparison",
-      "notes": "Re-ruled adopt -> reference-only in R05 (issue #12): the planned byte-exact import destinations were superseded by the R05 issue brief (external-oracle seam). tools/capture_trace.py and tests/test_trace_capture.py are locally authored against the sibling's PATTERN (non-perturbing observers, versioned tap registry, non-perturbation negative control) with no upstream bytes; the capture tool is byte-pinned in local_originals. The sibling negative control is kept live: a stub oracle that writes traces AND perturbs PCM is rejected by the byte-identity gate with no artifacts written. Upstream hashes retain the original adopt-entry provenance."
-    },
-    {
-      "component": "paired-comparator",
-      "ruling": "adopt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "src/torchsynth_voice/paired_metrics.py",
-          "tests/test_paired_metrics.py"
-        ]
-      },
-      "sha256": {
-        "src/torchsynth_voice/paired_metrics.py": "82aa74dfedeb36524b19d76d0162094b9a5134e1b02a938e048042486cdfa72e",
-        "tests/test_paired_metrics.py": "f315af4ea070fdfc627eb340442427cc6b668167f1bed2c4fbb61f6582281ec2"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "src/gf180_dx7/paired_metrics.py",
-        "tests/test_paired_metrics.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "upstream unittest subset green on adopted copy; alignment-free comparison demonstrated on two renders of the same input",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a comparator that normalizes or time-warps independently per render must fail the invariance controls",
-      "notes": "no-alignment paired sample/metric comparison; matches the plan's dry-render comparison rule."
-    },
-    {
-      "component": "case-registry",
-      "ruling": "adopt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "src/torchsynth_voice/case_registry.py",
-          "tests/test_case_registry.py"
-        ]
-      },
-      "sha256": {
-        "src/torchsynth_voice/case_registry.py": "a4e54a7587c14500b80ee18379519c6382ccdcb1a7b70b72a80e91a41e0b2077",
-        "tests/test_case_registry.py": "349b3e8b160ce062043e1f231003b753ece2b4aa4c3d7fa24d297b82e743e50f"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "src/gf180_dx7/case_registry.py",
-        "tests/test_case_registry.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "upstream unittest subset green on adopted copy",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a registry that accepts a case with missing required fields must fail validation tests",
-      "notes": "registry/scorecard pattern: statuses PASS/FAIL/NOT_RUN/BLOCKED/NO_VERDICT/STALE with coverage kept separate from agreement. The sibling scorecard implementation itself is REJECTED (see 'scorecard' entry)."
-    },
-    {
-      "component": "fixedpoint-library",
-      "ruling": "adopt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "6532ec08eee7c79fd642f95d77bc086507a05f79",
-        "path": [
-          "src/torchsynth_voice/fixedpoint/__init__.py",
-          "src/torchsynth_voice/fixedpoint/README.md",
-          "src/torchsynth_voice/fixedpoint/choices.py",
-          "src/torchsynth_voice/fixedpoint/counters.py",
-          "src/torchsynth_voice/fixedpoint/formats.py",
-          "src/torchsynth_voice/fixedpoint/lut.py",
-          "src/torchsynth_voice/fixedpoint/ops.py",
-          "src/torchsynth_voice/fixedpoint/phase.py",
-          "src/torchsynth_voice/fixedpoint/rounding.py",
-          "tests/test_fixedpoint_choices.py",
-          "tests/test_fixedpoint_formats.py",
-          "tests/test_fixedpoint_lut.py",
-          "tests/test_fixedpoint_ops.py",
-          "tests/test_fixedpoint_phase.py",
-          "tests/test_fixedpoint_rounding.py"
-        ]
-      },
-      "sha256": {
-        "src/torchsynth_voice/fixedpoint/__init__.py": "202ae0d731082997760bb9ca041fb9ff74336f45c67b17a9c8cd5719ed3130ce",
-        "src/torchsynth_voice/fixedpoint/README.md": "c8990c7724a524e84905bdfdbccb484785909bf462dbe49b35c92db85633a0ed",
-        "src/torchsynth_voice/fixedpoint/choices.py": "de21c671ba5ee8e2f5a28bc218206545c9240581ac24a537e42841c547fe4d7a",
-        "src/torchsynth_voice/fixedpoint/counters.py": "fc49d51b2b9370762fec37c7a4028cd49442452dadc994c279ccc5b23f8ca336",
-        "src/torchsynth_voice/fixedpoint/formats.py": "762e6b604ad4c21e4816b34944e9b5c8537a9f34da9eb89f1e84b4322faf5a95",
-        "src/torchsynth_voice/fixedpoint/lut.py": "3df18aeba95b74de3398e00fcd5d1ccc8692170f226f74e953f0b67de5b5367a",
-        "src/torchsynth_voice/fixedpoint/ops.py": "8c400e8db0caeb961b1615ac2b3fa55a9f0caa995e06215d8a43ba63c76a6e3e",
-        "src/torchsynth_voice/fixedpoint/phase.py": "11ee656139f846a38a752a94955d585826a60b52e44894d2ea52526c58fad959",
-        "src/torchsynth_voice/fixedpoint/rounding.py": "2bdc1747e09b160003361b8dd95f9caa787ebaf83d744201b1b0bf45256e6e59",
-        "tests/test_fixedpoint_choices.py": "f7abd4a22c9c19f7d31b74406c0d4d6dbd3f6527a55a0ca9c865e7b530255b97",
-        "tests/test_fixedpoint_formats.py": "b90dc62d50e21bb768a2d7b89433da3e7d2baeb05ea2e8f22c81502a8f77fb03",
-        "tests/test_fixedpoint_lut.py": "d164080ebae059fcab8de4d31a65867d48ea9ab77f2644ce28aab91b26fad0b8",
-        "tests/test_fixedpoint_ops.py": "a2c26cf8a159e436547627b3973e5c8b0dad23ef9446f1cfdf7d95d8296f496a",
-        "tests/test_fixedpoint_phase.py": "ca8e135cf283abf627622216815f3b7a18e6bd6f193b71e9b103c8c5ccc146e1",
-        "tests/test_fixedpoint_rounding.py": "b43a62525b2312d3cc74f5fb4ffc8e74b1a5db237f3a4aaadf0bfd0aafc8b573"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "src/gf180_dx7/fixedpoint/",
-        "tests/test_fixedpoint_choices.py",
-        "tests/test_fixedpoint_formats.py",
-        "tests/test_fixedpoint_lut.py",
-        "tests/test_fixedpoint_ops.py",
-        "tests/test_fixedpoint_phase.py",
-        "tests/test_fixedpoint_rounding.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "upstream fixedpoint unittest subset green on adopted copy; ops match the frozen integer model's arithmetic choices where shared",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "an op that silently widens/saturates differently than declared must fail the format/rounding tests",
-      "notes": "generic fixed-point primitives (formats, rounding, LUT, phase, counters). Pinned at torchsynth HEAD 6532ec0 because fixedpoint/ does not exist at audit-era commit 36bdc67; re-pin consciously when importing."
-    },
-    {
-      "component": "reference-manifest-pattern",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "spec/reference/upstream.json"
-        ]
-      },
-      "sha256": {
-        "spec/reference/upstream.json": "565236e22ad8b1dcd620783024a114b0960e5534b1cb26e8dcf8dafc9c96c0af"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "spec/reference/upstream.json"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "R01 lands a Dexed-pin manifest (commit, engine mode, sample rate, runtime) validated by a checker",
-        "result": "NOT_RUN (R01 pending)"
-      },
-      "negative_control": "a manifest missing the pinned commit or sample rate must be rejected by its checker",
-      "notes": "manifest shape only; R01 owns the content. Do not silently follow upstream Dexed.",
-      "adaptations": [
-        "schema retargeted from TorchSynth pin to the pinned Dexed Mark I reference (repo, commit, engine mode, sample rate, runtime)"
-      ]
-    },
-    {
-      "component": "protocol-specs",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "spec/protocol/README.md",
-          "spec/protocol/FRAMING.md",
-          "spec/protocol/TRANSPORTS.md",
-          "spec/protocol/PATCH-LOAD.md",
-          "spec/protocol/SESSION.md",
-          "spec/protocol/MOCK-HARNESS.md"
-        ]
-      },
-      "sha256": {
-        "spec/protocol/README.md": "ca6c0c6077f761e79cb41de92f883d1161262ffa319283993019116123bd5ef8",
-        "spec/protocol/FRAMING.md": "36c70ded91279bdb6bcd2c4787d62fc3b638aee2a85cdd37a461f799198f7187",
-        "spec/protocol/TRANSPORTS.md": "01d92cf7ce5416e8c60e89a409ef02db56c3782e98025b9bca2190b9873f1620",
-        "spec/protocol/PATCH-LOAD.md": "72dafdc83a264c306372ff389249cb765dce5a02f3e40796742f669699c14ced",
-        "spec/protocol/SESSION.md": "86583bf70e5887c4c93ae7be5412883065b66d889b09e61c56320abec048a39e",
-        "spec/protocol/MOCK-HARNESS.md": "20930575b6a4929eea29df36ba8d2aae7a8de0adabb2d0106017e5fb54dc7dfc"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "spec/protocol/"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "mock-harness conformance run passes for the DX7-adapted framing",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a transport that drops or duplicates a patch-load write must fail the harness replay",
-      "notes": "protocol spec family (framing, transports, patch-load, session, mock harness) used with trace capture.",
-      "adaptations": [
-        "retarget framing/session docs from the TorchSynth patch model to DX7 32-voice patches and performance controls at 48 kHz; sibling targets differ"
-      ]
-    },
-    {
-      "component": "capability-dag-compiler",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "2AMLogic/gf180-torchsynth",
-        "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
-        "path": [
-          "tools/compile_capabilities.py",
-          "tests/test_capabilities.py",
-          "tests/test_capability_views.py",
-          "spec/schemas/capability-evidence-v1.schema.json"
-        ]
-      },
-      "sha256": {
-        "tools/compile_capabilities.py": "1ca49fa72a6c05ce698c6c7baf95f1e85ab336d0329c9a6627d405abf1b4ff79",
-        "tests/test_capabilities.py": "79aa2fe99541c9dc0f1ce06a3054d5a0afec8b5413adae0b75b273facc60dc46",
-        "tests/test_capability_views.py": "09d55d82010f71cc89b2b4256cff293e9fa5369b34838a6909bf9357dbce6e81",
-        "spec/schemas/capability-evidence-v1.schema.json": "ef565be9ee1efc84ec4afe2fb7e10868bf55dfa06d538927d2b8f2d0f6a29197"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
-      "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
-    },
-    {
-      "component": "spi-reg-control",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/spi_ctl.v",
-          "rtl-sketch/verify_ctl.py",
-          "rtl-sketch/stubs/spi_ctl_dr7rev1.v",
-          "spec/decision-records/0007-control-interface-spi-register-writes.md"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/spi_ctl.v": "8892b72cde65c2ac52cd577fdefb0cf9d9e50c3b2fef5676745a07750eafe815",
-        "rtl-sketch/verify_ctl.py": "d839126a8b993d11952e70a33f96e9cab8ab0ddbad9a215f5d63900d331f1b7b",
-        "rtl-sketch/stubs/spi_ctl_dr7rev1.v": "5f2ea74ea2ba5eba8ab6f90b090471cf8d0003f191eaf306cd4f8ab834fb856d",
-        "spec/decision-records/0007-control-interface-spi-register-writes.md": "3984b437ee20ddb526ef4ca1be6588472502cacf26e80f30ff03b53fc58d2fe3"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/spi_ctl.v",
-        "tb/verify_ctl.py",
-        "rtl/stubs/spi_ctl_dr7rev1.v",
-        "docs/decision-records/0003-control-interface.md"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "verify_ctl.py-equivalent end-to-end pin bench: model register image in, intended writes out, plus latency/overflow cases at our clocks",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "the retained prior-revision receiver (spi_ctl_dr7rev1.v pattern) must fail the end-to-end bench",
-      "notes": "Sibling DR-0007 documents the transport; its register semantics are sibling-specific and are NOT imported.",
-      "adaptations": [
-        "keep mode-0 48-bit CS-framed transport, four-deep write queue, status word, per-frame drain",
-        "replace sibling voice/drum register pages entirely with a DX7 patch/performance protocol (new control-interface DR)",
-        "recompute CDC and queue-overflow bounds for our clock plan"
-      ]
-    },
-    {
-      "component": "i2s-transmitter",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/i2s_tx.v"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/i2s_tx.v": "2cdb2112a11e1cff855ae1d2dc99e06032b3ef4efab8fdff29ca061802326202"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/i2s_tx.v"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "DAC-model pin decode bench (tb_top_bx/verify_synth_top pattern) at 48 kHz with our width; one-frame latency measured",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a one-BCLK-early/late MSB (the defect class polysynth PR #4 fixed) must be detected by the decode bench",
-      "notes": "16-bit, same word in both channels, MSB on second BCLK after LRCLK edge.",
-      "adaptations": [
-        "decide width and sample strobe locally; sibling derives LRCLK from its 256-cycle frame counter -- keep only if our frame plan matches",
-        "sibling carries 'two recorded defects kept out' markers; re-derive from the pinned bytes, not from prose"
-      ]
-    },
-    {
-      "component": "synth-top-chassis",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/synth_top.v",
-          "rtl-sketch/tb_top_bx.v",
-          "rtl-sketch/verify_synth_top.py"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/synth_top.v": "e476bfdfe93d3dbf5ab99ebad72958e8e4476681e9fcdc3d7d1c4d9a9061f9d7",
-        "rtl-sketch/tb_top_bx.v": "962614ffea25b4fa1057b7f124060852b74b60eca35b88d1ff9eac03e9c49de8",
-        "rtl-sketch/verify_synth_top.py": "461d98e99d23bbf2443e9175a9ff72595a901b856dfa07be78061ed302db82b4"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/synth_top.v",
-        "tb/tb_top_bx.v",
-        "tb/verify_synth_top.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "blackbox pin-level co-sim: RTL vs model at 48 kHz, every decoded I2S word checked; cycle budget per frame asserted",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a datapath that misses its frame deadline must fail the cycle-budget assertion",
-      "notes": "The chassis/wiring pattern is reusable; its DSP contents are rejected (see sibling DSP entries).",
-      "adaptations": [
-        "keep single-clock 256-cycle frame chassis: tick/go, overrun status, I2S strobe timing",
-        "replace the sibling DSP instances (voice/drum/modal) with the FM operator array; no DSP semantics inherited"
-      ]
-    },
-    {
-      "component": "negative-control-stub-pattern",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/stubs/voice_dp_stub.v",
-          "rtl-sketch/stubs/ladder_dp_stub.v"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/stubs/voice_dp_stub.v": "64e825db79a4ab885b79bda59cc60930d92c3a913bb1da56cddbf24fd0f38199",
-        "rtl-sketch/stubs/ladder_dp_stub.v": "e47bd45ef1998be49f0002afc567ad7077ee83a8e8773663e6605df73190c084"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/stubs/"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "each retained stub demonstrably fails the bench its real component passes",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "the control IS the negative: a stub passing a bench means the bench is broken",
-      "notes": "Borrowed from the sibling's spi_ctl_dr7rev1 standing negative control (kept with spi-reg-control).",
-      "adaptations": [
-        "pattern only: keep a deliberately-broken prior revision of each component as a standing bench control",
-        "the DSP cores these stubs stand in for are REJECTED; stubs are never functional imports"
-      ]
-    },
-    {
-      "component": "ladder-filter-core",
-      "ruling": "reject",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/ladder_dp_n.v"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/ladder_dp_n.v": "7a42aeec2663adfe4c741a915b492c7915c73a5c491caf8360f6d5994ad28d5b"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": null,
-      "notes": "REJECTED: sibling DSP (transistor-ladder filter core). DX7 FM needs no ladder; module names are not semantic proof and no sibling implements FM/DX envelopes. The N-channel shared-datapath METHOD (one datapath proven bit-exact at NCH=1/2/4/8, bench tb_ladder_n.v under iverilog) may be re-expressed locally for the FM operator array; that is method, not an import."
-    },
-    {
-      "component": "scorecard",
-      "ruling": "reject",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "tools/scorecard.py",
-          "tools/scorecard_delta.py",
-          "spec/decision-records/0015-the-scorecard-is-the-judge.md"
-        ]
-      },
-      "sha256": {
-        "tools/scorecard.py": "8cbdb7a3e97fde860890c730490aed3e20c1f3da56a278835f383fcd6159e544",
-        "tools/scorecard_delta.py": "84544222937ac5006dc51b903a829cbc86bceb66716be0441f4e9db80d05d942",
-        "spec/decision-records/0015-the-scorecard-is-the-judge.md": "57f6214e2ed42aa5640966c06e79f39f866fa557822652c23231f9c781399bf8"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": null,
-      "notes": "REJECTED (inherited negative finding, torchsynth audit P21/P22 probe): a required NaN after a finite metric still yields 'pass'; schema checks are shallow; worst tolerance-normalized distance mixes properties. Re-derive the judge locally: finiteness gates, per-property units/tolerances, PASS/FAIL/NOT_RUN/BLOCKED/NO_VERDICT/STALE, coverage separate from agreement. A proposed fixed import would need its own reviewed provenance + controls."
-    },
-    {
-      "component": "orfs-run-flow",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "pnr/orfs/run-orfs.sh"
-        ]
-      },
-      "sha256": {
-        "pnr/orfs/run-orfs.sh": "a827c1c3e875815a3679d138d7ad4647ba3af0c23ce7818911c84f4c2894be10"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "asic/orfs/run-orfs.sh"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "flow rerun end-to-end on our design; committed evidence per stage before any synthesis/PnR claim",
-        "result": "NOT_RUN (no ASIC work started)"
-      },
-      "negative_control": "a flow run with a stale/missing stage report must fail the evidence checklist",
-      "notes": "Working ORFS driver for gf180mcu. Import trigger: D02/ASIC work. Committed sibling reports are design-specific history (see orfs-evidence-records).",
-      "adaptations": [
-        "retarget top/constraints to our design; never inherit the sibling's floorplan/clock assumptions"
-      ]
-    },
-    {
-      "component": "orfs-gf180-7t-techmaps",
-      "ruling": "reject",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "pnr/orfs/gf180_7t/cells_adders.v",
-          "pnr/orfs/gf180_7t/cells_latch.v",
-          "pnr/orfs/gf180_7t/synth_unsigned.tcl"
-        ]
-      },
-      "sha256": {
-        "pnr/orfs/gf180_7t/cells_adders.v": "686fc8100a3d5e69f07e573422611eee9ff509e3a44848bc6f8936f7bc203d98",
-        "pnr/orfs/gf180_7t/cells_latch.v": "bd21a88f1ce3ad8087cba16dab01f8cb5b34ce5c8f0dae8b7a7b7fb8daec68d5",
-        "pnr/orfs/gf180_7t/synth_unsigned.tcl": "e0c4e78ceee4ee7387a8609efbb46fc72b8f99c2d5c6ef556bb79a5f2549034f"
-      },
-      "license": "Apache-2.0 (repository declaration); techmaps derived from OpenROAD-flow-scripts",
-      "license_basis": "ORFS-derived files; original license/notice attribution unresolved per the torchsynth audit (P38/P39) and cells not re-verified against the gf180mcu PDK",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": null,
-      "notes": "REJECTED per A01 acceptance ('ORFS techmaps unless re-verified'): attribution gate unresolved; cell contents unverified. May be re-ruled adopt/adapt only after tracing original ORFS provenance and cell-by-cell re-verification against the PDK -- a new decision record."
-    },
-    {
-      "component": "orfs-evidence-records",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "pnr/orfs/evidence/synth_top/README.md"
-        ]
-      },
-      "sha256": {
-        "pnr/orfs/evidence/synth_top/README.md": "c366be0203e29893db01e2dec82f4ad201dab21b439bb9e8e62092715c488919"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": null,
-      "notes": "Historical routed-design evidence for the sibling's synth_top (joined-d1e5068). Useful as an evidence-contents checklist; establishes nothing about this repository and is not signoff evidence."
-    },
-    {
-      "component": "ulx3s-top-wrapper",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/rtl/ulx3s_top.v"
-        ]
-      },
-      "sha256": {
-        "fpga/rtl/ulx3s_top.v": "49a04c29781b0dddca435a98f446d948bfa70e62ad895b5fc2119f460c9e276e"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "fpga/rtl/ulx3s_top.v"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "synthesized for the chosen board; pin-level audio capture alignment/calibration procedure executed on hardware",
-        "result": "NOT_RUN (no board decision yet)"
-      },
-      "negative_control": "a wrapper build with no electrical/audio check must not count as playback evidence",
-      "notes": "Structure/wiring precedent only. Board selection precedes any import.",
-      "adaptations": [
-        "as-is board-wrapper import is FORBIDDEN (A01 acceptance): remove sibling DSP instances, re-derive reset/lock release and clocking for our plan, re-attribute every pin"
-      ]
-    },
-    {
-      "component": "ulx3s-board-constraints",
-      "ruling": "reject",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/boards/ulx3s.lpf"
-        ]
-      },
-      "sha256": {
-        "fpga/boards/ulx3s.lpf": "192d9a78908f27d44498e15f52b48dad689594efe26273899dd85f1219b70801"
-      },
-      "license": "Apache-2.0 (repository declaration); vendor-derived pin attribution unresolved",
-      "license_basis": "Pin attribution is vendor-derived and unresolved (torchsynth audit P11); constraints are board- and design-specific",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none required (no bytes imported)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": null,
-      "notes": "REJECTED as-is (A01 acceptance: board wrappers/constraints). Recreate against the chosen board with traced pin provenance."
-    },
-    {
-      "component": "fpga-srccheck-makefile",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/Makefile"
-        ]
-      },
-      "sha256": {
-        "fpga/Makefile": "c85bbc82301b75d614ff9300cabd252175d6f6761779b4474a7bc80c799d6f16"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "fpga/Makefile"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "make srccheck lints all RTL with iverilog -g2012 and fails on compile errors",
-        "result": "NOT_RUN (no RTL yet)"
-      },
-      "negative_control": "a deliberately broken RTL file must fail srccheck",
-      "notes": "Cheap static check that keeps RTL compiling without a simulator suite.",
-      "adaptations": [
-        "retarget file lists; keep the lint-first srccheck target pattern"
-      ]
-    },
-    {
-      "component": "spi-host-driver",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/spi_host.py"
-        ]
-      },
-      "sha256": {
-        "fpga/spi_host.py": "d643684b0dc9bd6a4993d2c84fefab63d88fb876fdfe3544babb2905b46856bb"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "tools/spi_host.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "host-driver unit tests: transaction framing, schedule/frame placement, error cases",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a driver that bursts writes with no frame scheduling must fail the schedule tests",
-      "notes": "Host-side production control path producing 48-bit mode-0 transactions.",
-      "adaptations": [
-        "retarget register transactions to the DX7 control-interface protocol (follows spi-reg-control adaptation)",
-        "sibling docstring itself warns against un-scheduled bursts; keep the frame-schedule discipline"
-      ]
-    },
-    {
-      "component": "link-budget",
-      "ruling": "adopt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/link_budget.py"
-        ]
-      },
-      "sha256": {
-        "fpga/link_budget.py": "f7dd14ae4752beb95816d48ce3a4c0c604266ec560e1bc8fef6efad4c387420a"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "tools/link_budget.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "arithmetic known-answer cases recomputed independently (exact rationals)",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a budget table that silently drops a term must fail the known-answer check",
-      "notes": "Board-link arithmetic helper."
-    },
-    {
-      "component": "pll-search",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "fpga/scripts/pll_search.py"
-        ]
-      },
-      "sha256": {
-        "fpga/scripts/pll_search.py": "e3ed187e7e4a4cd181d59254aca0d8436bf61830e8befd88cdf4333b94917920"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "fpga/scripts/pll_search.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "divider arithmetic checked with exact rationals; ranked results match independent recomputation for our 25 MHz -> 48 kHz family",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "an out-of-bounds divider candidate must be rejected by the bound checks",
-      "notes": "stdlib ECP5 divider enumeration.",
-      "adaptations": [
-        "retarget bounds and target frequency to our clock plan",
-        "remove the sibling's unconditional 'crystal dominates' claim: the torchsynth audit measured its 44.1 kHz candidate at +64 ppm; no tolerance is accepted here"
-      ]
-    },
-    {
-      "component": "area-scraper",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-parasynth",
-        "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
-        "path": [
-          "rtl-sketch/area/synth_area.py"
-        ]
-      },
-      "sha256": {
-        "rtl-sketch/area/synth_area.py": "cf38302a08237957c4873a4e71fa5f3de56c34c84441f54632a4fd33ea8a3e4e"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "tools/area/synth_area.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "parser known-answer test on a checked-in sample Yosys report",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a malformed report must fail parsing loudly, not produce zeros",
-      "notes": "Yosys area-report parser behind the sibling's measured gf180mcu area calibrations.",
-      "adaptations": [
-        "retarget report paths/metadata to our design"
-      ]
-    },
-    {
-      "component": "shared-substrate-dr",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-polysynth",
-        "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
-        "path": [
-          "spec/decision-records/0003-sibling-instrument-repositories.md"
-        ]
-      },
-      "sha256": {
-        "spec/decision-records/0003-sibling-instrument-repositories.md": "9a9edfdee46b59b886ee3482bde50ea99bc40dfcd69fa1a877d1ee8f7f473b8a"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "docs/decision-records/0002-reuse-governance.md"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "governance gates enforced by tools/check_reuse.py and review checklist",
-        "result": "PASS"
-      },
-      "negative_control": "tools/check_reuse.py failing on unrecorded or drifted governed files is the enforcement control",
-      "notes": "Upstream DR-0003 remains 'proposed' and un-ratified in the archived polysynth repo; we adopt its evidenced rules, not its status.",
-      "adaptations": [
-        "merged with torchsynth DR-0005 into DR-0002: one master per shared component, no submodules (org count: zero across ~50 repos), provenance-before-import, and the sibling's own I2S-copy defect (polysynth PR #4) as the cautionary case"
-      ],
-      "adapted_sha256": {
-        "docs/decision-records/0002-reuse-governance.md": "948c6899f14c9962a44675dd0f9a582afe9060235f2d9974cd6c482b55fd2632"
-      }
-    },
-    {
-      "component": "uart-receiver",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-polysynth",
-        "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
-        "path": [
-          "rtl/uart_rx.v"
-        ]
-      },
-      "sha256": {
-        "rtl/uart_rx.v": "c525d1924a1c29f32c81e2724e1cdda653f17fbccf0dba472c79104ec599d743"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/uart_rx.v"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "baud-error, sustained-traffic, bad-stop-bit and reset tests independent of any voice parser",
-        "result": "NOT_RUN (transport undecided)"
-      },
-      "negative_control": "a bad stop byte must produce a framing error, not a silent byte drop-and-accept",
-      "notes": "Candidate only if UART is selected as the external-host transport; SPI is the stronger prior (spi-reg-control).",
-      "adaptations": [
-        "byte receiver only; re-derive CLKS_PER_BIT for our clock; never import the sibling's voice command parser/note-event semantics"
-      ]
-    },
-    {
-      "component": "rom-table-generator",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-polysynth",
-        "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
-        "path": [
-          "rtl/gen_tables.py"
-        ]
-      },
-      "sha256": {
-        "rtl/gen_tables.py": "f5ad44e2cce90af62079335de32bb405bfcae984686ed7ced6de7fcb41e0ac05"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "rtl/gen_tables.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "generated table hash matches the frozen model's table bytes; repeat generation is byte-identical",
-        "result": "NOT_RUN (import pending)"
-      },
-      "negative_control": "a generator edit that changes table bytes without regenerating must fail the hash equality check",
-      "notes": "The RTL's tables become the same bytes the reference model uses.",
-      "adaptations": [
-        "generate-from-frozen-contract pattern with a content hash over the source table; retarget tables to FM sine LUT and DX envelope data from OUR frozen integer model"
-      ]
-    },
-    {
-      "component": "numeric-contract",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-polysynth",
-        "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
-        "path": [
-          "spec/NUMERIC-CONTRACT.md"
-        ]
-      },
-      "sha256": {
-        "spec/NUMERIC-CONTRACT.md": "879fe49da6c2ebe87a440f1d52c3dccb51e037ff1eb99c3634183da0692cc9e4"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "spec/NUMERIC-CONTRACT.md"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "contract review: every frozen table/literal carries a source and hash; model-vs-contract checker green",
-        "result": "NOT_RUN (contract work pending)"
-      },
-      "negative_control": "a literal present in RTL but absent from the frozen contract must fail the cross-check",
-      "notes": "Sibling contract covers a subtractive-ish polysynth; nothing numeric transfers.",
-      "adaptations": [
-        "pattern only: frozen literals + tables + generation provenance; content is DX7 FM semantics from our own model"
-      ]
-    },
-    {
-      "component": "pdk-free-runner",
-      "ruling": "adapt",
-      "upstream": {
-        "repo": "2AMLogic/gf180-polysynth",
-        "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
-        "path": [
-          "tb/run_tb.py"
-        ]
-      },
-      "sha256": {
-        "tb/run_tb.py": "f0ac9323555b56389f9ac3a86eea1551395dc3431ffa73a1981d4c12c2124758"
-      },
-      "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
-      "license_basis": "Apache-2.0",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [
-        "tb/run_tb.py"
-      ],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "runner exit convention proven: 0 pass / 1 failed tests / 2 did-not-run on fixtures",
-        "result": "NOT_RUN (no RTL yet)"
-      },
-      "negative_control": "build failure and empty-results-XML fixtures must yield 2, never 0",
-      "notes": "cocotb-based PDK-free RTL runner with the 0/1/2 exit convention (matches A01 acceptance).",
-      "adaptations": [
-        "replace sibling RTL/top/model inputs entirely; keep simulator/seed/defines selection and results-XML parsing"
-      ]
-    },
-    {
-      "component": "gf180-sram-macro",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "2AMLogic/gf180-sram",
-        "commit": null,
-        "path": []
-      },
-      "sha256": {},
-      "license": "unknown (not established)",
-      "license_basis": "GitHub-only (no local checkout at audit time); no Liberty/temperature/voltage views established; nothing pinned, no hashes recorded",
-      "license_anchor": null,
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "none (nothing importable without characterized views)",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "any attempt to instantiate the macro without characterized views must be blocked in review",
-      "notes": "Reference for future SRAM needs (voice memory). Reject for any use until Liberty views and license basis are established; then a new decision record."
-    },
-    {
-      "component": "klayout-tools-klt",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "2AMLogic/klayout-tools",
-        "commit": "d5893304afc2bfa6228609740e83292c44b854f3",
-        "path": []
-      },
-      "sha256": {},
-      "license": "MIT",
-      "license_basis": "MIT, LICENSE anchor; hash matches K08 in the torchsynth audit",
-      "license_anchor": {
-        "path": "LICENSE",
-        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
-      },
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "when ASIC work starts: pinned package dependency with recorded distribution digest + dependency lock; stage-specific evidence",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "ASIC claims without committed stage evidence from a pinned klt environment are invalid by policy",
-      "notes": "Existing org-shared ASIC interface (klt). Per torchsynth DR-0005: use as a pinned package, never fork internals; commit d5893304 is a local-observation note, re-pin at adoption time."
-    },
-    {
-      "component": "dexed-msfa-tables",
-      "ruling": "reference-only",
-      "upstream": {
-        "repo": "asb2m10/dexed",
-        "commit": null,
-        "path": []
-      },
-      "sha256": {},
-      "license": "Apache-2.0",
-      "license_basis": "org policy: Dexed msfa/ material is Apache-2.0 and adoptable with a full provenance record; confirm file headers at pin time",
-      "license_anchor": null,
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "R01 pins exact commit + table files + hashes + provenance record before any adoption",
-        "result": "NOT_RUN (R01 pending)"
-      },
-      "negative_control": "an imported table without a pre-landing provenance record must fail tools/check_reuse.py",
-      "notes": "FM operator tables (LUTs, sin/exp) under Source/msfa/. Reference-only until R01 pins them; then re-rule adopt with provenance + requalification. Dexed agreement is not original-DX7 fidelity."
-    },
-    {
-      "component": "dexed-enginemki",
-      "ruling": "external-oracle-only",
-      "upstream": {
-        "repo": "asb2m10/dexed",
-        "commit": null,
-        "path": []
-      },
-      "sha256": {},
-      "license": "GPL-3.0-or-later",
-      "license_basis": "GPL-3.0-or-later; external comparison oracle only",
-      "license_anchor": null,
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "renders used only as comparison oracle from outside the repository",
-        "result": "NOT_RUN (R01 pending)"
-      },
-      "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
-      "notes": "NEVER copied into this Apache-2.0 repository. R01 pins the exact Dexed commit/engine mode/sample rate/runtime in the reference manifest."
-    },
-    {
-      "component": "vdx7",
-      "ruling": "external-oracle-only",
-      "upstream": {
-        "repo": "external (identity and commit pinned in the R01 reference manifest)",
-        "commit": null,
-        "path": []
-      },
-      "sha256": {},
-      "license": "GPL-3.0-or-later",
-      "license_basis": "GPL-3.0-or-later; external comparison oracle only",
-      "license_anchor": null,
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "renders used only as comparison oracle from outside the repository",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
-      "notes": "NEVER copied into this repository."
-    },
-    {
-      "component": "hexter",
-      "ruling": "external-oracle-only",
-      "upstream": {
-        "repo": "external (identity and commit pinned in the R01 reference manifest)",
-        "commit": null,
-        "path": []
-      },
-      "sha256": {},
-      "license": "GPL-2.0-or-later",
-      "license_basis": "GPL-2.0-or-later; external comparison oracle only",
-      "license_anchor": null,
-      "destination": [],
-      "maintainer": "loom-builder + owner review",
-      "requalification": {
-        "check": "renders used only as comparison oracle from outside the repository",
-        "result": "NOT_RUN"
-      },
-      "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
-      "notes": "NEVER copied into this repository."
-    }
-  ],
-  "local_originals": [
-    {
-      "path": "src/gf180_dx7/__init__.py",
-      "sha256": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
-      "reason": "locally authored empty package marker; not a reuse import"
-    },
-    {
-      "path": "tools/check_reuse.py",
-      "sha256": "78cd8ba47e28264ae35f941e77742f87a1198fe0f096e611e698de65e87118f0",
-      "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
-    },
-    {
-      "path": "tools/check_all.sh",
-      "sha256": "7e13170117ac69768e329b8a42a952ffacf049bb17b48aa678ff846aa47de011",
-      "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge; re-pinned after H03 added the core-contract budget gate (issue #25)"
-    },
-    {
-      "path": "src/gf180_dx7/sysex.py",
-      "sha256": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
-      "reason": "locally authored P01 codec (PR #43); DX7 field layout taken from published documentation as facts, no upstream source bytes adopted"
-    },
-    {
-      "path": "src/gf180_dx7/cli.py",
-      "sha256": "110f5f06705b5e524649d05cf1553a53f16268a1ec5763eb27a8d460c8222ced",
-      "reason": "locally authored P01 CLI (PR #43); not a reuse import"
-    },
-    {
-      "path": "tools/sysex_probe.py",
-      "sha256": "698b2fa580b08f3c19c26b18e9b56d8c5bad4dde493bfce6aa62add23d5b4a7d",
-      "reason": "locally authored P01 probe tool (PR #43); not a reuse import"
-    },
-    {
-      "path": "tools/make_test_fixtures.py",
-      "sha256": "f60fa9ea5195ea3bc0e5b9a710a3c8ed475b7dd31eb94ba0199be8aa742d6c78",
-      "reason": "locally authored P01 fixture generator (PR #43); not a reuse import"
-    },
-    {
-      "path": "tools/catalog_archive.py",
-      "sha256": "09d732a1e31f9c859f38709109bfbb425721bbf03ce9c054047f0f0ea343de20",
-      "reason": "locally authored P02 archive cataloger (#9); not a reuse import"
-    },
-    {
-      "path": "tools/render_issue_dag.py",
-      "sha256": "c11889e6b7969f090bae371df1c68e7c9cbb58e285dd29bcee6f369922a6ef06",
-      "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import; re-pinned after GitHub mermaid rich-display fix (conservative labels/edges + built-in fence lint)"
-    },
-    {
-      "path": "tools/verify_reference.py",
-      "sha256": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa",
-      "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes (converted from exemption at merge; byte-pinned)"
-    },
-    {
-      "path": "tools/render_reference.py",
-      "sha256": "4320ad073fdf01c43f6343c9389cdfef3eb9814347e27c6edfc14900018c0a11",
-      "reason": "locally authored R02 render harness (issue #7); drives the external GPL oracle as comparison evidence, no upstream bytes"
-    },
-    {
-      "path": "tools/render_selfcheck.py",
-      "sha256": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b",
-      "reason": "locally authored R02 fast self-check (issue #7); guarded NOT_RUN where the oracle binary is absent, no upstream bytes"
-    },
-    {
-      "path": "tools/make_smoke_fixture.py",
-      "sha256": "11f3c2aba60df00ab52808c894928938692470cdd875f68aedf9f8cb8769fd37",
-      "reason": "locally authored R02 smoke-fixture generator (issue #7); original synthetic parameter set, no third-party voice bytes"
-    },
-    {
-      "path": "tools/capture_trace.py",
-      "sha256": "e83a0a20504ae43682d166577a9cad1a66e171ce8e22a7c53ff3e51312255bee",
-      "reason": "locally authored R05 non-invasive trace capture gate (issue #12); drives the external GPL oracle as comparison evidence and byte-compares traced vs untraced renders, no upstream bytes"
-    },
-    {
-      "path": "src/gf180_dx7/compare.py",
-      "sha256": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
-      "reason": "locally authored R04 exact paired comparator (issue #11); measurement DISCIPLINE adapted from the catalogued paired-comparator (torchsynth spec/PAIRED-METRICS.md @ 36bdc67, Apache-2.0), re-implemented stdlib-only with no upstream bytes; see docs/COMPARE-CONTRACT.md"
-    },
-    {
-      "path": "tools/compare_renders.py",
-      "sha256": "30072c04889a0bc9dca32876e187113cb5c933d6fc3b62161f0159aa1d184c47",
-      "reason": "locally authored R04 comparison CLI (issue #11); 0/1/2 exit convention, no upstream bytes"
-    },
-    {
-      "path": "tools/compare_evidence.py",
-      "sha256": "be94730dd8b60f2f4f1d1364de3bb95ae6c7c31a49d8d01e4a8443d7cbbd3981",
-      "reason": "locally authored R04 reproducibility-evidence tool (issue #11); committed-vs-fresh render metadata cross-check + exact comparison, no upstream bytes"
-    },
-    {
-      "path": "tools/qualify_compare.py",
-      "sha256": "c1a2a1583f1f9a9a1d54fe1e51933fe7b87255d304cf252f2dec9cc7fc3977ae",
-      "reason": "locally authored R04 comparator qualification report generator (issue #11); analytic fixtures + mutation battery, no upstream bytes"
-    },
-    {
-      "path": "tools/select_dev32.py",
-      "sha256": "4a049248a659a016095978df15b56ce6a86b19d178ec8abce27d7359869ed6e0",
-      "reason": "locally authored R03 tool (issue #10); not a reuse import"
-    },
-    {
-      "path": "tools/validate_dev32.py",
-      "sha256": "25a88e84dac936f5d4e75fef001b028fc3d73ade8c722734ef4510949660da92",
-      "reason": "locally authored R03 tool (issue #10); not a reuse import"
-    },
-    {
-      "path": "tools/audition.py",
-      "sha256": "60568670cced8df5adc18aee51327d565ae982da0ecb6a27b9a929289ce4b1b9",
-      "reason": "locally authored U01 audition/recall tool (issue #34); drives the external GPL oracle as an audition renderer, no upstream bytes"
-    },
-    {
-      "path": "spec/audition-phrases-v1.json",
-      "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
-      "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
-    },
-    {
-      "path": "tools/r07_compare.py",
-      "sha256": "b80bd15bb5e489bde962b71a6a2feb38ae39285eb288ab2a081360cfefeaa8e3",
-      "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported"
-    },
-    {
-      "path": "tools/check_numeric_profile.py",
-      "sha256": "11129ee06a919a5dfcfc8f1eaa39cbcaa80cdc42c9c9552093647cdac4b4345d",
-      "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1)"
-    },
-    {
-      "path": "tools/registry_coverage.py",
-      "sha256": "1ffec3d675647922851787a009be23493fb2f74a703f8b198f6bc37c452a57eb",
-      "reason": "locally authored R06 coverage validator (issue #13); reflects the P01 supported-field list, emits machine-readable coverage holes, --check gate and --selftest-negative resolution proof, no upstream bytes"
-    },
-    {
-      "path": "tools/registry_smoke.py",
-      "sha256": "6759e6c2a5bd45d6672885d0c05a9fb74772cbe37e09d1562644a29b25eb2e2a",
-      "reason": "locally authored R06 short-subset smoke executor (issue #13); builds patches via the P01 codec and drives the external GPL oracle as comparison evidence, no upstream bytes"
-    },
-    {
-      "path": "tools/check_registry.py",
-      "sha256": "ff78d51851a6d782b2f399a04adb9356d926606400075ff8767c49cf46bcf564",
-      "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
-    },
-    {
-      "path": "tests/test_capabilities.py",
-      "sha256": "8044685347e4a20dcee98139fb4e344cf527d47c5fbbbe1a3a32dd6ddb10d5fb",
-      "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted"
-    },
-    {
-      "path": "spec/capabilities-v1.json",
-      "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
-      "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
-    },
-    {
-      "path": "src/gf180_dx7/model/__init__.py",
-      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
-      "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import; re-pinned to the N02 package-marker bytes (same file, later entry records the same hash)"
-    },
-    {
-      "path": "src/gf180_dx7/model/envelope.py",
-      "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
-      "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
-    },
-    {
-      "path": "tests/test_envelope.py",
-      "sha256": "ab3bc3181a2a38e7e80c62e38650befa316d84e7d6e9e7272052bd3c0fa16ce8",
-      "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes. Re-pinned after the PR #58 judge-fix revision (sr_multiplier control documentation corrected to the measured flip locations; committed scan-statistics test added)"
-    },
-    {
-      "path": "src/gf180_dx7/capabilities.py",
-      "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md"
-    },
-    {
-      "path": "tools/compile_capabilities.py",
-      "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
-      "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes"
-    },
-    {
-      "path": "src/gf180_dx7/model/__init__.py",
-      "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
-      "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge; conflict-marker regression repaired after #57 squash (orchestrator)"
-    },
-    {
-      "path": "src/gf180_dx7/model/tables.py",
-      "sha256": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
-      "reason": "locally authored N02 table generator (issue #16); formulas adopted as facts from the pinned trees with citations, zero upstream bytes"
-    },
-    {
-      "path": "src/gf180_dx7/model/operator.py",
-      "sha256": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
-      "reason": "locally authored N02 integer operator model (issue #16); Mark I semantics re-implemented from cited facts (EngineMkI.cpp is external-oracle-only), no GPL/MSFA bytes"
-    },
-    {
-      "path": "tools/gen_tables.py",
-      "sha256": "36caa180ce476e69a83b3947a06779ac5264a38e7cd8dc8ac4ad21ee19775224",
-      "reason": "locally authored N02 regenerate-and-hash CLI (issue #16); parasynth --check discipline re-expressed, no upstream bytes"
-    },
-    {
-      "path": "tests/test_operator.py",
-      "sha256": "5a7bb873383fe2ba0fe408730b2ef7762757443e4959cd9f28dfe26b996aafd4",
-      "reason": "locally authored N02 probe suite (issue #16); analytic probes, negative controls, and the pinned-oracle reference probe"
-    },
-    {
-      "path": "reference/tables/sinlog_table.hex",
-      "sha256": "91182672af773c5df0ba41b76bc89b74b6268cc233f5b2659eb3e3c6ac836ea3",
-      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
-    },
-    {
-      "path": "reference/tables/sinexp_table.hex",
-      "sha256": "dc3b3a93db54df5c7d41ca1ad38e6c67e6ba7b8a891c5c2e0be4cba7856794f7",
-      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
-    },
-    {
-      "path": "reference/tables/freqlut_table.hex",
-      "sha256": "f1b080824a8286e307c8febcacca96c25eb501f0c482296062c3ff22f15d9c7b",
-      "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
-    },
-    {
-      "path": "reference/tables/manifest.json",
-      "sha256": "7dff9a64852bb701a07662c9bee6689a8804e60c8791bac856564547c7ef4e81",
-      "reason": "generated N02 table manifest (issue #16): sha256/entries/bits/formula citations per table"
-    },
-    {
-      "path": "reference/evidence/n02-operator/reference-probe.json",
-      "sha256": "cd306c4e7d1613ac3da341b58f185062c8e7eaa3431853704336cfe4cfbfe08a",
-      "reason": "N02 reference-probe evidence record (issue #16); liveness re-verified by tests/test_operator.py"
-    },
-    {
-      "path": "src/gf180_dx7/model/pitch.py",
-      "sha256": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
-      "reason": "locally authored N05 integer pitch/modulation model (issue #19); numeric semantics, constants and table contents adopted as facts from the pinned Apache-2.0 msfa files by citation (freqlut.cc, dx7note.cc, pitchenv.cc, lfo.cc, sin.cc, tuning.cc), clean re-implementation with zero copied bytes; GPL EngineMkI never copied or imported"
-    },
-    {
-      "path": "tests/test_pitch.py",
-      "sha256": "45b37dd3a1f03195147675bb96c7e529ce12cd73f85782e8c5344a1d16ef1062",
-      "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes"
-    },
-    {
-      "path": "rtl/storage_probe.v",
-      "sha256": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
-      "reason": "locally authored H02 full-state storage probe RTL (issue #21); state image widths mirrored from spec/numeric-profile-v1.json as facts, no upstream bytes"
-    },
-    {
-      "path": "rtl/storage_probe_tb.v",
-      "sha256": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6",
-      "reason": "locally authored H02 iverilog smoke bench (issue #21); write/readback of all 113 banks, no upstream bytes"
-    },
-    {
-      "path": "tools/storage_probe_synth.py",
-      "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
-      "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
-    },
-    {
-      "path": "tests/test_storage_probe.py",
-      "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
-      "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
-    },
-    {
-      "path": "rtl/operator_probe.v",
-      "sha256": "c20277c0c39258250a4acaa259847f2395e0e31f894d34ea92d9a4e710f10f04",
-      "reason": "locally authored H01 synthesizable operator-probe RTL (issue #20); Mark I per-sample operator semantics mirrored from the frozen N02 model (operator.py) as facts with citations, ROMs $readmemh-load the repo's own manifest-pinned reference/tables bytes, no upstream bytes"
-    },
-    {
-      "path": "rtl/tb_operator_probe.v",
-      "sha256": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842",
-      "reason": "locally authored H01 iverilog equivalence driver (issue #20); drives golden vectors and dumps RTL outputs for the Python judge, no upstream bytes"
-    },
-    {
-      "path": "tools/h01_compare.py",
-      "sha256": "5368c6ff1e1e1b32a05eb55127bd5da9b285ea04f9d6b83b55b25f4ee9f8a0f6",
-      "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes"
-    },
-    {
-      "path": "tools/h01_synth.py",
-      "sha256": "d3e82f753d741ee8291fd601c44f51078e56672f4ea9af8c963bc5b29a49459e",
-      "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes"
-    },
-    {
-      "path": "tests/test_h01.py",
-      "sha256": "8d34a6e1d04eccb2f83eb12e51aca0320eed3feb44e16bd57f3fb229a9aae89f",
-      "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes"
-    },
-    {
-      "path": "src/gf180_dx7/model/algorithm.py",
-      "sha256": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
-      "reason": "locally authored N04 integer algorithm/feedback model (issue #18); routing table values adopted as numeric facts from the pinned msfa citation with clean re-implementation, zero GPL bytes"
-    },
-    {
-      "path": "tests/test_algorithm.py",
-      "sha256": "733f778ba5ef7fc7ab605fe6da92ee42a5316204cb12cf6ac01843e87439ac0a",
-      "reason": "locally authored N04 test suite (issue #18); hand-derived wiring table re-derived from the citation, scripted-source battery, oracle sweep, three negative controls"
-    },
-    {
-      "path": "docs/N04-ALGORITHM-MODEL.md",
-      "sha256": "99138af716d18a4ec761ac55c919d0264f36ed141fe702ba9abe99844fff24a0",
-      "reason": "locally authored N04 derivation and results record (issue #18)"
-    },
-    {
-      "path": "src/gf180_dx7/model/integrated.py",
-      "sha256": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
-      "reason": "locally authored N06 integrated single-note model (issue #22); composes the merged N02-N05 modules and mirrors the pinned wrapper's block loop as semantic facts (zero GPL bytes); carries the DR-0006 findings"
-    },
-    {
-      "path": "tools/n06_compare.py",
-      "sha256": "2f76e8abaf157451759cade62031129e52ae0e3131911bcde360b590812ebf60",
-      "reason": "locally authored N06 case runner (issue #22); pinned-oracle vs integrated-model exact comparison over the dev32 + registry single-note suites with per-property localization and the stub negative control"
-    },
-    {
-      "path": "tests/test_integrated.py",
-      "sha256": "77d0c6f385ce80d837593a6329bdbca76d723e4a39d03c4a99cc2db94ae661e9",
-      "reason": "locally authored N06 test suite (issue #22); wrapper bookkeeping, composition semantics (bend/LFO/scope guard), stub seams, committed-evidence validation, guarded live oracle checks"
-    },
-    {
-      "path": "docs/N06-INTEGRATED-MODEL.md",
-      "sha256": "2a177959638e1947adb50c7044e5f277a62525f3d3f9331f1065d9b65b05934f",
-      "reason": "locally authored N06 derivation and results record (issue #22): composition order, event semantics, evidence tables, findings F-1..F-5; re-pinned after DR-0006 wording follow-up (judge note)"
-    },
-    {
-      "path": "docs/decision-records/0006-n06-integration-findings.md",
-      "sha256": "239729f38b610c66e0c843065cac723227498d4e6a184cd755d09985612eef5e",
-      "reason": "locally authored decision record for the N06 integration findings (issue #22, stop/escalate clause); re-pinned after DR-0006 wording follow-up (judge note)"
-    },
-    {
-      "path": "reference/evidence/n06-integrated/dev32-subset.json",
-      "sha256": "d135fd41ad7f629708d68df47fa5546a850f109fb7b2aa464424e06d0c9040eb",
-      "reason": "committed N06 evidence (issue #22): oracle-vs-model verdicts and diagnostics for the dev32 subset + registry single-note cases"
-    },
-    {
-      "path": "reference/evidence/n06-integrated/negative-control.json",
-      "sha256": "60e0ed8affc922a529e32bba74f743fa32332ff938581556901ad71030cc19de",
-      "reason": "committed N06 negative control (issue #22): envelope-seam stub makes the case set fail and localize the stubbed module"
-    },
-    {
-      "path": "src/gf180_dx7/model/poly.py",
-      "sha256": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12",
-      "reason": "N07 D00 polyphonic state/event manager (issue #23): 16 independent voice slots, DEC-015/016/017/018/019 policy, NUM-012 reclamation, isolation negative-control seams"
-    },
-    {
-      "path": "tools/n07_compare.py",
-      "sha256": "5646c10027cdc8e01d27c8af3afc591183201ce9155d3249456971d875859227",
-      "reason": "committed N07 case runner (issue #23): wrapper-valid oracle cross-checks plus the measured ev-steal-17 policy divergence"
-    },
-    {
-      "path": "tests/test_poly.py",
-      "sha256": "35bd7b96857a93316c9da450fb636b9f31181a1fce114e24174876aa2198bac1",
-      "reason": "N07 test suite (issue #23): D00 policy battery, isolation additivity, live negative controls, committed-evidence validation, guarded live-oracle checks"
-    },
-    {
-      "path": "docs/N07-POLY-MODEL.md",
-      "sha256": "0f0b8eb5e05f8d8d6ced09cad6f746008aa852e046eacd1c2b46312e95b89965",
-      "reason": "N07 model doc (issue #23): D00 policy mapping, DEC-016 reading record, isolation methodology, wrapper-validity boundary, divergence documentation"
-    },
-    {
-      "path": "reference/evidence/n07-poly/evidence.json",
-      "sha256": "4c1e9806f5b164138c33e6bee07d1be96642faab5b67fb1dec39fd81a50982d6",
-      "reason": "committed N07 evidence (issue #23): 7/7 wrapper-valid EXACT cross-checks and the documented ev-steal-17 divergence measurements"
-    },
-    {
-      "path": "spec/release-vectors-v1.json",
-      "sha256": "5848fbfd031521599ab001dec325d1a1d8b6bdb08102475a53a95ef26474230d",
-      "reason": "N08 preregistration (issue #24): dev/challenge selection, frozen thresholds, and binding hashes, frozen before any challenge render was inspected"
-    },
-    {
-      "path": "tools/n08_build_release.py",
-      "sha256": "b6315c8919b651c8fe4ba43d2ab826e5c14fb376d402ae253cc1723848fe7ecc",
-      "reason": "locally authored N08 bundle builder (issue #24): deterministic vector+manifest build enforcing the preregistration binding (refuses on drift)"
-    },
-    {
-      "path": "tools/n08_verify_release.py",
-      "sha256": "88b4808146608922f38328472390513d25fe72d57e1252e03b8e0e620703b80f",
-      "reason": "locally authored N08 release verifier (issue #24): bundle hash, vector/model-identity/STALE checks, and the re-render gate H-series RTL conformance runs against"
-    },
-    {
-      "path": "tools/n08_mutations.py",
-      "sha256": "8a299d854c4d753f9f4d23508f883d4ad464574c7d3ad51e960a9ae9e62ceee6",
-      "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle"
-    },
-    {
-      "path": "tools/n08_challenge.py",
-      "sha256": "c4ec82e4cb932e4c185169c49e8f5e1a836c4215d1b6dea011f7a84466c3fc61",
-      "reason": "locally authored N08 challenge runner (issue #24): renders the preregistered challenge set and compares vs the pinned oracle at the frozen thresholds"
-    },
-    {
-      "path": "tests/test_n08_release.py",
-      "sha256": "0d29ef3bae35b2b309c65911e969849a979160fac8df329ecd93b57eab16e3f1",
-      "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation"
-    },
-    {
-      "path": "docs/decision-records/0007-release-freeze-v1.md",
-      "sha256": "015bb8f9888b4fade73a62e0d1fcb229e5372d172bb99ba01172fd56a7a46d32",
-      "reason": "locally authored freeze decision record (issue #24): frozen contents, challenge protocol ordering, STALE rules, H03+ authorization statement"
-    },
-    {
-      "path": "docs/N08-RELEASE.md",
-      "sha256": "7188af87668373eec224b58e3ddc4bc9c56688b6818007110175369c6db10af1",
-      "reason": "locally authored N08 release notes (issue #24): contents, verification commands, mutation coverage, challenge results, bounded findings and exclusions"
-    },
-    {
-      "path": "reference/release/manifest.json",
-      "sha256": "4eab072416e75e37a3c9ff328bba625a2f7f11d14dc40949c6b0366f52246d38",
-      "reason": "committed N08 release manifest (issue #24): per-case vector shas + block-level event traces, model identity, arithmetic-profile pointer, frozen thresholds, derived error budgets, bundle hash"
-    },
-    {
-      "path": "reference/release/challenge-results.json",
-      "sha256": "ad9cba1b2cb0f1f529b1d9147c1977b7b476559c0f7893be70c564e48b768198",
-      "reason": "committed N08 challenge record (issue #24): 21/21 preregistered challenge cases AGREE_EXACT at the frozen thresholds, bound to the bundle hash"
-    },
-    {
-      "path": "reference/release/mutation-results.json",
-      "sha256": "8c7741511b5ba8df8ed0bd617d5988c5493a4066f7e83f358f8993933444a900",
-      "reason": "committed N08 mutation results (issue #24): 5/5 mutations detected by the release verification, bound to the bundle hash"
-    },
-    {
-      "path": "docs/CONTRACT-CORE-v1.md",
-      "sha256": "12182ea4a0f1d5a46c76507ae3a3690661a295dc684450ec4e80ceefd47b0e54",
-      "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata"
-    },
-    {
-      "path": "spec/core-contract-v1.json",
-      "sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
-      "reason": "locally authored H03 machine-readable contract (issue #25): budget rows with measured/structural/derived_estimate classes, clock targets, queue/latency constants, module conformance subsets pointing at N08 case ids, depends_on hash pins"
-    },
-    {
-      "path": "tools/h03_budget_check.py",
-      "sha256": "9df7c1cedadbb438205938b7782fce134b474cd2bdb14c4ecb71c82796c5547f",
-      "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes"
-    },
-    {
-      "path": "tests/test_h03_contract.py",
-      "sha256": "c93c5c7cecbade3b8417a9142edea3543fc8846f64d452e128d4b458d3fb26fc",
-      "reason": "locally authored H03 test suite (issue #25): independent budget recomputation, DEC-citation existence, queue/latency constants, live tool gate, and four negative controls (mutated 2 clk/eval row, burst-stripped average-case budget, fake PASS verdict, drifted evidence hash); no upstream bytes"
-    },
-    {
-      "path": "docs/decision-records/0008-core-schedule-contract.md",
-      "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
-      "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
-    },
-    {
-      "path": "rtl/env_unit.v",
-      "sha256": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
-      "reason": "locally authored H04 envelope/state RTL (issue #26): the N03 integer operator envelope as a synthesizable micro-sequencer, exact to src/gf180_dx7/model/envelope.py by semantic re-implementation from docs/N03-ENVELOPE-MODEL.md (Apache-2.0 semantic facts only, no bytes copied); derived sr_multiplier 15414067 constant, H02-style bank slot with H03 read-old/write-new hazard rules, and three in-file negative controls (step-skew, sr_multiplier-1, strip observability)"
-    },
-    {
-      "path": "rtl/tb_env_unit.v",
-      "sha256": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72",
-      "reason": "locally authored H04 equivalence bench (issue #26): drives the directed command stream, dumps committed slot state per command for bit-exact comparison, measures per-command cycles (H03 env_steps budget gate), and self-checks the H03 read-old/write-new hazard rule before the stream; no upstream bytes"
-    },
-    {
-      "path": "tools/h04_compare.py",
-      "sha256": "4ced08b0644ff4be0924ddde442c6b401b33833eeb806be2408117603a81f731",
-      "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls"
-    },
-    {
-      "path": "tools/h04_synth.py",
-      "sha256": "e15c0b9d524bd782d59413b63b720bb3b2fca14fc27c7a3b0d057892999fba13",
-      "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes"
-    },
-    {
-      "path": "tests/test_h04.py",
-      "sha256": "5b59faa9fe95043ecb00e94fd62201ca22dfac9422dac6c284610e866390e236",
-      "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes"
-    },
-    {
-      "path": "docs/H04-ENV-RTL.md",
-      "sha256": "7a8d986d4ee5d02763235da6c278119789252ff8583d955fb72907bd693d641f",
-      "reason": "locally authored H04 report (issue #26): unit structure and micro-sequencer, bit-exact conformance results (27,931 commands / 24,639 frame steps, 0 mismatches), measured 13-clk worst step vs the contracted 24-clk H03 slot, hazard verification, mapped area (0.179 mm2, 480 flops, strip control at 0), and the claim boundary"
-    },
-    {
-      "path": "reference/tables/alg_table.hex",
-      "sha256": "2d9abc6abcd070fb1fc7f79be425fd8aea8e182e90915653f1b6b7f36b6fcf78",
-      "reason": "generated H05 artifact (issue #27): the 32-row connection table regenerated from src/gf180_dx7/model/algorithm.py ALGORITHMS so the model and rtl/alg_router.v share ONE table artifact (parasynth gen_tables discipline); bytes pinned by reference/tables/alg_manifest.json and tools/h05_compare.py --check-tables"
-    },
-    {
-      "path": "reference/tables/alg_manifest.json",
-      "sha256": "65088680bc045352272c0ef9dc5655ae19dd31d359b044f8aff41ad196ae8977",
-      "reason": "generated H05 table manifest (issue #27): sha256/entries/bits pin for alg_table.hex; verified before every simulation"
-    },
-    {
-      "path": "rtl/alg_router.v",
-      "sha256": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
-      "reason": "locally authored H05 routing/feedback RTL (issue #27); Mark I router semantics mirrored from the frozen N04 model (algorithm.py) as facts with citations, ROM $readmemh-loads the generated shared alg_table.hex, delayed-commit fb history per the H03 contract, negative-control ifdefs, no upstream bytes"
-    },
-    {
-      "path": "rtl/tb_alg_router.v",
-      "sha256": "755fe45c69efae64ad69f05b0916f9574445b8b90d417b573ea073d1b3c5de32",
-      "reason": "locally authored H05 iverilog conformance driver (issue #27); drives the directed program and streams eval/output/state records for the Python judge with the same scripted source as the golden, no upstream bytes"
-    },
-    {
-      "path": "tools/h05_compare.py",
-      "sha256": "35a285d859b7b575e49a0706f7b8b9f8b71023bce8f53b90f21ff1243118518f",
-      "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes"
-    },
-    {
-      "path": "tools/h05_synth.py",
-      "sha256": "28ca0c4b921c56f3995a7c65e75ae52eeae6b8674f6452d85d2ec8dd937a759b",
-      "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes"
-    },
-    {
-      "path": "tests/test_h05.py",
-      "sha256": "d196b793a47c3381d6a7ad493b188bd6c0109b54b28c23ef8105051fd07fafc7",
-      "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes"
-    },
-    {
-      "path": "docs/H05-ROUTING-RTL.md",
-      "sha256": "67d0b08891b37fd646bee210b76c85599f48b30c8b86786777e398243876765d",
-      "reason": "locally authored H05 derivation and results record (issue #27): table regeneration identity, structure, schedule-delay handling, conformance matrix, mapped area, controls, claim boundary"
-    },
-    {
-      "path": "rtl/pitch_mod.v",
-      "sha256": "e84051493e0f99575c022f53ae429c966e7d830fbe2e3f92ced3908c345750de",
-      "reason": "locally authored H06 pitch/modulation RTL unit (issue #28): per-note pitch path exact to the frozen N05 model under the H03 split - pitch-EG stepping, LFO (six waveforms + regenerated SIN table + delay ramp + keysync), PM/AM composition, documented-mode transpose, freqlut lookups; per-event frozen-integer host interface with five negative-control ifdefs; no upstream bytes"
-    },
-    {
-      "path": "rtl/tb_pitch_mod.v",
-      "sha256": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2",
-      "reason": "locally authored H06 conformance bench (issue #28): drives the contracted W/F vector stream, dumps per-frame increments + boundary values, measures worst control-tail latency; stdlib-free Verilog-2001"
-    },
-    {
-      "path": "tools/h06_compare.py",
-      "sha256": "259de1f5e4c4dd792b7b12529dc001bc0bee96d461e27661e4964a5dcc197381",
-      "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only"
-    },
-    {
-      "path": "tools/h06_synth.py",
-      "sha256": "fbdf7e2e60376ce5648291bad8b01f91560898e5320b4995d48153760aea5150",
-      "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes"
-    },
-    {
-      "path": "tests/test_h06.py",
-      "sha256": "7da7588827d6a0c159053115e67be00ece49984b39876504ce6e5d4a14f18178",
-      "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only"
-    },
-    {
-      "path": "reference/tables/lfo_sin_table.hex",
-      "sha256": "5c27ce7f40ea8f4272a65414b9fa7d85ef0c2f030f460de5e4dcae8e103b3223",
-      "reason": "regenerated LFO sine table (issue #28): 2048-entry SIN_DELTA form rebuilt from build_sintab() following sin.cc:31-56 operation order (no bytes copied); byte-verified on every harness run and consumed by the RTL via $readmemh"
-    },
-    {
-      "path": "docs/H06-PITCH-RTL.md",
-      "sha256": "f9522a0c4fac19d8d713b7e3aec43b626e4212bd7a7d8f1d783ca0132a0be136",
-      "reason": "locally authored H06 report (issue #28): split decisions table with DEC/NUM citations, transpose ruling cross-ref, detune-delta exactness argument, link budget, bit-exact conformance results, negative controls, mapped area, claim boundary"
-    },
-    {
-      "path": "src/gf180_dx7/mock_core.py",
-      "sha256": "af0efe9c66a4a141dfda1a5b879aa6902dbeafbf5f35fe58140b7c65aa1797de",
-      "reason": "locally authored U04 mock core (issue #37): contract-faithful H03 link model (48-bit frames, depth-8 skid FIFO with explicit-rejection overflow, shadow/commit with load-digest gate, 4-entry generation ring, 0xD7110001-shaped status word, pad/soft reset) plus failure injection (truncated transfer, bad checksum, queue overflow, drain stall, overrun, reset mid-transfer) with fault records kept as evidence; stdlib only"
-    },
-    {
-      "path": "src/gf180_dx7/host.py",
-      "sha256": "4e7457a852227afd66f0502bfbe85dd92955144e232274a0063958261d3022fc",
-      "reason": "locally authored U04 embedded host (issue #37): MIDI-event to core-transaction scheduling per H03 (frame-window capacity with explicit BackpressureRefused, DEC-014 overflow retry), patch load from P01 Voice/bank bytes with atomic digest-gated commit, frozen integers mirroring model/pitch.py, reset/boot/recall protocol with FRAME-regression reset detection, link-budget accounting vs the 216-write bound and the parasynth 182-write family anchor; stdlib only"
-    },
-    {
-      "path": "tests/test_host_mock.py",
-      "sha256": "8e7dc849c4e5f7b029ec8e2aa90f9f9ce02a6713525b6ffb35d85bab16c627db",
-      "reason": "locally authored U04 acceptance suite (issue #37): burst timing at both clocks, frame-boundary semantics, generation-ring patch-change-while-held, boot/recall with hashed transaction logs, truncated/bad-checksum partial transfers with stale-state detection, malformed SysEx propagation, write-cost accounting, failure-injection matrix, and live negative-control stubs (NaiveLoader, DeafHost, bare-commit refusal)"
-    },
-    {
-      "path": "docs/U04-HOST-MOCK.md",
-      "sha256": "e97d62763d1d8e472d9b7d4b9bbcb8003027b6e7c6368582a39da993d6f5fb4d",
-      "reason": "locally authored U04 report (issue #37): transaction map, link-budget measurements against the H03 rows and the parasynth boot-image family anchor (182 writes ~= 4.43 ms at 2 MHz), failure-injection matrix with results, negative controls, claim boundary"
-    },
-    {
-      "path": "tools/test_fast.sh",
-      "sha256": "736f5e09c2361d2756c679d4d59ee19bd0b762f418e769be8341247004220cdb",
-      "reason": "locally authored fast-lane gate (DR-0009 test tiering)"
-    },
-    {
-      "path": "tools/u02_candidates.py",
-      "sha256": "ba7b0aca2303d5d004cb6bb2c8a0b03634f84f882b0b18ec72f13d338e37c74e",
-      "reason": "locally authored U02 candidate pre-selection + one-sitting listening-kit tool (issue #35): deterministic documented heuristics over decoded catalog parameters, kit emission, render-kit driver around the external GPL oracle via tools/audition.py; no taste judgments, no upstream bytes"
-    },
-    {
-      "path": "tests/test_u02_kit.py",
-      "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
-      "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
-    },
-    {
-      "path": "rtl/dx7_core.v",
-      "sha256": "335599eae6aada90f45c5738cf79d70098bb3a6cf97437927fcbdec10abfc917",
-      "reason": "locally authored H07 integrated 16-note core (issue #29, WIP bring-up revision): SPI slave + skid/event queues, atomic patch commit, DEC-015..021 allocator, 96 env_unit slices, shared per-note pitch path (H06 semantics), shared H05 router around a combinational H01 kernel, NUM-010 unclamped mixer, I2S master, four negative-control ifdefs; composed from landed in-repo modules only, no upstream bytes"
-    },
-    {
-      "path": "rtl/tb_dx7_core.v",
-      "sha256": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea",
-      "reason": "locally authored H07 host-side bench (issue #29, WIP): SPI master at SCK=clk/16 for the contracted 48-bit frame, model-block event pacing, I2S DAC-model decoder + PCM dump via the mixer-load tap; no upstream bytes"
-    },
-    {
-      "path": "docs/H07-CORE.md",
-      "sha256": "aadb6205dc2eccf6ce3f456037c9ec3db0d7fafdf1a2e7c497a89544511002ba",
-      "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
-    },
-    {
-      "path": "tools/h07_compare.py",
-      "reason": "locally authored H07 conformance harness (issue #29): N08 case resolution via n08_build_release CaseSource with a committed voice-byte cache, host-side frozen-integer frontend (dx7note.cc:46-53 detune/fine/bend), section-5 register encoding, vector emission, bit-exact comparator with first-mismatch localization, latency recording, --audit-exp sweep, exit 0/1/2; no upstream bytes",
-      "sha256": "c4d8dfb53f697ea872aaaf3d88c87aefe5998bc2c21c3913c6d30167debc66b3"
-    },
-    {
-      "path": "tools/h07_synth.py",
-      "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; no upstream bytes",
-      "sha256": "0a106abf199246ec8edca0b93754b4a66afa32492f076eae213e1fce8a9f6805"
-    },
-    {
-      "path": "tests/test_h07.py",
-      "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; no upstream bytes",
-      "sha256": "30c4dc075eadb9bb5be841c0669e966ed9c19c070242598987a18f1a6dc9f35e"
-    }
-  ]
+ "schema_version": 1,
+ "date": "2026-09-19",
+ "issue": 39,
+ "decision_record": "docs/decision-records/0002-reuse-governance.md",
+ "rulings_enum": [
+  "adopt",
+  "adapt",
+  "reject",
+  "reference-only",
+  "external-oracle-only"
+ ],
+ "hash_method": "sha256 of `git -C <sibling-checkout> show <upstream.commit>:<path>` -- bytes at the pinned commit, not a moving branch. Verify with tools/check_reuse.py --verify-upstream when sibling checkouts are available.",
+ "maintainer": "loom-builder + owner review",
+ "components": [
+  {
+   "component": "reuse-governance-audit",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "docs/REUSE-AUDIT.md",
+     "docs/reuse-audit-sources.json",
+     "spec/decision-records/0005-pinned-substrate-reuse.md"
+    ]
+   },
+   "sha256": {
+    "docs/REUSE-AUDIT.md": "1637b47627995c712cfd7335f6dd6803a8ede28a023a254f624f255fe76cb5c0",
+    "docs/reuse-audit-sources.json": "8f9490827483be99247679bb6d699be9df06bd7f2661ad539a4efe21988963fb",
+    "spec/decision-records/0005-pinned-substrate-reuse.md": "d7b02feeeecf722aa824f87c721326ed3b1a7feaaf2676287e414ea9424e0c19"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "python3 -m unittest discover -s tests -v (this repo) and bash tools/check_all.sh",
+    "result": "PASS"
+   },
+   "negative_control": "tools/check_reuse.py must fail on an unrecorded governed source file and on hash drift (tests/test_check_reuse.py)",
+   "notes": "70-file sibling source catalog + governance DR. The audit's negative findings are inherited as adoption gates (see docs/REUSE-RULINGS.md).",
+   "adaptations": [
+    "method re-expressed locally as DR-0002, docs/reuse/, tools/check_reuse.py; no upstream bytes imported"
+   ]
+  },
+  {
+   "component": "trace-capture",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "src/torchsynth_voice/trace_capture.py",
+     "tools/qualify_trace_capture.py",
+     "tests/test_trace_capture.py"
+    ]
+   },
+   "sha256": {
+    "src/torchsynth_voice/trace_capture.py": "276c462ea09e46c61d14eb407a0c1629779a36ba8eee96133abc4e97427a5b54",
+    "tools/qualify_trace_capture.py": "c75f6027c7bc0f8de5c3ae9aa5383d301ce690de3096094489f6dd7a6edec6f0",
+    "tests/test_trace_capture.py": "16daa79fde4aebe016cf2b1b92d5d1d1ca47ae3a6eb2c8d9a02e509cc9fec8d1"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "an observer that mutates render state must fail the non-perturbation comparison",
+   "notes": "Re-ruled adopt -> reference-only in R05 (issue #12): the planned byte-exact import destinations were superseded by the R05 issue brief (external-oracle seam). tools/capture_trace.py and tests/test_trace_capture.py are locally authored against the sibling's PATTERN (non-perturbing observers, versioned tap registry, non-perturbation negative control) with no upstream bytes; the capture tool is byte-pinned in local_originals. The sibling negative control is kept live: a stub oracle that writes traces AND perturbs PCM is rejected by the byte-identity gate with no artifacts written. Upstream hashes retain the original adopt-entry provenance."
+  },
+  {
+   "component": "paired-comparator",
+   "ruling": "adopt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "src/torchsynth_voice/paired_metrics.py",
+     "tests/test_paired_metrics.py"
+    ]
+   },
+   "sha256": {
+    "src/torchsynth_voice/paired_metrics.py": "82aa74dfedeb36524b19d76d0162094b9a5134e1b02a938e048042486cdfa72e",
+    "tests/test_paired_metrics.py": "f315af4ea070fdfc627eb340442427cc6b668167f1bed2c4fbb61f6582281ec2"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "src/gf180_dx7/paired_metrics.py",
+    "tests/test_paired_metrics.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "upstream unittest subset green on adopted copy; alignment-free comparison demonstrated on two renders of the same input",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a comparator that normalizes or time-warps independently per render must fail the invariance controls",
+   "notes": "no-alignment paired sample/metric comparison; matches the plan's dry-render comparison rule."
+  },
+  {
+   "component": "case-registry",
+   "ruling": "adopt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "src/torchsynth_voice/case_registry.py",
+     "tests/test_case_registry.py"
+    ]
+   },
+   "sha256": {
+    "src/torchsynth_voice/case_registry.py": "a4e54a7587c14500b80ee18379519c6382ccdcb1a7b70b72a80e91a41e0b2077",
+    "tests/test_case_registry.py": "349b3e8b160ce062043e1f231003b753ece2b4aa4c3d7fa24d297b82e743e50f"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "src/gf180_dx7/case_registry.py",
+    "tests/test_case_registry.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "upstream unittest subset green on adopted copy",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a registry that accepts a case with missing required fields must fail validation tests",
+   "notes": "registry/scorecard pattern: statuses PASS/FAIL/NOT_RUN/BLOCKED/NO_VERDICT/STALE with coverage kept separate from agreement. The sibling scorecard implementation itself is REJECTED (see 'scorecard' entry)."
+  },
+  {
+   "component": "fixedpoint-library",
+   "ruling": "adopt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "6532ec08eee7c79fd642f95d77bc086507a05f79",
+    "path": [
+     "src/torchsynth_voice/fixedpoint/__init__.py",
+     "src/torchsynth_voice/fixedpoint/README.md",
+     "src/torchsynth_voice/fixedpoint/choices.py",
+     "src/torchsynth_voice/fixedpoint/counters.py",
+     "src/torchsynth_voice/fixedpoint/formats.py",
+     "src/torchsynth_voice/fixedpoint/lut.py",
+     "src/torchsynth_voice/fixedpoint/ops.py",
+     "src/torchsynth_voice/fixedpoint/phase.py",
+     "src/torchsynth_voice/fixedpoint/rounding.py",
+     "tests/test_fixedpoint_choices.py",
+     "tests/test_fixedpoint_formats.py",
+     "tests/test_fixedpoint_lut.py",
+     "tests/test_fixedpoint_ops.py",
+     "tests/test_fixedpoint_phase.py",
+     "tests/test_fixedpoint_rounding.py"
+    ]
+   },
+   "sha256": {
+    "src/torchsynth_voice/fixedpoint/__init__.py": "202ae0d731082997760bb9ca041fb9ff74336f45c67b17a9c8cd5719ed3130ce",
+    "src/torchsynth_voice/fixedpoint/README.md": "c8990c7724a524e84905bdfdbccb484785909bf462dbe49b35c92db85633a0ed",
+    "src/torchsynth_voice/fixedpoint/choices.py": "de21c671ba5ee8e2f5a28bc218206545c9240581ac24a537e42841c547fe4d7a",
+    "src/torchsynth_voice/fixedpoint/counters.py": "fc49d51b2b9370762fec37c7a4028cd49442452dadc994c279ccc5b23f8ca336",
+    "src/torchsynth_voice/fixedpoint/formats.py": "762e6b604ad4c21e4816b34944e9b5c8537a9f34da9eb89f1e84b4322faf5a95",
+    "src/torchsynth_voice/fixedpoint/lut.py": "3df18aeba95b74de3398e00fcd5d1ccc8692170f226f74e953f0b67de5b5367a",
+    "src/torchsynth_voice/fixedpoint/ops.py": "8c400e8db0caeb961b1615ac2b3fa55a9f0caa995e06215d8a43ba63c76a6e3e",
+    "src/torchsynth_voice/fixedpoint/phase.py": "11ee656139f846a38a752a94955d585826a60b52e44894d2ea52526c58fad959",
+    "src/torchsynth_voice/fixedpoint/rounding.py": "2bdc1747e09b160003361b8dd95f9caa787ebaf83d744201b1b0bf45256e6e59",
+    "tests/test_fixedpoint_choices.py": "f7abd4a22c9c19f7d31b74406c0d4d6dbd3f6527a55a0ca9c865e7b530255b97",
+    "tests/test_fixedpoint_formats.py": "b90dc62d50e21bb768a2d7b89433da3e7d2baeb05ea2e8f22c81502a8f77fb03",
+    "tests/test_fixedpoint_lut.py": "d164080ebae059fcab8de4d31a65867d48ea9ab77f2644ce28aab91b26fad0b8",
+    "tests/test_fixedpoint_ops.py": "a2c26cf8a159e436547627b3973e5c8b0dad23ef9446f1cfdf7d95d8296f496a",
+    "tests/test_fixedpoint_phase.py": "ca8e135cf283abf627622216815f3b7a18e6bd6f193b71e9b103c8c5ccc146e1",
+    "tests/test_fixedpoint_rounding.py": "b43a62525b2312d3cc74f5fb4ffc8e74b1a5db237f3a4aaadf0bfd0aafc8b573"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "src/gf180_dx7/fixedpoint/",
+    "tests/test_fixedpoint_choices.py",
+    "tests/test_fixedpoint_formats.py",
+    "tests/test_fixedpoint_lut.py",
+    "tests/test_fixedpoint_ops.py",
+    "tests/test_fixedpoint_phase.py",
+    "tests/test_fixedpoint_rounding.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "upstream fixedpoint unittest subset green on adopted copy; ops match the frozen integer model's arithmetic choices where shared",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "an op that silently widens/saturates differently than declared must fail the format/rounding tests",
+   "notes": "generic fixed-point primitives (formats, rounding, LUT, phase, counters). Pinned at torchsynth HEAD 6532ec0 because fixedpoint/ does not exist at audit-era commit 36bdc67; re-pin consciously when importing."
+  },
+  {
+   "component": "reference-manifest-pattern",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "spec/reference/upstream.json"
+    ]
+   },
+   "sha256": {
+    "spec/reference/upstream.json": "565236e22ad8b1dcd620783024a114b0960e5534b1cb26e8dcf8dafc9c96c0af"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "spec/reference/upstream.json"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "R01 lands a Dexed-pin manifest (commit, engine mode, sample rate, runtime) validated by a checker",
+    "result": "NOT_RUN (R01 pending)"
+   },
+   "negative_control": "a manifest missing the pinned commit or sample rate must be rejected by its checker",
+   "notes": "manifest shape only; R01 owns the content. Do not silently follow upstream Dexed.",
+   "adaptations": [
+    "schema retargeted from TorchSynth pin to the pinned Dexed Mark I reference (repo, commit, engine mode, sample rate, runtime)"
+   ]
+  },
+  {
+   "component": "protocol-specs",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "spec/protocol/README.md",
+     "spec/protocol/FRAMING.md",
+     "spec/protocol/TRANSPORTS.md",
+     "spec/protocol/PATCH-LOAD.md",
+     "spec/protocol/SESSION.md",
+     "spec/protocol/MOCK-HARNESS.md"
+    ]
+   },
+   "sha256": {
+    "spec/protocol/README.md": "ca6c0c6077f761e79cb41de92f883d1161262ffa319283993019116123bd5ef8",
+    "spec/protocol/FRAMING.md": "36c70ded91279bdb6bcd2c4787d62fc3b638aee2a85cdd37a461f799198f7187",
+    "spec/protocol/TRANSPORTS.md": "01d92cf7ce5416e8c60e89a409ef02db56c3782e98025b9bca2190b9873f1620",
+    "spec/protocol/PATCH-LOAD.md": "72dafdc83a264c306372ff389249cb765dce5a02f3e40796742f669699c14ced",
+    "spec/protocol/SESSION.md": "86583bf70e5887c4c93ae7be5412883065b66d889b09e61c56320abec048a39e",
+    "spec/protocol/MOCK-HARNESS.md": "20930575b6a4929eea29df36ba8d2aae7a8de0adabb2d0106017e5fb54dc7dfc"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "spec/protocol/"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "mock-harness conformance run passes for the DX7-adapted framing",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a transport that drops or duplicates a patch-load write must fail the harness replay",
+   "notes": "protocol spec family (framing, transports, patch-load, session, mock harness) used with trace capture.",
+   "adaptations": [
+    "retarget framing/session docs from the TorchSynth patch model to DX7 32-voice patches and performance controls at 48 kHz; sibling targets differ"
+   ]
+  },
+  {
+   "component": "capability-dag-compiler",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "2AMLogic/gf180-torchsynth",
+    "commit": "36bdc67faa1ff2509988b772efcca7a7eb4e7115",
+    "path": [
+     "tools/compile_capabilities.py",
+     "tests/test_capabilities.py",
+     "tests/test_capability_views.py",
+     "spec/schemas/capability-evidence-v1.schema.json"
+    ]
+   },
+   "sha256": {
+    "tools/compile_capabilities.py": "1ca49fa72a6c05ce698c6c7baf95f1e85ab336d0329c9a6627d405abf1b4ff79",
+    "tests/test_capabilities.py": "79aa2fe99541c9dc0f1ce06a3054d5a0afec8b5413adae0b75b273facc60dc46",
+    "tests/test_capability_views.py": "09d55d82010f71cc89b2b4256cff293e9fa5369b34838a6909bf9357dbce6e81",
+    "spec/schemas/capability-evidence-v1.schema.json": "ef565be9ee1efc84ec4afe2fb7e10868bf55dfa06d538927d2b8f2d0f6a29197"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "if ever adopted: a fabricated/empty evidence file must yield NOT a green graph node",
+   "notes": "Engine-agnostic evidence-DAG compiler. Inherited negative finding (torchsynth audit probe): run_evidence accepts ANY existing evidence_file as passed -- file existence is not evidence. Reference-only until a real capability-graph need exists; requires schema/content-hash verification and negative controls before any adoption."
+  },
+  {
+   "component": "spi-reg-control",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/spi_ctl.v",
+     "rtl-sketch/verify_ctl.py",
+     "rtl-sketch/stubs/spi_ctl_dr7rev1.v",
+     "spec/decision-records/0007-control-interface-spi-register-writes.md"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/spi_ctl.v": "8892b72cde65c2ac52cd577fdefb0cf9d9e50c3b2fef5676745a07750eafe815",
+    "rtl-sketch/verify_ctl.py": "d839126a8b993d11952e70a33f96e9cab8ab0ddbad9a215f5d63900d331f1b7b",
+    "rtl-sketch/stubs/spi_ctl_dr7rev1.v": "5f2ea74ea2ba5eba8ab6f90b090471cf8d0003f191eaf306cd4f8ab834fb856d",
+    "spec/decision-records/0007-control-interface-spi-register-writes.md": "3984b437ee20ddb526ef4ca1be6588472502cacf26e80f30ff03b53fc58d2fe3"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/spi_ctl.v",
+    "tb/verify_ctl.py",
+    "rtl/stubs/spi_ctl_dr7rev1.v",
+    "docs/decision-records/0003-control-interface.md"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "verify_ctl.py-equivalent end-to-end pin bench: model register image in, intended writes out, plus latency/overflow cases at our clocks",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "the retained prior-revision receiver (spi_ctl_dr7rev1.v pattern) must fail the end-to-end bench",
+   "notes": "Sibling DR-0007 documents the transport; its register semantics are sibling-specific and are NOT imported.",
+   "adaptations": [
+    "keep mode-0 48-bit CS-framed transport, four-deep write queue, status word, per-frame drain",
+    "replace sibling voice/drum register pages entirely with a DX7 patch/performance protocol (new control-interface DR)",
+    "recompute CDC and queue-overflow bounds for our clock plan"
+   ]
+  },
+  {
+   "component": "i2s-transmitter",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/i2s_tx.v"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/i2s_tx.v": "2cdb2112a11e1cff855ae1d2dc99e06032b3ef4efab8fdff29ca061802326202"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/i2s_tx.v"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "DAC-model pin decode bench (tb_top_bx/verify_synth_top pattern) at 48 kHz with our width; one-frame latency measured",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a one-BCLK-early/late MSB (the defect class polysynth PR #4 fixed) must be detected by the decode bench",
+   "notes": "16-bit, same word in both channels, MSB on second BCLK after LRCLK edge.",
+   "adaptations": [
+    "decide width and sample strobe locally; sibling derives LRCLK from its 256-cycle frame counter -- keep only if our frame plan matches",
+    "sibling carries 'two recorded defects kept out' markers; re-derive from the pinned bytes, not from prose"
+   ]
+  },
+  {
+   "component": "synth-top-chassis",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/synth_top.v",
+     "rtl-sketch/tb_top_bx.v",
+     "rtl-sketch/verify_synth_top.py"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/synth_top.v": "e476bfdfe93d3dbf5ab99ebad72958e8e4476681e9fcdc3d7d1c4d9a9061f9d7",
+    "rtl-sketch/tb_top_bx.v": "962614ffea25b4fa1057b7f124060852b74b60eca35b88d1ff9eac03e9c49de8",
+    "rtl-sketch/verify_synth_top.py": "461d98e99d23bbf2443e9175a9ff72595a901b856dfa07be78061ed302db82b4"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/synth_top.v"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "blackbox pin-level co-sim: decoded I2S stream byte-identical to the H07 flat-interface stream on every committed H07 vector + corrupted-transaction injection suite (H08, issue #30)",
+    "result": "PASS (H08, issue #30): 11 committed H07 vectors byte-exact pin==flat; injection suite PASS; BCLK/LRCLK structural law asserted every run"
+   },
+   "negative_control": "a datapath that misses its frame deadline must fail the cycle-budget assertion",
+   "notes": "Imported at H08 as the 9-pad chassis (rtl/synth_top.v): dx7_core instant with every DUT port tied to a pad, internal tap/status ports unconnected. The sibling bench/test files were reference-only for the adaptation; they are not imported (H08 authored its own bench).",
+   "adaptations": [
+    "keep single-clock 256-cycle frame chassis: tick/go, overrun status, I2S strobe timing",
+    "replace the sibling DSP instances (voice/drum/modal) with the FM operator array; no DSP semantics inherited"
+   ],
+   "adapted_sha256": {
+    "rtl/synth_top.v": "1fb6b7bdee430a70a131f25f391e5d47492c0e807816edc66ad9709ae278f87b"
+   }
+  },
+  {
+   "component": "negative-control-stub-pattern",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/stubs/voice_dp_stub.v",
+     "rtl-sketch/stubs/ladder_dp_stub.v"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/stubs/voice_dp_stub.v": "64e825db79a4ab885b79bda59cc60930d92c3a913bb1da56cddbf24fd0f38199",
+    "rtl-sketch/stubs/ladder_dp_stub.v": "e47bd45ef1998be49f0002afc567ad7077ee83a8e8773663e6605df73190c084"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/stubs/"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "each retained stub demonstrably fails the bench its real component passes",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "the control IS the negative: a stub passing a bench means the bench is broken",
+   "notes": "Borrowed from the sibling's spi_ctl_dr7rev1 standing negative control (kept with spi-reg-control).",
+   "adaptations": [
+    "pattern only: keep a deliberately-broken prior revision of each component as a standing bench control",
+    "the DSP cores these stubs stand in for are REJECTED; stubs are never functional imports"
+   ]
+  },
+  {
+   "component": "ladder-filter-core",
+   "ruling": "reject",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/ladder_dp_n.v"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/ladder_dp_n.v": "7a42aeec2663adfe4c741a915b492c7915c73a5c491caf8360f6d5994ad28d5b"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": null,
+   "notes": "REJECTED: sibling DSP (transistor-ladder filter core). DX7 FM needs no ladder; module names are not semantic proof and no sibling implements FM/DX envelopes. The N-channel shared-datapath METHOD (one datapath proven bit-exact at NCH=1/2/4/8, bench tb_ladder_n.v under iverilog) may be re-expressed locally for the FM operator array; that is method, not an import."
+  },
+  {
+   "component": "scorecard",
+   "ruling": "reject",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "tools/scorecard.py",
+     "tools/scorecard_delta.py",
+     "spec/decision-records/0015-the-scorecard-is-the-judge.md"
+    ]
+   },
+   "sha256": {
+    "tools/scorecard.py": "8cbdb7a3e97fde860890c730490aed3e20c1f3da56a278835f383fcd6159e544",
+    "tools/scorecard_delta.py": "84544222937ac5006dc51b903a829cbc86bceb66716be0441f4e9db80d05d942",
+    "spec/decision-records/0015-the-scorecard-is-the-judge.md": "57f6214e2ed42aa5640966c06e79f39f866fa557822652c23231f9c781399bf8"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": null,
+   "notes": "REJECTED (inherited negative finding, torchsynth audit P21/P22 probe): a required NaN after a finite metric still yields 'pass'; schema checks are shallow; worst tolerance-normalized distance mixes properties. Re-derive the judge locally: finiteness gates, per-property units/tolerances, PASS/FAIL/NOT_RUN/BLOCKED/NO_VERDICT/STALE, coverage separate from agreement. A proposed fixed import would need its own reviewed provenance + controls."
+  },
+  {
+   "component": "orfs-run-flow",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "pnr/orfs/run-orfs.sh"
+    ]
+   },
+   "sha256": {
+    "pnr/orfs/run-orfs.sh": "a827c1c3e875815a3679d138d7ad4647ba3af0c23ce7818911c84f4c2894be10"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "asic/orfs/run-orfs.sh"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "flow rerun end-to-end on our design; committed evidence per stage before any synthesis/PnR claim",
+    "result": "NOT_RUN (no ASIC work started)"
+   },
+   "negative_control": "a flow run with a stale/missing stage report must fail the evidence checklist",
+   "notes": "Working ORFS driver for gf180mcu. Import trigger: D02/ASIC work. Committed sibling reports are design-specific history (see orfs-evidence-records).",
+   "adaptations": [
+    "retarget top/constraints to our design; never inherit the sibling's floorplan/clock assumptions"
+   ]
+  },
+  {
+   "component": "orfs-gf180-7t-techmaps",
+   "ruling": "reject",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "pnr/orfs/gf180_7t/cells_adders.v",
+     "pnr/orfs/gf180_7t/cells_latch.v",
+     "pnr/orfs/gf180_7t/synth_unsigned.tcl"
+    ]
+   },
+   "sha256": {
+    "pnr/orfs/gf180_7t/cells_adders.v": "686fc8100a3d5e69f07e573422611eee9ff509e3a44848bc6f8936f7bc203d98",
+    "pnr/orfs/gf180_7t/cells_latch.v": "bd21a88f1ce3ad8087cba16dab01f8cb5b34ce5c8f0dae8b7a7b7fb8daec68d5",
+    "pnr/orfs/gf180_7t/synth_unsigned.tcl": "e0c4e78ceee4ee7387a8609efbb46fc72b8f99c2d5c6ef556bb79a5f2549034f"
+   },
+   "license": "Apache-2.0 (repository declaration); techmaps derived from OpenROAD-flow-scripts",
+   "license_basis": "ORFS-derived files; original license/notice attribution unresolved per the torchsynth audit (P38/P39) and cells not re-verified against the gf180mcu PDK",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": null,
+   "notes": "REJECTED per A01 acceptance ('ORFS techmaps unless re-verified'): attribution gate unresolved; cell contents unverified. May be re-ruled adopt/adapt only after tracing original ORFS provenance and cell-by-cell re-verification against the PDK -- a new decision record."
+  },
+  {
+   "component": "orfs-evidence-records",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "pnr/orfs/evidence/synth_top/README.md"
+    ]
+   },
+   "sha256": {
+    "pnr/orfs/evidence/synth_top/README.md": "c366be0203e29893db01e2dec82f4ad201dab21b439bb9e8e62092715c488919"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": null,
+   "notes": "Historical routed-design evidence for the sibling's synth_top (joined-d1e5068). Useful as an evidence-contents checklist; establishes nothing about this repository and is not signoff evidence."
+  },
+  {
+   "component": "ulx3s-top-wrapper",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/rtl/ulx3s_top.v"
+    ]
+   },
+   "sha256": {
+    "fpga/rtl/ulx3s_top.v": "49a04c29781b0dddca435a98f446d948bfa70e62ad895b5fc2119f460c9e276e"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "fpga/rtl/ulx3s_top.v"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "synthesized for the chosen board; pin-level audio capture alignment/calibration procedure executed on hardware",
+    "result": "NOT_RUN (no board decision yet)"
+   },
+   "negative_control": "a wrapper build with no electrical/audio check must not count as playback evidence",
+   "notes": "Structure/wiring precedent only. Board selection precedes any import.",
+   "adaptations": [
+    "as-is board-wrapper import is FORBIDDEN (A01 acceptance): remove sibling DSP instances, re-derive reset/lock release and clocking for our plan, re-attribute every pin"
+   ]
+  },
+  {
+   "component": "ulx3s-board-constraints",
+   "ruling": "reject",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/boards/ulx3s.lpf"
+    ]
+   },
+   "sha256": {
+    "fpga/boards/ulx3s.lpf": "192d9a78908f27d44498e15f52b48dad689594efe26273899dd85f1219b70801"
+   },
+   "license": "Apache-2.0 (repository declaration); vendor-derived pin attribution unresolved",
+   "license_basis": "Pin attribution is vendor-derived and unresolved (torchsynth audit P11); constraints are board- and design-specific",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none required (no bytes imported)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": null,
+   "notes": "REJECTED as-is (A01 acceptance: board wrappers/constraints). Recreate against the chosen board with traced pin provenance."
+  },
+  {
+   "component": "fpga-srccheck-makefile",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/Makefile"
+    ]
+   },
+   "sha256": {
+    "fpga/Makefile": "c85bbc82301b75d614ff9300cabd252175d6f6761779b4474a7bc80c799d6f16"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "fpga/Makefile"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "make srccheck lints all RTL with iverilog -g2012 and fails on compile errors",
+    "result": "NOT_RUN (no RTL yet)"
+   },
+   "negative_control": "a deliberately broken RTL file must fail srccheck",
+   "notes": "Cheap static check that keeps RTL compiling without a simulator suite.",
+   "adaptations": [
+    "retarget file lists; keep the lint-first srccheck target pattern"
+   ]
+  },
+  {
+   "component": "spi-host-driver",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/spi_host.py"
+    ]
+   },
+   "sha256": {
+    "fpga/spi_host.py": "d643684b0dc9bd6a4993d2c84fefab63d88fb876fdfe3544babb2905b46856bb"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "tools/spi_host.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "host-driver unit tests: transaction framing, schedule/frame placement, error cases",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a driver that bursts writes with no frame scheduling must fail the schedule tests",
+   "notes": "Host-side production control path producing 48-bit mode-0 transactions.",
+   "adaptations": [
+    "retarget register transactions to the DX7 control-interface protocol (follows spi-reg-control adaptation)",
+    "sibling docstring itself warns against un-scheduled bursts; keep the frame-schedule discipline"
+   ]
+  },
+  {
+   "component": "link-budget",
+   "ruling": "adopt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/link_budget.py"
+    ]
+   },
+   "sha256": {
+    "fpga/link_budget.py": "f7dd14ae4752beb95816d48ce3a4c0c604266ec560e1bc8fef6efad4c387420a"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "tools/link_budget.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "arithmetic known-answer cases recomputed independently (exact rationals)",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a budget table that silently drops a term must fail the known-answer check",
+   "notes": "Board-link arithmetic helper."
+  },
+  {
+   "component": "pll-search",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "fpga/scripts/pll_search.py"
+    ]
+   },
+   "sha256": {
+    "fpga/scripts/pll_search.py": "e3ed187e7e4a4cd181d59254aca0d8436bf61830e8befd88cdf4333b94917920"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "fpga/scripts/pll_search.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "divider arithmetic checked with exact rationals; ranked results match independent recomputation for our 25 MHz -> 48 kHz family",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "an out-of-bounds divider candidate must be rejected by the bound checks",
+   "notes": "stdlib ECP5 divider enumeration.",
+   "adaptations": [
+    "retarget bounds and target frequency to our clock plan",
+    "remove the sibling's unconditional 'crystal dominates' claim: the torchsynth audit measured its 44.1 kHz candidate at +64 ppm; no tolerance is accepted here"
+   ]
+  },
+  {
+   "component": "area-scraper",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "rtl-sketch/area/synth_area.py"
+    ]
+   },
+   "sha256": {
+    "rtl-sketch/area/synth_area.py": "cf38302a08237957c4873a4e71fa5f3de56c34c84441f54632a4fd33ea8a3e4e"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "tools/area/synth_area.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "parser known-answer test on a checked-in sample Yosys report",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a malformed report must fail parsing loudly, not produce zeros",
+   "notes": "Yosys area-report parser behind the sibling's measured gf180mcu area calibrations.",
+   "adaptations": [
+    "retarget report paths/metadata to our design"
+   ]
+  },
+  {
+   "component": "shared-substrate-dr",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-polysynth",
+    "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
+    "path": [
+     "spec/decision-records/0003-sibling-instrument-repositories.md"
+    ]
+   },
+   "sha256": {
+    "spec/decision-records/0003-sibling-instrument-repositories.md": "9a9edfdee46b59b886ee3482bde50ea99bc40dfcd69fa1a877d1ee8f7f473b8a"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "docs/decision-records/0002-reuse-governance.md"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "governance gates enforced by tools/check_reuse.py and review checklist",
+    "result": "PASS"
+   },
+   "negative_control": "tools/check_reuse.py failing on unrecorded or drifted governed files is the enforcement control",
+   "notes": "Upstream DR-0003 remains 'proposed' and un-ratified in the archived polysynth repo; we adopt its evidenced rules, not its status.",
+   "adaptations": [
+    "merged with torchsynth DR-0005 into DR-0002: one master per shared component, no submodules (org count: zero across ~50 repos), provenance-before-import, and the sibling's own I2S-copy defect (polysynth PR #4) as the cautionary case"
+   ],
+   "adapted_sha256": {
+    "docs/decision-records/0002-reuse-governance.md": "948c6899f14c9962a44675dd0f9a582afe9060235f2d9974cd6c482b55fd2632"
+   }
+  },
+  {
+   "component": "uart-receiver",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-polysynth",
+    "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
+    "path": [
+     "rtl/uart_rx.v"
+    ]
+   },
+   "sha256": {
+    "rtl/uart_rx.v": "c525d1924a1c29f32c81e2724e1cdda653f17fbccf0dba472c79104ec599d743"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/uart_rx.v"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "baud-error, sustained-traffic, bad-stop-bit and reset tests independent of any voice parser",
+    "result": "NOT_RUN (transport undecided)"
+   },
+   "negative_control": "a bad stop byte must produce a framing error, not a silent byte drop-and-accept",
+   "notes": "Candidate only if UART is selected as the external-host transport; SPI is the stronger prior (spi-reg-control).",
+   "adaptations": [
+    "byte receiver only; re-derive CLKS_PER_BIT for our clock; never import the sibling's voice command parser/note-event semantics"
+   ]
+  },
+  {
+   "component": "rom-table-generator",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-polysynth",
+    "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
+    "path": [
+     "rtl/gen_tables.py"
+    ]
+   },
+   "sha256": {
+    "rtl/gen_tables.py": "f5ad44e2cce90af62079335de32bb405bfcae984686ed7ced6de7fcb41e0ac05"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "rtl/gen_tables.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "generated table hash matches the frozen model's table bytes; repeat generation is byte-identical",
+    "result": "NOT_RUN (import pending)"
+   },
+   "negative_control": "a generator edit that changes table bytes without regenerating must fail the hash equality check",
+   "notes": "The RTL's tables become the same bytes the reference model uses.",
+   "adaptations": [
+    "generate-from-frozen-contract pattern with a content hash over the source table; retarget tables to FM sine LUT and DX envelope data from OUR frozen integer model"
+   ]
+  },
+  {
+   "component": "numeric-contract",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-polysynth",
+    "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
+    "path": [
+     "spec/NUMERIC-CONTRACT.md"
+    ]
+   },
+   "sha256": {
+    "spec/NUMERIC-CONTRACT.md": "879fe49da6c2ebe87a440f1d52c3dccb51e037ff1eb99c3634183da0692cc9e4"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "spec/NUMERIC-CONTRACT.md"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "contract review: every frozen table/literal carries a source and hash; model-vs-contract checker green",
+    "result": "NOT_RUN (contract work pending)"
+   },
+   "negative_control": "a literal present in RTL but absent from the frozen contract must fail the cross-check",
+   "notes": "Sibling contract covers a subtractive-ish polysynth; nothing numeric transfers.",
+   "adaptations": [
+    "pattern only: frozen literals + tables + generation provenance; content is DX7 FM semantics from our own model"
+   ]
+  },
+  {
+   "component": "pdk-free-runner",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-polysynth",
+    "commit": "b60e424ec570d5ef988c0b2c05dc71ba5eed1825",
+    "path": [
+     "tb/run_tb.py"
+    ]
+   },
+   "sha256": {
+    "tb/run_tb.py": "f0ac9323555b56389f9ac3a86eea1551395dc3431ffa73a1981d4c12c2124758"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "tb/run_tb.py"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "runner exit convention proven: 0 pass / 1 failed tests / 2 did-not-run on fixtures",
+    "result": "NOT_RUN (no RTL yet)"
+   },
+   "negative_control": "build failure and empty-results-XML fixtures must yield 2, never 0",
+   "notes": "cocotb-based PDK-free RTL runner with the 0/1/2 exit convention (matches A01 acceptance).",
+   "adaptations": [
+    "replace sibling RTL/top/model inputs entirely; keep simulator/seed/defines selection and results-XML parsing"
+   ]
+  },
+  {
+   "component": "gf180-sram-macro",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "2AMLogic/gf180-sram",
+    "commit": null,
+    "path": []
+   },
+   "sha256": {},
+   "license": "unknown (not established)",
+   "license_basis": "GitHub-only (no local checkout at audit time); no Liberty/temperature/voltage views established; nothing pinned, no hashes recorded",
+   "license_anchor": null,
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "none (nothing importable without characterized views)",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "any attempt to instantiate the macro without characterized views must be blocked in review",
+   "notes": "Reference for future SRAM needs (voice memory). Reject for any use until Liberty views and license basis are established; then a new decision record."
+  },
+  {
+   "component": "klayout-tools-klt",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "2AMLogic/klayout-tools",
+    "commit": "d5893304afc2bfa6228609740e83292c44b854f3",
+    "path": []
+   },
+   "sha256": {},
+   "license": "MIT",
+   "license_basis": "MIT, LICENSE anchor; hash matches K08 in the torchsynth audit",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "when ASIC work starts: pinned package dependency with recorded distribution digest + dependency lock; stage-specific evidence",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "ASIC claims without committed stage evidence from a pinned klt environment are invalid by policy",
+   "notes": "Existing org-shared ASIC interface (klt). Per torchsynth DR-0005: use as a pinned package, never fork internals; commit d5893304 is a local-observation note, re-pin at adoption time."
+  },
+  {
+   "component": "dexed-msfa-tables",
+   "ruling": "reference-only",
+   "upstream": {
+    "repo": "asb2m10/dexed",
+    "commit": null,
+    "path": []
+   },
+   "sha256": {},
+   "license": "Apache-2.0",
+   "license_basis": "org policy: Dexed msfa/ material is Apache-2.0 and adoptable with a full provenance record; confirm file headers at pin time",
+   "license_anchor": null,
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "R01 pins exact commit + table files + hashes + provenance record before any adoption",
+    "result": "NOT_RUN (R01 pending)"
+   },
+   "negative_control": "an imported table without a pre-landing provenance record must fail tools/check_reuse.py",
+   "notes": "FM operator tables (LUTs, sin/exp) under Source/msfa/. Reference-only until R01 pins them; then re-rule adopt with provenance + requalification. Dexed agreement is not original-DX7 fidelity."
+  },
+  {
+   "component": "dexed-enginemki",
+   "ruling": "external-oracle-only",
+   "upstream": {
+    "repo": "asb2m10/dexed",
+    "commit": null,
+    "path": []
+   },
+   "sha256": {},
+   "license": "GPL-3.0-or-later",
+   "license_basis": "GPL-3.0-or-later; external comparison oracle only",
+   "license_anchor": null,
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "renders used only as comparison oracle from outside the repository",
+    "result": "NOT_RUN (R01 pending)"
+   },
+   "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
+   "notes": "NEVER copied into this Apache-2.0 repository. R01 pins the exact Dexed commit/engine mode/sample rate/runtime in the reference manifest."
+  },
+  {
+   "component": "vdx7",
+   "ruling": "external-oracle-only",
+   "upstream": {
+    "repo": "external (identity and commit pinned in the R01 reference manifest)",
+    "commit": null,
+    "path": []
+   },
+   "sha256": {},
+   "license": "GPL-3.0-or-later",
+   "license_basis": "GPL-3.0-or-later; external comparison oracle only",
+   "license_anchor": null,
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "renders used only as comparison oracle from outside the repository",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
+   "notes": "NEVER copied into this repository."
+  },
+  {
+   "component": "hexter",
+   "ruling": "external-oracle-only",
+   "upstream": {
+    "repo": "external (identity and commit pinned in the R01 reference manifest)",
+    "commit": null,
+    "path": []
+   },
+   "sha256": {},
+   "license": "GPL-2.0-or-later",
+   "license_basis": "GPL-2.0-or-later; external comparison oracle only",
+   "license_anchor": null,
+   "destination": [],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "renders used only as comparison oracle from outside the repository",
+    "result": "NOT_RUN"
+   },
+   "negative_control": "any copy of this code inside this repo must fail tools/check_reuse.py and review",
+   "notes": "NEVER copied into this repository."
+  }
+ ],
+ "local_originals": [
+  {
+   "path": "src/gf180_dx7/__init__.py",
+   "sha256": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
+   "reason": "locally authored empty package marker; not a reuse import"
+  },
+  {
+   "path": "tools/check_reuse.py",
+   "sha256": "78cd8ba47e28264ae35f941e77742f87a1198fe0f096e611e698de65e87118f0",
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
+  },
+  {
+   "path": "tools/check_all.sh",
+   "sha256": "7e13170117ac69768e329b8a42a952ffacf049bb17b48aa678ff846aa47de011",
+   "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge; re-pinned after H03 added the core-contract budget gate (issue #25)"
+  },
+  {
+   "path": "src/gf180_dx7/sysex.py",
+   "sha256": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+   "reason": "locally authored P01 codec (PR #43); DX7 field layout taken from published documentation as facts, no upstream source bytes adopted"
+  },
+  {
+   "path": "src/gf180_dx7/cli.py",
+   "sha256": "110f5f06705b5e524649d05cf1553a53f16268a1ec5763eb27a8d460c8222ced",
+   "reason": "locally authored P01 CLI (PR #43); not a reuse import"
+  },
+  {
+   "path": "tools/sysex_probe.py",
+   "sha256": "698b2fa580b08f3c19c26b18e9b56d8c5bad4dde493bfce6aa62add23d5b4a7d",
+   "reason": "locally authored P01 probe tool (PR #43); not a reuse import"
+  },
+  {
+   "path": "tools/make_test_fixtures.py",
+   "sha256": "f60fa9ea5195ea3bc0e5b9a710a3c8ed475b7dd31eb94ba0199be8aa742d6c78",
+   "reason": "locally authored P01 fixture generator (PR #43); not a reuse import"
+  },
+  {
+   "path": "tools/catalog_archive.py",
+   "sha256": "09d732a1e31f9c859f38709109bfbb425721bbf03ce9c054047f0f0ea343de20",
+   "reason": "locally authored P02 archive cataloger (#9); not a reuse import"
+  },
+  {
+   "path": "tools/render_issue_dag.py",
+   "sha256": "c11889e6b7969f090bae371df1c68e7c9cbb58e285dd29bcee6f369922a6ef06",
+   "reason": "locally authored issue-DAG README view generator (progress tooling); not a reuse import; re-pinned after GitHub mermaid rich-display fix (conservative labels/edges + built-in fence lint)"
+  },
+  {
+   "path": "tools/verify_reference.py",
+   "sha256": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa",
+   "reason": "locally authored R01 drift verifier (issue #6); pattern adapted from the catalogued reference-manifest-pattern, no upstream bytes (converted from exemption at merge; byte-pinned)"
+  },
+  {
+   "path": "tools/render_reference.py",
+   "sha256": "4320ad073fdf01c43f6343c9389cdfef3eb9814347e27c6edfc14900018c0a11",
+   "reason": "locally authored R02 render harness (issue #7); drives the external GPL oracle as comparison evidence, no upstream bytes"
+  },
+  {
+   "path": "tools/render_selfcheck.py",
+   "sha256": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b",
+   "reason": "locally authored R02 fast self-check (issue #7); guarded NOT_RUN where the oracle binary is absent, no upstream bytes"
+  },
+  {
+   "path": "tools/make_smoke_fixture.py",
+   "sha256": "11f3c2aba60df00ab52808c894928938692470cdd875f68aedf9f8cb8769fd37",
+   "reason": "locally authored R02 smoke-fixture generator (issue #7); original synthetic parameter set, no third-party voice bytes"
+  },
+  {
+   "path": "tools/capture_trace.py",
+   "sha256": "e83a0a20504ae43682d166577a9cad1a66e171ce8e22a7c53ff3e51312255bee",
+   "reason": "locally authored R05 non-invasive trace capture gate (issue #12); drives the external GPL oracle as comparison evidence and byte-compares traced vs untraced renders, no upstream bytes"
+  },
+  {
+   "path": "src/gf180_dx7/compare.py",
+   "sha256": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
+   "reason": "locally authored R04 exact paired comparator (issue #11); measurement DISCIPLINE adapted from the catalogued paired-comparator (torchsynth spec/PAIRED-METRICS.md @ 36bdc67, Apache-2.0), re-implemented stdlib-only with no upstream bytes; see docs/COMPARE-CONTRACT.md"
+  },
+  {
+   "path": "tools/compare_renders.py",
+   "sha256": "30072c04889a0bc9dca32876e187113cb5c933d6fc3b62161f0159aa1d184c47",
+   "reason": "locally authored R04 comparison CLI (issue #11); 0/1/2 exit convention, no upstream bytes"
+  },
+  {
+   "path": "tools/compare_evidence.py",
+   "sha256": "be94730dd8b60f2f4f1d1364de3bb95ae6c7c31a49d8d01e4a8443d7cbbd3981",
+   "reason": "locally authored R04 reproducibility-evidence tool (issue #11); committed-vs-fresh render metadata cross-check + exact comparison, no upstream bytes"
+  },
+  {
+   "path": "tools/qualify_compare.py",
+   "sha256": "c1a2a1583f1f9a9a1d54fe1e51933fe7b87255d304cf252f2dec9cc7fc3977ae",
+   "reason": "locally authored R04 comparator qualification report generator (issue #11); analytic fixtures + mutation battery, no upstream bytes"
+  },
+  {
+   "path": "tools/select_dev32.py",
+   "sha256": "4a049248a659a016095978df15b56ce6a86b19d178ec8abce27d7359869ed6e0",
+   "reason": "locally authored R03 tool (issue #10); not a reuse import"
+  },
+  {
+   "path": "tools/validate_dev32.py",
+   "sha256": "25a88e84dac936f5d4e75fef001b028fc3d73ade8c722734ef4510949660da92",
+   "reason": "locally authored R03 tool (issue #10); not a reuse import"
+  },
+  {
+   "path": "tools/audition.py",
+   "sha256": "60568670cced8df5adc18aee51327d565ae982da0ecb6a27b9a929289ce4b1b9",
+   "reason": "locally authored U01 audition/recall tool (issue #34); drives the external GPL oracle as an audition renderer, no upstream bytes"
+  },
+  {
+   "path": "spec/audition-phrases-v1.json",
+   "sha256": "bcfd66075a0ead183e5453591e4095077fac4e067a927e55ce236ff856ec00ff",
+   "reason": "locally authored U01 fixed audition phrase set (issue #34, plan section 6 protocol); original event data, no third-party voice bytes"
+  },
+  {
+   "path": "tools/r07_compare.py",
+   "sha256": "b80bd15bb5e489bde962b71a6a2feb38ae39285eb288ab2a081360cfefeaa8e3",
+   "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported"
+  },
+  {
+   "path": "tools/check_numeric_profile.py",
+   "sha256": "11129ee06a919a5dfcfc8f1eaa39cbcaa80cdc42c9c9552093647cdac4b4345d",
+   "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1)"
+  },
+  {
+   "path": "tools/registry_coverage.py",
+   "sha256": "1ffec3d675647922851787a009be23493fb2f74a703f8b198f6bc37c452a57eb",
+   "reason": "locally authored R06 coverage validator (issue #13); reflects the P01 supported-field list, emits machine-readable coverage holes, --check gate and --selftest-negative resolution proof, no upstream bytes"
+  },
+  {
+   "path": "tools/registry_smoke.py",
+   "sha256": "6759e6c2a5bd45d6672885d0c05a9fb74772cbe37e09d1562644a29b25eb2e2a",
+   "reason": "locally authored R06 short-subset smoke executor (issue #13); builds patches via the P01 codec and drives the external GPL oracle as comparison evidence, no upstream bytes"
+  },
+  {
+   "path": "tools/check_registry.py",
+   "sha256": "ff78d51851a6d782b2f399a04adb9356d926606400075ff8767c49cf46bcf564",
+   "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
+  },
+  {
+   "path": "tests/test_capabilities.py",
+   "sha256": "8044685347e4a20dcee98139fb4e344cf527d47c5fbbbe1a3a32dd6ddb10d5fb",
+   "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted"
+  },
+  {
+   "path": "spec/capabilities-v1.json",
+   "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
+   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+  },
+  {
+   "path": "src/gf180_dx7/model/__init__.py",
+   "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+   "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import; re-pinned to the N02 package-marker bytes (same file, later entry records the same hash)"
+  },
+  {
+   "path": "src/gf180_dx7/model/envelope.py",
+   "sha256": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+   "reason": "locally authored N03 integer operator-envelope model (issue #17); re-implementation of pinned env.cc/dx7note.cc semantics as numeric facts with file:line citations in docs/N03-ENVELOPE-MODEL.md, zero GPL bytes copied"
+  },
+  {
+   "path": "tests/test_envelope.py",
+   "sha256": "ab3bc3181a2a38e7e80c62e38650befa316d84e7d6e9e7272052bd3c0fa16ce8",
+   "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes. Re-pinned after the PR #58 judge-fix revision (sr_multiplier control documentation corrected to the measured flip locations; committed scan-statistics test added)"
+  },
+  {
+   "path": "src/gf180_dx7/capabilities.py",
+   "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md"
+  },
+  {
+   "path": "tools/compile_capabilities.py",
+   "sha256": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+   "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes"
+  },
+  {
+   "path": "src/gf180_dx7/model/__init__.py",
+   "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+   "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge; conflict-marker regression repaired after #57 squash (orchestrator)"
+  },
+  {
+   "path": "src/gf180_dx7/model/tables.py",
+   "sha256": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+   "reason": "locally authored N02 table generator (issue #16); formulas adopted as facts from the pinned trees with citations, zero upstream bytes"
+  },
+  {
+   "path": "src/gf180_dx7/model/operator.py",
+   "sha256": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+   "reason": "locally authored N02 integer operator model (issue #16); Mark I semantics re-implemented from cited facts (EngineMkI.cpp is external-oracle-only), no GPL/MSFA bytes"
+  },
+  {
+   "path": "tools/gen_tables.py",
+   "sha256": "36caa180ce476e69a83b3947a06779ac5264a38e7cd8dc8ac4ad21ee19775224",
+   "reason": "locally authored N02 regenerate-and-hash CLI (issue #16); parasynth --check discipline re-expressed, no upstream bytes"
+  },
+  {
+   "path": "tests/test_operator.py",
+   "sha256": "5a7bb873383fe2ba0fe408730b2ef7762757443e4959cd9f28dfe26b996aafd4",
+   "reason": "locally authored N02 probe suite (issue #16); analytic probes, negative controls, and the pinned-oracle reference probe"
+  },
+  {
+   "path": "reference/tables/sinlog_table.hex",
+   "sha256": "91182672af773c5df0ba41b76bc89b74b6268cc233f5b2659eb3e3c6ac836ea3",
+   "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+  },
+  {
+   "path": "reference/tables/sinexp_table.hex",
+   "sha256": "dc3b3a93db54df5c7d41ca1ad38e6c67e6ba7b8a891c5c2e0be4cba7856794f7",
+   "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+  },
+  {
+   "path": "reference/tables/freqlut_table.hex",
+   "sha256": "f1b080824a8286e307c8febcacca96c25eb501f0c482296062c3ff22f15d9c7b",
+   "reason": "generated N02 artifact (issue #16); bytes pinned by reference/tables/manifest.json and tools/gen_tables.py --check"
+  },
+  {
+   "path": "reference/tables/manifest.json",
+   "sha256": "7dff9a64852bb701a07662c9bee6689a8804e60c8791bac856564547c7ef4e81",
+   "reason": "generated N02 table manifest (issue #16): sha256/entries/bits/formula citations per table"
+  },
+  {
+   "path": "reference/evidence/n02-operator/reference-probe.json",
+   "sha256": "cd306c4e7d1613ac3da341b58f185062c8e7eaa3431853704336cfe4cfbfe08a",
+   "reason": "N02 reference-probe evidence record (issue #16); liveness re-verified by tests/test_operator.py"
+  },
+  {
+   "path": "src/gf180_dx7/model/pitch.py",
+   "sha256": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+   "reason": "locally authored N05 integer pitch/modulation model (issue #19); numeric semantics, constants and table contents adopted as facts from the pinned Apache-2.0 msfa files by citation (freqlut.cc, dx7note.cc, pitchenv.cc, lfo.cc, sin.cc, tuning.cc), clean re-implementation with zero copied bytes; GPL EngineMkI never copied or imported"
+  },
+  {
+   "path": "tests/test_pitch.py",
+   "sha256": "45b37dd3a1f03195147675bb96c7e529ce12cd73f85782e8c5344a1d16ef1062",
+   "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes"
+  },
+  {
+   "path": "rtl/storage_probe.v",
+   "sha256": "606a548ce6acde72a324c22f2be1778d48e089338823d85539e747c2cfbf10ab",
+   "reason": "locally authored H02 full-state storage probe RTL (issue #21); state image widths mirrored from spec/numeric-profile-v1.json as facts, no upstream bytes"
+  },
+  {
+   "path": "rtl/storage_probe_tb.v",
+   "sha256": "ea48885501b38a087cec4a34f1b0b986f0fa2de7932ada550b788ffa067fc5d6",
+   "reason": "locally authored H02 iverilog smoke bench (issue #21); write/readback of all 113 banks, no upstream bytes"
+  },
+  {
+   "path": "tools/storage_probe_synth.py",
+   "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
+   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
+  },
+  {
+   "path": "tests/test_storage_probe.py",
+   "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
+   "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
+  },
+  {
+   "path": "rtl/operator_probe.v",
+   "sha256": "c20277c0c39258250a4acaa259847f2395e0e31f894d34ea92d9a4e710f10f04",
+   "reason": "locally authored H01 synthesizable operator-probe RTL (issue #20); Mark I per-sample operator semantics mirrored from the frozen N02 model (operator.py) as facts with citations, ROMs $readmemh-load the repo's own manifest-pinned reference/tables bytes, no upstream bytes"
+  },
+  {
+   "path": "rtl/tb_operator_probe.v",
+   "sha256": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842",
+   "reason": "locally authored H01 iverilog equivalence driver (issue #20); drives golden vectors and dumps RTL outputs for the Python judge, no upstream bytes"
+  },
+  {
+   "path": "tools/h01_compare.py",
+   "sha256": "5368c6ff1e1e1b32a05eb55127bd5da9b285ea04f9d6b83b55b25f4ee9f8a0f6",
+   "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes"
+  },
+  {
+   "path": "tools/h01_synth.py",
+   "sha256": "d3e82f753d741ee8291fd601c44f51078e56672f4ea9af8c963bc5b29a49459e",
+   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes"
+  },
+  {
+   "path": "tests/test_h01.py",
+   "sha256": "8d34a6e1d04eccb2f83eb12e51aca0320eed3feb44e16bd57f3fb229a9aae89f",
+   "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes"
+  },
+  {
+   "path": "src/gf180_dx7/model/algorithm.py",
+   "sha256": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+   "reason": "locally authored N04 integer algorithm/feedback model (issue #18); routing table values adopted as numeric facts from the pinned msfa citation with clean re-implementation, zero GPL bytes"
+  },
+  {
+   "path": "tests/test_algorithm.py",
+   "sha256": "733f778ba5ef7fc7ab605fe6da92ee42a5316204cb12cf6ac01843e87439ac0a",
+   "reason": "locally authored N04 test suite (issue #18); hand-derived wiring table re-derived from the citation, scripted-source battery, oracle sweep, three negative controls"
+  },
+  {
+   "path": "docs/N04-ALGORITHM-MODEL.md",
+   "sha256": "99138af716d18a4ec761ac55c919d0264f36ed141fe702ba9abe99844fff24a0",
+   "reason": "locally authored N04 derivation and results record (issue #18)"
+  },
+  {
+   "path": "src/gf180_dx7/model/integrated.py",
+   "sha256": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
+   "reason": "locally authored N06 integrated single-note model (issue #22); composes the merged N02-N05 modules and mirrors the pinned wrapper's block loop as semantic facts (zero GPL bytes); carries the DR-0006 findings"
+  },
+  {
+   "path": "tools/n06_compare.py",
+   "sha256": "2f76e8abaf157451759cade62031129e52ae0e3131911bcde360b590812ebf60",
+   "reason": "locally authored N06 case runner (issue #22); pinned-oracle vs integrated-model exact comparison over the dev32 + registry single-note suites with per-property localization and the stub negative control"
+  },
+  {
+   "path": "tests/test_integrated.py",
+   "sha256": "77d0c6f385ce80d837593a6329bdbca76d723e4a39d03c4a99cc2db94ae661e9",
+   "reason": "locally authored N06 test suite (issue #22); wrapper bookkeeping, composition semantics (bend/LFO/scope guard), stub seams, committed-evidence validation, guarded live oracle checks"
+  },
+  {
+   "path": "docs/N06-INTEGRATED-MODEL.md",
+   "sha256": "2a177959638e1947adb50c7044e5f277a62525f3d3f9331f1065d9b65b05934f",
+   "reason": "locally authored N06 derivation and results record (issue #22): composition order, event semantics, evidence tables, findings F-1..F-5; re-pinned after DR-0006 wording follow-up (judge note)"
+  },
+  {
+   "path": "docs/decision-records/0006-n06-integration-findings.md",
+   "sha256": "239729f38b610c66e0c843065cac723227498d4e6a184cd755d09985612eef5e",
+   "reason": "locally authored decision record for the N06 integration findings (issue #22, stop/escalate clause); re-pinned after DR-0006 wording follow-up (judge note)"
+  },
+  {
+   "path": "reference/evidence/n06-integrated/dev32-subset.json",
+   "sha256": "d135fd41ad7f629708d68df47fa5546a850f109fb7b2aa464424e06d0c9040eb",
+   "reason": "committed N06 evidence (issue #22): oracle-vs-model verdicts and diagnostics for the dev32 subset + registry single-note cases"
+  },
+  {
+   "path": "reference/evidence/n06-integrated/negative-control.json",
+   "sha256": "60e0ed8affc922a529e32bba74f743fa32332ff938581556901ad71030cc19de",
+   "reason": "committed N06 negative control (issue #22): envelope-seam stub makes the case set fail and localize the stubbed module"
+  },
+  {
+   "path": "src/gf180_dx7/model/poly.py",
+   "sha256": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12",
+   "reason": "N07 D00 polyphonic state/event manager (issue #23): 16 independent voice slots, DEC-015/016/017/018/019 policy, NUM-012 reclamation, isolation negative-control seams"
+  },
+  {
+   "path": "tools/n07_compare.py",
+   "sha256": "5646c10027cdc8e01d27c8af3afc591183201ce9155d3249456971d875859227",
+   "reason": "committed N07 case runner (issue #23): wrapper-valid oracle cross-checks plus the measured ev-steal-17 policy divergence"
+  },
+  {
+   "path": "tests/test_poly.py",
+   "sha256": "35bd7b96857a93316c9da450fb636b9f31181a1fce114e24174876aa2198bac1",
+   "reason": "N07 test suite (issue #23): D00 policy battery, isolation additivity, live negative controls, committed-evidence validation, guarded live-oracle checks"
+  },
+  {
+   "path": "docs/N07-POLY-MODEL.md",
+   "sha256": "0f0b8eb5e05f8d8d6ced09cad6f746008aa852e046eacd1c2b46312e95b89965",
+   "reason": "N07 model doc (issue #23): D00 policy mapping, DEC-016 reading record, isolation methodology, wrapper-validity boundary, divergence documentation"
+  },
+  {
+   "path": "reference/evidence/n07-poly/evidence.json",
+   "sha256": "4c1e9806f5b164138c33e6bee07d1be96642faab5b67fb1dec39fd81a50982d6",
+   "reason": "committed N07 evidence (issue #23): 7/7 wrapper-valid EXACT cross-checks and the documented ev-steal-17 divergence measurements"
+  },
+  {
+   "path": "spec/release-vectors-v1.json",
+   "sha256": "5848fbfd031521599ab001dec325d1a1d8b6bdb08102475a53a95ef26474230d",
+   "reason": "N08 preregistration (issue #24): dev/challenge selection, frozen thresholds, and binding hashes, frozen before any challenge render was inspected"
+  },
+  {
+   "path": "tools/n08_build_release.py",
+   "sha256": "b6315c8919b651c8fe4ba43d2ab826e5c14fb376d402ae253cc1723848fe7ecc",
+   "reason": "locally authored N08 bundle builder (issue #24): deterministic vector+manifest build enforcing the preregistration binding (refuses on drift)"
+  },
+  {
+   "path": "tools/n08_verify_release.py",
+   "sha256": "88b4808146608922f38328472390513d25fe72d57e1252e03b8e0e620703b80f",
+   "reason": "locally authored N08 release verifier (issue #24): bundle hash, vector/model-identity/STALE checks, and the re-render gate H-series RTL conformance runs against"
+  },
+  {
+   "path": "tools/n08_mutations.py",
+   "sha256": "8a299d854c4d753f9f4d23508f883d4ad464574c7d3ad51e960a9ae9e62ceee6",
+   "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle"
+  },
+  {
+   "path": "tools/n08_challenge.py",
+   "sha256": "c4ec82e4cb932e4c185169c49e8f5e1a836c4215d1b6dea011f7a84466c3fc61",
+   "reason": "locally authored N08 challenge runner (issue #24): renders the preregistered challenge set and compares vs the pinned oracle at the frozen thresholds"
+  },
+  {
+   "path": "tests/test_n08_release.py",
+   "sha256": "0d29ef3bae35b2b309c65911e969849a979160fac8df329ecd93b57eab16e3f1",
+   "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation"
+  },
+  {
+   "path": "docs/decision-records/0007-release-freeze-v1.md",
+   "sha256": "015bb8f9888b4fade73a62e0d1fcb229e5372d172bb99ba01172fd56a7a46d32",
+   "reason": "locally authored freeze decision record (issue #24): frozen contents, challenge protocol ordering, STALE rules, H03+ authorization statement"
+  },
+  {
+   "path": "docs/N08-RELEASE.md",
+   "sha256": "7188af87668373eec224b58e3ddc4bc9c56688b6818007110175369c6db10af1",
+   "reason": "locally authored N08 release notes (issue #24): contents, verification commands, mutation coverage, challenge results, bounded findings and exclusions"
+  },
+  {
+   "path": "reference/release/manifest.json",
+   "sha256": "4eab072416e75e37a3c9ff328bba625a2f7f11d14dc40949c6b0366f52246d38",
+   "reason": "committed N08 release manifest (issue #24): per-case vector shas + block-level event traces, model identity, arithmetic-profile pointer, frozen thresholds, derived error budgets, bundle hash"
+  },
+  {
+   "path": "reference/release/challenge-results.json",
+   "sha256": "ad9cba1b2cb0f1f529b1d9147c1977b7b476559c0f7893be70c564e48b768198",
+   "reason": "committed N08 challenge record (issue #24): 21/21 preregistered challenge cases AGREE_EXACT at the frozen thresholds, bound to the bundle hash"
+  },
+  {
+   "path": "reference/release/mutation-results.json",
+   "sha256": "8c7741511b5ba8df8ed0bd617d5988c5493a4066f7e83f358f8993933444a900",
+   "reason": "committed N08 mutation results (issue #24): 5/5 mutations detected by the release verification, bound to the bundle hash"
+  },
+  {
+   "path": "docs/CONTRACT-CORE-v1.md",
+   "sha256": "12182ea4a0f1d5a46c76507ae3a3690661a295dc684450ec4e80ceefd47b0e54",
+   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata"
+  },
+  {
+   "path": "spec/core-contract-v1.json",
+   "sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
+   "reason": "locally authored H03 machine-readable contract (issue #25): budget rows with measured/structural/derived_estimate classes, clock targets, queue/latency constants, module conformance subsets pointing at N08 case ids, depends_on hash pins"
+  },
+  {
+   "path": "tools/h03_budget_check.py",
+   "sha256": "9df7c1cedadbb438205938b7782fce134b474cd2bdb14c4ecb71c82796c5547f",
+   "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes"
+  },
+  {
+   "path": "tests/test_h03_contract.py",
+   "sha256": "c93c5c7cecbade3b8417a9142edea3543fc8846f64d452e128d4b458d3fb26fc",
+   "reason": "locally authored H03 test suite (issue #25): independent budget recomputation, DEC-citation existence, queue/latency constants, live tool gate, and four negative controls (mutated 2 clk/eval row, burst-stripped average-case budget, fake PASS verdict, drifted evidence hash); no upstream bytes"
+  },
+  {
+   "path": "docs/decision-records/0008-core-schedule-contract.md",
+   "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
+   "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
+  },
+  {
+   "path": "rtl/env_unit.v",
+   "sha256": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+   "reason": "locally authored H04 envelope/state RTL (issue #26): the N03 integer operator envelope as a synthesizable micro-sequencer, exact to src/gf180_dx7/model/envelope.py by semantic re-implementation from docs/N03-ENVELOPE-MODEL.md (Apache-2.0 semantic facts only, no bytes copied); derived sr_multiplier 15414067 constant, H02-style bank slot with H03 read-old/write-new hazard rules, and three in-file negative controls (step-skew, sr_multiplier-1, strip observability)"
+  },
+  {
+   "path": "rtl/tb_env_unit.v",
+   "sha256": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72",
+   "reason": "locally authored H04 equivalence bench (issue #26): drives the directed command stream, dumps committed slot state per command for bit-exact comparison, measures per-command cycles (H03 env_steps budget gate), and self-checks the H03 read-old/write-new hazard rule before the stream; no upstream bytes"
+  },
+  {
+   "path": "tools/h04_compare.py",
+   "sha256": "4ced08b0644ff4be0924ddde442c6b401b33833eeb806be2408117603a81f731",
+   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls"
+  },
+  {
+   "path": "tools/h04_synth.py",
+   "sha256": "e15c0b9d524bd782d59413b63b720bb3b2fca14fc27c7a3b0d057892999fba13",
+   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes"
+  },
+  {
+   "path": "tests/test_h04.py",
+   "sha256": "5b59faa9fe95043ecb00e94fd62201ca22dfac9422dac6c284610e866390e236",
+   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes"
+  },
+  {
+   "path": "docs/H04-ENV-RTL.md",
+   "sha256": "7a8d986d4ee5d02763235da6c278119789252ff8583d955fb72907bd693d641f",
+   "reason": "locally authored H04 report (issue #26): unit structure and micro-sequencer, bit-exact conformance results (27,931 commands / 24,639 frame steps, 0 mismatches), measured 13-clk worst step vs the contracted 24-clk H03 slot, hazard verification, mapped area (0.179 mm2, 480 flops, strip control at 0), and the claim boundary"
+  },
+  {
+   "path": "reference/tables/alg_table.hex",
+   "sha256": "2d9abc6abcd070fb1fc7f79be425fd8aea8e182e90915653f1b6b7f36b6fcf78",
+   "reason": "generated H05 artifact (issue #27): the 32-row connection table regenerated from src/gf180_dx7/model/algorithm.py ALGORITHMS so the model and rtl/alg_router.v share ONE table artifact (parasynth gen_tables discipline); bytes pinned by reference/tables/alg_manifest.json and tools/h05_compare.py --check-tables"
+  },
+  {
+   "path": "reference/tables/alg_manifest.json",
+   "sha256": "65088680bc045352272c0ef9dc5655ae19dd31d359b044f8aff41ad196ae8977",
+   "reason": "generated H05 table manifest (issue #27): sha256/entries/bits pin for alg_table.hex; verified before every simulation"
+  },
+  {
+   "path": "rtl/alg_router.v",
+   "sha256": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+   "reason": "locally authored H05 routing/feedback RTL (issue #27); Mark I router semantics mirrored from the frozen N04 model (algorithm.py) as facts with citations, ROM $readmemh-loads the generated shared alg_table.hex, delayed-commit fb history per the H03 contract, negative-control ifdefs, no upstream bytes"
+  },
+  {
+   "path": "rtl/tb_alg_router.v",
+   "sha256": "755fe45c69efae64ad69f05b0916f9574445b8b90d417b573ea073d1b3c5de32",
+   "reason": "locally authored H05 iverilog conformance driver (issue #27); drives the directed program and streams eval/output/state records for the Python judge with the same scripted source as the golden, no upstream bytes"
+  },
+  {
+   "path": "tools/h05_compare.py",
+   "sha256": "35a285d859b7b575e49a0706f7b8b9f8b71023bce8f53b90f21ff1243118518f",
+   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes"
+  },
+  {
+   "path": "tools/h05_synth.py",
+   "sha256": "28ca0c4b921c56f3995a7c65e75ae52eeae6b8674f6452d85d2ec8dd937a759b",
+   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes"
+  },
+  {
+   "path": "tests/test_h05.py",
+   "sha256": "d196b793a47c3381d6a7ad493b188bd6c0109b54b28c23ef8105051fd07fafc7",
+   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes"
+  },
+  {
+   "path": "docs/H05-ROUTING-RTL.md",
+   "sha256": "67d0b08891b37fd646bee210b76c85599f48b30c8b86786777e398243876765d",
+   "reason": "locally authored H05 derivation and results record (issue #27): table regeneration identity, structure, schedule-delay handling, conformance matrix, mapped area, controls, claim boundary"
+  },
+  {
+   "path": "rtl/pitch_mod.v",
+   "sha256": "e84051493e0f99575c022f53ae429c966e7d830fbe2e3f92ced3908c345750de",
+   "reason": "locally authored H06 pitch/modulation RTL unit (issue #28): per-note pitch path exact to the frozen N05 model under the H03 split - pitch-EG stepping, LFO (six waveforms + regenerated SIN table + delay ramp + keysync), PM/AM composition, documented-mode transpose, freqlut lookups; per-event frozen-integer host interface with five negative-control ifdefs; no upstream bytes"
+  },
+  {
+   "path": "rtl/tb_pitch_mod.v",
+   "sha256": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2",
+   "reason": "locally authored H06 conformance bench (issue #28): drives the contracted W/F vector stream, dumps per-frame increments + boundary values, measures worst control-tail latency; stdlib-free Verilog-2001"
+  },
+  {
+   "path": "tools/h06_compare.py",
+   "sha256": "259de1f5e4c4dd792b7b12529dc001bc0bee96d461e27661e4964a5dcc197381",
+   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only"
+  },
+  {
+   "path": "tools/h06_synth.py",
+   "sha256": "fbdf7e2e60376ce5648291bad8b01f91560898e5320b4995d48153760aea5150",
+   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes"
+  },
+  {
+   "path": "tests/test_h06.py",
+   "sha256": "7da7588827d6a0c159053115e67be00ece49984b39876504ce6e5d4a14f18178",
+   "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only"
+  },
+  {
+   "path": "reference/tables/lfo_sin_table.hex",
+   "sha256": "5c27ce7f40ea8f4272a65414b9fa7d85ef0c2f030f460de5e4dcae8e103b3223",
+   "reason": "regenerated LFO sine table (issue #28): 2048-entry SIN_DELTA form rebuilt from build_sintab() following sin.cc:31-56 operation order (no bytes copied); byte-verified on every harness run and consumed by the RTL via $readmemh"
+  },
+  {
+   "path": "docs/H06-PITCH-RTL.md",
+   "sha256": "f9522a0c4fac19d8d713b7e3aec43b626e4212bd7a7d8f1d783ca0132a0be136",
+   "reason": "locally authored H06 report (issue #28): split decisions table with DEC/NUM citations, transpose ruling cross-ref, detune-delta exactness argument, link budget, bit-exact conformance results, negative controls, mapped area, claim boundary"
+  },
+  {
+   "path": "src/gf180_dx7/mock_core.py",
+   "sha256": "af0efe9c66a4a141dfda1a5b879aa6902dbeafbf5f35fe58140b7c65aa1797de",
+   "reason": "locally authored U04 mock core (issue #37): contract-faithful H03 link model (48-bit frames, depth-8 skid FIFO with explicit-rejection overflow, shadow/commit with load-digest gate, 4-entry generation ring, 0xD7110001-shaped status word, pad/soft reset) plus failure injection (truncated transfer, bad checksum, queue overflow, drain stall, overrun, reset mid-transfer) with fault records kept as evidence; stdlib only"
+  },
+  {
+   "path": "src/gf180_dx7/host.py",
+   "sha256": "4e7457a852227afd66f0502bfbe85dd92955144e232274a0063958261d3022fc",
+   "reason": "locally authored U04 embedded host (issue #37): MIDI-event to core-transaction scheduling per H03 (frame-window capacity with explicit BackpressureRefused, DEC-014 overflow retry), patch load from P01 Voice/bank bytes with atomic digest-gated commit, frozen integers mirroring model/pitch.py, reset/boot/recall protocol with FRAME-regression reset detection, link-budget accounting vs the 216-write bound and the parasynth 182-write family anchor; stdlib only"
+  },
+  {
+   "path": "tests/test_host_mock.py",
+   "sha256": "8e7dc849c4e5f7b029ec8e2aa90f9f9ce02a6713525b6ffb35d85bab16c627db",
+   "reason": "locally authored U04 acceptance suite (issue #37): burst timing at both clocks, frame-boundary semantics, generation-ring patch-change-while-held, boot/recall with hashed transaction logs, truncated/bad-checksum partial transfers with stale-state detection, malformed SysEx propagation, write-cost accounting, failure-injection matrix, and live negative-control stubs (NaiveLoader, DeafHost, bare-commit refusal)"
+  },
+  {
+   "path": "docs/U04-HOST-MOCK.md",
+   "sha256": "e97d62763d1d8e472d9b7d4b9bbcb8003027b6e7c6368582a39da993d6f5fb4d",
+   "reason": "locally authored U04 report (issue #37): transaction map, link-budget measurements against the H03 rows and the parasynth boot-image family anchor (182 writes ~= 4.43 ms at 2 MHz), failure-injection matrix with results, negative controls, claim boundary"
+  },
+  {
+   "path": "tools/test_fast.sh",
+   "sha256": "fa8d7468b74deebe68cf2ac45d0b1c76074b2f6137db2230b75c2fdfe15bd43e",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned\n    after H08 added the h08 fast subset (issue #30)"
+  },
+  {
+   "path": "tools/u02_candidates.py",
+   "sha256": "ba7b0aca2303d5d004cb6bb2c8a0b03634f84f882b0b18ec72f13d338e37c74e",
+   "reason": "locally authored U02 candidate pre-selection + one-sitting listening-kit tool (issue #35): deterministic documented heuristics over decoded catalog parameters, kit emission, render-kit driver around the external GPL oracle via tools/audition.py; no taste judgments, no upstream bytes"
+  },
+  {
+   "path": "tests/test_u02_kit.py",
+   "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
+   "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
+  },
+  {
+   "path": "rtl/dx7_core.v",
+   "sha256": "335599eae6aada90f45c5738cf79d70098bb3a6cf97437927fcbdec10abfc917",
+   "reason": "locally authored H07 integrated 16-note core (issue #29, WIP bring-up revision): SPI slave + skid/event queues, atomic patch commit, DEC-015..021 allocator, 96 env_unit slices, shared per-note pitch path (H06 semantics), shared H05 router around a combinational H01 kernel, NUM-010 unclamped mixer, I2S master, four negative-control ifdefs; composed from landed in-repo modules only, no upstream bytes"
+  },
+  {
+   "path": "rtl/tb_dx7_core.v",
+   "sha256": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea",
+   "reason": "locally authored H07 host-side bench (issue #29, WIP): SPI master at SCK=clk/16 for the contracted 48-bit frame, model-block event pacing, I2S DAC-model decoder + PCM dump via the mixer-load tap; no upstream bytes"
+  },
+  {
+   "path": "docs/H07-CORE.md",
+   "sha256": "aadb6205dc2eccf6ce3f456037c9ec3db0d7fafdf1a2e7c497a89544511002ba",
+   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
+  },
+  {
+   "path": "tools/h07_compare.py",
+   "reason": "locally authored H07 conformance harness (issue #29): N08 case resolution via n08_build_release CaseSource with a committed voice-byte cache, host-side frozen-integer frontend (dx7note.cc:46-53 detune/fine/bend), section-5 register encoding, vector emission, bit-exact comparator with first-mismatch localization, latency recording, --audit-exp sweep, exit 0/1/2; no upstream bytes",
+   "sha256": "c4d8dfb53f697ea872aaaf3d88c87aefe5998bc2c21c3913c6d30167debc66b3"
+  },
+  {
+   "path": "tools/h07_synth.py",
+   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; no upstream bytes",
+   "sha256": "0a106abf199246ec8edca0b93754b4a66afa32492f076eae213e1fce8a9f6805"
+  },
+  {
+   "path": "tests/test_h07.py",
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; no upstream bytes",
+   "sha256": "30c4dc075eadb9bb5be841c0669e966ed9c19c070242598987a18f1a6dc9f35e"
+  },
+  {
+   "path": "rtl/tb_synth_top.v",
+   "sha256": "8ab92be516f075be1fcd6c9fcd8f5dccc659391461836ad20c537b0923da856d",
+   "reason": "locally authored H08 pin-level bench (issue #30): timed SPI master +\n    BCLK/LRCLK/D wire decoder (empirically mapped against a verbatim model\n    of the dx7_core I2S TX), structural period/phase assertions, injection\n    directives (X truncated / V F=0 / Y rate-violation / Z pad reset / Q\n    status read), forensic frame-latch + st_overrun witnesses; pattern\n    adapted from rtl/tb_dx7_core.v (this repo, H07)"
+  },
+  {
+   "path": "tools/h08_pin_check.py",
+   "sha256": "9dfdabf2193c797eaa33aaafb0d9ff0316d7b0681094306d4f710fc29c4fc642",
+   "reason": "locally authored H08 evidence runner (issue #30): per-case\n    pin-vs-flat byte-exact conformance over the committed H07 vectors +\n    corrupted-transaction injection suite + qread/status lifecycle checks;\n    runner pattern follows tools/h07_compare.py (this repo, H07)"
+  },
+  {
+   "path": "tests/test_h08.py",
+   "sha256": "cea96851a95ecd1822a67e965e6c0c9c98a92d824cba81223f2b9637863fefa8",
+   "reason": "locally authored H08 tests (issue #30): core sha pin (H08 changes no\n    core lines), committed-evidence recomputation, catalog pins, live\n    undersized-frame/F=0/FRESH/OVERFLOW negative controls (wall-heavy\n    pattern per H07); Icarus shadow recorded NOT_RUN with reason"
+  },
+  {
+   "path": "docs/H08-PIN.md",
+   "sha256": "37e480f045b8799bfc3658611547f76d6d4877abb8d9dfbcfa00ca039f4f6eb5",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings"
+  },
+  {
+   "path": "tools/h08_synth.py",
+   "sha256": "138d141cc6a5641b8e1d0c87a5025825aab0a887114f7c0e51fa3629fac77c36",
+   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/"
+  }
+ ]
 }

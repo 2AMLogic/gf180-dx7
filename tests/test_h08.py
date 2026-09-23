@@ -235,6 +235,10 @@ class TestH08LiveControls(unittest.TestCase):
     """
 
     def setUp(self):
+        if not shutil.which("verilator"):
+            self.skipTest("verilator not installed on this runner; the "
+                          "executing-tool gate runs on hosts with Verilator "
+                          "(NOT_RUN here, never a red error)")
         if not os.path.exists(BIN):
             cmd = ["verilator", "--binary", "--timing", "-j", "4",
                    "--Wno-fatal", "--timescale-override", "1ns/1ps",

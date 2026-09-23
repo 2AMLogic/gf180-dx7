@@ -1314,7 +1314,7 @@
     {
       "path": "src/gf180_dx7/capabilities.py",
       "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md"
+      "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md"
     },
     {
       "path": "tools/compile_capabilities.py",
@@ -1733,7 +1733,7 @@
     },
     {
       "path": "docs/H07-CORE.md",
-      "sha256": "984c01883d22de01b122596e8da017ae16bfd5bb0f1ec2f1cde7f27fd1fa72ec",
+      "sha256": "aadb6205dc2eccf6ce3f456037c9ec3db0d7fafdf1a2e7c497a89544511002ba",
       "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
     },
     {

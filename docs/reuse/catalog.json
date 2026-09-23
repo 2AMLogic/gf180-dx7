@@ -1054,7 +1054,7 @@
       "license_basis": "MIT, LICENSE anchor; hash matches K08 in the torchsynth audit",
       "license_anchor": {
         "path": "LICENSE",
-        "sha256": "721f4ce18acb00e7641fe083b619ca06437aeff9f3ddd13244dd151b55ba4f72"
+        "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
       },
       "destination": [],
       "maintainer": "loom-builder + owner review",
@@ -1720,6 +1720,36 @@
       "path": "tests/test_u02_kit.py",
       "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
       "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
+    },
+    {
+      "path": "rtl/dx7_core.v",
+      "sha256": "335599eae6aada90f45c5738cf79d70098bb3a6cf97437927fcbdec10abfc917",
+      "reason": "locally authored H07 integrated 16-note core (issue #29, WIP bring-up revision): SPI slave + skid/event queues, atomic patch commit, DEC-015..021 allocator, 96 env_unit slices, shared per-note pitch path (H06 semantics), shared H05 router around a combinational H01 kernel, NUM-010 unclamped mixer, I2S master, four negative-control ifdefs; composed from landed in-repo modules only, no upstream bytes"
+    },
+    {
+      "path": "rtl/tb_dx7_core.v",
+      "sha256": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea",
+      "reason": "locally authored H07 host-side bench (issue #29, WIP): SPI master at SCK=clk/16 for the contracted 48-bit frame, model-block event pacing, I2S DAC-model decoder + PCM dump via the mixer-load tap; no upstream bytes"
+    },
+    {
+      "path": "docs/H07-CORE.md",
+      "sha256": "984c01883d22de01b122596e8da017ae16bfd5bb0f1ec2f1cde7f27fd1fa72ec",
+      "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
+    },
+    {
+      "path": "tools/h07_compare.py",
+      "reason": "locally authored H07 conformance harness (issue #29): N08 case resolution via n08_build_release CaseSource with a committed voice-byte cache, host-side frozen-integer frontend (dx7note.cc:46-53 detune/fine/bend), section-5 register encoding, vector emission, bit-exact comparator with first-mismatch localization, latency recording, --audit-exp sweep, exit 0/1/2; no upstream bytes",
+      "sha256": "c4d8dfb53f697ea872aaaf3d88c87aefe5998bc2c21c3913c6d30167debc66b3"
+    },
+    {
+      "path": "tools/h07_synth.py",
+      "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; no upstream bytes",
+      "sha256": "0a106abf199246ec8edca0b93754b4a66afa32492f076eae213e1fce8a9f6805"
+    },
+    {
+      "path": "tests/test_h07.py",
+      "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; no upstream bytes",
+      "sha256": "30c4dc075eadb9bb5be841c0669e966ed9c19c070242598987a18f1a6dc9f35e"
     }
   ]
 }

@@ -1,8 +1,0 @@
-base_frame 0
-commits 0
-overrun 0
-overflow 0
-frame 60
-samples 3903
-live 65535
-state_obs 0

@@ -423,7 +423,12 @@ class TestConformanceEvidence(unittest.TestCase):
                if c["set"] == "dev"}
         for cid in dev:
             self.assertIn(cid, results["cases"], cid)
-        self.assertEqual(results.get("rtl_sha256"), rtl_fingerprint(),
+        # freshness is checked against the PRODUCER's fingerprint domain:
+        # tools/h07_compare.py hashes the three synthesized RTL files
+        # (the tb is exercised live by the negative controls instead)
+        import h07_compare
+        self.assertEqual(results.get("rtl_sha256"),
+                         h07_compare.rtl_fingerprint(),
                          f"{name} is STALE: RTL moved after the run")
 
     def test_dev_vectors_respect_burst_bound(self):
@@ -467,12 +472,16 @@ class TestHarnessMachinery(unittest.TestCase):
     def test_stress_golden_is_frozen_and_fresh(self):
         import h07_compare as H
         for spec in H.STRESS_SET[1]:
-            golden = stress = H.stress_golden(spec)
+            golden = H.stress_golden(spec)
             # a re-render must agree byte-for-byte with the frozen cache
+            # (stress_golden returns per-segment int lists; the fresh
+            # render wraps them in dicts with the event schedule)
             fresh = H.render_stress_golden(spec)
+            self.assertEqual(len(golden["segments"]),
+                             len(fresh["segments"]), spec["id"])
             for a, b in zip(golden["segments"], fresh["segments"]):
                 self.assertEqual(
-                    list(a), list(b),
+                    list(a), list(b["ints"]),
                     f"{spec['id']}: frozen stress golden drifted from a "
                     "fresh model render (model moved? re-freeze)")
 

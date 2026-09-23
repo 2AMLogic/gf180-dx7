@@ -150,7 +150,10 @@ def yosys_version(yosys):
 
 def run_yosys(yosys, liberty, strip, log_path):
     script = [
-        "read_verilog" + (" -DH07_STRIP_OBSERVABILITY" if strip else "")
+        # -sv: dx7_core.v uses two SystemVerilog size casts (8'(...)) at
+        # the DEC-019 strike binding; iverilog -g2012/verilator already
+        # accept them (the conformance builds), yosys needs the flag.
+        "read_verilog -sv" + (" -DH07_STRIP_OBSERVABILITY" if strip else "")
         + " " + " ".join(os.path.join(REPO_ROOT, r) for r in RTL_RELS),
         "hierarchy -check -top dx7_core",
         "synth -top dx7_core",

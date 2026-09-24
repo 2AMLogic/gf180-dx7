@@ -63,6 +63,7 @@ to `d47483eb…` (Apache-2.0, same org text); klayout-tools LICENSE is MIT
 | dexed-enginemki | external-oracle-only | asb2m10/dexed | — | GPL-3.0-or-later comparison oracle; **never copied into this Apache-2.0 repository**. |
 | vdx7 | external-oracle-only | external (pin = R01) | — | GPL-3.0-or-later oracle; never copied in. |
 | hexter | external-oracle-only | external (pin = R01) | — | GPL-2.0-or-later oracle; never copied in. |
+| u05-demo-fixture-bench | adapt | parasynth @ cbcc8b9e | tools/demo/fixtures_dx7.py, tools/demo/demo_fixture.py | Fixture assembly + coverage-counted-from-schedule + refuse-the-under-delivering-fixture negative kept; re-expressed around the U01 phrase set and the H03 link bench (numpy audio, patch/kit state, drum/knob machinery removed). |
 
 ## Negative findings inherited from the torchsynth audit
 

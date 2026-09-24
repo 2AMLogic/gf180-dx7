@@ -444,8 +444,13 @@ class TestFavoriteRecallRoundTrip(unittest.TestCase):
             with open(CATALOG_PATH, "r", encoding="utf-8") as fh:
                 cat = json.load(fh)
             zip_path = self.mod.resolve_zip(None, cat)
-        except (self.mod.AuditionFail, self.mod.AuditionNotRun) as exc:
+        except (self.mod.AuditionFail, self.mod.AuditionNotRun,
+                OSError) as exc:
             return f"pinned archive zip unavailable: {exc}"
+            # OSError: e.g. macOS TCC denies content reads of a
+            # user-directory zip (EPERM/EACCES) — the negative control
+            # cannot run on this box; report NOT_RUN (skip), never
+            # ERROR, and never a pass (H08 fast-lane footgun).
         self.zip_path = zip_path
         return None
 

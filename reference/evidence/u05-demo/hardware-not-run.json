@@ -1,0 +1,38 @@
+{
+  "schema": "gf180-dx7.hardware-not-run/1",
+  "issue": "#38 (U05) - hardware acceptance rows NOT run by this PR",
+  "rows": [
+    {
+      "row": "sustained playing on the board, all patches",
+      "status": "NOT_RUN",
+      "blocked_by": "issue #35 (final U02 patch bank selection) and issue #31 (H09 FPGA capture) - operator rows"
+    },
+    {
+      "row": "board latency budget",
+      "status": "NOT_RUN",
+      "blocked_by": "issue #31 (H09 FPGA capture) - the board latency measurement is operator-executed"
+    },
+    {
+      "row": "reproducible recording capture",
+      "status": "NOT_RUN",
+      "blocked_by": "issue #31 (H09 FPGA capture) - the dry record (this PR) exists; the board capture is operator-executed"
+    },
+    {
+      "row": "stuck notes / wrap / underrun on hardware",
+      "status": "NOT_RUN",
+      "blocked_by": "issue #31 (H09 FPGA capture) - software-side equivalents pass (see stress-results.json); the board audit is operator-executed"
+    },
+    {
+      "row": "listening bank",
+      "status": "BLOCKED",
+      "blocked_by": "issue #35 (listening bank) - not a numeric row; a listening record, operator-executed"
+    }
+  ],
+  "note": "NOT_RUN is recorded, never a pass and never silently skipped: each row names the operator issue it is blocked on. The software-side rows this PR does run are listed with their evidence files.",
+  "evidence": {
+    "stress (software, mock link)": "stress-results.json",
+    "fixture clean compact/full": "demo-clean-*.json",
+    "negative controls": "demo-negative-*.json",
+    "dry manifest": "demo-manifest.json"
+  }
+}

@@ -1,0 +1,48 @@
+# record E: the pinned ORFS flow's final full-synthesis check on the FROZEN dx7-core
+# (sha 335599ea..., H07 pin) — do-yosys (1_2), platform gf180 7t, FLOW_VARIANT=natdie
+# image openroad/orfs:26Q3-296-gda37dce1c, yosys 0.67 (git 2d1509d1b), machine repo-remote-gf180-dx7
+# full log sha256: c646d1a6ef64085c60d52227fc2f74b840e2c7b3ad5d1403f098feabef071473 (5,080,150 bytes
+# committed in the H10 report bundle as evidence/h10-gf180/frozen-core-1_2-yosys.log)
+# result: PASS 20 CHECK prints the multi-driver warnings; PASS 22 (final check -assert)
+# reports 'ERROR: Found 9 problems' -> the flow's synth target FAILS; no netlist stats produced.
+===================== (pass 20..22 of the full log) =====================
+
+16. Executing SPLITNETS pass (splitting up multi-bit signals).
+17. Executing OPT_CLEAN pass (remove unused cells and wires).
+18. Executing HILOMAP pass (mapping to constant drivers).
+19. Executing INSBUF pass (insert buffer cells for connected wires).
+20. Executing CHECK pass (checking for obvious problems).
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[7]:
+    port Q[0] of cell evq_cnt[7]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[7]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[6]:
+    port Q[0] of cell evq_cnt[6]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[6]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[5]:
+    port Q[0] of cell evq_cnt[5]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[5]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[4]:
+    port Q[0] of cell evq_cnt[4]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[4]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[3]:
+    port Q[0] of cell evq_cnt[3]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[3]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[2]:
+    port Q[0] of cell evq_cnt[2]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[2]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[1]:
+    port Q[0] of cell evq_cnt[1]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[1]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[0]:
+    port Q[0] of cell evq_cnt[0]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[0]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+Warning: multiple conflicting drivers for dx7_core.\evq_cnt[8]:
+    port Q[0] of cell evq_cnt[8]$_SDFFE_PP0P_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+    port Q[0] of cell evq_cnt[8]$_DFFE_PP_ (gf180mcu_fd_sc_mcu7t5v0__dffq_2)
+21. Printing statistics.
+22. Executing CHECK pass (checking for obvious problems).
+ERROR: Found 9 problems in 'check -assert'.
+Elapsed time: 14:49.75[h:]min:sec. CPU time: user 925.31 sys 3.66 (104%). Peak memory: 2422792KB.
+
+# note: 'multiple conflicting drivers' occurs 12,938 times across the full log (per-pass);
+# the 9 count is the final check -assert's problem tally (evq_cnt[0..8]).

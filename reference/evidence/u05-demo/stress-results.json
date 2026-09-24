@@ -1,0 +1,447 @@
+{
+  "schema": "gf180-dx7.stress-report/1",
+  "scenarios": {
+    "fast_play": {
+      "scenario": "fast_play",
+      "status": "PASS",
+      "problems": [],
+      "events_sent": 128,
+      "image_commits": 1,
+      "applied_events": {
+        "commit": 1,
+        "note_on": 64,
+        "note_off": 64
+      },
+      "fault_counts": {},
+      "rejections": 0,
+      "notes_held_at_end": [],
+      "n_writes": 747,
+      "accounting": [
+        {
+          "sample": 0,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 4,
+          "n_writes": 8
+        },
+        {
+          "sample": 2400,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 5,
+          "n_writes": 1
+        },
+        {
+          "sample": 720,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 6,
+          "n_writes": 8
+        },
+        {
+          "sample": 3120,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 7,
+          "n_writes": 1
+        },
+        {
+          "sample": 1440,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 8,
+          "n_writes": 8
+        },
+        {
+          "sample": 3840,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 9,
+          "n_writes": 1
+        },
+        {
+          "sample": 2160,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 10,
+          "n_writes": 8
+        },
+        {
+          "sample": 4560,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 11,
+          "n_writes": 1
+        }
+      ],
+      "accounting_total_bursts": 128,
+      "throttled": false,
+      "boot": {
+        "generation": 1,
+        "digest": 57,
+        "writes": 171,
+        "frames": 2,
+        "image_sha256": "bc4f156d503a4e775235e6837437442b87ca5a62f584b5cfb7da4f39491bde74",
+        "recall": false
+      }
+    },
+    "sustain_pedal": {
+      "scenario": "sustain_pedal",
+      "status": "PASS",
+      "problems": [],
+      "events_sent": 14,
+      "image_commits": 1,
+      "applied_events": {
+        "commit": 1,
+        "controller": 2,
+        "note_on": 6,
+        "note_off": 6
+      },
+      "fault_counts": {},
+      "rejections": 0,
+      "notes_held_at_end": [],
+      "n_writes": 227,
+      "accounting": [
+        {
+          "sample": 4800,
+          "kinds": [
+            "controller"
+          ],
+          "send_frame_pred": 4,
+          "n_writes": 1
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 5,
+          "n_writes": 8
+        },
+        {
+          "sample": 9600,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 6,
+          "n_writes": 1
+        },
+        {
+          "sample": 14400,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 7,
+          "n_writes": 8
+        },
+        {
+          "sample": 19200,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 8,
+          "n_writes": 1
+        },
+        {
+          "sample": 24000,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 9,
+          "n_writes": 8
+        },
+        {
+          "sample": 28800,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 10,
+          "n_writes": 1
+        },
+        {
+          "sample": 33600,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 11,
+          "n_writes": 8
+        }
+      ],
+      "accounting_total_bursts": 14,
+      "throttled": false,
+      "boot": {
+        "generation": 1,
+        "digest": 57,
+        "writes": 171,
+        "frames": 2,
+        "image_sha256": "bc4f156d503a4e775235e6837437442b87ca5a62f584b5cfb7da4f39491bde74",
+        "recall": false
+      }
+    },
+    "patch_changes_while_held": {
+      "scenario": "patch_changes_while_held",
+      "status": "PASS",
+      "problems": [],
+      "events_sent": 4,
+      "image_commits": 2,
+      "applied_events": {
+        "commit": 2,
+        "note_on": 2,
+        "note_off": 2
+      },
+      "fault_counts": {},
+      "rejections": 0,
+      "notes_held_at_end": [],
+      "n_writes": 360,
+      "accounting": [
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 4,
+          "n_writes": 8
+        },
+        {
+          "sample": 14400,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 8,
+          "n_writes": 8
+        },
+        {
+          "sample": 28800,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 9,
+          "n_writes": 1
+        },
+        {
+          "sample": 33600,
+          "kinds": [
+            "note_off"
+          ],
+          "send_frame_pred": 10,
+          "n_writes": 1
+        }
+      ],
+      "accounting_total_bursts": 4,
+      "throttled": false,
+      "boot": {
+        "generation": 1,
+        "digest": 57,
+        "writes": 171,
+        "frames": 2,
+        "image_sha256": "bc4f156d503a4e775235e6837437442b87ca5a62f584b5cfb7da4f39491bde74",
+        "recall": false
+      }
+    },
+    "all_sound_off": {
+      "scenario": "all_sound_off",
+      "status": "PASS",
+      "problems": [],
+      "events_sent": 18,
+      "image_commits": 1,
+      "applied_events": {
+        "commit": 1,
+        "controller": 2,
+        "note_on": 8,
+        "note_off": 8
+      },
+      "fault_counts": {},
+      "rejections": 0,
+      "notes_held_at_end": [],
+      "n_writes": 245,
+      "accounting": [
+        {
+          "sample": 4800,
+          "kinds": [
+            "controller"
+          ],
+          "send_frame_pred": 4,
+          "n_writes": 1
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 5,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 6,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 7,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 8,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 9,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 10,
+          "n_writes": 8
+        },
+        {
+          "sample": 4800,
+          "kinds": [
+            "note_on"
+          ],
+          "send_frame_pred": 11,
+          "n_writes": 8
+        }
+      ],
+      "accounting_total_bursts": 18,
+      "throttled": false,
+      "boot": {
+        "generation": 1,
+        "digest": 57,
+        "writes": 171,
+        "frames": 2,
+        "image_sha256": "bc4f156d503a4e775235e6837437442b87ca5a62f584b5cfb7da4f39491bde74",
+        "recall": false
+      }
+    },
+    "throttled_link": {
+      "scenario": "throttled_link",
+      "status": "PASS",
+      "problems": [],
+      "events_sent": 128,
+      "image_commits": 1,
+      "applied_events": {
+        "commit": 1,
+        "note_on": 64,
+        "note_off": 64
+      },
+      "fault_counts": {
+        "drain_stall": 575,
+        "queue_overflow": 126
+      },
+      "rejections": 126,
+      "notes_held_at_end": [],
+      "n_writes": 747,
+      "accounting": [
+        {
+          "sample": 0,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 4,
+          "n_writes": 9
+        },
+        {
+          "sample": 720,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 5,
+          "n_writes": 9
+        },
+        {
+          "sample": 1440,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 6,
+          "n_writes": 9
+        },
+        {
+          "sample": 2160,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 7,
+          "n_writes": 9
+        },
+        {
+          "sample": 2880,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 8,
+          "n_writes": 9
+        },
+        {
+          "sample": 3600,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 9,
+          "n_writes": 9
+        },
+        {
+          "sample": 4320,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 10,
+          "n_writes": 9
+        },
+        {
+          "sample": 5040,
+          "kinds": [
+            "note_on",
+            "note_off"
+          ],
+          "send_frame_pred": 11,
+          "n_writes": 9
+        }
+      ],
+      "accounting_total_bursts": 64,
+      "throttled": true,
+      "boot": {
+        "generation": 1,
+        "digest": 57,
+        "writes": 171,
+        "frames": 2,
+        "image_sha256": "bc4f156d503a4e775235e6837437442b87ca5a62f584b5cfb7da4f39491bde74",
+        "recall": false
+      }
+    }
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,36 @@
+{
+ "direct_support_not_measurement": {
+  "cross_version_note": "local yosys 0.69+post (git 143eb14f) vs H07's 0.57+72: comparison bound, not apples-to-apples; the zero-addition property is tool-independent",
+  "inference": "from (structural pin map, no logic) + (identical RTL, liberty, tool pass shape): the chassis adds ZERO state and ZERO logic; mapped flops/cells vs H07's core-top build can only be equal or lower (shortfall = pruning of unconnected tap/status/debug outputs). This is an inference with its warrants listed, NOT a measured gate result - the measured result requires the run below.",
+  "liberty_identity": "local 7t liberty sha256 == H07 report liberty_sha256 (330aa943...) exactly",
+  "rtl_identity": "rtl/dx7_core.v, rtl/env_unit.v, rtl/alg_router.v sha-pinned (tests/test_h08.py catalog pins; H07 report rtl shas match)",
+  "wrapper_structure_check": {
+   "detail": "instances=1 forbidden_tokens=- missing_pads=- (run this session via tools/h08_synth.py check_wrapper_structure)",
+   "negative_controls_run_this_session": [
+    "injected `reg` declaration -> checker FAILS (forbidden_tokens=['reg'])",
+    "injected `always` block -> checker FAILS (forbidden_tokens=['always'])"
+   ],
+   "status": "PASS"
+  }
+ },
+ "exact_recheck": [
+  "python3 tools/h08_synth.py            # full gate (full + strip yosys runs; ~10-30 min CPU on a healthy host)",
+  "python3 tools/h08_synth.py --from-logs  # re-parse committed yosys_*.log once present (sha256s recorded)",
+  "python3 -m unittest tests.test_h08    # gate presence asserted on the evidence"
+ ],
+ "gate": "chassis-overhead-vs-h07-core (docs/H08-PIN.md A7; tools/h08_synth.py)",
+ "host_diagnostics": {
+  "date": "2026-09-23",
+  "liberty_local": "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+  "liberty_sha256_h07_report": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+  "liberty_sha256_local": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+  "uptime_load": "9:39  up 66 days,  7:32, 64 users, load averages: 93.29 100.37 102.25",
+  "yosys_version_h07_report": "Yosys 0.57+72 (git sha1 fa02d71f6, clang++ 18.1.8 -fPIC -O3) [Linux instance per H07 report]",
+  "yosys_version_local": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"
+ },
+ "issue": 30,
+ "status": "NOT_RUN",
+ "status_meaning": "NOT_RUN = did not complete this session; NOT a pass, NOT a failure. Reported as such per repo doctrine.",
+ "unit": "synth_top",
+ "why": "host was ~100x CPU-oversubscribed at runtime (64 users; parallel H10 wave + other agents): the yosys job accumulated ~5.5 CPU-minutes in ~61 wall-minutes (~9% of one core) and was still inside the internal `synth` pass (no yosys-abc child spawned), so the full+strip pipeline was infeasible in the session budget; the job was killed to release shared-host CPU."
+}

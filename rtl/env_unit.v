@@ -644,20 +644,21 @@ module env_unit #(
             endcase
 
             state_q <= nstate;
-        end
-    end
-
-    // external slot write (control-tail/event commit path): committed
-    // state only, idle cycles only (the step owns the slot while busy)
-    always @(posedge clk) begin
-        if (!rst && slot_wr_en && !busy) begin
-            level_q  <= slot_wr_data[132:101];
-            target_q <= slot_wr_data[100:69];
-            inc_q    <= slot_wr_data[68:37];
-            static_q <= slot_wr_data[36:5];
-            ix_q     <= slot_wr_data[4:2];
-            rising_q <= slot_wr_data[1];
-            down_q   <= slot_wr_data[0];
+            // External slot write (control-tail/event commit path): committed
+            // state only, idle cycles only (the step owns the slot while busy).
+            // H10 single-driver merge: this was a second always block writing
+            // the same registers the step block drives (multiple drivers;
+            // rejected by yosys check -assert). Placed last in the cycle, so
+            // priority is unchanged from the two-block build.
+            if (slot_wr_en && !busy) begin
+                level_q  <= slot_wr_data[132:101];
+                target_q <= slot_wr_data[100:69];
+                inc_q    <= slot_wr_data[68:37];
+                static_q <= slot_wr_data[36:5];
+                ix_q     <= slot_wr_data[4:2];
+                rising_q <= slot_wr_data[1];
+                down_q   <= slot_wr_data[0];
+            end
         end
     end
 

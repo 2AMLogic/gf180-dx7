@@ -36,16 +36,16 @@
    "target_q": 32,
    "tgt_new": 28
   },
-  "mapped_flops_full": 480,
+  "mapped_flops_full": 347,
   "note": "mapped and declared differ (here mapped is larger) and the mapping is behavior-preserving: yosys proc_rom extracts the levellut/statics case tables as ROMs and MEMORY_MAP re-implements them with registered logic, while next-state redundancies elsewhere merge. The contract the mapping must preserve is RTL behavior, proven bit-exact to the frozen model by tools/h04_compare.py on the pre-synthesis RTL."
  },
  "gates": {
   "full": {
-   "cell_total": 8326,
-   "chip_area_um2": 179055.8784,
-   "mapped_flops": 480,
+   "cell_total": 8286,
+   "chip_area_um2": 171188.2816,
+   "mapped_flops": 347,
    "requirement": "mapped flops > 133 (irreducible 133-bit envelope slot) and chip area > 0 and sequential area > 0 and cells > 0",
-   "seq_area_um2": 30557.184,
+   "seq_area_um2": 22090.2976,
    "status": "PASS"
   },
   "strip_negative_control": {
@@ -58,49 +58,48 @@
  "planning_id": "H04",
  "runs": {
   "full": {
-   "cell_total": 8326,
+   "cell_total": 8286,
    "cells_by_name": {
-    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 301,
-    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 37,
-    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 11,
-    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 54,
-    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 746,
-    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 65,
-    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 6,
-    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 190,
-    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 556,
-    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 480,
-    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 230,
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 266,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 68,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 7,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 186,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 716,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 83,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 5,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 168,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 642,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 347,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 123,
     "gf180mcu_fd_sc_mcu7t5v0__mux4_1": 2,
-    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 1582,
-    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 163,
-    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 31,
-    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 888,
-    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 90,
-    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 23,
-    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 76,
-    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 589,
-    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 23,
-    "gf180mcu_fd_sc_mcu7t5v0__oai222_1": 2,
-    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 113,
-    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 40,
-    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 14,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 1649,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 168,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 22,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 846,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 80,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 18,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 89,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 551,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 32,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 102,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 34,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 28,
     "gf180mcu_fd_sc_mcu7t5v0__oai33_1": 2,
-    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 161,
-    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 44,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 147,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 69,
     "gf180mcu_fd_sc_mcu7t5v0__or4_1": 2,
-    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 391,
-    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 86,
-    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 1104,
-    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 224
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 363,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 71,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 1159,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 241
    },
-   "chip_area_um2": 179055.8784,
+   "chip_area_um2": 171188.2816,
    "dff_cells": {
-    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 480
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 347
    },
-   "flop_total": 480,
-   "generic_gate_depth": 685,
-   "loop_warnings": 13718,
+   "flop_total": 347,
+   "generic_gate_depth": 728,
+   "loop_warnings": 16685,
    "mode": "full",
    "rom_representation": {
     "detail": "levellut + statics case tables extracted as ROMs by yosys proc_rom (2 found) and dissolved to combinational gates + registers by MEMORY_MAP; no BRAM exists in this flow and the final stat shows no memory cells",
@@ -110,7 +109,7 @@
     },
     "representation": "logic"
    },
-   "seq_area_um2": 30557.184
+   "seq_area_um2": 22090.2976
   },
   "strip": {
    "cell_total": 0,
@@ -167,7 +166,7 @@
    "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
   },
   "rtl": {
-   "rtl/env_unit.v": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+   "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
    "rtl/tb_env_unit.v": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72"
   },
   "yosys": "Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)"

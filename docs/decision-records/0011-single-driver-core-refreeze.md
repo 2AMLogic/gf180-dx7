@@ -146,8 +146,10 @@
    the 217 MB mapped netlist, floorplan odb) are hash-pinned here but not
    committed; they land with the H10 report bundle (`evidence/h10-gf180/`,
    PR-B). The digest `evidence/h10-legality/run-attempts.md` is the
-   run-by-run record, including the superseded battery attempt (row I) and
-   the blocked place stage (row H).
+   run-by-run record, including the superseded battery attempt (row I),
+   the blocked place stage (row H), the one iverilog-13-devel deadlock
+   recorded without a verdict (row L), and the re-certified H07 accept /
+   shadow / synthesis-gate evidence on the refrozen core (rows K–M).
 
 ## Consequences
 

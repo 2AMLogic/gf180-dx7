@@ -1,0 +1,89 @@
+# record B: host-yosys raw-elaboration multi-driver check on the FROZEN dx7-core (335599ea, H07 pin)
+# tool: Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+# command: yosys -p "read_verilog -sv rtl/*.v (3 files)" -p "hierarchy -top dx7_core" -p "check -assert" (cwd = rtl extract of origin/main)
+# purpose: refutes the superseded 2026-09-23 '9 fatals' working note; see DR-0011 supersession note
+=====================
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+
+-- Running command `read_verilog -sv rtl/dx7_core.v; read_verilog -sv rtl/env_unit.v; read_verilog -sv rtl/alg_router.v' --
+
+1. Executing Verilog-2005 frontend: rtl/dx7_core.v
+Parsing SystemVerilog input from `rtl/dx7_core.v' to AST representation.
+Generating RTLIL representation for module `\h07_op_kernel'.
+Generating RTLIL representation for module `\dx7_core'.
+Warning: Replacing memory \cmt_scaleB with list of registers. See rtl/dx7_core.v:1513
+Warning: Replacing memory \cmt_scaleA with list of registers. See rtl/dx7_core.v:1513
+Warning: Replacing memory \cmt_elevels with list of registers. See rtl/dx7_core.v:1512
+Warning: Replacing memory \cmt_erates with list of registers. See rtl/dx7_core.v:1512
+Warning: Replacing memory \cmt_fterm with list of registers. See rtl/dx7_core.v:1511
+Warning: Replacing memory \cmt_opitch with list of registers. See rtl/dx7_core.v:1511
+rtl/dx7_core.v:1028: Warning: Range [85:30] select out of bounds on signal `\exp_t3': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:1029: Warning: Range [85:30] select out of bounds on signal `\exp_t4': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:1030: Warning: Range [81:26] select out of bounds on signal `\exp_t5': Setting 16 MSB bits to undef.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: rtl/env_unit.v
+Parsing SystemVerilog input from `rtl/env_unit.v' to AST representation.
+Generating RTLIL representation for module `\env_unit'.
+Warning: Replacing memory \levels_q with list of registers. See rtl/env_unit.v:476
+Warning: Replacing memory \rates_q with list of registers. See rtl/env_unit.v:472
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: rtl/alg_router.v
+Parsing SystemVerilog input from `rtl/alg_router.v' to AST representation.
+Generating RTLIL representation for module `\alg_router'.
+Successfully finished Verilog frontend.
+
+-- Running command `hierarchy -top dx7_core' --
+
+4. Executing HIERARCHY pass (managing design hierarchy).
+
+4.1. Analyzing design hierarchy..
+Top module:  \dx7_core
+Used module:     \env_unit
+Used module:     \alg_router
+Used module:     \h07_op_kernel
+Reprocessing module dx7_core because instantiated module env_unit has become available.
+Generating RTLIL representation for module `\dx7_core'.
+Warning: Replacing memory \cmt_scaleB with list of registers. See rtl/dx7_core.v:1513
+Warning: Replacing memory \cmt_scaleA with list of registers. See rtl/dx7_core.v:1513
+Warning: Replacing memory \cmt_elevels with list of registers. See rtl/dx7_core.v:1512
+Warning: Replacing memory \cmt_erates with list of registers. See rtl/dx7_core.v:1512
+Warning: Replacing memory \cmt_fterm with list of registers. See rtl/dx7_core.v:1511
+Warning: Replacing memory \cmt_opitch with list of registers. See rtl/dx7_core.v:1511
+rtl/dx7_core.v:1028: Warning: Range [85:30] select out of bounds on signal `\exp_t3': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:1029: Warning: Range [85:30] select out of bounds on signal `\exp_t4': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:1030: Warning: Range [81:26] select out of bounds on signal `\exp_t5': Setting 16 MSB bits to undef.
+
+4.2. Analyzing design hierarchy..
+Top module:  \dx7_core
+Used module:     \env_unit
+Used module:     \alg_router
+Used module:     \h07_op_kernel
+
+4.3. Analyzing design hierarchy..
+Top module:  \dx7_core
+Used module:     \env_unit
+Used module:     \alg_router
+Used module:     \h07_op_kernel
+Removed 0 unused modules.
+
+-- Running command `check -assert' --
+
+5. Executing CHECK pass (checking for obvious problems).
+Checking module dx7_core...
+Checking module env_unit...
+Checking module alg_router...
+Checking module h07_op_kernel...
+Found and reported 0 problems.
+
+Warnings: 11 unique messages, 20 total
+End of script. Logfile hash: 4c17d43339, time: 591.05s, user: 28.65s, system: 10.26s, MEM: 102.33 MB peak
+Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+Time spent: 39% 1x hierarchy (15 sec), 34% 6x read_verilog (13 sec), 25% 1x check (10 sec), ...
+RAW_RC=0

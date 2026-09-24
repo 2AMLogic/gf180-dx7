@@ -1714,7 +1714,6 @@
    "pass": true
   }
  },
- "determinism_note": "second clean full run (tag verilog-accept-run2, same RTL 25e7e1ebaf65, committed alongside): every per-case artifact sha256 identical to this run",
  "determinism_run2": {
   "alg4-fb0": "caa96eba71b4e489b7ae1888e94d1a593078ef280cd01eb48fc07141cd077ec9",
   "alg4-fb3": "145f5c7a177c4653740782a8f695743d922141a031433e8bb4964ce5e2f7c383",
@@ -1752,7 +1751,7 @@
   "stress-sum16": "6b307fbfb8f951ffcfb6547561686e3313e056e5d44f8cdb266741ec58e8139b"
  },
  "latency_contract": "H03 section 4.5: [(64-p), (64-p)+65]",
- "rtl_sha256": "25e7e1ebaf65dcc01441d839da3c1abdc95762bd8f023b7d9403c52c47db4c74",
+ "rtl_sha256": "7bab93f514f49a3f6819818e66ed3e4581c00ebb0063082ef1e2b7f2f06bc188",
  "tag": "verilog-accept",
  "tool": "verilator"
 }

@@ -301,29 +301,6 @@ module dx7_core (
     wire        wr_wr  = frame_reg_v & wr_f;      // F=1: write
     wire        skid_push = wr_wr;
 
-    always @(posedge clk) begin
-        if (rst) begin
-            skid_wp <= 3'd0; skid_rp <= 3'd0; skid_cnt <= 4'd0;
-            st_overflow <= 1'b0;
-            st_fresh    <= 1'b1;
-        end else begin
-            if (wr_wr)
-                st_fresh <= 1'b0;   // any accepted write unfreshes
-            if (skid_push) begin
-                if (skid_full)
-                    st_overflow <= 1'b1;   // explicit rejection (DEC-014)
-                else begin
-                    skid[skid_wp] <= frame_reg;
-                    skid_wp  <= skid_wp + 3'd1;
-                    skid_cnt <= skid_cnt + 4'd1;
-                end
-            end
-            if (skid_pop) begin
-                skid_rp  <= skid_rp + 3'd1;
-                skid_cnt <= skid_cnt - 4'd1;
-            end
-        end
-    end
     wire [48:0] skid_out = skid[skid_rp];
 
     // =====================================================================
@@ -369,54 +346,6 @@ module dx7_core (
     wire        dr_sec  = skid_out[40];
     wire [7:0]  dr_a    = skid_out[39:32];
     wire [31:0] dr_d    = skid_out[31:0];
-    always @(posedge clk) begin
-        if (rst) begin
-            for (si = 0; si < 6; si = si + 1) begin
-                shd_opitch[si]  <= 32'd0;  shd_fterm[si]  <= 32'd0;
-                shd_erates[si]  <= 32'd0;  shd_elevels[si] <= 32'd0;
-                shd_scaleA[si]  <= 32'd0;  shd_scaleB[si] <= 32'd0;
-            end
-            shd_globA <= 32'd0;  shd_globB <= 32'd0;  shd_globC <= 32'd0;
-            shd_pegr <= 32'd0;   shd_pegl <= 32'd0;
-            shd_commit <= 1'b0;
-            evq_wp <= 8'd0; evq_rp <= 8'd0; evq_cnt <= 9'd0;
-        end else if (skid_pop) begin
-            if (dr_sec) begin
-                if (dr_a == 8'h42) begin
-                    shd_commit <= 1'b1;
-                end else begin
-                    case (dr_a)
-                        8'h40: shd_globA <= dr_d;
-                        8'h41: shd_globB <= dr_d;
-                        8'h43: shd_globC <= dr_d;
-                        8'h44: shd_pegr   <= dr_d;
-                        8'h45: shd_pegl   <= dr_d;
-                        default: ;
-                    endcase
-                    if (dr_a >= 8'h10 && dr_a <= 8'h15)
-                        shd_opitch[dr_a[2:0]] <= dr_d;
-                    if (dr_a >= 8'h18 && dr_a <= 8'h1D)
-                        shd_fterm[dr_a[2:0]] <= dr_d;
-                    if (dr_a >= 8'h20 && dr_a <= 8'h25)
-                        shd_erates[dr_a[2:0]] <= dr_d;
-                    if (dr_a >= 8'h28 && dr_a <= 8'h2D)
-                        shd_elevels[dr_a[2:0]] <= dr_d;
-                    if (dr_a >= 8'h30 && dr_a <= 8'h35)
-                        shd_scaleA[dr_a[2:0]] <= dr_d;
-                    if (dr_a >= 8'h38 && dr_a <= 8'h3D)
-                        shd_scaleB[dr_a[2:0]] <= dr_d;
-                end
-            end else begin
-                if (evq_full)
-                    st_overflow <= 1'b1;
-                else begin
-                    evq[evq_wp] <= {dr_a[4:0], dr_d};
-                    evq_wp  <= (evq_wp == EVQ_DEPTH-1) ? 8'd0 : evq_wp + 8'd1;
-                    evq_cnt <= evq_cnt + 9'd1;
-                end
-            end
-        end
-    end
 `ifdef H07_MUTATE_TICK_SKEW
     // NEGATIVE CONTROL: stale schedule. Event application observes the
     // queue state one cycle late, so the final write of a burst window is
@@ -430,6 +359,8 @@ module dx7_core (
     wire [36:0] evq_out = evq[evq_rp];
     wire [4:0]  ev_a    = evq_out[36:32];
     wire [31:0] ev_d    = evq_out[31:0];
+    // Pop event and next pointer captured here, written only by the
+    // config/push block above (single-driver merge, H10 — see comment there).
 
     // event addresses (page 0)
     localparam [4:0] EA_NOTEON = 5'h00, EA_NOTEOFF = 5'h01, EA_CC = 5'h02,
@@ -1491,8 +1422,41 @@ module dx7_core (
 
     integer fi, fj;
 
+    // (H10: moved here from the config/push region so every symbol these
+    // and the fused block reference is already declared above)
+    wire       wc_pop_fire = (fc_state == F_EVPOP) && !evq_peek_empty;
+    wire [7:0] wc_rp_next  = (evq_rp == EVQ_DEPTH-1) ? 8'd0 : evq_rp + 8'd1;
+    // H10 single-driver merge: st_overflow previously had two drivers
+    // (DEC-014 skid-full rejection in the status block, event-queue-full
+    // rejection in the config/push block). One block latches both; both
+    // sources only set, so the merged set condition is same-cycle exact.
+    always @(posedge clk) begin
+        if (rst)
+            st_overflow <= 1'b0;
+        else if ((skid_push && skid_full) || (skid_pop && !dr_sec && evq_full))
+            st_overflow <= 1'b1;
+    end
+    // =====================================================================
+    // Fused control sequential (H10 single-driver merge). The status/skid
+    // block, the config/push block, and the master FSM are now ONE always
+    // block, in their original file order (status, config/push, FSM) so the
+    // same-cycle last-writer-wins order is unchanged. Registers previously
+    // written by two blocks (shd_commit, evq_rp, evq_cnt) are written exactly
+    // once per process; st_overflow got the standalone block below the wires.
+    // =====================================================================
     always @(posedge clk) begin
         if (rst) begin
+            skid_wp <= 3'd0; skid_rp <= 3'd0; skid_cnt <= 4'd0;
+            st_fresh    <= 1'b1;
+            for (si = 0; si < 6; si = si + 1) begin
+                shd_opitch[si]  <= 32'd0;  shd_fterm[si]  <= 32'd0;
+                shd_erates[si]  <= 32'd0;  shd_elevels[si] <= 32'd0;
+                shd_scaleA[si]  <= 32'd0;  shd_scaleB[si] <= 32'd0;
+            end
+            shd_globA <= 32'd0;  shd_globB <= 32'd0;  shd_globC <= 32'd0;
+            shd_pegr <= 32'd0;   shd_pegl <= 32'd0;
+            shd_commit <= 1'b0;
+            evq_wp <= 8'd0; evq_rp <= 8'd0; evq_cnt <= 9'd0;
             fc_state <= F_IDLE;
             nn <= 4'd0; opk <= 3'd0; tgt <= 4'd0; scan <= 4'd0;
             kind <= 2'd0; mix_j <= 6'd0; rb_cnt <= 3'd0;
@@ -1551,6 +1515,65 @@ module dx7_core (
             w_fa <= 10'd0; w_fl <= 14'd0; w_fsh <= 9'd0;
             sched_start <= 16'd0; sched_used <= 16'd0;
         end else begin
+            // --- status/skid body (former standalone block) ---
+            if (wr_wr)
+                st_fresh <= 1'b0;   // any accepted write unfreshes
+            if (skid_push) begin
+                if (!skid_full) begin
+                    skid[skid_wp] <= frame_reg;
+                    skid_wp  <= skid_wp + 3'd1;
+                    skid_cnt <= skid_cnt + 4'd1;
+                end
+            end
+            if (skid_pop) begin
+                skid_rp  <= skid_rp + 3'd1;
+                skid_cnt <= skid_cnt - 4'd1;
+            end
+            // --- config/push body (former standalone block) ---
+            if (skid_pop) begin
+            if (dr_sec) begin
+                if (dr_a != 8'h42) begin
+                    case (dr_a)
+                        8'h40: shd_globA <= dr_d;
+                        8'h41: shd_globB <= dr_d;
+                        8'h43: shd_globC <= dr_d;
+                        8'h44: shd_pegr   <= dr_d;
+                        8'h45: shd_pegl   <= dr_d;
+                        default: ;
+                    endcase
+                    if (dr_a >= 8'h10 && dr_a <= 8'h15)
+                        shd_opitch[dr_a[2:0]] <= dr_d;
+                    if (dr_a >= 8'h18 && dr_a <= 8'h1D)
+                        shd_fterm[dr_a[2:0]] <= dr_d;
+                    if (dr_a >= 8'h20 && dr_a <= 8'h25)
+                        shd_erates[dr_a[2:0]] <= dr_d;
+                    if (dr_a >= 8'h28 && dr_a <= 8'h2D)
+                        shd_elevels[dr_a[2:0]] <= dr_d;
+                    if (dr_a >= 8'h30 && dr_a <= 8'h35)
+                        shd_scaleA[dr_a[2:0]] <= dr_d;
+                    if (dr_a >= 8'h38 && dr_a <= 8'h3D)
+                        shd_scaleB[dr_a[2:0]] <= dr_d;
+                end
+            end else if (!evq_full) begin
+                evq[evq_wp] <= {dr_a[4:0], dr_d};
+                evq_wp  <= (evq_wp == EVQ_DEPTH-1) ? 8'd0 : evq_wp + 8'd1;
+            end
+        end
+            // --- config/push merge-tail (unconditional, original order)
+        // Single-driver merge (H10): the frame-commit FSM (fc_state) and this
+        // config/push block used to write shd_commit/evq_rp/evq_cnt from two
+        // always blocks — multiple drivers on one register, which simulators
+        // silently time-multiplex but yosys rejects (check -assert). Same-cycle
+        // semantics are now explicit: push and pop each count once; a commit
+        // clear in the same cycle as a set wins the clear.
+        if (wc_pop_fire)
+            evq_rp <= wc_rp_next;
+        evq_cnt <= evq_cnt + (skid_pop && !dr_sec && !evq_full ? 9'd1 : 9'd0)
+                             - (wc_pop_fire ? 9'd1 : 9'd0);
+        shd_commit <= ((fc_state == F_COMMIT) && shd_commit) ? 1'b0
+                     : (skid_pop && dr_sec && (dr_a == 8'h42)) ? 1'b1
+                     : shd_commit;
+            // --- master FSM body (verbatim; last writer wins) ---
             env_cmd_en <= 96'd0;          // default: no command this cycle
             if (frame_tick && (fc_state != F_IDLE))
                 st_overrun <= 1'b1;       // defect detector: must never set
@@ -1586,7 +1609,8 @@ module dx7_core (
                     lfo_delta <= l_delta_w;    // DEC-019/DEC-020: no phase
                     lfo_dinc1 <= l_dinc1_w;    // reset, params from the
                     lfo_dinc2 <= l_dinc2_w;    // incoming image
-                    shd_commit <= 1'b0;
+                    // shd_commit cleared by the config/push block (single-driver
+                    // merge, H10); the captures above observe it this cycle.
                 end
                 fc_state <= F_EVPOP;
             end
@@ -1597,26 +1621,17 @@ module dx7_core (
                         EA_NOTEON: begin
                             stg_note <= ev_d[6:0];
                             stg_vel  <= ev_d[14:8];
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_ALLOC;
+                                                        fc_state <= F_ALLOC;
                         end
                         EA_NOTEOFF: begin
                             stg_note <= ev_d[6:0];
                             scan <= 4'd0;
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_OFFFIND;
+                                                        fc_state <= F_OFFFIND;
                         end
                         EA_CC: begin
                             stg_ctrl <= ev_d[7:0];
                             stg_val  <= ev_d[15:8];
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            case (ev_d[7:0])
+                                                        case (ev_d[7:0])
                                 8'd64: begin
                                     sustain <= (ev_d[15:8] > 8'd63);
                                     if (!(ev_d[15:8] > 8'd63)) begin
@@ -1650,58 +1665,34 @@ module dx7_core (
                         end
                         EA_PB: begin
                             bend_pb <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_DD0, EA_DD0+5'd1, EA_DD0+5'd2, EA_DD0+5'd3,
                         EA_DD0+5'd4, EA_DD0+5'd5: begin
                             stg_dd[ev_a - 5'd4] <= ev_d;   // op = addr-DD0
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_MTUNE: begin
                             master_tune <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_CTRLPM: begin
                             ctrl_pm <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_CTRLAM: begin
                             ctrl_am <= $signed(ev_d);
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_EGMOD: begin
                             eg_mod <= ev_d;
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                         EA_SOFT: begin
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_SOFT;
+                                                        fc_state <= F_SOFT;
                         end
                         default: begin
-                            evq_rp <= (evq_rp == EVQ_DEPTH-1) ? 8'd0
-                                                              : evq_rp + 8'd1;
-                            evq_cnt <= evq_cnt - 9'd1;
-                            fc_state <= F_EVPOP;
+                                                        fc_state <= F_EVPOP;
                         end
                     endcase
                 end else begin

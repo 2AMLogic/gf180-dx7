@@ -417,62 +417,9 @@
    "pass": true
   },
   "dev32-30": {
-   "actual_sha256": "2cbc8ad0f0a45a9d8e410d0d8488ada47b34943646f0292968e16b43d61acb61",
-   "checked": 1536,
-   "commits": [
-    "0"
-   ],
+   "error": "simulation failed:  ",
    "id": "dev32-30",
-   "latency": [
-    {
-     "block": 75,
-     "distance_samples": 128,
-     "event": "4800 note_on 60 100",
-     "in_window": true,
-     "p": 0,
-     "window": [
-      64,
-      129
-     ]
-    },
-    {
-     "block": 750,
-     "distance_samples": 128,
-     "event": "48000 note_off 60",
-     "in_window": true,
-     "p": 0,
-     "window": [
-      64,
-      129
-     ]
-    },
-    {
-     "block": 1125,
-     "distance_samples": 128,
-     "event": "72000 note_on 60 30",
-     "in_window": true,
-     "p": 0,
-     "window": [
-      64,
-      129
-     ]
-    },
-    {
-     "block": 1875,
-     "distance_samples": 128,
-     "event": "120000 note_off 60",
-     "in_window": true,
-     "p": 0,
-     "window": [
-      64,
-      129
-     ]
-    }
-   ],
-   "mismatches": [],
-   "overflow": 0,
-   "overrun": 0,
-   "pass": true
+   "pass": false
   },
   "dir-base": {
    "actual_sha256": "ffbb45ac6c779d638fab7bab6a49af793931361ac2edd4ddcecead65cfd7ad74",
@@ -1715,7 +1662,7 @@
   }
  },
  "latency_contract": "H03 section 4.5: [(64-p), (64-p)+65]",
- "rtl_sha256": "25e7e1ebaf65dcc01441d839da3c1abdc95762bd8f023b7d9403c52c47db4c74",
+ "rtl_sha256": "7bab93f514f49a3f6819818e66ed3e4581c00ebb0063082ef1e2b7f2f06bc188",
  "tag": "iverilog-shadow",
  "tool": "iverilog"
 }

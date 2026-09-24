@@ -619,5 +619,5 @@
     }
   },
   "status": "PASS",
-  "written": "/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-38/reference/evidence/u05-demo/demo-clean-compact.json"
+  "written": "reference/evidence/u05-demo/demo-clean-compact.json"
 }

@@ -1,0 +1,199 @@
+{
+  "schema": "gf180-dx7.demo-bench-report/1",
+  "fixture": "spec/demo-audition-v1.json",
+  "profile": "compact",
+  "mode": "drop-restore",
+  "expect_fail": true,
+  "expect_refuse": false,
+  "coverage": {
+    "distinct_notes": [
+      60,
+      64,
+      67,
+      71
+    ],
+    "distinct_velocities": [
+      32,
+      64,
+      72,
+      88,
+      96,
+      100,
+      110,
+      127
+    ],
+    "max_chord_width": 4,
+    "pedal_down_up": true,
+    "all_notes_off_events": 1,
+    "bend_steps": 6,
+    "bend_values": [
+      8192,
+      12288,
+      16256,
+      8192,
+      0,
+      8192
+    ],
+    "controller_cc_values": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        16
+      ],
+      [
+        1,
+        32
+      ],
+      [
+        1,
+        47
+      ],
+      [
+        1,
+        63
+      ],
+      [
+        1,
+        79
+      ],
+      [
+        1,
+        95
+      ],
+      [
+        1,
+        111
+      ],
+      [
+        1,
+        127
+      ]
+    ],
+    "release_tail_notes": 4,
+    "note_on_total": 23,
+    "final_held": []
+  },
+  "counts_expected": {
+    "note_on": 23,
+    "note_off": 23,
+    "controller": 12,
+    "bend": 6,
+    "event_writes": 225,
+    "image_writes": 342,
+    "commits_applied_expected": 2,
+    "generations_expected": 2,
+    "total_write_windows": 567,
+    "n_boot_frames_at_design": 2
+  },
+  "patch": {
+    "source": "tests/fixtures/valid_bank.syx",
+    "source_sha256": "d28921d47c89bb774df6928f55b6037b80423746a91ddf2e63779132a9045861",
+    "bank_slot": 7,
+    "name": "BANKVCE007",
+    "canonical_hash": "d3f96a971767965439c6c9f415d48bb7d247a15e59a24c281936d4fcc950aa2d",
+    "note": "Synthetic P01 codec-validated bank voice (issue #8 fixture), algorithm 7. The control-path claims do not depend on timbre. The final U02 listening bank (issue #35, BLOCKED until selected) is the bank an operator plays on hardware; wave-gate tests additionally run this fixture through a real dev32 patch from the pinned AllTheWeb archive when the environment provides it (that variant is NOT_RUN, never a pass, when the archive is absent)."
+  },
+  "expected_digest": 57,
+  "boot": {
+    "writes": 171,
+    "flush_cycles": 2,
+    "land_frame": 4,
+    "generation": 1
+  },
+  "gates": {
+    "three_way_stream_agreement": {
+      "pass": false,
+      "detail": [
+        "host accepted 567 writes, core drained 388",
+        "write 0: host (1, 0, 46) != drain (0x0/0x0/0x2003c)",
+        "pin leg 567 (after DEC-014 collapse) != drain leg 388; raw pins 567",
+        "write 0: pin (0x1/0x0) != drain (0x0/0x0)"
+      ]
+    },
+    "frame_landing_prediction": {
+      "pass": false,
+      "detail": [
+        "no per-burst accounting (pad reset mid-play): link-frame prediction is undefined across the reset"
+      ]
+    },
+    "applied_timing_h03_4_2": {
+      "pass": false,
+      "detail": [
+        "applied note events 45 != scheduled 46"
+      ]
+    },
+    "commit_audit": {
+      "pass": false,
+      "detail": [
+        "commits applied 1 != expected 2",
+        "core generation 1 != expected 2"
+      ]
+    },
+    "no_contract_defects": {
+      "pass": true,
+      "detail": "directed pad reset recorded (1x); OVERRUN never set",
+      "fault_counts": {
+        "reset_mid_transfer": 1
+      }
+    },
+    "no_stuck_notes": {
+      "pass": true,
+      "detail": "0 notes held at end; frame counter 53 < 2^16"
+    },
+    "expected_event_counts": {
+      "pass": false,
+      "detail": [
+        "note_on: observed 22 != expected 23",
+        "event write windows: observed 46 != expected 225"
+      ],
+      "bench_counts": {
+        "note_on": 22,
+        "note_off": 23,
+        "controller": 12,
+        "bend": 0,
+        "event_writes": 46,
+        "commits_applied": 1,
+        "generations": 1
+      }
+    }
+  },
+  "run_info": {
+    "reset_observed_at_song_frame": 87,
+    "reset_observed": "FRAME counter regressed 3 -> 2: pad reset observed (H03 section 4.4); recall required",
+    "recall_undelivered": true,
+    "drains_at_play_start": 171,
+    "drains_at_play_end": 217
+  },
+  "faults": [
+    {
+      "kind": "reset_mid_transfer",
+      "detail": "pad reset after 179 accepted writes",
+      "frame": 4
+    }
+  ],
+  "counts_observed": {
+    "pin_writes": 567,
+    "pin_writes_collapse_dec014": 567,
+    "drain_writes": 388,
+    "host_log_writes": 567,
+    "applied_events": {
+      "note_off": 23,
+      "note_on": 22,
+      "controller": 12,
+      "commit": 1
+    }
+  },
+  "status": "PASS",
+  "expect_fail_verification": {
+    "passed": true,
+    "problems": [],
+    "expected": {
+      "three_way_stream_agreement": false,
+      "commit_audit": false
+    }
+  },
+  "written": "/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-38/reference/evidence/u05-demo/demo-negative-drop-restore.json"
+}

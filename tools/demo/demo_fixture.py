@@ -762,7 +762,12 @@ def _finish(report: dict, report_path, expect_fail: bool,
         if not report_path.is_absolute():
             report_path = REPO / report_path
         report_path.parent.mkdir(parents=True, exist_ok=True)
-        report["written"] = report_path.as_posix()
+        try:
+            report["written"] = (report_path.resolve()
+                                 .relative_to(REPO.resolve())
+                                 .as_posix())
+        except ValueError:
+            report["written"] = report_path.name
         report_path.write_text(json.dumps(report, indent=2) + "\n")
     status = report["status"]
     print(json.dumps({"status": status,

@@ -15,8 +15,7 @@ Implements, over an in-process transport shaped like the SPI link
   * bounded skid FIFO (depth 8 x 49 bits) with explicit-rejection
     overflow policy (DEC-014): a dropped write sets the sticky OVERFLOW
     status flag and is recorded in the fault log - silent drops and
-    silent deferral are forbidden;
-  * status reads (H03 section 4.3): 32-bit word {MAGIC 0xD7, VERSION
+    silent deferral are forbidden;  * status reads (H03 section 4.3): 32-bit word {MAGIC 0xD7, VERSION
     0x1, OVERRUN, QUEUE, OVERFLOW, FRESH, FRAME[15:0]}; the first read
     after reset reads the 0xD711_0001-shaped word; sticky flags clear
     on read; FRESH = no write accepted since reset;
@@ -33,6 +32,14 @@ FAILURE INJECTION (issue #37 acceptance): truncated transfer, bad
 checksum, queue overflow, backpressure (drain stall / frozen queue),
 overrun, and reset mid-transfer. Every injection leaves a record in the
 fault log; nothing fails silently.
+
+OBSERVABILITY (H03 section 4.6 style, read-only; U04 + U05): the
+applied-event tap (applied_events), the committed-image accessors
+(committed_image/committed_digest over the 4-entry ring), the fault log
+(core.faults), the status word (read_status), and (U05, issue #38) the
+drain tap (drain_tap) - the frame each accepted write left the skid FIFO,
+used by the tools/demo fixture bench for the host prediction / CS-N pin /
+drain frame three-way cross-check. Taps never affect behavior.
 
 Timing model: each accepted transaction window costs 194 core clocks
 (48-bit frame + 2-cycle CS gap at SCK = f_core/4; H03 section 2 row 15
@@ -160,6 +167,25 @@ class EventRecord:
     detail: str
 
 
+@dataclass(frozen=True)
+class DrainRecord:
+    """One accepted write drained from the skid FIFO into the core (U05,
+    issue #38). Read-only H03 section 4.6-style observability: the frame in
+    which the write left the FIFO and entered shadow/event state. The FIFO
+    never reorders, and every accepted write drains exactly once (explicitly
+    rejected writes are refused before queueing and recorded as faults), so
+    the drain tap correlates one-for-one, in order, with every accepted
+    write - the drain side of the host prediction / CS-N pin / drain frame
+    three-way cross-check.
+    """
+
+    frame: int
+    sec: int
+    addr: int
+    data: int
+    seq: int
+
+
 @dataclass
 class FailureInjection:
     """Failure-injection hooks (issue #37); every use records a fault."""
@@ -211,6 +237,7 @@ class MockCore:
         self.sticky_overflow = False
         self.accepted_since_reset = 0
         self.applied: list[EventRecord] = []
+        self.drains: list[DrainRecord] = []
         self.faults = prior_faults  # evidence survives a reset
         self._pending_velocity: int | None = None
         self._pending_ddelta: dict[int, int] = {}
@@ -272,6 +299,10 @@ class MockCore:
 
     def _drain_one(self) -> None:
         frame = self.queue.pop(0)
+        if not frame.is_read:  # writes only; status reads drain as no-ops
+            self.drains.append(DrainRecord(
+                self.frame_now, frame.sec, frame.addr, frame.data,
+                len(self.drains)))
         self._apply_write(frame)
 
     def _record_fault(self, kind: str, detail: str) -> None:
@@ -476,6 +507,16 @@ class MockCore:
 
     def applied_events(self) -> tuple[EventRecord, ...]:
         return tuple(self.applied)
+
+    def drain_tap(self) -> tuple[DrainRecord, ...]:
+        """Drain tap (U05, issue #38; read-only evidence, H03 4.6 style).
+
+        One record per accepted write, in FIFO order: the frame in which the
+        write drained into the core. Survives pad resets (evidence, like the
+        fault log and ``applied``). One append per drained write - no effect
+        on behavior.
+        """
+        return tuple(self.drains)
 
     def committed_image(self, generation: int | None = None) -> dict[int, int]:
         gen = self.generation if generation is None else generation

@@ -1,0 +1,124 @@
+{
+ "schema": "gf180-dx7.demo-audition/1",
+ "issue": "https://github.com/2AMLogic/gf180-dx7/issues/38",
+ "plan_basis": "docs/dx7-chip-plan-v0.1-2026-09-20.md section 6 (audition protocol, line 172) and line 260 (U05 evidence row)",
+ "sample_rate": 48000,
+ "commitment": "Committed versioned demo fixture (U05): exact patch identity, phrase-set reference, playthrough ordering, and expected event counts. Never improvised per run; requalification = tools/demo/demo_fixture.py exit 0 on the pinned inputs.",
+ "patch": {
+  "source": "tests/fixtures/valid_bank.syx",
+  "source_sha256": "d28921d47c89bb774df6928f55b6037b80423746a91ddf2e63779132a9045861",
+  "bank_slot": 7,
+  "name": "BANKVCE007",
+  "canonical_hash": "d3f96a971767965439c6c9f415d48bb7d247a15e59a24c281936d4fcc950aa2d",
+  "note": "Synthetic P01 codec-validated bank voice (issue #8 fixture), algorithm 7. The control-path claims do not depend on timbre. The final U02 listening bank (issue #35, BLOCKED until selected) is the bank an operator plays on hardware; wave-gate tests additionally run this fixture through a real dev32 patch from the pinned AllTheWeb archive when the environment provides it (that variant is NOT_RUN, never a pass, when the archive is absent)."
+ },
+ "phrases_ref": {
+  "path": "spec/audition-phrases-v2.json",
+  "schema": "gf180-dx7.audition-phrases/1",
+  "supersedes": "spec/audition-phrases-v1.json (U01, issue #34) - v2 is a byte-identical superset; the U01 file is unchanged and still the input of tools/audition.py"
+ },
+ "playthrough_order": {
+  "compact": [
+   "vel-layers-32-64-96-127",
+   "mid-60-vel100",
+   "short-pluck-60",
+   "chord-4note-60-64-67-71",
+   "modwheel-sweep-60",
+   "pitch-bend-60",
+   "sustain-pedal-60-64",
+   "all-notes-off-60-64-67",
+   "fast-run-60-64-67-71"
+  ],
+  "full": [
+   "low-36-vel100",
+   "mid-60-vel100",
+   "high-84-vel100",
+   "mid-60-vel32",
+   "mid-60-vel80",
+   "mid-60-vel127",
+   "vel-layers-32-64-96-127",
+   "short-pluck-60",
+   "long-hold-60",
+   "release-tail-60",
+   "chord-3note-60-64-67",
+   "chord-4note-60-64-67-71",
+   "modwheel-sweep-60",
+   "pitch-bend-60",
+   "sustain-pedal-60-64",
+   "all-notes-off-60-64-67",
+   "fast-run-60-64-67-71"
+  ]
+ },
+ "second_commit_after": {
+  "compact": "chord-4note-60-64-67-71",
+  "full": "release-tail-60"
+ },
+ "recall_note": "After the named phrase the host re-commits the SAME patch (byte-identical image, load digest re-verified): the committed-patch-ring recall check inside the playthrough (the mock keeps the clean contract; a no-recovery host variant is the drop-restore failure mode).",
+ "coverage_wants": {
+  "compact": {
+   "min_distinct_velocities": 4,
+   "required_velocities": [
+    32,
+    64,
+    96,
+    127,
+    100
+   ],
+   "min_chord_width": 4,
+   "min_release_tails": 1,
+   "require_pedal": true,
+   "require_all_notes_off": true,
+   "min_bend_steps": 4,
+   "required_cc": [
+    1
+   ],
+   "min_distinct_notes": 4
+  },
+  "full": {
+   "min_distinct_velocities": 6,
+   "required_velocities": [
+    32,
+    64,
+    80,
+    96,
+    100,
+    127
+   ],
+   "min_chord_width": 4,
+   "min_release_tails": 2,
+   "require_pedal": true,
+   "require_all_notes_off": true,
+   "min_bend_steps": 4,
+   "required_cc": [
+    1
+   ],
+   "min_distinct_notes": 4
+  }
+ },
+ "expected_counts": {
+  "compact": {
+   "note_on": 23,
+   "note_off": 23,
+   "controller": 12,
+   "bend": 6,
+   "event_writes": 225,
+   "image_writes": 342,
+   "commits_applied_expected": 2,
+   "generations_expected": 2,
+   "total_write_windows": 567,
+   "n_boot_frames_at_design": 2
+  },
+  "full": {
+   "note_on": 33,
+   "note_off": 33,
+   "controller": 12,
+   "bend": 6,
+   "event_writes": 315,
+   "image_writes": 342,
+   "commits_applied_expected": 2,
+   "generations_expected": 2,
+   "total_write_windows": 657,
+   "n_boot_frames_at_design": 2
+  }
+ }
+}

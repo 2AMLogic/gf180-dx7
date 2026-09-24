@@ -271,12 +271,72 @@ def verify_upstream(repo_root, components):
           f"checkouts unavailable: {skipped} component(s)")
 
 
+def union_merge(catalog_path):
+    """Resolve a conflicted docs/reuse/catalog.json by unioning both sides.
+
+    Originals: union by path; re-pin any entry whose file content changed.
+    Components: union by name; the merged-HEAD side (ours) wins its own rows,
+    destination/adapted-hash maps union. Replaces the ad-hoc per-merge script.
+    """
+    import subprocess as _sp
+    raw = open(catalog_path).read()
+    if "<<<<<<<" not in raw:
+        print("no conflict")
+        return 0
+    ours = json.loads(_sp.run(["git", "show", "HEAD:docs/reuse/catalog.json"],
+                               capture_output=True, text=True).stdout)
+    theirs = json.loads(_sp.run(["git", "show", "MERGE_HEAD:docs/reuse/catalog.json"],
+                                 capture_output=True, text=True).stdout)
+    m = dict(theirs)
+    paths = {e["path"] for e in m.get("local_originals", [])}
+    for e in ours.get("local_originals", []):
+        if e["path"] in paths:
+            continue
+        m.setdefault("local_originals", []).append(e)
+        paths.add(e["path"])
+    for e in m.get("local_originals", []):
+        if os.path.isfile(e["path"]):
+            actual = sha256_file(e["path"])
+            if actual != e["sha256"]:
+                e["sha256"] = actual
+                e["reason"] = str(e.get("reason", "")) + "; re-pinned at merge"
+                print("re-pinned:", e["path"])
+    bcomps = {c["component"]: c for c in ours.get("components", [])}
+    out = []
+    for comp in m.get("components", []):
+        b = bcomps.pop(comp["component"], None)
+        if b is not None:
+            merged = dict(b)
+            dests = list(dict.fromkeys(
+                list(b.get("destination", [])) + list(comp.get("destination", []))))
+            if dests:
+                merged["destination"] = dests
+            adapted = dict(comp.get("adapted_sha256", {}))
+            adapted.update(b.get("adapted_sha256", {}))
+            if adapted:
+                merged["adapted_sha256"] = adapted
+            out.append(merged)
+        else:
+            out.append(comp)
+    for name, b in bcomps.items():
+        out.append(b)
+    m["components"] = out
+    with open(catalog_path, "w") as f:
+        json.dump(m, f, indent=2)
+        f.write("\n")
+    print("union-resolved:", len(m["components"]), "components,",
+          len(m["local_originals"]), "originals")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo-root", default=os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
     parser.add_argument("--catalog", default=None,
                         help="catalog path (default <repo-root>/docs/reuse/catalog.json)")
+    parser.add_argument("--union-merge", action="store_true",
+                        help="resolve a conflicted catalog by unioning both sides, then exit")
     parser.add_argument("--verify-upstream", action="store_true",
                         help="also re-hash pinned files from local sibling checkouts")
     args = parser.parse_args(argv)
@@ -284,6 +344,8 @@ def main(argv=None):
     catalog_path = args.catalog or os.path.join(
         repo_root, "docs", "reuse", "catalog.json")
 
+    if args.union_merge:
+        return union_merge(catalog_path)
     try:
         catalog = load_catalog(repo_root, catalog_path)
         components = catalog["components"]

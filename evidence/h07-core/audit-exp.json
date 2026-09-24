@@ -1,0 +1,9 @@
+{
+ "audit": "num008-exp-boundary",
+ "domain": "0 <= x <= 2^24, stride 4093",
+ "points": 4100,
+ "min_boundary_distance": 0.0004462284268811345,
+ "argmin_x": 4923879,
+ "points_within_1e-9": 0,
+ "note": "the RTL fixed-point evaluator reproduces int(exp(arg)) wherever exp(arg) is farther than ~1e-6 from an integer; every conformance vector is exact"
+}

@@ -48,9 +48,22 @@ polyphony, one timbre, 48 kHz, external host/controller/DAC/storage.
 - Do not weaken a product goal (e.g. 16-note polyphony) or acceptance rule
   to make a task pass; record a bounded finding and block only the affected
   dependency.
+- Test tiering (DR-0009): `make test-fast` (seconds) is the default gate for
+  builder/merge loops; the full suite (`make test`, ~15 min, renders+synthesis)
+  runs at judge approval and wave gates. Never report a skipped or fast-lane
+  result as a full-suite pass.
 - Keep `AGENTS.md` and `CLAUDE.md` substantively identical outside their
   Loom-managed marker blocks.
 
 <!-- BEGIN LOOM ORCHESTRATION (AGENTS) -->
 This repository uses [Loom](https://github.com/rjwalters/loom) for AI-powered development orchestration (dual-runtime: Claude Code reads `CLAUDE.md`; OpenAI Codex CLI and other AGENTS.md-aware runtimes read this file). See the Loom repository for the full guide (roles, labels, worktrees, configuration). When installed, Loom also writes a locally-substituted copy of the runtime-neutral guide to `.loom/AGENTS.md`.
 <!-- END LOOM ORCHESTRATION (AGENTS) -->
+
+<!-- BEGIN REPO-SKILLS -->
+This repository has [Repo Skills](https://github.com/rjwalters/repo) v0.11.18 installed —
+general repository hygiene and environment commands invoked as `/repo:<command>`. Run
+`/repo:help` for the command list, or see `.claude/skills/repo/SKILL.md` for the full
+guide. Hygiene commands apply safe, reversible fixes by default and report each
+change; run with `--ask` to review first, and `--prune` to allow irreversible
+removals. Managed by `install.sh` — edit outside the markers only.
+<!-- END REPO-SKILLS -->

@@ -1,0 +1,62 @@
+{
+ "schema": "gf180-dx7.demo-manifest/1",
+ "note": "TEMPLATE - not a valid manifest as-is (the placeholders are the point: tools/demo/check_manifest.py refuses them at record time and accepts a declared-dry run only when the software rows are concrete and the hardware rows are declared NOT_RUN/BLOCKED with named operator issues). Fill from a real run with tools/demo/run_demo.py; do not hand-edit a committed manifest afterwards.",
+ "run_id": "u05-demo-<DATE>",
+ "mode": "dry",
+ "date": "<DATE_UTC_ISO_Z>",
+ "claim": "software-only dry run: the committed fixture and stress battery pass on the mock link; the hardware acceptance rows are NOT_RUN, pending #31 (H09 FPGA capture) and #35 (listening bank)",
+ "software": {
+  "repo_sha": "<GIT_SHA40>",
+  "branch": "<BRANCH>",
+  "python": "<PYTHON_VERSION>",
+  "fixture": {"path": "spec/demo-audition-v1.json", "sha256": "<SHA256>"},
+  "phrase_set": {"path": "spec/audition-phrases-v2.json", "sha256": "<SHA256>"},
+  "patch": {"source": "tests/fixtures/valid_bank.syx slot 7 (BANKVCE007)", "canonical_hash": "<SHA256>"},
+  "tools": {
+   "demo_fixture.py": {"sha256": "<SHA256>"},
+   "stress.py": {"sha256": "<SHA256>"}
+  }
+ },
+ "results": {
+  "demo_clean_compact": "PASS",
+  "demo_clean_full": "PASS",
+  "stress": {
+   "fast_play": {"status": "PASS"},
+   "sustain_pedal": {"status": "PASS"},
+   "patch_changes_while_held": {"status": "PASS"},
+   "all_sound_off": {"status": "PASS"},
+   "throttled_link": {"status": "PASS", "rejections_observed": 0}
+  },
+  "negatives": {
+   "drop-deltas": true,
+   "drop-restore": true,
+   "late-window": true,
+   "drop-bend": true,
+   "drop-bend-step": true,
+   "burst": true,
+   "throttle": true,
+   "drop-note-off": true
+  }
+ },
+ "hardware": {
+  "rtl_tag": "<RTL_TAG>",
+  "bitstream_sha256": "<BITSTREAM_SHA256>",
+  "bank_version": "<BANK_VERSION>",
+  "capture": {
+   "status": "NOT_RUN",
+   "blocked_by": "issue #31 - H09: FPGA board capture pipeline (operator)"
+  },
+  "listening_bank": {
+   "status": "NOT_RUN",
+   "blocked_by": "issue #35 - listening bank on real hardware (operator)"
+  },
+  "board_latency": {
+   "status": "BLOCKED",
+   "blocked_by": "issue #31 - H09: board latency measurement (operator)"
+  },
+  "board_audit": {
+   "status": "BLOCKED",
+   "blocked_by": "issue #31 - H09: board waveform audit/capture (operator)"
+  }
+ }
+}

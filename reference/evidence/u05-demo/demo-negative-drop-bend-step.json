@@ -1,0 +1,637 @@
+{
+  "schema": "gf180-dx7.demo-bench-report/1",
+  "fixture": "spec/demo-audition-v1.json",
+  "profile": "compact",
+  "mode": "drop-bend-step",
+  "expect_fail": true,
+  "expect_refuse": false,
+  "coverage": {
+    "distinct_notes": [
+      60,
+      64,
+      67,
+      71
+    ],
+    "distinct_velocities": [
+      32,
+      64,
+      72,
+      88,
+      96,
+      100,
+      110,
+      127
+    ],
+    "max_chord_width": 4,
+    "pedal_down_up": true,
+    "all_notes_off_events": 1,
+    "bend_steps": 6,
+    "bend_values": [
+      8192,
+      12288,
+      16256,
+      8192,
+      0,
+      8192
+    ],
+    "controller_cc_values": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        16
+      ],
+      [
+        1,
+        32
+      ],
+      [
+        1,
+        47
+      ],
+      [
+        1,
+        63
+      ],
+      [
+        1,
+        79
+      ],
+      [
+        1,
+        95
+      ],
+      [
+        1,
+        111
+      ],
+      [
+        1,
+        127
+      ]
+    ],
+    "release_tail_notes": 4,
+    "note_on_total": 23,
+    "final_held": []
+  },
+  "counts_expected": {
+    "note_on": 23,
+    "note_off": 23,
+    "controller": 12,
+    "bend": 6,
+    "event_writes": 225,
+    "image_writes": 342,
+    "commits_applied_expected": 2,
+    "generations_expected": 2,
+    "total_write_windows": 567,
+    "n_boot_frames_at_design": 2
+  },
+  "patch": {
+    "source": "tests/fixtures/valid_bank.syx",
+    "source_sha256": "d28921d47c89bb774df6928f55b6037b80423746a91ddf2e63779132a9045861",
+    "bank_slot": 7,
+    "name": "BANKVCE007",
+    "canonical_hash": "d3f96a971767965439c6c9f415d48bb7d247a15e59a24c281936d4fcc950aa2d",
+    "note": "Synthetic P01 codec-validated bank voice (issue #8 fixture), algorithm 7. The control-path claims do not depend on timbre. The final U02 listening bank (issue #35, BLOCKED until selected) is the bank an operator plays on hardware; wave-gate tests additionally run this fixture through a real dev32 patch from the pinned AllTheWeb archive when the environment provides it (that variant is NOT_RUN, never a pass, when the archive is absent)."
+  },
+  "expected_digest": 57,
+  "boot": {
+    "writes": 171,
+    "flush_cycles": 2,
+    "land_frame": 4,
+    "generation": 1
+  },
+  "gates": {
+    "three_way_stream_agreement": {
+      "pass": false,
+      "detail": [
+        "host accepted 567 writes, core drained 566",
+        "write 288: host (0, 40, 12288) != drain (0x0/0x28/0x3f80)"
+      ]
+    },
+    "frame_landing_prediction": {
+      "pass": false,
+      "detail": [
+        "accounting write total 225 != play-drain count 224 (attribution impossible)"
+      ]
+    },
+    "applied_timing_h03_4_2": {
+      "pass": true,
+      "detail": "every note event applied exactly one frame after its last write drained (frame N+1 rule)"
+    },
+    "commit_audit": {
+      "pass": true,
+      "detail": "2 digest-verified commit(s), generation 2"
+    },
+    "no_contract_defects": {
+      "pass": true,
+      "detail": "no faults; OVERRUN never set",
+      "fault_counts": {}
+    },
+    "no_stuck_notes": {
+      "pass": true,
+      "detail": "0 notes held at end; frame counter 56 < 2^16"
+    },
+    "expected_event_counts": {
+      "pass": false,
+      "detail": [
+        "event write windows: observed 224 != expected 225"
+      ],
+      "bench_counts": {
+        "note_on": 23,
+        "note_off": 23,
+        "controller": 12,
+        "bend": 5,
+        "event_writes": 224,
+        "commits_applied": 2,
+        "generations": 2
+      }
+    }
+  },
+  "run_info": {
+    "accounting": [
+      {
+        "burst": 0,
+        "song_frame": 37,
+        "send_frame_pred": 4,
+        "tags": [
+          "note_on 60 vel 32"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 1,
+        "song_frame": 87,
+        "send_frame_pred": 5,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 2,
+        "song_frame": 150,
+        "send_frame_pred": 6,
+        "tags": [
+          "note_on 60 vel 64"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 3,
+        "song_frame": 200,
+        "send_frame_pred": 7,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 4,
+        "song_frame": 262,
+        "send_frame_pred": 8,
+        "tags": [
+          "note_on 60 vel 96"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 5,
+        "song_frame": 312,
+        "send_frame_pred": 9,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 6,
+        "song_frame": 375,
+        "send_frame_pred": 10,
+        "tags": [
+          "note_on 60 vel 127"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 7,
+        "song_frame": 425,
+        "send_frame_pred": 11,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 8,
+        "song_frame": 2287,
+        "send_frame_pred": 12,
+        "tags": [
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 9,
+        "song_frame": 3000,
+        "send_frame_pred": 13,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 10,
+        "song_frame": 3412,
+        "send_frame_pred": 14,
+        "tags": [
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 11,
+        "song_frame": 3487,
+        "send_frame_pred": 15,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 12,
+        "song_frame": 4162,
+        "send_frame_pred": 16,
+        "tags": [
+          "note_on 60 vel 100",
+          "note_on 64 vel 100",
+          "note_on 67 vel 100",
+          "note_on 71 vel 100"
+        ],
+        "n_writes": 32
+      },
+      {
+        "burst": 13,
+        "song_frame": 4875,
+        "send_frame_pred": 17,
+        "tags": [
+          "note_off 60",
+          "note_off 64",
+          "note_off 67",
+          "note_off 71"
+        ],
+        "n_writes": 4
+      },
+      {
+        "burst": 14,
+        "song_frame": 5287,
+        "send_frame_pred": 18,
+        "tags": [
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 15,
+        "song_frame": 5437,
+        "send_frame_pred": 19,
+        "tags": [
+          "cc 1=0"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 16,
+        "song_frame": 5625,
+        "send_frame_pred": 20,
+        "tags": [
+          "cc 1=16"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 17,
+        "song_frame": 5812,
+        "send_frame_pred": 21,
+        "tags": [
+          "cc 1=32"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 18,
+        "song_frame": 6000,
+        "send_frame_pred": 22,
+        "tags": [
+          "cc 1=47"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 19,
+        "song_frame": 6187,
+        "send_frame_pred": 23,
+        "tags": [
+          "cc 1=63"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 20,
+        "song_frame": 6375,
+        "send_frame_pred": 24,
+        "tags": [
+          "cc 1=79"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 21,
+        "song_frame": 6562,
+        "send_frame_pred": 25,
+        "tags": [
+          "cc 1=95"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 22,
+        "song_frame": 6750,
+        "send_frame_pred": 26,
+        "tags": [
+          "cc 1=111"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 23,
+        "song_frame": 6937,
+        "send_frame_pred": 27,
+        "tags": [
+          "cc 1=127"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 24,
+        "song_frame": 7125,
+        "send_frame_pred": 28,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 25,
+        "song_frame": 7537,
+        "send_frame_pred": 29,
+        "tags": [
+          "bend 8192",
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 9
+      },
+      {
+        "burst": 26,
+        "song_frame": 7781,
+        "send_frame_pred": 30,
+        "tags": [
+          "bend 12288"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 27,
+        "song_frame": 8062,
+        "send_frame_pred": 31,
+        "tags": [
+          "bend 16256"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 28,
+        "song_frame": 8343,
+        "send_frame_pred": 32,
+        "tags": [
+          "bend 8192"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 29,
+        "song_frame": 8625,
+        "send_frame_pred": 33,
+        "tags": [
+          "bend 0"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 30,
+        "song_frame": 8906,
+        "send_frame_pred": 34,
+        "tags": [
+          "bend 8192"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 31,
+        "song_frame": 9187,
+        "send_frame_pred": 35,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 32,
+        "song_frame": 9787,
+        "send_frame_pred": 36,
+        "tags": [
+          "cc 64=127",
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 9
+      },
+      {
+        "burst": 33,
+        "song_frame": 9937,
+        "send_frame_pred": 37,
+        "tags": [
+          "note_on 64 vel 100"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 34,
+        "song_frame": 10012,
+        "send_frame_pred": 38,
+        "tags": [
+          "cc 64=0",
+          "note_off 60",
+          "note_off 64"
+        ],
+        "n_writes": 3
+      },
+      {
+        "burst": 35,
+        "song_frame": 11662,
+        "send_frame_pred": 39,
+        "tags": [
+          "note_on 60 vel 100",
+          "note_on 64 vel 100",
+          "note_on 67 vel 100"
+        ],
+        "n_writes": 24
+      },
+      {
+        "burst": 36,
+        "song_frame": 11775,
+        "send_frame_pred": 40,
+        "tags": [
+          "cc 120=127",
+          "note_off 60",
+          "note_off 64",
+          "note_off 67"
+        ],
+        "n_writes": 4
+      },
+      {
+        "burst": 37,
+        "song_frame": 13162,
+        "send_frame_pred": 41,
+        "tags": [
+          "note_on 60 vel 96"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 38,
+        "song_frame": 13237,
+        "send_frame_pred": 42,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 39,
+        "song_frame": 13275,
+        "send_frame_pred": 43,
+        "tags": [
+          "note_on 64 vel 72"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 40,
+        "song_frame": 13350,
+        "send_frame_pred": 44,
+        "tags": [
+          "note_off 64"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 41,
+        "song_frame": 13387,
+        "send_frame_pred": 45,
+        "tags": [
+          "note_on 67 vel 110"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 42,
+        "song_frame": 13462,
+        "send_frame_pred": 46,
+        "tags": [
+          "note_off 67"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 43,
+        "song_frame": 13500,
+        "send_frame_pred": 47,
+        "tags": [
+          "note_on 71 vel 88"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 44,
+        "song_frame": 13575,
+        "send_frame_pred": 48,
+        "tags": [
+          "note_off 71"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 45,
+        "song_frame": 13612,
+        "send_frame_pred": 49,
+        "tags": [
+          "note_on 60 vel 100"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 46,
+        "song_frame": 13687,
+        "send_frame_pred": 50,
+        "tags": [
+          "note_off 60"
+        ],
+        "n_writes": 1
+      },
+      {
+        "burst": 47,
+        "song_frame": 13725,
+        "send_frame_pred": 51,
+        "tags": [
+          "note_on 64 vel 64"
+        ],
+        "n_writes": 8
+      },
+      {
+        "burst": 48,
+        "song_frame": 13800,
+        "send_frame_pred": 52,
+        "tags": [
+          "note_off 64"
+        ],
+        "n_writes": 1
+      }
+    ],
+    "drains_at_play_start": 171,
+    "drains_at_play_end": 395
+  },
+  "faults": [],
+  "counts_observed": {
+    "pin_writes": 566,
+    "pin_writes_collapse_dec014": 566,
+    "drain_writes": 566,
+    "host_log_writes": 567,
+    "applied_events": {
+      "commit": 2,
+      "note_on": 23,
+      "note_off": 23,
+      "controller": 12
+    }
+  },
+  "status": "PASS",
+  "expect_fail_verification": {
+    "passed": true,
+    "problems": [],
+    "expected": {
+      "three_way_stream_agreement": false
+    }
+  },
+  "written": "reference/evidence/u05-demo/demo-negative-drop-bend-step.json"
+}

@@ -1,0 +1,31 @@
+# record A: pinned-image (openroad/orfs:26Q3-296-gda37dce1c, yosys 0.57) 'check -assert' on the
+# FROZEN dx7-core (335599ea, H07 pin) canonicalized 1_1 netlist (01_1_yosys_canonicalize.rtlil
+# sha256 below), produced by the flow's do-yosys-canonicalize on repo-remote-gf180-dx7
+# netlist sha256: 2fd2fa57a041ed5685d9424eade835e9105ffce8947d7542d929f119948d425c
+# command: docker run -v <box>:/h openroad/orfs:26Q3-296-gda37dce1c sh -c 'yosys -p "read_rtlil <1_1>" -p "check -assert"'
+=====================
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.67 (git sha1 2d1509d1b, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+
+-- Running command `read_rtlil /h/h10-frozen/asic/orfs/work/results/gf180/dx7core/natdie/1_1_yosys_canonicalize.rtlil' --
+
+1. Executing RTLIL frontend.
+Input filename: /h/h10-frozen/asic/orfs/work/results/gf180/dx7core/natdie/1_1_yosys_canonicalize.rtlil
+
+-- Running command `check -assert' --
+
+2. Executing CHECK pass (checking for obvious problems).
+Checking module dx7_core...
+Checking module alg_router...
+Checking module env_unit...
+Checking module h07_op_kernel...
+Found and reported 0 problems.
+
+End of script. Logfile hash: 5e2293ee4d, time: 5.96s, user: 5.44s, system: 0.52s, MEM: 1076.08 MB peak
+Yosys 0.67 (git sha1 2d1509d1b, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+Time spent: 96% 1x check (5 sec), 3% 2x read_rtlil (0 sec), ...

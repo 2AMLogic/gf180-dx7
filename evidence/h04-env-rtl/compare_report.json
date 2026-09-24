@@ -1,7 +1,7 @@
 {
  "claim_boundary": "RTL-vs-frozen-model bit-exactness + measured step-cycle bound only; no synthesis, timing, fit, or audibility claim",
  "equivalence": {
-  "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual.txt",
+  "actual_file": "/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/evidence/h04-env-rtl/actual.txt",
   "actual_rows": 27931,
   "bench_cmds": 27933,
   "bench_hazard": "ok",
@@ -19,13 +19,13 @@
    "measured_clks": 13,
    "status": "PASS"
   },
-  "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
+  "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
  },
  "expected_sha256": "fbe0569eb94a4cd0c341fadc54beda927e09eaa4ad5fe40ce1a0befd4e3dc71a",
  "issue": 26,
  "negative_controls": {
   "srm": {
-   "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual_srm.txt",
+   "actual_file": "/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/evidence/h04-env-rtl/actual_srm.txt",
    "bench_cmds": 27933,
    "bench_hazard": "ok",
    "bench_max_cmd_cycles": 13,
@@ -60,10 +60,10 @@
    },
    "mismatches": 6958,
    "status": "MET (mutant fails equivalence as required)",
-   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
+   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/rtl/tb_env_unit.v:265: $finish called at 1204500 (1s)"
   },
   "timing": {
-   "actual_file": "/private/tmp/opencode/wt-h04-env-rtl/evidence/h04-env-rtl/actual_timing.txt",
+   "actual_file": "/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/evidence/h04-env-rtl/actual_timing.txt",
    "bench_cmds": 27933,
    "bench_hazard": "ok",
    "bench_max_cmd_cycles": 13,
@@ -98,7 +98,7 @@
    },
    "mismatches": 18784,
    "status": "MET (mutant fails equivalence as required)",
-   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/private/tmp/opencode/wt-h04-env-rtl/rtl/tb_env_unit.v:265: $finish called at 1210450 (1s)"
+   "vvp_stdout_tail": "PASS tb_env_unit (cmds=27933 steps=24639 max_step_cycles=13 max_cmd_cycles=13 hazard=ok)\n/Users/joseph/dev/gf180-dx7/.loom/worktrees/issue-32/rtl/tb_env_unit.v:265: $finish called at 1210450 (1s)"
   }
  },
  "planning_id": "H04",
@@ -108,7 +108,7 @@
   "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
   "python": "3.14.7",
   "rtl": {
-   "rtl/env_unit.v": "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+   "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
    "rtl/tb_env_unit.v": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72"
   },
   "sr_multiplier": 15414067

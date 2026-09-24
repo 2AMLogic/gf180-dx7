@@ -48,12 +48,15 @@ REPORT = os.path.join(REPO, "docs", "H08-PIN.md")
 CATALOG = os.path.join(REPO, "docs", "reuse", "catalog.json")
 BIN = os.path.join(REPO, "build", "h08", "simtbA.obj", "simtbA")
 
-# H07-pinned core: sha256 as committed at loom/h07-core (884a7fa).
+# H07-pinned core: sha256 of the frozen dx7-core revision. Re-freezed by
+# DR-0011 (2026-09-24, H10 single-driver control merge): the H08 evidence
+# below was produced on the pre-refreeze core and stays as its historical
+# record; the pin here tracks the current frozen revision.
 CORE_SHA = {
     "rtl/dx7_core.v":
-        "335599eae6aada90f45c5738cf79d70098bb3a6cf97437927fcbdec10abfc917",
+        "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
     "rtl/env_unit.v":
-        "f61916cb6cc0c9b9434ff5007732e1636614c10450b0ec1a07d5f97592999e7b",
+        "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
     "rtl/alg_router.v":
         "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
     "rtl/tb_dx7_core.v":

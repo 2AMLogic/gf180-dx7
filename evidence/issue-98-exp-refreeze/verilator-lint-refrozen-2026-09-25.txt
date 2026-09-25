@@ -1,0 +1,769 @@
+$ verilator --lint-only -Wall -Wno-fatal -Irtl rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v
+Verilator 5.052 2026-09-05 rev vUNKNOWN-built20260905
+%Warning-DECLFILENAME: rtl/dx7_core.v:130:8: Filename 'dx7_core' does not match MODULE name: 'h07_op_kernel'
+  130 | module h07_op_kernel (
+      |        ^~~~~~~~~~~~~
+                       ... For warning description see https://verilator.org/warn/DECLFILENAME?v=5.052
+                       ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
+%Warning-PINCONNECTEMPTY: rtl/dx7_core.v:489:18: Instance pin connected by name with empty reference: 'param_rd'
+  489 |                 .param_rd(),
+      |                  ^~~~~~~~
+                          ... For warning description see https://verilator.org/warn/PINCONNECTEMPTY?v=5.052
+                          ... Use "/* verilator lint_off PINCONNECTEMPTY */" and lint_on around source to disable this message.
+%Warning-PINCONNECTEMPTY: rtl/dx7_core.v:490:18: Instance pin connected by name with empty reference: 'state_obs'
+  490 |                 .state_obs()
+      |                  ^~~~~~~~~
+%Warning-WIDTHEXPAND: rtl/alg_router.v:174:43: Operator ADD expects 8 bits on the RHS, but RHS's REPLICATE generates 6 bits.
+                                             : ... note: In instance 'dx7_core.u_router'
+  174 |     wire [7:0] row_index = {alg_q, 2'b00} + {alg_q, 1'b0} + {5'b0, op_q};
+      |                                           ^
+                      ... For warning description see https://verilator.org/warn/WIDTHEXPAND?v=5.052
+                      ... Use "/* verilator lint_off WIDTHEXPAND */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: rtl/alg_router.v:227:30: Operator ASSIGNW expects 10 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 17 bits.
+                                            : ... note: In instance 'dx7_core.u_router'
+  227 |     wire signed [9:0]  dgain = dgsum >>> 6;
+      |                              ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.052
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHEXPAND: rtl/alg_router.v:445:31: Operator ASSIGNDLY expects 17 bits on the Assign RHS, but Assign RHS's REPLICATE generates 16 bits.
+                                             : ... note: In instance 'dx7_core.u_router'
+  445 |                     w_gain    <= {1'b0, gain1};    
+      |                               ^~
+%Warning-WIDTHEXPAND: rtl/env_unit.v:266:29: Operator ASSIGNW expects 13 bits on the Assign RHS, but Assign RHS's REPLICATE generates 12 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  266 |     wire [12:0] scale_part  = {lut_v[6:1], 6'b000000};   
+      |                             ^
+%Warning-WIDTHTRUNC: rtl/env_unit.v:272:23: Operator ASSIGNW expects 28 bits on the Assign RHS, but Assign RHS's REPLICATE generates 29 bits.
+                                          : ... note: In instance 'dx7_core.envs[95].u_env'
+  272 |     wire [27:0] tgt_w = {act_cl[12:0], 16'b0000000000000000};
+      |                       ^
+%Warning-WIDTHEXPAND: rtl/env_unit.v:276:41: Operator GT expects 36 bits on the LHS, but LHS's REPLICATE generates 32 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  276 |     wire rising_w = ({4'b0000, tgt_new} > {4'b0000, level_q});
+      |                                         ^
+%Warning-WIDTHEXPAND: rtl/env_unit.v:375:32: Operator SUB expects 32 or 21 bits on the RHS, but RHS's VARREF 'sr_w' generates 7 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  375 |     wire [20:0] raw_ge77 = (99 - sr_w) * 5'd20;     
+      |                                ^
+%Warning-WIDTHEXPAND: rtl/env_unit.v:385:27: Operator ASSIGNW expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 29 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  385 |     wire [31:0] stat_w    = stat_prod[52:24];         
+      |                           ^
+%Warning-WIDTHTRUNC: rtl/env_unit.v:405:34: Operator ASSIGNW expects 10 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 34 bits.
+                                          : ... note: In instance 'dx7_core.envs[95].u_env'
+  405 |     wire signed [9:0]  quot10    = base_diff >>> 24;
+      |                                  ^
+%Warning-WIDTHEXPAND: rtl/env_unit.v:408:39: Operator GTES expects 46 bits on the LHS, but LHS's VARREF 'rise_sum' generates 42 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  408 |     wire        rise_clamp = rise_sum >= $signed({14'b0, target_q});
+      |                                       ^~
+%Warning-WIDTHEXPAND: rtl/env_unit.v:621:47: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'tgt_new' generates 28 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  621 |                     static_cond_r <= (tgt_new == level_q)
+      |                                               ^~
+%Warning-WIDTHEXPAND: rtl/env_unit.v:636:34: Operator ASSIGNDLY expects 32 bits on the Assign RHS, but Assign RHS's VARREF 'tgt_new' generates 28 bits.
+                                           : ... note: In instance 'dx7_core.envs[95].u_env'
+  636 |                         target_q <= tgt_new;
+      |                                  ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:154:38: Operator ADD expects 17 bits on the LHS, but LHS's CONST '13'h1000' generates 13 bits.
+                                           : ... note: In instance 'dx7_core.u_kern'
+  154 |     wire [12:0] result13  = 13'd4096 + {1'b0, ex_data};
+      |                                      ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:154:27: Operator ASSIGNW expects 13 bits on the Assign RHS, but Assign RHS's ADD generates 17 bits.
+                                          : ... note: In instance 'dx7_core.u_kern'
+  154 |     wire [12:0] result13  = 13'd4096 + {1'b0, ex_data};
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:526:39: Operator AND expects 32 or 16 bits on the LHS, but LHS's VARREF 'l_a0' generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+  526 |     wire [15:0] l_a1    = (16 + (l_a0 & 8'd15)) << (1 + (l_a0 >> 4));
+      |                                       ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:526:39: Operator AND expects 32 or 16 bits on the RHS, but RHS's CONST '8'hf' generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+  526 |     wire [15:0] l_a1    = (16 + (l_a0 & 8'd15)) << (1 + (l_a0 >> 4));
+      |                                       ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:540:27: Operator ASSIGNW expects 24 bits on the Assign RHS, but Assign RHS's SHIFTR generates 32 bits.
+                                          : ... note: In instance 'dx7_core'
+  540 |     wire [23:0] l_sawdn   = ((~l_ph_n) ^ 32'h80000000) >> 8;
+      |                           ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:541:27: Operator ASSIGNW expects 24 bits on the Assign RHS, but Assign RHS's SHIFTR generates 32 bits.
+                                          : ... note: In instance 'dx7_core'
+  541 |     wire [23:0] l_sawup   = (l_ph_n ^ 32'h80000000) >> 8;
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:965:36: Operator SHIFTL expects 69 bits on the LHS, but LHS's CONST '57'h1' generates 57 bits.
+                                           : ... note: In instance 'dx7_core'
+  965 |     wire [56:0]  exp_hsum = (57'd1 << 56)
+      |                                    ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:966:9: Operator ADD expects 69 bits on the RHS, but RHS's REPLICATE generates 57 bits.
+                                          : ... note: In instance 'dx7_core'
+  966 |         + {1'b0, exp_xq}
+      |         ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:967:9: Operator ADD expects 69 bits on the RHS, but RHS's REPLICATE generates 57 bits.
+                                          : ... note: In instance 'dx7_core'
+  967 |         + {13'b0, exp_p2[44:1]}          
+      |         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:965:27: Operator ASSIGNW expects 57 bits on the Assign RHS, but Assign RHS's ADD generates 69 bits.
+                                          : ... note: In instance 'dx7_core'
+  965 |     wire [56:0]  exp_hsum = (57'd1 << 56)
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:978:37: Operator ASSIGNDLY expects 46 bits on the Assign RHS, but Assign RHS's CONST '45'h0' generates 45 bits.
+                                           : ... note: In instance 'dx7_core'
+  978 |             exp_xq <= 56'd0; exp_p2 <= 45'd0; exp_p3 <= 39'd0;
+      |                                     ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:978:54: Operator ASSIGNDLY expects 44 bits on the Assign RHS, but Assign RHS's CONST '39'h0' generates 39 bits.
+                                           : ... note: In instance 'dx7_core'
+  978 |             exp_xq <= 56'd0; exp_p2 <= 45'd0; exp_p3 <= 39'd0;
+      |                                                      ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:980:21: Operator ASSIGNDLY expects 62 bits on the Assign RHS, but Assign RHS's CONST '63'h0' generates 63 bits.
+                                          : ... note: In instance 'dx7_core'
+  980 |             exp_res <= 63'd0;
+      |                     ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:984:53: Operator COND expects 26 bits on the Conditional True, but Conditional True's CONST '25'h1000000' generates 25 bits.
+                                           : ... note: In instance 'dx7_core'
+  984 |                     exp_y <= (exp_x > 25'd16777216) ? 25'd16777216 : exp_x;
+      |                                                     ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:984:53: Operator COND expects 26 bits on the Conditional False, but Conditional False's VARREF 'exp_x' generates 25 bits.
+                                           : ... note: In instance 'dx7_core'
+  984 |                     exp_y <= (exp_x > 25'd16777216) ? 25'd16777216 : exp_x;
+      |                                                     ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:992:30: Operator ADD expects 76 bits on the LHS, but LHS's REPLICATE generates 66 bits.
+                                           : ... note: In instance 'dx7_core'
+  992 |                              + {11'b0, EXP_M122, 11'b0};
+      |                              ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:991:29: Operator ASSIGNDLY expects 66 bits on the Assign RHS, but Assign RHS's ADD generates 76 bits.
+                                          : ... note: In instance 'dx7_core'
+  991 |                     exp_arg <= {1'b0, exp_t1[78:14]}
+      |                             ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:999:28: Operator ASSIGNDLY expects 56 bits on the Assign RHS, but Assign RHS's SEL generates 50 bits.
+                                           : ... note: In instance 'dx7_core'
+  999 |                     exp_xq <= exp_xp[109:60];        
+      |                            ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1002:36: Operator ASSIGNDLY expects 46 bits on the Assign RHS, but Assign RHS's SEL generates 45 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1002 |                 4'd5: begin exp_p2 <= exp_p2w[100:56]; exp_st <= 4'd6; end
+      |                                    ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1004:36: Operator ASSIGNDLY expects 43 bits on the Assign RHS, but Assign RHS's SEL generates 32 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1004 |                 4'd7: begin exp_p4 <= exp_p4w[87:56]; exp_st <= 4'd8; end
+      |                                    ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1005:36: Operator ASSIGNDLY expects 41 bits on the Assign RHS, but Assign RHS's SEL generates 26 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1005 |                 4'd8: begin exp_p5 <= exp_p5w[81:56]; exp_st <= 4'd9; end
+      |                                    ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1009:30: Operator ASSIGNDLY expects 32 bits on the Assign RHS, but Assign RHS's SHIFTR generates 62 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1009 |                     exp_pt_q <= exp_res >> (6'd60 - exp_k);
+      |                              ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1059:44: Operator AND expects 40 bits on the RHS, but RHS's CONST '32'hffffffff' generates 32 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1059 |     wire [31:0] exp_sub  = exp_prod[67:28] & 32'hFFFFFFFF;
+      |                                            ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1059:26: Operator ASSIGNW expects 32 bits on the Assign RHS, but Assign RHS's AND generates 40 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1059 |     wire [31:0] exp_sub  = exp_prod[67:28] & 32'hFFFFFFFF;
+      |                          ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1209:38: Operator GT expects 9 bits on the RHS, but RHS's CONST '6'h20' generates 6 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1209 |     wire [5:0]  dv_g      = (dv_gdiv > 6'd32) ? 6'd32 : dv_gdiv[5:0];
+      |                                      ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1217:33: Operator ASSIGNW expects 22 bits on the Assign RHS, but Assign RHS's SIGNED generates 14 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1217 |     wire signed [21:0] dv_lin_s = $signed({5'b0, dv_linp[20:12]});
+      |                                 ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1218:33: Operator ASSIGNW expects 24 bits on the Assign RHS, but Assign RHS's SIGNED generates 15 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1218 |     wire signed [23:0] dv_exp_s = $signed({7'b0, dv_expp[22:15]});
+      |                                 ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1221:24: Operator COND expects 33 bits on the Conditional True, but Conditional True's SIGNED generates 31 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1221 |         ? (dv_curve[1] ? $signed({9'b0, dv_lin_s}) : -$signed({9'b0, dv_lin_s}))
+      |                        ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1221:54: Operator NEGATE expects 33 bits on the LHS, but LHS's SIGNED generates 31 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1221 |         ? (dv_curve[1] ? $signed({9'b0, dv_lin_s}) : -$signed({9'b0, dv_lin_s}))
+      |                                                      ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1219:34: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's COND generates 33 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1219 |     wire signed [15:0] dv_scaleS =
+      |                                  ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1224:35: Operator ADD expects 16 bits on the LHS, but LHS's SIGNED generates 13 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1224 |                                   + dv_scaleS;
+      |                                   ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1223:35: Operator ASSIGNW expects 14 bits on the Assign RHS, but Assign RHS's ADD generates 16 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1223 |     wire signed [13:0] dv_ols_pre = $signed({6'b0, levellut(dv_out_byte[6:0])})
+      |                                   ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1232:32: Operator ASSIGNW expects 9 bits on the Assign RHS, but Assign RHS's SIGNED generates 4 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1232 |     wire signed [8:0] dv_kvs_s = $signed({1'b0, dv_kvs});
+      |                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1234:37: Operator ADD expects 20 bits on the RHS, but RHS's CONST '16'sh7' generates 16 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1234 |                                     + 16'sd7) >>> 3) <<< 4;
+      |                                     ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1235:33: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's ADD generates 20 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1235 |     wire signed [15:0] dv_olsum = $signed({1'b0, dv_ols[12:0], 5'b0})
+      |                                 ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1247:31: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1247 |         ? ((({2'b0, dv_rate0} + {2'b0, dv_rs}) > 10'd99)
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1247:48: Operator GT expects 11 bits on the RHS, but RHS's CONST '10'h63' generates 10 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1247 |         ? ((({2'b0, dv_rate0} + {2'b0, dv_rs}) > 10'd99)
+      |                                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1248:12: Operator COND expects 11 bits on the Conditional True, but Conditional True's CONST '7'h63' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1248 |            ? 7'd99 : ({2'b0, dv_rate0} + {2'b0, dv_rs})) - 7'd63
+      |            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1248:40: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1248 |            ? 7'd99 : ({2'b0, dv_rate0} + {2'b0, dv_rs})) - 7'd63
+      |                                        ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1248:58: Operator SUB expects 11 bits on the RHS, but RHS's CONST '7'h3f' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1248 |            ? 7'd99 : ({2'b0, dv_rate0} + {2'b0, dv_rs})) - 7'd63
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1247:9: Operator COND expects 11 bits on the Conditional False, but Conditional False's VARREF 'dv_rate0' generates 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1247 |         ? ((({2'b0, dv_rate0} + {2'b0, dv_rs}) > 10'd99)
+      |         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1246:27: Operator ASSIGNW expects 7 bits on the Assign RHS, but Assign RHS's COND generates 11 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1246 |     wire [6:0] dv_rsub0   = dv_rs_big
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1251:31: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1251 |         ? ((({2'b0, dv_rate1} + {2'b0, dv_rs}) > 10'd99)
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1251:48: Operator GT expects 11 bits on the RHS, but RHS's CONST '10'h63' generates 10 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1251 |         ? ((({2'b0, dv_rate1} + {2'b0, dv_rs}) > 10'd99)
+      |                                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1252:12: Operator COND expects 11 bits on the Conditional True, but Conditional True's CONST '7'h63' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1252 |            ? 7'd99 : ({2'b0, dv_rate1} + {2'b0, dv_rs})) - 7'd63
+      |            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1252:40: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1252 |            ? 7'd99 : ({2'b0, dv_rate1} + {2'b0, dv_rs})) - 7'd63
+      |                                        ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1252:58: Operator SUB expects 11 bits on the RHS, but RHS's CONST '7'h3f' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1252 |            ? 7'd99 : ({2'b0, dv_rate1} + {2'b0, dv_rs})) - 7'd63
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1251:9: Operator COND expects 11 bits on the Conditional False, but Conditional False's VARREF 'dv_rate1' generates 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1251 |         ? ((({2'b0, dv_rate1} + {2'b0, dv_rs}) > 10'd99)
+      |         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1250:27: Operator ASSIGNW expects 7 bits on the Assign RHS, but Assign RHS's COND generates 11 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1250 |     wire [6:0] dv_rsub1   = dv_rs_big
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1255:31: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1255 |         ? ((({2'b0, dv_rate2} + {2'b0, dv_rs}) > 10'd99)
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1255:48: Operator GT expects 11 bits on the RHS, but RHS's CONST '10'h63' generates 10 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1255 |         ? ((({2'b0, dv_rate2} + {2'b0, dv_rs}) > 10'd99)
+      |                                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1256:12: Operator COND expects 11 bits on the Conditional True, but Conditional True's CONST '7'h63' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1256 |            ? 7'd99 : ({2'b0, dv_rate2} + {2'b0, dv_rs})) - 7'd63
+      |            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1256:40: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1256 |            ? 7'd99 : ({2'b0, dv_rate2} + {2'b0, dv_rs})) - 7'd63
+      |                                        ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1256:58: Operator SUB expects 11 bits on the RHS, but RHS's CONST '7'h3f' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1256 |            ? 7'd99 : ({2'b0, dv_rate2} + {2'b0, dv_rs})) - 7'd63
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1255:9: Operator COND expects 11 bits on the Conditional False, but Conditional False's VARREF 'dv_rate2' generates 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1255 |         ? ((({2'b0, dv_rate2} + {2'b0, dv_rs}) > 10'd99)
+      |         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1254:27: Operator ASSIGNW expects 7 bits on the Assign RHS, but Assign RHS's COND generates 11 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1254 |     wire [6:0] dv_rsub2   = dv_rs_big
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1259:31: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1259 |         ? ((({2'b0, dv_rate3} + {2'b0, dv_rs}) > 10'd99)
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1259:48: Operator GT expects 11 bits on the RHS, but RHS's CONST '10'h63' generates 10 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1259 |         ? ((({2'b0, dv_rate3} + {2'b0, dv_rs}) > 10'd99)
+      |                                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1260:12: Operator COND expects 11 bits on the Conditional True, but Conditional True's CONST '7'h63' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1260 |            ? 7'd99 : ({2'b0, dv_rate3} + {2'b0, dv_rs})) - 7'd63
+      |            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1260:40: Operator ADD expects 11 bits on the LHS, but LHS's REPLICATE generates 9 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1260 |            ? 7'd99 : ({2'b0, dv_rate3} + {2'b0, dv_rs})) - 7'd63
+      |                                        ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1260:58: Operator SUB expects 11 bits on the RHS, but RHS's CONST '7'h3f' generates 7 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1260 |            ? 7'd99 : ({2'b0, dv_rate3} + {2'b0, dv_rs})) - 7'd63
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1259:9: Operator COND expects 11 bits on the Conditional False, but Conditional False's VARREF 'dv_rate3' generates 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1259 |         ? ((({2'b0, dv_rate3} + {2'b0, dv_rs}) > 10'd99)
+      |         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1258:27: Operator ASSIGNW expects 7 bits on the Assign RHS, but Assign RHS's COND generates 11 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1258 |     wire [6:0] dv_rsub3   = dv_rs_big
+      |                           ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1276:44: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'dv_detune' generates 8 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1276 |         ? dv_bpf0 + 32'd13457 * (dv_detune - 8'd7) : dv_bpf0;
+      |                                            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1276:44: Operator SUB expects 32 bits on the RHS, but RHS's CONST '8'h7' generates 8 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1276 |         ? dv_bpf0 + 32'd13457 * (dv_detune - 8'd7) : dv_bpf0;
+      |                                            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1287:36: Bit extraction of array[1024:0] requires 11 bit index, not 10 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1287 |     wire [31:0] fq_y0 = freqlut_rom[w_fa];
+      |                                    ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1312:32: Operator ASSIGNW expects 64 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 65 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1312 |     wire signed [63:0] w_sh1   = w_prod1 >>> 39;
+      |                                ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1400:53: Operator SHIFTRS expects 33 bits on the LHS, but LHS's SIGNED generates 32 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1400 |     wire signed [32:0] cv_val = $signed(ar_rd_data) >>> 4;
+      |                                                     ^~~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1403:39: Operator COND expects 33 bits on the Conditional True, but Conditional True's CONST '17'sh8000' generates 17 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1403 |     wire signed [16:0] cv_c17 = cv_lo ? 17'sd32768
+      |                                       ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1404:36: Operator COND expects 33 bits on the Conditional True, but Conditional True's CONST '17'sh7fff' generates 17 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1404 |                            : cv_hi ? 17'sd32767
+      |                                    ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1403:31: Operator ASSIGNW expects 17 bits on the Assign RHS, but Assign RHS's COND generates 33 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1403 |     wire signed [16:0] cv_c17 = cv_lo ? 17'sd32768
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1406:31: Operator ASSIGNW expects 33 bits on the Assign RHS, but Assign RHS's VARREF 'cv_c17' generates 17 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1406 |     wire signed [32:0] cv_add = cv_c17;
+      |                               ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1532:35: Operator ASSIGNDLY expects 49 bits on the Assign RHS, but Assign RHS's VARREF 'frame_reg' generates 48 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1532 |                     skid[skid_wp] <= frame_reg;
+      |                                   ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1681:35: Bit extraction of array[5:0] requires 3 bit index, not 5 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1681 |                             stg_dd[ev_a - 5'd4] <= ev_d;    
+      |                                   ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1756:32: Operator ASSIGNDLY expects 7 bits on the Assign RHS, but Assign RHS's SEL generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1756 |                 n_pegr[tgt][0] <= shd_pegr_w[7:0];
+      |                                ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1757:32: Operator ASSIGNDLY expects 7 bits on the Assign RHS, but Assign RHS's SEL generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1757 |                 n_pegr[tgt][1] <= shd_pegr_w[15:8];
+      |                                ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1758:32: Operator ASSIGNDLY expects 7 bits on the Assign RHS, but Assign RHS's SEL generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1758 |                 n_pegr[tgt][2] <= shd_pegr_w[23:16];
+      |                                ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1759:32: Operator ASSIGNDLY expects 7 bits on the Assign RHS, but Assign RHS's SEL generates 8 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1759 |                 n_pegr[tgt][3] <= shd_pegr_w[31:24];
+      |                                ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:1770:36: Operator ASSIGNDLY expects 1 bits on the Assign RHS, but Assign RHS's REPLICATE generates 6 bits.
+                                           : ... note: In instance 'dx7_core'
+ 1770 |                 n_opmode[tgt][opk] <= {5'b0, dv_mode};
+      |                                    ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:1783:45: Operator ASSIGNDLY expects 133 bits on the Assign RHS, but Assign RHS's REPLICATE generates 75 bits.
+                                            : ... note: In instance 'dx7_core'
+ 1783 |                     env_cmd_data[tgt*6+opk] <=
+      |                                             ^~
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2037:44: Operator ASSIGNDLY expects 133 bits on the Assign RHS, but Assign RHS's REPLICATE generates 75 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2037 |                     env_cmd_data[nn*6+opk] <=
+      |                                            ^~
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2129:57: Bit extraction of array[3:0] requires 2 bit index, not 3 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2129 |                     n_pegtgt[nn] <= peg_tab19(n_pegl[nn][n_pegix[nn] + 3'd1]);
+      |                                                         ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2130:58: Bit extraction of array[3:0] requires 2 bit index, not 3 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2130 |                     n_pegris[nn] <= (peg_tab19(n_pegl[nn][n_pegix[nn] + 3'd1])
+      |                                                          ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2132:60: Bit extraction of array[3:0] requires 2 bit index, not 3 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2132 |                     n_peginc[nn] <= peg_rate_inc(n_pegr[nn][n_pegix[nn]
+      |                                                            ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2259:30: Bit extraction of array[5:0] requires 3 bit index, not 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2259 |                     op_ph[nn][r_rd_addr - 7'd64] <= ar_rd_data;
+      |                              ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2261:30: Bit extraction of array[5:0] requires 3 bit index, not 7 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2261 |                     op_go[nn][r_rd_addr - 7'd70] <= ar_rd_data[15:0];
+      |                              ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2352:39: Operator COND expects 34 bits on the Conditional False, but Conditional False's CONST '23'h0' generates 23 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2352 |     assign tap_mix         = mix_load ? {1'b0, mixbuf[out_sel][tap_smp]}
+      |                                       ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2352:28: Operator ASSIGNW expects 23 bits on the Assign RHS, but Assign RHS's COND generates 34 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2352 |     assign tap_mix         = mix_load ? {1'b0, mixbuf[out_sel][tap_smp]}
+      |                            ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2385:36: Operator XOR expects 31 bits on the LHS, but LHS's SEL generates 4 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2385 |                 n_peglvl[gnb][3:0] ^ n_pegtgt[gnb][3:0]
+      |                                    ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2385:36: Operator XOR expects 31 bits on the RHS, but RHS's SEL generates 4 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2385 |                 n_peglvl[gnb][3:0] ^ n_pegtgt[gnb][3:0]
+      |                                    ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2386:17: Operator XOR expects 31 bits on the RHS, but RHS's SEL generates 4 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2386 |                 ^ n_peginc[gnb][3:0] ^ {n_pegris[gnb], n_pegdwn[gnb],
+      |                 ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2384:41: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's XOR generates 31 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2384 |             assign nb_obs[gnb*16 +: 16] =
+      |                                         ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2399:39: Operator XOR expects 33 bits on the LHS, but LHS's VARREF 'mixbuf_obs0' generates 32 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2399 |             mixbuf_obs0 = mixbuf_obs0 ^ mixbuf[0][ob];
+      |                                       ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2399:25: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's XOR generates 33 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2399 |             mixbuf_obs0 = mixbuf_obs0 ^ mixbuf[0][ob];
+      |                         ^
+%Warning-WIDTHEXPAND: rtl/dx7_core.v:2400:39: Operator XOR expects 33 bits on the LHS, but LHS's VARREF 'mixbuf_obs1' generates 32 bits.
+                                            : ... note: In instance 'dx7_core'
+ 2400 |             mixbuf_obs1 = mixbuf_obs1 ^ mixbuf[1][ob];
+      |                                       ^
+%Warning-WIDTHTRUNC: rtl/dx7_core.v:2400:25: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's XOR generates 33 bits.
+                                           : ... note: In instance 'dx7_core'
+ 2400 |             mixbuf_obs1 = mixbuf_obs1 ^ mixbuf[1][ob];
+      |                         ^
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:268:16: Bits of signal are not used: 'shift_in'[47]
+                                            : ... note: In instance 'dx7_core'
+  268 |     reg [47:0] shift_in;
+      |                ^~~~~~~~
+                       ... For warning description see https://verilator.org/warn/UNUSEDSIGNAL?v=5.052
+                       ... Use "/* verilator lint_off UNUSEDSIGNAL */" and lint_on around source to disable this message.
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:298:17: Signal is not used: 'wr_sec'
+                                            : ... note: In instance 'dx7_core'
+  298 |     wire        wr_sec = frame_reg[40];
+      |                 ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:299:17: Signal is not used: 'wr_a'
+                                            : ... note: In instance 'dx7_core'
+  299 |     wire [7:0]  wr_a   = frame_reg[39:32];
+      |                 ^~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:300:17: Signal is not used: 'wr_d'
+                                            : ... note: In instance 'dx7_core'
+  300 |     wire [31:0] wr_d   = frame_reg[31:0];
+      |                 ^~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:304:17: Bits of signal are not used: 'skid_out'[48:41]
+                                            : ... note: In instance 'dx7_core'
+  304 |     wire [48:0] skid_out = skid[skid_rp];
+      |                 ^~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:383:17: Bits of signal are not used: 'shd_pegl_w'[31,23,15,7]
+                                            : ... note: In instance 'dx7_core'
+  383 |     wire [31:0] shd_pegl_w = cmt_pegl;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:384:17: Bits of signal are not used: 'cmt_pegr_w'[31:7]
+                                            : ... note: In instance 'dx7_core'
+  384 |     wire [31:0] cmt_pegr_w = cmt_pegr;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:385:17: Bits of signal are not used: 'cmt_pegl_w'[31,23:7]
+                                            : ... note: In instance 'dx7_core'
+  385 |     wire [31:0] cmt_pegl_w = cmt_pegl;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:410:16: Signal is not used: 'c_transpose'
+                                            : ... note: In instance 'dx7_core'
+  410 |     wire [7:0] c_transpose  = cmt_globA[31:24];   
+      |                ^~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:456:16: Signal is not used: 'n_dd'
+                                            : ... note: In instance 'dx7_core'
+  456 |     reg [31:0] n_dd      [0:15][0:5];
+      |                ^~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:471:28: Signal is not used: 'env_done'
+                                            : ... note: In instance 'dx7_core'
+  471 |     wire [95:0]  env_busy, env_done;
+      |                            ^~~~~~~~
+%Warning-UNUSEDPARAM: rtl/dx7_core.v:496:56: Parameter is not used: 'EC_ADV'
+                                           : ... note: In instance 'dx7_core'
+  496 |                      EC_UPDATE = 3'd3, EC_STEP = 3'd4, EC_ADV = 3'd5,
+      |                                                        ^~~~~~
+                      ... For warning description see https://verilator.org/warn/UNUSEDPARAM?v=5.052
+                      ... Use "/* verilator lint_off UNUSEDPARAM */" and lint_on around source to disable this message.
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:501:45: Bits of function variable are not used: 's'[100:0]
+                                            : ... note: In instance 'dx7_core'
+  501 |     function [31:0] env_level(input [132:0] s); env_level = s[132:101]; endfunction
+      |                                             ^
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:502:46: Bits of function variable are not used: 's'[132:101,68:0]
+                                            : ... note: In instance 'dx7_core'
+  502 |     function [31:0] env_target(input [132:0] s); env_target = s[100:69]; endfunction
+      |                                              ^
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:503:42: Bits of function variable are not used: 's'[132:5,1:0]
+                                            : ... note: In instance 'dx7_core'
+  503 |     function [2:0]  env_ix(input [132:0] s); env_ix = s[4:2]; endfunction
+      |                                          ^
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:504:44: Bits of function variable are not used: 's'[132:1]
+                                            : ... note: In instance 'dx7_core'
+  504 |     function        env_down(input [132:0] s); env_down = s[0]; endfunction
+      |                                            ^
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:518:17: Signal is not used: 'l_dec_sync'
+                                            : ... note: In instance 'dx7_core'
+  518 |     wire        l_dec_sync  = fc_commit ? shd_globB[16] : c_lfo_sync;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:519:17: Signal is not used: 'l_dec_wave'
+                                            : ... note: In instance 'dx7_core'
+  519 |     wire [2:0]  l_dec_wave  = fc_commit ? shd_globB[19:17] : c_lfo_wave;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:932:17: Bits of signal are not used: 'exp_t1'[79,13:0]
+                                            : ... note: In instance 'dx7_core'
+  932 |     reg  [79:0] exp_t1;          
+      |                 ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:934:17: Bits of signal are not used: 'exp_zq'[66]
+                                            : ... note: In instance 'dx7_core'
+  934 |     reg  [66:0] exp_zq;          
+      |                 ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:944:17: Bits of signal are not used: 'exp_xmul'[57:49,23:0]
+                                            : ... note: In instance 'dx7_core'
+  944 |     wire [57:0] exp_xmul = exp_amd * exp_ams;           
+      |                 ^~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:947:18: Bits of signal are not used: 'exp_zp'[119,51:0]
+                                            : ... note: In instance 'dx7_core'
+  947 |     wire [119:0] exp_zp  = exp_arg * {12'b0, EXP_MLG2};
+      |                  ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:948:18: Bits of signal are not used: 'exp_xp'[59:0]
+                                            : ... note: In instance 'dx7_core'
+  948 |     wire [109:0] exp_xp  = exp_zq[53:0] * EXP_LN2;      
+      |                  ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:949:18: Bits of signal are not used: 'exp_p2w'[111:101,55:0]
+                                            : ... note: In instance 'dx7_core'
+  949 |     wire [111:0] exp_p2w = exp_xq * exp_xq;             
+      |                  ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:950:18: Bits of signal are not used: 'exp_p3w'[55:0]
+                                            : ... note: In instance 'dx7_core'
+  950 |     wire [99:0]  exp_p3w = exp_p2 * exp_xq;             
+      |                  ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:951:18: Bits of signal are not used: 'exp_p4w'[55:0]
+                                            : ... note: In instance 'dx7_core'
+  951 |     wire [87:0]  exp_p4w = exp_p3 * exp_xq;             
+      |                  ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:952:18: Bits of signal are not used: 'exp_p5w'[55:0]
+                                            : ... note: In instance 'dx7_core'
+  952 |     wire [81:0]  exp_p5w = exp_p4 * exp_xq;             
+      |                  ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:962:18: Bits of signal are not used: 'exp_t3'[29:0]
+                                            : ... note: In instance 'dx7_core'
+  962 |     wire [85:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;       
+      |                  ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:963:18: Bits of signal are not used: 'exp_t4'[29:0]
+                                            : ... note: In instance 'dx7_core'
+  963 |     wire [85:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;       
+      |                  ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:964:18: Bits of signal are not used: 'exp_t5'[25:0]
+                                            : ... note: In instance 'dx7_core'
+  964 |     wire [81:0]  exp_t5  = exp_p5 * 26'h02222222;       
+      |                  ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:971:18: Bits of signal are not used: 'exp_rp'[55:0]
+                                            : ... note: In instance 'dx7_core'
+  971 |     wire [117:0] exp_rp  = exp_T * {2'b0, exp_hsum};
+      |                  ^~~~~~
+%Warning-UNUSEDPARAM: rtl/dx7_core.v:1023:53: Parameter is not used: 'F_NN_BASE'
+                                            : ... note: In instance 'dx7_core'
+ 1023 |         F_IDLE=0, F_COMMIT=1, F_EVPOP=2, F_ALLOC=3, F_NN_BASE=4,
+      |                                                     ^~~~~~~~~
+%Warning-UNUSEDPARAM: rtl/dx7_core.v:1024:35: Parameter is not used: 'F_NN_ENVK2'
+                                            : ... note: In instance 'dx7_core'
+ 1024 |         F_NN_ENVP=5, F_NN_ENVK=6, F_NN_ENVK2=7, F_NN_ENVK3=8, F_NN_PEG=9,
+      |                                   ^~~~~~~~~~
+%Warning-UNUSEDPARAM: rtl/dx7_core.v:1024:49: Parameter is not used: 'F_NN_ENVK3'
+                                            : ... note: In instance 'dx7_core'
+ 1024 |         F_NN_ENVP=5, F_NN_ENVK=6, F_NN_ENVK2=7, F_NN_ENVK3=8, F_NN_PEG=9,
+      |                                                 ^~~~~~~~~~
+%Warning-UNUSEDPARAM: rtl/dx7_core.v:1025:64: Parameter is not used: 'F_ASO'
+                                            : ... note: In instance 'dx7_core'
+ 1025 |         F_NN_BOOK=10, F_OFFFIND=11, F_OFFAPPLY=12, F_PEDUP=13, F_ASO=14,
+      |                                                                ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1042:17: Signal is not used: 'stg_envstate'
+                                             : ... note: In instance 'dx7_core'
+ 1042 |     reg [132:0] stg_envstate;   
+      |                 ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1058:17: Bits of signal are not used: 'exp_prod'[27:0]
+                                             : ... note: In instance 'dx7_core'
+ 1058 |     wire [67:0] exp_prod = w_level * {4'b0, exp_pt, 4'b0};
+      |                 ^~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1066:16: Signal is not used: 'sched_start'
+                                             : ... note: In instance 'dx7_core'
+ 1066 |     reg [15:0] sched_start, sched_used;
+      |                ^~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1066:29: Signal is not used: 'sched_used'
+                                             : ... note: In instance 'dx7_core'
+ 1066 |     reg [15:0] sched_start, sched_used;
+      |                             ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1069:16: Bits of signal are not used: 'dv_vel'[0]
+                                             : ... note: In instance 'dx7_core'
+ 1069 |     wire [6:0] dv_vel  = (fc_state == F_REFOP) ? n_vel[nn]  : stg_vel;
+      |                ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1076:17: Signal is not driven, nor used: 'dv_opmode'
+                                             : ... note: In instance 'dx7_core'
+ 1076 |     wire [5:0]  dv_opmode;
+      |                 ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1077:17: Signal is not driven, nor used: 'env_cmd_en_nxt'
+                                             : ... note: In instance 'dx7_core'
+ 1077 |     reg  [95:0] env_cmd_en_nxt;
+      |                 ^~~~~~~~~~~~~~
+%Warning-UNUSEDGENVAR: rtl/dx7_core.v:1126:16: Genvar is not used: 'go2'
+                                             : ... note: In instance 'dx7_core'
+ 1126 |     genvar gn, go2;
+      |                ^~~
+                       ... For warning description see https://verilator.org/warn/UNUSEDGENVAR?v=5.052
+                       ... Use "/* verilator lint_off UNUSEDGENVAR */" and lint_on around source to disable this message.
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1179:17: Bits of signal are not used: 'dv_elevels'[31,23,15,7]
+                                             : ... note: In instance 'dx7_core'
+ 1179 |     wire [31:0] dv_elevels = cmt_elevels[dv_eb];
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1180:17: Bits of signal are not used: 'dv_scaleA'[31]
+                                             : ... note: In instance 'dx7_core'
+ 1180 |     wire [31:0] dv_scaleA  = cmt_scaleA[dv_eb];
+      |                 ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1181:17: Bits of signal are not used: 'dv_scaleB'[31:16]
+                                             : ... note: In instance 'dx7_core'
+ 1181 |     wire [31:0] dv_scaleB  = cmt_scaleB[dv_eb];
+      |                 ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1182:16: Bits of signal are not used: 'dv_r_raw0'[7]
+                                             : ... note: In instance 'dx7_core'
+ 1182 |     wire [7:0] dv_r_raw0 = dv_erates[7:0];
+      |                ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1183:16: Bits of signal are not used: 'dv_r_raw1'[7]
+                                             : ... note: In instance 'dx7_core'
+ 1183 |     wire [7:0] dv_r_raw1 = dv_erates[15:8];
+      |                ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1184:16: Bits of signal are not used: 'dv_r_raw2'[7]
+                                             : ... note: In instance 'dx7_core'
+ 1184 |     wire [7:0] dv_r_raw2 = dv_erates[23:16];
+      |                ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1185:16: Bits of signal are not used: 'dv_r_raw3'[7]
+                                             : ... note: In instance 'dx7_core'
+ 1185 |     wire [7:0] dv_r_raw3 = dv_erates[31:24];
+      |                ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1200:16: Bits of signal are not used: 'dv_out_byte'[7]
+                                             : ... note: In instance 'dx7_core'
+ 1200 |     wire [7:0] dv_out_byte = dv_scaleB[7:0];
+      |                ^~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1212:17: Bits of signal are not used: 'dv_linp'[11:0]
+                                             : ... note: In instance 'dx7_core'
+ 1212 |     wire [20:0] dv_linp   = dv_g * dv_depth * 21'd329;    
+      |                 ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1213:17: Bits of signal are not used: 'dv_expp'[14:0]
+                                             : ... note: In instance 'dx7_core'
+ 1213 |     wire [22:0] dv_expp   = exp_scale_data(dv_g) * dv_depth * 16'd329;
+      |                 ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1225:24: Bits of signal are not used: 'dv_ols'[13]
+                                             : ... note: In instance 'dx7_core'
+ 1225 |     wire signed [13:0] dv_ols = (dv_ols_pre > 14'sd127) ? 14'sd127
+      |                        ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1290:24: Bits of signal are not used: 'fq_prod'[13:0]
+                                             : ... note: In instance 'dx7_core'
+ 1290 |     wire signed [45:0] fq_prod = fq_diff * $signed({32'b0, w_fl});
+      |                        ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1309:24: Bits of signal are not used: 'w_sl0'[39:32]
+                                             : ... note: In instance 'dx7_core'
+ 1309 |     wire signed [39:0] w_sl0  = $signed({32'b0, w_pmsens}) * w_slfo;
+      |                        ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1312:24: Bits of signal are not used: 'w_sh1'[63:32]
+                                             : ... note: In instance 'dx7_core'
+ 1312 |     wire signed [63:0] w_sh1   = w_prod1 >>> 39;
+      |                        ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1316:24: Bits of signal are not used: 'w_sh2'[63:32]
+                                             : ... note: In instance 'dx7_core'
+ 1316 |     wire signed [63:0] w_sh2   = w_prod2 >>> 14;
+      |                        ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1324:17: Bits of signal are not used: 'w_am1p'[7:0]
+                                             : ... note: In instance 'dx7_core'
+ 1324 |     wire [39:0] w_am1p  = {32'b0, w_amdep} * {7'b0, lfo_del_q};
+      |                 ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1326:17: Bits of signal are not used: 'w_am1bp'[23:0]
+                                             : ... note: In instance 'dx7_core'
+ 1326 |     wire [55:0] w_am1bp = {24'b0, w_am1} * {8'b0, w_lv};
+      |                 ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1328:24: Bits of signal are not used: 'w_am2p'[64:32]
+                                             : ... note: In instance 'dx7_core'
+ 1328 |     wire signed [64:0] w_am2p = $signed(ctrl_am)
+      |                        ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1340:58: Signal is not used: 'ar_eval_req'
+                                             : ... note: In instance 'dx7_core'
+ 1340 |     wire        ar_ld_cfg, ar_ld_fb, ar_ld_op, ar_start, ar_eval_req,
+      |                                                          ^~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1341:32: Signal is not used: 'ar_busy'
+                                             : ... note: In instance 'dx7_core'
+ 1341 |                 ar_frame_done, ar_busy;
+      |                                ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1346:42: Signal is not driven, nor used: 'ar_ld_mod'
+                                             : ... note: In instance 'dx7_core'
+ 1346 |     wire [31:0] ar_ld_phase, ar_ld_freq, ar_ld_mod;
+      |                                          ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1349:17: Signal is not used: 'ar_eval_op'
+                                             : ... note: In instance 'dx7_core'
+ 1349 |     wire [2:0]  ar_eval_op;
+      |                 ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1350:35: Signal is not used: 'ar_eval_mod'
+                                             : ... note: In instance 'dx7_core'
+ 1350 |     wire [31:0] ar_eval_phase_in, ar_eval_mod;
+      |                                   ^~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:1429:16: Signal is not used: 'nn_busy'
+                                             : ... note: In instance 'dx7_core'
+ 1429 |     wire [5:0] nn_busy   = env_busy[nn*6 +: 6];
+      |                ^~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:131:24: Bits of signal are not used: 'phase'[31:28,11:0]
+                                            : ... note: In instance 'dx7_core.u_kern'
+  131 |     input  wire [31:0] phase,    
+      |                        ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/dx7_core.v:142:17: Bits of signal are not used: 'phi'[15:12]
+                                            : ... note: In instance 'dx7_core.u_kern'
+  142 |     wire [15:0] phi       = phase[27:12];
+      |                 ^~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:235:15: Bits of signal are not used: 'lut_v'[0]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  235 |     reg [6:0] lut_v;
+      |               ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:270:24: Bits of signal are not used: 'act_cl'[15:13]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  270 |     wire signed [15:0] act_cl = (act16 < $signed(LEVEL_FLOOR))
+      |                        ^~~~~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:280:17: Bits of signal are not used: 'qprod'[5:0]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  280 |     wire [11:0] qprod = adv_rate * 7'd41;           
+      |                 ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:378:17: Bits of signal are not used: 'raw_prod'[23:0]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  378 |     wire [44:0] raw_prod = raw_base * DIV20_M;      
+      |                 ^~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:384:17: Bits of signal are not used: 'stat_prod'[63:53,23:0]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  384 |     wire [63:0] stat_prod = raw_static_r * SRM_EFF;   
+      |                 ^~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/env_unit.v:391:17: Bits of signal are not used: 'inc_prod'[63:56,23:0]
+                                            : ... note: In instance 'dx7_core.envs[95].u_env'
+  391 |     wire [63:0] inc_prod = {38'b0, inc_pre_r} * SRM_EFF;     
+      |                 ^~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/alg_router.v:179:16: Bits of signal are not used: 'flags'[3]
+                                              : ... note: In instance 'dx7_core.u_router'
+  179 |     wire [7:0] flags = (alg46 && fb_on && (op_q == 3'd0))
+      |                ^~~~~
+%Warning-UNUSEDSIGNAL: rtl/alg_router.v:237:17: Signal is not used: 'plain_fb'
+                                              : ... note: In instance 'dx7_core.u_router'
+  237 |     wire        plain_fb = fb_dispatch && !ser3_sel && !ser2_sel;
+      |                 ^~~~~~~~
+- V e r i l a t i o n   R e p o r t: Verilator 5.052 2026-09-05 rev vUNKNOWN-built20260905
+- Verilator: Built from 0.397 MB sources in 5 modules, into 6.207 MB in 15 C++ files needing 0.000 MB
+- Verilator: Walltime 9.532 s (elab=0.197, cvt=8.382, bld=0.000); cpu 1.950 s on 1 threads; allocated 131.969 MB
+exit=0

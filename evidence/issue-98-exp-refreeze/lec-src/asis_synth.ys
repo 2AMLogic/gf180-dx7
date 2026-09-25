@@ -1,0 +1,10 @@
+read_verilog /private/tmp/i86lec39wcjxtq/asis_gate.v
+hierarchy -check -top cone
+synth -flatten -run :fine
+synth -top cone -run fine: -noabc
+opt -purge
+opt
+setundef -zero
+abc -g AND,NAND,OR,NOR,XOR,XNOR,MUX
+opt_clean -purge
+write_verilog -noattr /private/tmp/i86lec39wcjxtq/asis_mapped.v

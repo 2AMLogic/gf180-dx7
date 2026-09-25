@@ -111,14 +111,31 @@
    ratification is required before merge**; until then this PR holds at judge
    approval. This is the mechanism DR-0011 itself used (its Decision 3).
 
-5. **Claim boundary of this PR.** It establishes, for the refrozen revision:
-   simulation bit-exactness against the frozen model (H07 battery), no change
-   to any simulated value versus the DR-0011 pin, cone-level formal agreement
-   between the synthesised and simulated `exp_hsum`, and the presence of the
-   exp datapath in a pinned-flow mapped netlist. It claims **no timing, no
-   fit, no placement, no routing, no signoff, no silicon and no musical
-   result**. The synthesis-stage cell-area delta quoted in Evidence is
-   synth-stage cell area only; there is no placement or timing behind it.
+5. **Claim boundary of this PR.** It establishes, for the refrozen revision
+   `f33cecbd…` itself: simulation bit-exactness against the frozen model (H07
+   battery, fresh), byte-identical captured PCM versus the DR-0011 pin on
+   every case of that battery, cone-level formal agreement between the
+   synthesised and the simulated `exp_hsum` under the pinned image's yosys,
+   and — in the same pinned yosys, on the whole core — an `exp_hsum` driven by
+   a real adder cell instead of a constant `x`.
+
+   It does **not** establish a mapped-netlist census on this exact pin. That
+   run is **BLOCKED on this host** (Evidence row F): the pinned flow's
+   `do-yosys` needed 11.4 GB on the successful #86 widened run, the Docker VM
+   here offers 7.75 GB total with ~3.8 GB already resident, and the attempt
+   was killed inside `techmap` at 5.2 GB. The standing pinned-flow mapped
+   census for the widening is #86's, made on a scratch copy that differs from
+   this pin only in comments (`evidence/issue-86-exp-range-proof/orfs-census-
+   widened-2026-09-25.json`: 564 exp datapath flops vs 0 as-written). That is
+   evidence about the *widening*, not about this file's hash, and it is
+   reported that way: the census on the refrozen pin is NOT_RUN here and is
+   required together with the H10 re-run (Decision 6, and the follow-up issue
+   named in Consequences).
+
+   It claims **no timing, no fit, no placement, no routing, no signoff, no
+   silicon and no musical result**. The synthesis-stage cell-area delta quoted
+   in Evidence is synth-stage cell area from #86's runs only; there is no
+   placement or timing behind it.
 
 6. **H10 is STALE, not corrected here.** Every figure in
    `docs/H10-GF180-FEASIBILITY.md` was measured on a netlist missing the exp
@@ -153,6 +170,11 @@
 - **Costs:** the exp datapath is real logic that the as-written core was not
   paying for. The synthesis-stage cell-area increase is recorded in Evidence
   and is a correction of an undercount, not a regression.
+- **Open, tracked, not assumed:** the pinned-flow mapped census on this pin and
+  the H10 re-run on top of it are **issue #103** (blocked on a synthesis host
+  that can give the container ≥ 12 GB — Evidence row F). Until #103 lands,
+  every H10 figure stays a lower bound and no mapped-netlist number may be
+  attributed to `f33cecbd…`.
 
 ## Evidence
 
@@ -161,18 +183,56 @@ All runs on `repo-local-gf180-dx7` (Apple Silicon; the pinned image runs under
 `f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa` unless
 stated. Retained under `evidence/issue-98-exp-refreeze/`.
 
-<!-- EVIDENCE-TABLE -->
+Full per-row detail, artifacts, tool hashes and the two negative-control runs:
+`evidence/issue-98-exp-refreeze/README.md`. Row letters below are that file's.
+
+| row | check | tool / binary | result |
+|---|---|---|---|
+| A | static range proof | `tools/exp_range_proof.py --mode static` | **PASS** — no out-of-range bits remain; exact products 68/60/52 bits in 86/86/82-bit wires, headroom 18/26/30 bits |
+| B | probe cross-check, Verilator 5.052 | `--mode xcheck --sim verilator` | **PASS**, 64/64 points, 0 unknown |
+| C | probe cross-check, Icarus 13.0 | `--mode xcheck --sim iverilog` | **PASS**, 64/64 points, **0** unknown — was `NO_VERDICT` with 64/64 unknown on the DR-0011 pin (#96's root cause) |
+| D | Verilator lint | `verilator --lint-only -Wall` | **PASS** — 0 `SELRANGE` (188 warnings total; 3 `SELRANGE` traded for 3 `UNUSEDSIGNAL` on the never-read low bits, no waiver added) |
+| D′ | lint control at DR-0011 widths | same | **FAIL as required** — 3 `SELRANGE` |
+| E | cone LEC + whole-core driver, pinned image `sha256:ebc8142da6d6…`, `Yosys 0.68+post` | `tools/exp_hsum_lec.py` | **PASS**, exit 0: SAT-equivalent for every input; whole-core `exp_hsum` driven by an `$add` cell, not `69'x` |
+| E′ | the same tool on the DR-0011 file (required failure control) | `--rtl build/i98/dx7_core_dr0011.v` | **FAIL as required**, exit 1: mapped cone constant `57'h0`, driver tied to `69'x` |
+| E″ | built-in live controls on every run | idem | widened **PASS**; narrowed (DR-0011 widths) **FAIL**; gold with one out-of-range bit forced to 1 **FAIL**; `controls_behaved: true` |
+| F | pinned-flow **mapped census on this pin** | `run-orfs.sh dx7core natdie synth` | **BLOCKED** — yosys `SIGKILL`ed inside `techmap` (exit 247 = `sys.exit(-9)`), peak RSS 5.2 GiB, Docker VM 7.75 GiB with ~3.8 GiB resident elsewhere; #86's successful widened run needed 11.4 GiB. Reproduced twice. Tracked as #103 |
+| F′ | standing pinned-flow census **for the widening** (#86, scratch copy differing only in comments) | `tools/exp_netlist_census.py` | as-written **0** exp datapath flops / 32,941,030.7 µm²; widened **564** flops / 34,839,310.1 µm² (+5.8 % synth-stage cell area) |
+| G | H07 battery, fresh, Verilator | `tools/h07_compare.py --set both --tag dr0012-p1` | **PASS 34/34**, `overrun`/`overflow` 0 everywhere, every latency inside the contracted window |
+| G′ | same battery vs the DR-0011-pin baseline run | per-case `actual_sha256` | **34/34 byte-identical** — no simulated value changed (this issue's stop/escalate condition, measured) |
+| H | H07 Icarus on the two AMS ≠ 0 cases (`dev32-06`, `dev32-30`) | `--tool iverilog --tag dr0012-iv-ams` | see README row H; the full 34-case Icarus shadow on this pin is **NOT_RUN** |
+| I | cone LEC under the host `Yosys 0.69+post` (tool-independence only) | `tools/exp_hsum_lec.py --yosys …` | see README row I |
+| J | structural guard, fast lane, no tools | `tests/test_exp_range_proof.py::NoOutOfRangeSelects` | **PASS**, with both negative controls failing as required (DR-0011 narrowing; an unrelated narrowed part-selected wire) |
 
 ## Reproduce
 
 ```sh
+# Rows A-D, J -- seconds to minutes, no docker.
 python3 tools/exp_range_proof.py --mode static
 python3 tools/exp_range_proof.py --mode xcheck --sim verilator
 python3 tools/exp_range_proof.py --mode xcheck --sim iverilog
-python3 tools/exp_hsum_lec.py                     # pinned image via docker
-python3 tools/exp_hsum_lec.py --rtl build/i98/dx7_core_dr0011.v   # must FAIL
-verilator --lint-only -Wall -Wno-fatal -Irtl rtl/*.v   # no SELRANGE
-python3 tools/h07_compare.py --set both --tool verilator --tag dr0012-p1
+verilator --lint-only -Wall -Wno-fatal -Irtl \
+    rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v   # 0 SELRANGE
+python3 -m unittest tests.test_exp_range_proof -v
+
+# Rows E, E', E'' -- the pinned image's yosys, ~20 min each under emulation.
+python3 tools/exp_hsum_lec.py                     # exit 0 expected
+mkdir -p build/i98
+git show <dr0011-commit>:rtl/dx7_core.v > build/i98/dx7_core_dr0011.v
+python3 tools/exp_hsum_lec.py --rtl build/i98/dx7_core_dr0011.v   # must FAIL (exit 1)
+
+# Rows G, G' -- the fresh battery, ~65 min with --jobs 4.
+python3 tools/h07_compare.py --set both --tool verilator --tag dr0012-p1 --jobs 4
+# then compare per-case actual_sha256 against the DR-0011-pin baseline
+# evidence/h07-core/results-h10-merged-p3.json (expect 34/34 identical).
+
+# Row H -- Icarus, tens of minutes PER CASE on an Apple-Silicon host.
+python3 tools/h07_compare.py --set dev --cases dev32-30,dev32-06 \
+    --tool iverilog --tag dr0012-iv-ams
+
+# Row F -- NEEDS >= 12 GB available to the container (see issue #103).
+# On a host that cannot give it that, this is killed inside techmap (exit 247)
+# and must be reported BLOCKED, never FAIL and never skipped-as-pass.
 ORFS_WORK=/tmp/w ./asic/orfs/run-orfs.sh dx7core FLOW_VARIANT=natdie synth
 python3 tools/exp_netlist_census.py /tmp/w/results/gf180/dx7core/natdie/1_2_yosys.v \
     --stat /tmp/w/reports/gf180/dx7core/natdie/synth_stat.txt

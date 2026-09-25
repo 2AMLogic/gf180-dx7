@@ -1,0 +1,5 @@
+read_verilog -defer -sv -I rtl /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-98/rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v
+hierarchy -check -top dx7_core
+proc
+opt_expr
+write_rtlil /private/tmp/i86lec39wcjxtq/core_asis.il

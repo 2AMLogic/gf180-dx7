@@ -25,7 +25,7 @@ python3 -m unittest discover -s tests \
   -k contract -k sysex -k check_reuse -k numeric_profile -k physical \
   -k compare -k registry -k capabilities -k issue_dag -k host_mock \
   -k audition -k reference_manifest -k h08 -k u05_demo -k bank128 -k h10 \
-  -k synthparse -k exp_range \
+  -k synthparse -k exp_range -k ams_audit \
   >"$log" 2>&1
 rc=$?
 set -e

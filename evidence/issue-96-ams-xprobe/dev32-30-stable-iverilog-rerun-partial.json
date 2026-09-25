@@ -1,0 +1,28 @@
+{
+ "check": "issue #96: does the FULL-LENGTH dev32-30 vector complete under a STABLE iverilog 13.0, or does it deadlock as the DR-0011 re-run recorded?",
+ "status": "NOT_RUN",
+ "problems": [
+  "the full-length run (the vector plays to block 1875 regardless of --frames, ~2 h on one core of this host) had not completed when this record was written and was stopped; it is reported as NOT_RUN, never as a pass or a refutation"
+ ],
+ "command": "python3 tools/h07_compare.py --set dev --cases dev32-30 --tool iverilog --frames 24 --tag issue96-repro",
+ "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
+ "rtl_dx7_core_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "observed_before_it_was_stopped": {
+  "samples_dumped": 39490,
+  "of_total_samples": 120063,
+  "nonzero_samples": 0,
+  "deadlocked_early": false,
+  "note": "the dump grew steadily (~15 wire frames/min); no early deadlock. Every sample dumped was 0, i.e. the same all-silence shape as the committed iverilog artifact for this case.",
+  "prefix_vs_committed_iverilog_artifact": {
+   "compared_samples": 39490,
+   "diverging_samples": 0
+  }
+ },
+ "partial_dump_retained": false,
+ "partial_dump_note": "the truncated actual.i32 of the stopped run is deliberately NOT committed: an incomplete dump with an empty meta.txt under evidence/h07-core/runs/ would look like a completed run to anything that globs that directory. The figures above are the observation record; the reproducible evidence for this case is the windowed compare (window-iverilog-dev32-30.json), which ran to DONE.",
+ "superseded_for_the_deadlock_question_by": {
+  "artifact": "window-iverilog-dev32-30.json",
+  "what_it_settles": "the same case, same patch, same vector grammar, 126 blocks, runs to DONE under stable iverilog 13.0 and produces a complete dump -- so the recorded CouldNotRun is not a property of the case that reproduces at any vector length under this build",
+  "what_it_does_not_settle": "whether the FULL-LENGTH (block-1875) vector completes under the stable build; that remains NOT_RUN"
+ }
+}

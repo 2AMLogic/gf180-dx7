@@ -1,0 +1,57 @@
+{
+ "check": "issue #96 LFO-AMS X-propagation probe (whole-core, real SPI stimulus)",
+ "case": "dev32-30",
+ "simulator": "iverilog",
+ "rtl_variant": "widened",
+ "rtl_sha256": "752507494d5f85eeb5fa612d835e40fc6dfc0407ff221a83745e292ace1aa391",
+ "frozen_rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "frozen_rtl_matches_dr0011_pin": true,
+ "patch_amp_mod_sensitivity_body_order_op6_first": [
+  3,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "patch_amp_mod_sensitivity_op1_first": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  3
+ ],
+ "patch_ams_zeroed": false,
+ "note": [
+  60,
+  100
+ ],
+ "run_frames_after_note_on": 8,
+ "result": {
+  "frames": 42,
+  "events": 7,
+  "note_frame": 1,
+  "end_frame": 9,
+  "hsum": -1,
+  "pt": -1,
+  "li": -1,
+  "wli": -1,
+  "mix": -1,
+  "opli_slot0_unknown_ops": 0,
+  "samples": 639,
+  "unknown_samples": 0,
+  "live": 1,
+  "overrun": 0,
+  "overflow": 0
+ },
+ "probe_lines": [
+  "PROBE frames=42 events=7 note_frame=1 end_frame=9",
+  "PROBE first_x_frame hsum=-1 pt=-1 li=-1 wli=-1 mix=-1",
+  "PROBE opli_slot0_unknown_ops=0",
+  "PROBE samples=639 unknown_samples=0 live=1 overrun=0 overflow=0"
+ ],
+ "expect_unknowns": false,
+ "status": "PASS",
+ "problems": []
+}

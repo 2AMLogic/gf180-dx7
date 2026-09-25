@@ -1,0 +1,99 @@
+{
+ "check": "issue #96: H07 conformance compare over a window that contains the live note",
+ "case": "dev32-06",
+ "tool": "iverilog",
+ "tool_version": "Icarus Verilog version 13.0 (stable) (v13_0)",
+ "window_blocks": 120,
+ "compared_samples": 7680,
+ "first_event_block": 75,
+ "event_blocks_kept": [
+  75
+ ],
+ "event_blocks_dropped_after_window": [
+  750,
+  1125,
+  1875
+ ],
+ "amp_mod_sensitivity_op1_to_op6": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  3
+ ],
+ "ams_nonzero": true,
+ "rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "rtl_matches_dr0011_pin": true,
+ "actual_sha256": "5c80ce76d92fda4d68d6282e6182b78fcb38627c040354d49da0c9a46762ef0b",
+ "overrun": 0,
+ "overflow": 0,
+ "state_obs": "x",
+ "golden_nonzero_samples": 2864,
+ "actual_nonzero_samples": 0,
+ "pass": false,
+ "checked": 7680,
+ "mismatches": [
+  {
+   "index": 4944,
+   "golden": 2,
+   "actual": 0,
+   "block": 75,
+   "sample": 16
+  },
+  {
+   "index": 4945,
+   "golden": 2,
+   "actual": 0,
+   "block": 75,
+   "sample": 17
+  },
+  {
+   "index": 4946,
+   "golden": 2,
+   "actual": 0,
+   "block": 75,
+   "sample": 18
+  },
+  {
+   "index": 4947,
+   "golden": 2,
+   "actual": 0,
+   "block": 75,
+   "sample": 19
+  },
+  {
+   "index": 4948,
+   "golden": 4,
+   "actual": 0,
+   "block": 75,
+   "sample": 20
+  },
+  {
+   "index": 4949,
+   "golden": 5,
+   "actual": 0,
+   "block": 75,
+   "sample": 21
+  },
+  {
+   "index": 4950,
+   "golden": 6,
+   "actual": 0,
+   "block": 75,
+   "sample": 22
+  },
+  {
+   "index": 4951,
+   "golden": 8,
+   "actual": 0,
+   "block": 75,
+   "sample": 23
+  }
+ ],
+ "first_mismatch_block": 75,
+ "expect_pass": false,
+ "status": "PASS",
+ "problems": [],
+ "note": "status is the verdict on the DECLARED EXPECTATION, not on the case: the iverilog/nonzero-AMS row is expected to be a conformance FAIL, and `pass: false` there is the finding."
+}

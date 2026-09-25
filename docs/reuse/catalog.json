@@ -1844,8 +1844,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "eb6f5193beb1a01c8299822c6bd50dba472821f90fe9e9d6f9822d4f76289301",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases"
+   "sha256": "7a64f8815800f129da0170a1ba498159fa7f0092b327d3b02c902c06f762d27d",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases; re-pinned after issue #96 added the ams_audit fast-lane token"
   },
   {
    "path": "tools/u02_candidates.py",
@@ -1869,7 +1869,7 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "cd1af470b61e3a3e82d1be99c75bbd6ace9ca59f2320baa3ecb1dfb2103ffb17",
+   "sha256": "f6de20fd2ffc89b74d951af3d871fa74f0247111da38b2ab27506f32237c07a9",
    "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes"
   },
   {
@@ -2121,6 +2121,21 @@
    "path": "tools/exp_netlist_census.py",
    "sha256": "773a48c569553733e50112b844fda27a5891e3dfc5def3364f770bec93bcbf74",
    "reason": "locally authored issue #86 mapped-netlist exp() register census; not a reuse import"
+  },
+  {
+   "path": "tools/ams_xprobe.py",
+   "sha256": "4fe585f71ec85a955a4cc18309e4d5b6d1a4ace430af319d42345cec6d8c0a1a",
+   "reason": "locally authored issue #96 LFO-AMS X-propagation probe (whole-core, real SPI stimulus; AMS-zero / widened-RTL / Verilator controls); not a reuse import"
+  },
+  {
+   "path": "tools/ams_window_compare.py",
+   "sha256": "7c2e5beeca2019a52e4466a27f578cfd4b2653fb4e0deda4e403a7f83377908a",
+   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import"
+  },
+  {
+   "path": "tools/h07_ams_audit.py",
+   "sha256": "4cae93d92884d5f5a58547f1b5fd33d053641a624ded33c26c5cdaa676f792d5",
+   "reason": "locally authored issue #96 H07 corpus AMS census + compared-window coverage + iverilog/Verilator artifact-divergence audit; not a reuse import"
   }
  ]
 }

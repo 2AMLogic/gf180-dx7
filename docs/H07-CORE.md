@@ -70,8 +70,9 @@ detector: it reads 0 after every frame of every conformance vector —
 including the 16-voice maximum-summation chord, the 167-write single-frame
 burst, held notes across a mid-render patch commit, and soft-reset
 mid-render (2,361,344 compared samples per full run, ×2 runs, plus the
-34-case iverilog shadow). OVERRUN-never-sets is therefore demonstrated
-over the complete vector set, not a sample.
+33 of 34 cases that completed in the iverilog shadow — see the §4
+correction). OVERRUN-never-sets is therefore demonstrated over the
+complete vector set, not a sample.
 
 ## 3. Integration findings (each with its resolution)
 
@@ -170,8 +171,34 @@ over the complete vector set, not a sample.
 Simulator tiers (klayout-tools #2223 convention): the sweeps and
 determinism runs are Verilator 5.041 (remote oss-cad-suite); the final
 acceptance shadow is iverilog 13.0, bounded to the first 24 golden blocks
-per case (`results-iverilog-shadow.json`, 34/34 PASS) — **zero
-Verilator/iverilog divergence** (every case bit-exact under both).
+per case (`results-iverilog-shadow.json`).
+
+> **CORRECTION (issue #96, 2026-09-25) — this paragraph previously read
+> "34/34 PASS — zero Verilator/iverilog divergence (every case bit-exact
+> under both)". Both halves were wrong and the iverilog tier is STALE for
+> coverage.** The committed file records 33 passes and one `CouldNotRun`
+> (`dev32-30`), not 34/34. And the two corpus cases with a nonzero
+> per-operator LFO amp-mod sensitivity (`dev32-06`, `dev32-30`) are **not**
+> bit-exact under both: their committed iverilog dumps differ from the
+> Verilator dumps on 113,735 / 115,073 of the 120,063 overlapping samples,
+> because iverilog evaluates the out-of-range `exp_t3/t4/t5` reads
+> (`dx7_core.v:953-961`) as x and that x reaches the mixer. It went
+> unreported because `--frames 24` bounds the *compare window*, not the
+> vector: every dev case's first event is at block 37 or later, so 30 of
+> the 34 compared windows contain only golden silence, and iverilog's
+> `$fwrite("%c", …)` dump renders an unknown sample as NUL — so an
+> x-corrupted render compares equal there. Re-compared through this same
+> harness over a 120-block window (the note-on is at block 75), both cases
+> report a bit-exactness **FAIL** under iverilog 13.0 (stable) — 0 of
+> 2,856 / 2,864 nonzero golden samples reproduced, first mismatch in block
+> 75 — while the same window passes under Verilator and the AMS = 0
+> sibling `dev32-03` passes under iverilog. What the iverilog tier does
+> establish is bit-exactness over the three stress windows that contain
+> audio and over `dev32-03`'s blocks 0..119 (all AMS = 0); it establishes
+> nothing about the dev set's audio past block 120, and nothing good about
+> the AM/exp() path. Full analysis, probe, and controls:
+> [`AMS-XPROBE-96.md`](AMS-XPROBE-96.md). The Verilator acceptance
+> evidence below is unaffected. The RTL width fix is tracked in #98.
 
 Wall time on `repo-remote-gf180-dx7` (m5.2xlarge, 8 vCPU): full dev+stress
 Verilator run 4,226 s (run 1) / 4,092 s (run 2); iverilog shadow

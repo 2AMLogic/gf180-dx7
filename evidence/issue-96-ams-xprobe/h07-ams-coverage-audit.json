@@ -1,0 +1,1076 @@
+{
+ "check": "issue #96 H07 corpus LFO-AMS coverage + artifact audit",
+ "results_file": "evidence/h07-core/results-iverilog-shadow.json",
+ "ams_census": {
+  "dir-base": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "osc-fixed-carrier": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "bd-coarse0": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "bd-coarse31": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "bd-detune0": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "bd-detune14": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg4-fb0": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg4-fb3": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg4-fb7": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg6-fb0": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg6-fb3": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "alg6-fb7": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "codec-name-a": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "codec-name-b": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-sustain-no-pedal": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-sustain-pedal": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-all-sound-off": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-all-notes-off": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-pitch-bend-up": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-pitch-bend-down": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-pitch-bend-center": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-modwheel-127": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-modwheel-0": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-repeated-note": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-retrigger": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-sum-15": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "ev-steal-16": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "dev32-03": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ams_nonzero": false
+  },
+  "dev32-06": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3
+   ],
+   "ams_nonzero": true
+  },
+  "dev32-30": {
+   "set": "dev",
+   "ams_op1_to_op6": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3
+   ],
+   "ams_nonzero": true
+  },
+  "stress-sum16": {
+   "set": "stress",
+   "voices": 1,
+   "ams_op1_to_op6_per_voice": [
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "ams_nonzero": false
+  },
+  "stress-burst": {
+   "set": "stress",
+   "voices": 1,
+   "ams_op1_to_op6_per_voice": [
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "ams_nonzero": false
+  },
+  "stress-reset": {
+   "set": "stress",
+   "voices": 1,
+   "ams_op1_to_op6_per_voice": [
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "ams_nonzero": false
+  },
+  "stress-patchcommit": {
+   "set": "stress",
+   "voices": 2,
+   "ams_op1_to_op6_per_voice": [
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "ams_nonzero": false
+  }
+ },
+ "ams_nonzero_cases": [
+  "dev32-06",
+  "dev32-30"
+ ],
+ "compared_window": {
+  "tool": "iverilog",
+  "tag": "iverilog-shadow",
+  "rtl_sha256": "7bab93f514f49a3f6819818e66ed3e4581c00ebb0063082ef1e2b7f2f06bc188",
+  "cases": {
+   "alg4-fb0": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "alg4-fb3": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "alg4-fb7": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "alg6-fb0": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "alg6-fb3": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "alg6-fb7": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "bd-coarse0": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "bd-coarse31": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "bd-detune0": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "bd-detune14": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "codec-name-a": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "codec-name-b": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "dev32-03": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 75,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "dev32-06": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 75,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "dev32-30": {
+    "pass": false,
+    "checked": null,
+    "compared_blocks": null,
+    "first_event_block": 75,
+    "compared_golden_all_zero": null,
+    "window": "NOT_RUN",
+    "error": "simulation failed:  "
+   },
+   "dir-base": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-all-notes-off": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-all-sound-off": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-modwheel-0": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-modwheel-127": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-pitch-bend-center": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-pitch-bend-down": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-pitch-bend-up": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-repeated-note": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-retrigger": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-steal-16": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-sum-15": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-sustain-no-pedal": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 75,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "ev-sustain-pedal": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 0,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "osc-fixed-carrier": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 37,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "stress-burst": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 5,
+    "compared_golden_all_zero": true,
+    "window": "golden_silence"
+   },
+   "stress-patchcommit": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 2,
+    "compared_golden_all_zero": false,
+    "window": "golden_has_audio"
+   },
+   "stress-reset": {
+    "pass": true,
+    "checked": 1664,
+    "compared_blocks": 26,
+    "first_event_block": 2,
+    "compared_golden_all_zero": false,
+    "window": "golden_has_audio"
+   },
+   "stress-sum16": {
+    "pass": true,
+    "checked": 1536,
+    "compared_blocks": 24,
+    "first_event_block": 4,
+    "compared_golden_all_zero": false,
+    "window": "golden_has_audio"
+   }
+  }
+ },
+ "vacuous_window_cases": [
+  "alg4-fb0",
+  "alg4-fb3",
+  "alg4-fb7",
+  "alg6-fb0",
+  "alg6-fb3",
+  "alg6-fb7",
+  "bd-coarse0",
+  "bd-coarse31",
+  "bd-detune0",
+  "bd-detune14",
+  "codec-name-a",
+  "codec-name-b",
+  "dev32-03",
+  "dev32-06",
+  "dir-base",
+  "ev-all-notes-off",
+  "ev-all-sound-off",
+  "ev-modwheel-0",
+  "ev-modwheel-127",
+  "ev-pitch-bend-center",
+  "ev-pitch-bend-down",
+  "ev-pitch-bend-up",
+  "ev-repeated-note",
+  "ev-retrigger",
+  "ev-steal-16",
+  "ev-sum-15",
+  "ev-sustain-no-pedal",
+  "ev-sustain-pedal",
+  "osc-fixed-carrier",
+  "stress-burst"
+ ],
+ "uncovered_nonzero_ams_cases": [
+  "dev32-06",
+  "dev32-30"
+ ],
+ "artifact_divergence": {
+  "a": "iverilog-shadow",
+  "b": "verilog-accept",
+  "cases": {
+   "alg4-fb0": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69807,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "0"
+   },
+   "alg4-fb3": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69807,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "alg4-fb7": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69807,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "alg6-fb0": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69805,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "alg6-fb3": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69602,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "alg6-fb7": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69807,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "0"
+   },
+   "bd-coarse0": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69807,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "bd-coarse31": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69786,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "0"
+   },
+   "bd-detune0": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69779,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "0"
+   },
+   "bd-detune14": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69784,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "codec-name-a": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 45797,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "codec-name-b": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 45797,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "dev32-03": {
+    "overlap_samples": 120063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 115055,
+    "verilog-accept_nonzero": 173770,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "dev32-06": {
+    "overlap_samples": 120063,
+    "diverging_samples": 113735,
+    "first_diverging_index": 4944,
+    "iverilog-shadow_nonzero": 416,
+    "verilog-accept_nonzero": 137659,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "dev32-30": {
+    "overlap_samples": 120063,
+    "diverging_samples": 115073,
+    "first_diverging_index": 4946,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 187169,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "0"
+   },
+   "dir-base": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69792,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-all-notes-off": {
+    "overlap_samples": 24063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 21547,
+    "verilog-accept_nonzero": 69607,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-all-sound-off": {
+    "overlap_samples": 24063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 21547,
+    "verilog-accept_nonzero": 21612,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-modwheel-0": {
+    "overlap_samples": 4863,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2350,
+    "verilog-accept_nonzero": 36200,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-modwheel-127": {
+    "overlap_samples": 4863,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2350,
+    "verilog-accept_nonzero": 36200,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-pitch-bend-center": {
+    "overlap_samples": 4863,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2350,
+    "verilog-accept_nonzero": 36200,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-pitch-bend-down": {
+    "overlap_samples": 4863,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2350,
+    "verilog-accept_nonzero": 36200,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-pitch-bend-up": {
+    "overlap_samples": 4863,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2350,
+    "verilog-accept_nonzero": 36202,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-repeated-note": {
+    "overlap_samples": 24063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 21547,
+    "verilog-accept_nonzero": 69801,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-retrigger": {
+    "overlap_samples": 14463,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 11950,
+    "verilog-accept_nonzero": 69795,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-steal-16": {
+    "overlap_samples": 72063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 69549,
+    "verilog-accept_nonzero": 93802,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-sum-15": {
+    "overlap_samples": 72063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 69551,
+    "verilog-accept_nonzero": 93804,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   },
+   "ev-sustain-no-pedal": {
+    "overlap_samples": 24063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 19115,
+    "verilog-accept_nonzero": 67181,
+    "iverilog-shadow_state_obs": "0",
+    "verilog-accept_state_obs": "1"
+   },
+   "ev-sustain-pedal": {
+    "overlap_samples": 48063,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 43110,
+    "verilog-accept_nonzero": 67336,
+    "iverilog-shadow_state_obs": "0",
+    "verilog-accept_state_obs": "0"
+   },
+   "osc-fixed-carrier": {
+    "overlap_samples": 2431,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 69769,
+    "iverilog-shadow_state_obs": "x",
+    "verilog-accept_state_obs": "1"
+   },
+   "burst": {
+    "overlap_samples": 1855,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 0,
+    "verilog-accept_nonzero": 0,
+    "iverilog-shadow_state_obs": "0",
+    "verilog-accept_state_obs": "0"
+   },
+   "patchcommit": {
+    "overlap_samples": 2367,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 2095,
+    "verilog-accept_nonzero": 2606,
+    "iverilog-shadow_state_obs": "0",
+    "verilog-accept_state_obs": "1"
+   },
+   "reset": {
+    "overlap_samples": 2303,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 1440,
+    "verilog-accept_nonzero": 1440,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "1"
+   },
+   "sum16": {
+    "overlap_samples": 1855,
+    "diverging_samples": 0,
+    "first_diverging_index": null,
+    "iverilog-shadow_nonzero": 1458,
+    "verilog-accept_nonzero": 3505,
+    "iverilog-shadow_state_obs": "1",
+    "verilog-accept_state_obs": "0"
+   }
+  }
+ },
+ "diverging_cases": [
+  "dev32-06",
+  "dev32-30"
+ ],
+ "status": "FINDING",
+ "problems": [
+  "30 of 34 compared windows in results-iverilog-shadow.json are golden-silence (every compared golden sample is 0): over such a window an x-corrupted render, dumped as NUL by rtl/tb_dx7_core.v's \"%c\" writer, compares EQUAL and is recorded as a pass",
+  "nonzero-AMS corpus case(s) dev32-06, dev32-30 have no nonzero compared golden sample in results-iverilog-shadow.json: their recorded verdicts carry NO information about the AM/exp() path",
+  "committed iverilog-shadow vs verilog-accept dumps differ for case(s) dev32-06, dev32-30; tools/h07_compare.py requires any Verilator/iverilog artifact divergence to be reported as a finding"
+ ]
+}

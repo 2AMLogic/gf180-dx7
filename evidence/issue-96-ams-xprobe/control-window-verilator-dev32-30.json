@@ -1,0 +1,41 @@
+{
+ "check": "issue #96: H07 conformance compare over a window that contains the live note",
+ "case": "dev32-30",
+ "tool": "verilator",
+ "tool_version": "Verilator 5.050 2026-07-01 rev vUNKNOWN-built20260924",
+ "window_blocks": 120,
+ "compared_samples": 7680,
+ "first_event_block": 75,
+ "event_blocks_kept": [
+  75
+ ],
+ "event_blocks_dropped_after_window": [
+  750,
+  1125,
+  1875
+ ],
+ "amp_mod_sensitivity_op1_to_op6": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  3
+ ],
+ "ams_nonzero": true,
+ "rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "rtl_matches_dr0011_pin": true,
+ "actual_sha256": "07411094cdf716876ce21b1ae0c83798fcffab6d756eff3c2df5fd5cb5d3dbb9",
+ "overrun": 0,
+ "overflow": 0,
+ "state_obs": "1",
+ "golden_nonzero_samples": 2856,
+ "actual_nonzero_samples": 2856,
+ "pass": true,
+ "checked": 7680,
+ "mismatches": [],
+ "expect_pass": true,
+ "status": "PASS",
+ "problems": [],
+ "note": "status is the verdict on the DECLARED EXPECTATION, not on the case: the iverilog/nonzero-AMS row is expected to be a conformance FAIL, and `pass: false` there is the finding."
+}

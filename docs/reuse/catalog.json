@@ -1529,13 +1529,13 @@
   },
   {
    "path": "tools/storage_probe_synth.py",
-   "sha256": "1183ee592510eba1aea941cb3de6ec601bcaac91ca51a0118bf841ca45984797",
-   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes"
+   "sha256": "49671c71fc82cb92a1fc955ff0b9a48c418e6b5bf3c42be1ec7343dadc21871c",
+   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
   },
   {
    "path": "tests/test_storage_probe.py",
-   "sha256": "57049523764f35abeb2dc3ddd193e0feef63cc8ebbc1d0b7434d9466717923ed",
-   "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes"
+   "sha256": "4fdc4b2423e74c184be0072369fb06d43c1f44e690d7f7c589275491e7ce2c3d",
+   "reason": "locally authored H02 test suite (issue #21); accounting reconciliation, live flop gate + strip-observability negative control, independent macro tiling arithmetic, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
   },
   {
    "path": "rtl/operator_probe.v",
@@ -1554,13 +1554,13 @@
   },
   {
    "path": "tools/h01_synth.py",
-   "sha256": "d3e82f753d741ee8291fd601c44f51078e56672f4ea9af8c963bc5b29a49459e",
-   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes"
+   "sha256": "37f5f507a63ef62c11118af23242724da603d63f285a08a5d878eb5412dc4299",
+   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
   },
   {
    "path": "tests/test_h01.py",
-   "sha256": "8d34a6e1d04eccb2f83eb12e51aca0320eed3feb44e16bd57f3fb229a9aae89f",
-   "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes"
+   "sha256": "fa4a4e0dd854b953c49aaadc40c023cb32be88740ac148289e87d9f69bce7feb",
+   "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
   },
   {
    "path": "src/gf180_dx7/model/algorithm.py",
@@ -1734,13 +1734,13 @@
   },
   {
    "path": "tools/h04_synth.py",
-   "sha256": "e15c0b9d524bd782d59413b63b720bb3b2fca14fc27c7a3b0d057892999fba13",
-   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes"
+   "sha256": "7c7e56785c9b344224b1765d6ecfc62051eabc492c9397949e94e0f77e8111b6",
+   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "5b59faa9fe95043ecb00e94fd62201ca22dfac9422dac6c284610e866390e236",
-   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes"
+   "sha256": "8d8af19a57d362dfd0817428a662be2eb040fd9cdaa0c7d1fe4882de21e85943",
+   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
   },
   {
    "path": "docs/H04-ENV-RTL.md",
@@ -1774,13 +1774,13 @@
   },
   {
    "path": "tools/h05_synth.py",
-   "sha256": "28ca0c4b921c56f3995a7c65e75ae52eeae6b8674f6452d85d2ec8dd937a759b",
-   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes"
+   "sha256": "d300a966c4510a6da385373c4c39c3ac58634f14e20f4d6b2c1c9ec4953d7983",
+   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "d196b793a47c3381d6a7ad493b188bd6c0109b54b28c23ef8105051fd07fafc7",
-   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes"
+   "sha256": "422878f35e637780b11b796be163981f7fd06f73b74c719662330ff07beee9ec",
+   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
   },
   {
    "path": "docs/H05-ROUTING-RTL.md",
@@ -1804,13 +1804,13 @@
   },
   {
    "path": "tools/h06_synth.py",
-   "sha256": "fbdf7e2e60376ce5648291bad8b01f91560898e5320b4995d48153760aea5150",
-   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes"
+   "sha256": "0f583f1fd049aab36d91f8d82456e412bea6620b293be2d8124ac5e867561a58",
+   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
   },
   {
    "path": "tests/test_h06.py",
-   "sha256": "7da7588827d6a0c159053115e67be00ece49984b39876504ce6e5d4a14f18178",
-   "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only"
+   "sha256": "a8ff570f3c0a8886ed8096aa52bbf491193e3cd5530e2ada753087fc433009f9",
+   "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
   },
   {
    "path": "reference/tables/lfo_sin_table.hex",
@@ -1844,8 +1844,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "fdbe165a23ffa29cf6424a4493b81daf23008f9108fad90252d52d91a0aacb6e",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token"
+   "sha256": "eb6f5193beb1a01c8299822c6bd50dba472821f90fe9e9d6f9822d4f76289301",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases"
   },
   {
    "path": "tools/u02_candidates.py",

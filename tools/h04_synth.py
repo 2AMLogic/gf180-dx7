@@ -177,13 +177,60 @@ def run_yosys(yosys, repo_root, liberty, strip, ltp, log_path):
     return log
 
 
+HIER_MARK = "=== design hierarchy ==="
+MODULE_AREA_RE = r"Chip area for module .*?: ([\d.]+)"
+TOP_AREA_RE = r"Chip area for top module"
+
+
+def assert_single_module_stat(log):
+    """Assert the `stat` transcript really is single-module (issue #95).
+
+    parse_stat reports the transcript's ONE `Chip area for module` block as
+    the design total. That is correct only while env_unit is a flat,
+    single-module design -- which the committed
+    evidence/h04-env-rtl/yosys_full.log is (exactly one `Chip area for
+    module` line, no `=== design hierarchy ===` section; re-verified at
+    implementation time). If env_unit ever acquires submodules, yosys emits
+    one block PER module plus a hierarchy section whose `Chip area for top
+    module` line is the whole-design total, and taking a per-module block
+    would silently under-report -- exactly the bug #82 (h07) and #94 (h08)
+    had to fix. This assertion makes that drift FAIL loudly instead of
+    shipping a wrong number; the fix when it fires is #94's hierarchy-total
+    parser, never a looser regex or a relaxed assertion.
+
+    Returns the per-module area strings found (0 or 1). An EMPTY list is
+    legitimate, not an error: the strip-observability control maps nothing,
+    so yosys prints no area line at all (chip_area_um2 stays None).
+    """
+    if HIER_MARK in log or re.search(TOP_AREA_RE, log):
+        raise CheckFailure(
+            "stat transcript is HIERARCHICAL ('=== design hierarchy ===' "
+            "and/or a 'Chip area for top module' line present): env_unit is "
+            "no longer a single-module design, so a per-module 'Chip area for "
+            "module' block is NOT the whole-design total. Refusing to report "
+            "one as the design area (issues #82/#94/#95) -- parse the "
+            "hierarchy total instead.")
+    areas = re.findall(MODULE_AREA_RE, log)
+    if len(areas) > 1:
+        raise CheckFailure(
+            f"stat transcript has {len(areas)} 'Chip area for module' blocks; "
+            "env_unit is expected to be a single-module design (exactly one). "
+            "Refusing to report the first block as the design area "
+            "(issues #82/#94/#95).")
+    return areas
+
+
 def parse_stat(log):
-    """Mapped cell/area facts from a `stat -liberty` transcript."""
+    """Mapped cell/area facts from a `stat -liberty` transcript.
+
+    Single-module shape is asserted first (issue #95): the one per-module
+    area block IS the design total only because env_unit has no submodules.
+    """
+    areas = assert_single_module_stat(log)
     cells = {}
     for m in re.finditer(r"^\s+(\d+)\s+([\d.]+E\+\d+|[\d.]+)\s+"
                          r"(gf180mcu\S+)\s*$", log, re.M):
         cells[m.group(3)] = cells.get(m.group(3), 0) + int(m.group(1))
-    chip = re.search(r"Chip area for module .*?: ([\d.]+)", log)
     seq = re.search(r"of which used for sequential elements: ([\d.]+)", log)
     total = re.search(r"^\s+(\d+)\s+[\d.]+E\+\d+\s+cells\s*$", log, re.M)
     return {
@@ -191,7 +238,7 @@ def parse_stat(log):
         "cell_total": int(total.group(1)) if total else sum(cells.values()),
         "dff_cells": {k: v for k, v in cells.items() if "dff" in k},
         "flop_total": sum(v for k, v in cells.items() if "dff" in k),
-        "chip_area_um2": float(chip.group(1)) if chip else None,
+        "chip_area_um2": float(areas[0]) if areas else None,
         "seq_area_um2": float(seq.group(1)) if seq else None,
     }
 

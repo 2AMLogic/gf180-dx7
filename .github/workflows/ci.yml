@@ -24,6 +24,22 @@ jobs:
         run: |
           if [ -f tools/check_all.sh ]; then bash tools/check_all.sh; fi
 
+  test-fast:
+    # DR-0009 fast-lane backstop (#89): exercises tools/test_fast.sh's own
+    # `-k` selection syntax in CI so a break there (e.g. a typo'd keyword
+    # that silently narrows the suite to zero tests) cannot ship uncaught.
+    # Single Python version is enough — this job's purpose is validating the
+    # fast-lane script itself, not full version coverage (the `test` job
+    # above already matrices 3.11/3.12/3.13 for that).
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fast-lane tests (DR-0009)
+        run: make test-fast
+
   mermaid:
     # README mermaid blocks must render: a syntax error here breaks the GitHub
     # rich display of the whole README (regression fixed 2026-09-20).

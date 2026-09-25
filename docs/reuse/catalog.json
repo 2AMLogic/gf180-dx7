@@ -1869,8 +1869,8 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "aadb6205dc2eccf6ce3f456037c9ec3db0d7fafdf1a2e7c497a89544511002ba",
-   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; no upstream bytes"
+   "sha256": "0585dc290b3f1bd17809d5b531a4fb7286e0901111f47b494bb9febca4df4dbc",
+   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); no upstream bytes"
   },
   {
    "path": "tools/h07_compare.py",
@@ -1904,8 +1904,8 @@
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "70fd794b7aeefab3873258c348b98975f0bae2973a5fb83b1ce6874cb1c4277d",
-   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings"
+   "sha256": "d6abbd55b3931cca06d93cd0d0c5b4f5bb0bbfaac7c0121e80f14834191e5b74",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87)"
   },
   {
    "path": "tools/h08_synth.py",

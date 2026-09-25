@@ -378,7 +378,9 @@ repo-level Apache-2.0.
   record); the injection/forensic vectors are additionally re-run live
   by `tests/test_h08.py` in the fast lane. The remaining ten matrix
   cases' completeness is re-exercised at the judge wave gate
-  (`make test`, DR-0009), not assumed — a test that was not re-run is a
+  (`make test`,
+  [DR-0009](decision-records/0009-test-tiering-fast-lane-budget.md)), not
+  assumed — a test that was not re-run is a
   committed batch on the same host/toolchain, and it is reported as
   such, not as freshly re-generated.
 - `tools/test_fast.sh` re-pinned to run the H08 harness on the

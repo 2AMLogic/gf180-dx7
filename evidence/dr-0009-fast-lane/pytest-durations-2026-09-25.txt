@@ -1,0 +1,100 @@
+host: Linux ip-172-31-76-7 7.0.0-1012-aws #12~24.04.1-Ubuntu SMP PREEMPT Wed Aug 12 14:00:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+python: Python 3.12.3 / pytest pytest 9.1.1
+commit: d3dcdadaf8acf3588f3dcd2d37aa216e0af27b46
+date: 2026-09-25T13:33:50Z
+command: python3 -m pytest tests -k <fast-lane -k expression> -q --durations=0
+
+.................................s............................. [ 16%]
+........................................................................ [ 34%]
+....................................................................s... [ 52%]
+..........................................................s.s.s..... [ 69%]
+........................sssss...............................s........... [ 88%]
+..............................................              [100%]
+============================== slowest durations ===============================
+31.10s call     tests/test_h08.py::TestH08LiveControls::test_live_f0_and_freshctl
+5.72s call     tests/test_h08.py::TestH08LiveControls::test_live_trunc47
+0.62s call     tests/test_bank128.py::TestNegativeControls::test_fixture_cannot_pass_against_real_catalog
+0.59s call     tests/test_h08.py::TestH08LiveControls::test_live_ovf
+0.46s call     tests/test_audition.py::TestSelectAgainstCatalog::test_corrupt_catalog_index_fails_loudly
+0.21s setup    tests/test_h07.py::TestNegativeControls::test_interface_is_exactly_contracted
+0.18s call     tests/test_audition.py::TestSelectAgainstCatalog::test_select_hash_finds_standalone_voice
+0.17s call     tests/test_audition.py::TestSelectAgainstCatalog::test_select_hash_finds_bank_slot
+0.17s call     tests/test_audition.py::TestSelectAgainstCatalog::test_select_name_is_substring_and_case_insensitive
+0.14s call     tests/test_audition.py::TestSelectAgainstCatalog::test_select_unknown_hash_is_empty
+0.11s call     tests/test_bank128.py::TestCli::test_cli_pass_and_fail_with_report
+0.11s setup    tests/test_audition.py::TestSelectAgainstCatalog::test_corrupt_catalog_index_fails_loudly
+0.11s call     tests/test_check_reuse.py::CheckReuseTestCase::test_git_ignored_build_tree_not_scanned
+0.11s call     tests/test_h08.py::TestH08Evidence::test_pin_equals_flat_recomputed
+0.11s call     tests/test_h10_report.py::TestFitGate::test_a_missing_route_blocks_fit_conclusion
+0.10s call     tests/test_u05_demo.py::TestBench::test_every_corruption_mode_verifies
+0.10s call     tests/test_registry.py::TestCheckWrapper::test_check_registry_wrapper_exit0
+0.09s call     tests/test_compare.py::TestMutationBatteryCli::test_json_report_written_and_parseable
+0.09s call     tests/test_capabilities.py::RealRepositoryTests::test_compiler_check_mode_agrees_with_committed_views
+0.08s call     tests/test_compare.py::TestMutationBatteryCli::test_identical_exit_zero
+0.08s call     tests/test_host_mock.py::TestBurstTiming::test_worst_admissible_burst_fits_design_point_window
+0.08s call     tests/test_compare.py::TestMutationBatteryCli::test_gain_offset_exit_one
+0.08s call     tests/test_compare.py::TestMutationBatteryCli::test_one_byte_flip_exit_one_localized
+0.08s call     tests/test_h10_report.py::TestCommittedBundle::test_k_committed_report_fresh_and_fit_refused
+0.08s call     tests/test_compare.py::TestMutationBatteryCli::test_sample_shift_exit_one
+0.07s call     tests/test_compare.py::TestMutationBatteryCli::test_silent_tail_append_is_length_class
+0.07s call     tests/test_compare.py::TestMutationBatteryCli::test_nan_file_is_failure_class
+0.07s call     tests/test_check_reuse.py::CheckReuseTestCase::test_unrecorded_source_file_fails
+0.07s call     tests/test_check_reuse.py::CheckReuseTestCase::test_missing_catalog_could_not_run
+0.06s call     tests/test_registry.py::TestNegativeControls::test_selftest_negative_mode_passes
+0.06s call     tests/test_compare.py::TestMutationBatteryCli::test_truncate_is_length_class
+0.06s call     tests/test_compare.py::TestApparatusNegativeControls::test_odd_byte_count_exit_two
+0.06s call     tests/test_compare.py::TestApparatusNegativeControls::test_missing_input_file_exit_two
+0.06s call     tests/test_check_reuse.py::CheckReuseTestCase::test_unrecorded_asic_file_fails
+0.06s call     tests/test_compare.py::TestApparatusNegativeControls::test_directory_input_exit_two
+0.05s call     tests/test_check_reuse.py::CheckReuseTestCase::test_adapt_destination_without_adapted_hash_fails
+0.05s call     tests/test_check_reuse.py::CheckReuseTestCase::test_original_drift_fails
+0.05s call     tests/test_h08.py::TestH08Evidence::test_injection_evidence_recomputed
+0.05s call     tests/test_u05_demo.py::TestStress::test_throttled_underrun_engages_and_is_not_vacuous
+0.05s call     tests/test_check_reuse.py::CheckReuseTestCase::test_missing_original_fails
+0.05s call     tests/test_bank128.py::TestCli::test_missing_manifest_is_not_run
+0.05s call     tests/test_check_reuse.py::CheckReuseTestCase::test_reject_entry_may_not_own_destination
+0.04s call     tests/test_u05_demo.py::TestStress::test_all_scenarios_pass
+0.04s call     tests/test_capabilities.py::StampTests::test_stamp_runs_registered_check_and_controls_then_passes
+0.04s call     tests/test_check_reuse.py::CheckReuseTestCase::test_compliant_tree_passes
+0.04s call     tests/test_h10_report.py::TestFitGate::test_b_full_chain_permits_fit
+0.04s call     tests/test_capabilities.py::StampTests::test_stamp_records_not_detected_for_failing_control
+0.04s call     tests/test_check_reuse.py::CheckReuseTestCase::test_drifted_hash_fails
+0.04s call     tests/test_capabilities.py::RealRepositoryTests::test_view_regeneration_is_deterministic_and_lints
+0.04s call     tests/test_numeric_profile.py::TestCheckerCli::test_cli_passes_on_the_committed_tree
+0.03s call     tests/test_h10_report.py::TestFitGate::test_d_hash_drift_fails_verification
+0.03s call     tests/test_reference_manifest.py::TestVerifierEnvironment::test_missing_root_is_not_run
+0.03s call     tests/test_h03_contract.py::TestToolAndControls::test_budget_check_tool_passes
+0.03s call     tests/test_capabilities.py::RealRepositoryTests::test_readme_block_matches_regenerated_output_and_position
+0.03s call     tests/test_h10_techmaps.py::TestTechmapVerifier::test_fail_when_cell_missing_from_liberty
+0.03s call     tests/test_h10_techmaps.py::TestTechmapVerifier::test_fail_on_transform_drift
+0.03s call     tests/test_h10_techmaps.py::TestTechmapVerifier::test_pass_on_exact_transform_and_complete_lib
+0.02s call     tests/test_compare.py::TestSecondaryNeverPasses::test_secondary_structure
+0.02s call     tests/test_compare.py::TestAnalyticFixtures::test_stream_stats_match_analytic_values
+0.02s call     tests/test_compare.py::TestAnalyticFixtures::test_identical_sine_passes_byte_identical
+0.02s call     tests/test_registry.py::TestSyntheticPatches::test_every_synthetic_override_applies_cleanly
+0.02s call     tests/test_compare.py::TestSecondaryNeverPasses::test_matching_secondary_cannot_rescue_gain_fail
+0.02s call     tests/test_compare.py::TestMutationLocalization::test_one_sample_shift_diverges_immediately
+0.02s call     tests/test_compare.py::TestMutationLocalization::test_one_byte_flip_localized_exactly
+0.01s call     tests/test_compare.py::TestMutationLocalization::test_dc_offset_detected_via_mean_bias
+0.01s call     tests/test_compare.py::TestFailureClasses::test_length_mismatch_is_not_aligned_or_trimmed
+0.01s call     tests/test_compare.py::TestMutationLocalization::test_gain_offset_max_abs_error_matches_expected
+0.01s call     tests/test_u05_demo.py::TestBench::test_clean_compact_passes
+0.01s call     tests/test_compare.py::TestAnalyticFixtures::test_sample_rate_label_is_echoed_not_compared
+0.01s call     tests/test_compare.py::TestFailureClasses::test_empty_input_is_invalid_evidence_never_a_match
+0.01s call     tests/test_sysex.py::NegativeControlTests::test_every_single_bit_flip_is_caught_or_changes_decode
+0.01s call     tests/test_r07.py::TestHypotheses::test_compare_case_labels_hypothesis
+0.01s call     tests/test_u05_demo.py::TestStress::test_patch_change_while_held_commits_mid_hold
+0.01s call     tests/test_capabilities.py::StampTests::test_check_mode_flags_stale_views_and_regenerates
+0.01s call     tests/test_bank128.py::TestNegativeControls::test_source_not_in_catalog_fails
+0.01s setup    tests/test_contract_v1.py::TestContractV1::test_no_original_hardware_fidelity_claim
+0.01s call     tests/test_compare.py::TestFailureClasses::test_not_runnable_invalid_sample_rate
+0.01s call     tests/test_sysex.py::ValidBankTests::test_round_trip_is_byte_identical
+0.01s call     tests/test_host_mock.py::TestMalformedSysex::test_bank_dump_requires_slot_and_loads_selected_voice
+0.01s call     tests/test_compare.py::TestFailureClasses::test_inf_injection_is_non_finite_class
+0.01s call     tests/test_compare.py::TestFailureClasses::test_nan_injection_is_non_finite_class
+0.01s call     tests/test_h08.py::TestH08Evidence::test_evidence_layout
+0.01s call     tests/test_bank128.py::TestNegativeControls::test_catalog_drift_is_stale
+0.01s call     tests/test_host_mock.py::TestBurstTiming::test_16_note_chord_plus_commit_at_design_point
+
+(1116 durations < 0.005s hidden.  Use -vv to show these durations.)
+382 passed, 11 skipped, 435 deselected, 26 subtests passed in 43.72s

@@ -1,0 +1,71 @@
+host: Linux ip-172-31-76-7 7.0.0-1012-aws #12~24.04.1-Ubuntu SMP PREEMPT Wed Aug 12 14:00:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+python: Python 3.12.3
+commit: d3dcdadaf8acf3588f3dcd2d37aa216e0af27b46
+date: 2026-09-25T13:33:50Z
+purpose: failure control (DR-0009 issue #87) — confirm test_fast.sh still
+propagates a nonzero exit code when a fast-lane test is deliberately
+broken (self.fail injected into test_registry.py::TestCheckWrapper::
+test_check_registry_wrapper_exit0, reverted immediately after this run)
+
+=== deliberately broken tests/test_registry.py::...::test_check_registry_wrapper_exit0 (self.fail injected) ===
+{
+  "status": "PASS",
+  "gates": {
+    "three_way_stream_agreement": false,
+    "frame_landing_prediction": false,
+    "applied_timing_h03_4_2": true,
+    "commit_audit": true,
+    "no_contract_defects": true,
+    "no_stuck_notes": true,
+    "expected_event_counts": false
+  }
+}
+{
+  "status": "PASS",
+  "gates": {
+    "three_way_stream_agreement": true,
+    "frame_landing_prediction": false,
+    "applied_timing_h03_4_2": true,
+    "commit_audit": true,
+    "no_contract_defects": true,
+    "no_stuck_notes": true,
+    "expected_event_counts": true
+  }
+}
+{
+  "status": "PASS",
+  "gates": {
+    "three_way_stream_agreement": true,
+    "frame_landing_prediction": true,
+    "applied_timing_h03_4_2": true,
+    "commit_audit": true,
+    "no_contract_defects": true,
+    "no_stuck_notes": true,
+    "expected_event_counts": true
+  }
+}
+{
+  "status": "PASS",
+  "gates": {
+    "three_way_stream_agreement": false,
+    "frame_landing_prediction": false,
+    "applied_timing_h03_4_2": false,
+    "commit_audit": true,
+    "no_contract_defects": true,
+    "no_stuck_notes": false,
+    "expected_event_counts": false
+  }
+}
+{
+  "status": "REFUSE",
+  "gates": {}
+}
+{
+  "status": "REFUSE",
+  "gates": {}
+}
+{
+  "status": "REFUSE",
+  "gates": {}
+}
+test_fast.sh exit code: 1

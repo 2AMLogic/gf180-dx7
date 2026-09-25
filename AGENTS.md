@@ -48,10 +48,13 @@ polyphony, one timbre, 48 kHz, external host/controller/DAC/storage.
 - Do not weaken a product goal (e.g. 16-note polyphony) or acceptance rule
   to make a task pass; record a bounded finding and block only the affected
   dependency.
-- Test tiering (DR-0009): `make test-fast` (seconds) is the default gate for
-  builder/merge loops; the full suite (`make test`, ~15 min, renders+synthesis)
-  runs at judge approval and wave gates. Never report a skipped or fast-lane
-  result as a full-suite pass.
+- Test tiering ([DR-0009](docs/decision-records/0009-test-tiering-fast-lane-budget.md)):
+  `make test-fast` (seconds) is the default gate for builder/merge loops when
+  Verilator is not on `PATH` (every CI runner today); with Verilator present
+  (an opted-in operator/dev host) budget tens of seconds — DR-0009 measures
+  and explains the gap. The full suite (`make test`, ~15 min,
+  renders+synthesis) runs at judge approval and wave gates. Never report a
+  skipped or fast-lane result as a full-suite pass.
 - Keep `AGENTS.md` and `CLAUDE.md` substantively identical outside their
   Loom-managed marker blocks.
 

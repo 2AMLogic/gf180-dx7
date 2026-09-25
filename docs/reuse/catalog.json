@@ -1869,8 +1869,8 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "f6de20fd2ffc89b74d951af3d871fa74f0247111da38b2ab27506f32237c07a9",
-   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes"
+   "sha256": "f911a3a24c2c2d739d11b3670144e9804062df2678436cf1d214e382756be265",
+   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes Issue #98 (DR-0012): core-pin note on section 4 \u2014 the battery re-certified on the refrozen pin, the mapped-area and iverilog-shadow rows explicitly not re-established on it."
   },
   {
    "path": "tools/h07_compare.py",
@@ -1884,8 +1884,8 @@
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes",
-   "sha256": "ed3f79b1e3522816122ac69a1ee15f063de09ef4a57a43fa0f8d1a7dfa014ae6"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can.",
+   "sha256": "81a419091998461c62058b574f385c804512e2a78c73f497d52e3cd0ce051960"
   },
   {
    "path": "rtl/tb_synth_top.v",
@@ -2059,7 +2059,7 @@
   },
   {
    "path": "docs/decision-records/0012-exp-term-width-core-refreeze.md",
-   "sha256": "89e94e4a6198c8593475dd70786be35590c41ec2740595aa12389bdec4f76c43",
+   "sha256": "e723d6ef9fa370c50a3f0eb36c993d49d8793a5ef8618188f8d28f349f5ced12",
    "reason": "locally authored exp() term-width refreeze decision record (issue #98, escalation from #86): frozen core re-pinned to the widened-exp_t* revision, cone LEC + fresh H07 battery evidence, the no-out-of-range-select rule and its structural guard, H10 marked STALE, operator-ratification gate"
   },
   {

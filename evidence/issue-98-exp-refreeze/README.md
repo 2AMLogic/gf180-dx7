@@ -24,8 +24,10 @@ Statuses are PASS / FAIL / NOT_RUN / BLOCKED / NO_VERDICT / STALE as defined in
 | F | pinned-flow **mapped netlist census on this pin** | **BLOCKED** (host memory) | `orfs-synth-attempt-refrozen-2026-09-25.txt` |
 | G | H07 battery, fresh, Verilator, 34 cases | PASS 34/34 | `../h07-core/results-dr0012-p1.json` |
 | G′ | same battery vs the DR-0011-pin baseline, per-case captured PCM | 34/34 byte-identical | `../h07-core/results-h10-merged-p3.json` |
+| G″ | second clean battery on the same pin (DR-0011's two-clean-runs rule) | PASS 34/34, artifact-hash identical to G | `../h07-core/results-dr0012-p2.json` |
 | H | H07 battery, Icarus, on this pin | **NOT_RUN** (host throughput) | — |
 | I | host-yosys 0.69+post cone LEC, independent of the pinned image | PASS (same verdict, different yosys) | `exp-hsum-lec-host-refrozen-2026-09-25.json` |
+| K | live control for the weakened H07 synth-report gate | FAIL as required when the heavy host is reachable | `h07-synth-report-stale-control-2026-09-25.txt` |
 
 ## A — static range proof
 
@@ -137,6 +139,16 @@ RTL changes any Verilator-simulated value, stop"). Comparing per-case
 (`results-h10-merged-p3.json`, `rtl_sha256` `7bab93f5…` = the DR-0011 trio):
 **34 identical, 0 different**. The captured PCM is byte-for-byte the same.
 
+G″ is DR-0011's other standing requirement for accept evidence: **two** clean
+runs whose per-case artifact hashes are identical. `results-dr0012-p2.json`
+(tag `dr0012-p2`, run with `--embed-prior` the p1 results) is 34/34 PASS with
+`determinism_run2` embedded and zero cases differing from p1. So on the
+refrozen pin there are 68 case-runs, all byte-identical to each other **and**
+to the pre-refreeze baseline. `tests/test_h07.py::TestConformanceEvidence`
+reads the newest-pin results file and still fails if its `rtl_sha256` is not
+the current three-file fingerprint — that assertion is what caught the stale
+`results-verilog-accept.json` in CI on this PR, exactly as intended.
+
 ## H — the Icarus battery on this pin: NOT_RUN, with the reason measured
 
 **NOT_RUN. No Icarus verdict on the refrozen pin is claimed here.**
@@ -176,3 +188,18 @@ matters for anything mapped.
 - No claim that the mapped netlist of **this pin** was measured (row F).
 - Nothing about musical quality or original-DX7 fidelity; bit-exactness to the
   frozen model is claim (1) of `AGENTS.md` only.
+
+## K — the one assertion this PR weakened, with its control
+
+`tests/test_h07.py::TestStripObsControl::test_committed_synth_report_gates`
+asserted that `evidence/h07-core/synth_report.json` describes the current RTL.
+The refreeze makes that false, and the report cannot be regenerated except on
+`repo-remote-gf180-dx7` (yosys + the ciel gf180 7t liberty). The assertion is
+now a STALE / NOT_RUN report on a host that cannot regenerate it and a **FAIL**
+on a host that can — the same shape the #82 parser-drift check and the #94 H08
+gate already use.
+
+Because that trades a hard failure for a guarded skip, the skip is controlled:
+with `remote_reachable()` forced true, the drift **fails**, and the artifact
+records the run. The skip message itself always names the drift (both hashes)
+and the command that clears it, so the condition is never invisible.

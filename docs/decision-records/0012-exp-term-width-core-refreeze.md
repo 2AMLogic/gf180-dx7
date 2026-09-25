@@ -88,7 +88,14 @@
    claims. The DR-0011 pin `34f93d2d…` stands as the historical record of the
    single-driver refreeze only, and the H07/H08 pin `335599ea…` before it.
    Downstream pins updated in this PR: `tests/test_h08.py` CORE_SHA,
-   `docs/H08-PIN.md`, `docs/reuse/catalog.json`, `tools/exp_range_proof.py`.
+   `docs/H08-PIN.md`, `docs/reuse/catalog.json`, `tools/exp_range_proof.py`,
+   and the H07 accept evidence — re-certified on this pin as
+   `evidence/h07-core/results-dr0012-p{1,2}.json` (two clean runs), with
+   `tests/test_h07.py` reading the newest-pin file. The H07 mapped-area
+   report (`evidence/h07-core/synth_report.json`) is **not** re-run here: it
+   needs yosys plus the ciel 7t liberty on `repo-remote-gf180-dx7`, so its
+   core-pin drift is reported STALE / NOT_RUN on a host that cannot
+   regenerate it and FAIL on one that can.
 
 2. **DR-0011 Consequence (d) is discharged and replaced.** The `exp_t*`
    out-of-range select bits are no longer synthesis-resolved `undef` pending a
@@ -200,6 +207,7 @@ Full per-row detail, artifacts, tool hashes and the two negative-control runs:
 | F′ | standing pinned-flow census **for the widening** (#86, scratch copy differing only in comments) | `tools/exp_netlist_census.py` | as-written **0** exp datapath flops / 32,941,030.7 µm²; widened **564** flops / 34,839,310.1 µm² (+5.8 % synth-stage cell area) |
 | G | H07 battery, fresh, Verilator | `tools/h07_compare.py --set both --tag dr0012-p1` | **PASS 34/34**, `overrun`/`overflow` 0 everywhere, every latency inside the contracted window |
 | G′ | same battery vs the DR-0011-pin baseline run | per-case `actual_sha256` | **34/34 byte-identical** — no simulated value changed (this issue's stop/escalate condition, measured) |
+| G″ | second clean battery on the refrozen pin (DR-0011's two-clean-runs rule) | `--tag dr0012-p2 --embed-prior` p1 | **PASS 34/34**, every per-case artifact hash identical to p1; `determinism_run2` embedded. 68 case-runs on this pin, all byte-identical to each other and to the pre-refreeze baseline |
 | H | H07 Icarus shadow on this pin | `--tool iverilog --frames 24` | **NOT_RUN** — abandoned twice: Icarus advances ~6.4 render frames/min on this host and these cases must reach frame 1875 (≈4.5 h/case-pair). Row C is the Icarus statement that does not need a full render |
 | I | cone LEC under the host `Yosys 0.69+post` (tool-independence only) | `tools/exp_hsum_lec.py --yosys …` | **PASS**, exit 0 — same verdicts as row E on a different yosys build (narrowed control still FAIL with a constant-`57'h0` cone) |
 | J | structural guard, fast lane, no tools | `tests/test_exp_range_proof.py::NoOutOfRangeSelects` | **PASS**, with both negative controls failing as required (DR-0011 narrowing; an unrelated narrowed part-selected wire) |

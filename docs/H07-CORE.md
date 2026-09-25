@@ -157,6 +157,23 @@ complete vector set, not a sample.
 
 ## 4. Verification status (issue #29 acceptance)
 
+> **Core-pin note (2026-09-25, DR-0012, issue #98).** The rows below were
+> measured on earlier core revisions; the frozen core is now the
+> widened-`exp_t*` revision `f33cecbd…`
+> (`docs/decision-records/0012-exp-term-width-core-refreeze.md`). The
+> conformance battery was **re-run fresh on that pin** — `results-dr0012-p1`
+> and `results-dr0012-p2` (34/34 PASS each, two clean runs artifact-hash
+> identical, `determinism_run2` embedded in p2), and every per-case
+> `actual_sha256` is byte-identical to the DR-0011-pin run, so no simulated
+> value moved. Two rows are **not** re-established on that pin and say so:
+> the mapped-area row (the committed `synth_report.json` was produced on a
+> superseded revision, and yosys + the ciel 7t liberty live on
+> `repo-remote-gf180-dx7`) and the iverilog shadow row
+> (`results-iverilog-shadow.json` is on a superseded revision; Icarus
+> throughput on the DR-0012 builder host made a re-run infeasible — see
+> `evidence/issue-98-exp-refreeze/README.md` rows C and H, where the
+> tool-independent Icarus statement on the current pin is recorded instead).
+
 | Acceptance item | Status |
 |---|---|
 | Every output sample bit-exact vs the frozen model at the defined latency | **PASS** — 30/30 dev cases (frozen N08 f32 vectors, dyadic ×32768 mapping) + 4/4 stress cases (frozen integer model goldens), 2,361,344 samples/run, zero mismatches (`results-verilog-accept.json`) |
@@ -165,7 +182,7 @@ complete vector set, not a sample.
 | Two clean simulations artifact-hash identical | **PASS** — every per-case artifact sha256 identical between `verilog-accept` and `verilog-accept-run2` (embedded in the results file; both committed) |
 | Negative control: one-sample glitch / wrong voice-sum order fails + localizes | **PASS** — `H07_MUTATE_GLITCH` fails and localizes to the exact injected sample (tests/test_h07.py, live build); `H07_MUTATE_SUM_ORDER` fails on a clipping 4-voice vector; `H07_MUTATE_TICK_SKEW` fails on a 167-write burst; all three run in the committed suite |
 | Bring-up smoke (compile + full frame schedule + voice allocation) | PASS (iverilog 13.0; superseded by the full suite above) |
-| Mapped area vs H02's 38,781-flop accounting + strip-obs gate | **PASS** — 90,427 mapped flops (> 38,781), 1,063,163 cells, chip area 24,082,966.3 µm², sequential 5,756,655.2 µm²; strip-obs control maps 0 flops — gate fails as required. These are the **whole-core hierarchy totals** of the committed `yosys_full.log` (`=== design hierarchy ===`, closed by `Chip area for top module '\dx7_core'`), re-derived from that transcript by the corrected `tools/h07_synth.py` parser (#82). The committed `synth_report.json` still carries the pre-#82 parse — `alg_router`'s module-local area/cells and an across-blocks flop double count — and is **STALE** for those four numeric fields until it is regenerated on the heavy host (`repo-remote-gf180-dx7`); the gate verdict is unchanged either way (90,427 > 38,781). `tests/test_h07.py::TestStripObsControl::test_committed_synth_report_area_is_the_hierarchy_total` reports that regeneration as NOT_RUN rather than passing it |
+| Mapped area vs H02's 38,781-flop accounting + strip-obs gate | **PASS** — 90,427 mapped flops (> 38,781), 1,063,163 cells, chip area 24,082,966.3 µm², sequential 5,756,655.2 µm²; strip-obs control maps 0 flops — gate fails as required. These are the **whole-core hierarchy totals** of the committed `yosys_full.log` (`=== design hierarchy ===`, closed by `Chip area for top module '\dx7_core'`), re-derived from that transcript by the corrected `tools/h07_synth.py` parser (#82). The committed `synth_report.json` still carries the pre-#82 parse — `alg_router`'s module-local area/cells and an across-blocks flop double count — and is **STALE** for those four numeric fields until it is regenerated on the heavy host (`repo-remote-gf180-dx7`); the gate verdict is unchanged either way (90,427 > 38,781). `tests/test_h07.py::TestStripObsControl::test_committed_synth_report_area_is_the_hierarchy_total` reports that regeneration as NOT_RUN rather than passing it. **Since DR-0012 (issue #98) the report is also on a superseded core pin** (`34f93d2d…`, not the frozen `f33cecbd…`), and that pin difference alone would understate the core: the DR-0011 core's mapped netlist is missing the whole exp() datapath (`docs/EXP-RANGE-PROOF-86.md`). `test_committed_synth_report_gates` now reports that drift as STALE / NOT_RUN on a host that cannot regenerate it, and FAILs on one that can |
 | Latency statement per H03 §4.5 | **PASS** — 113 events: measured arrival→first-affected-SDATA distance is exactly (128 − p) samples = (64 − p) + 64, inside the contracted window [(64 − p), (64 − p) + 65] for every event; worst observed 128 samples (p = 0) |
 
 Simulator tiers (klayout-tools #2223 convention): the sweeps and
@@ -246,9 +263,16 @@ non-dyadic golden value.
 
 ### Committed evidence and run protocol
 
-* `evidence/h07-core/results-verilog-accept.json` — full 34-case Verilator
-  run (tag `verilog-accept`) with `determinism_run2` embedded;
-  `results-verilog-accept-run2.json` — the second clean run;
+* `evidence/h07-core/results-dr0012-p1.json` / `results-dr0012-p2.json` —
+  the two clean 34-case Verilator runs on the **current** frozen core
+  (DR-0012, issue #98; p2 embeds p1's per-case hashes as
+  `determinism_run2`). `tests/test_h07.py::TestConformanceEvidence` reads
+  the newest of these and fails if its `rtl_sha256` is not the current
+  three-file fingerprint.
+* `evidence/h07-core/results-verilog-accept.json` — the same battery on the
+  superseded DR-0011 pin (tag `verilog-accept`) with `determinism_run2`
+  embedded, kept as the historical record;
+  `results-verilog-accept-run2.json` — its second clean run;
   `results-iverilog-shadow.json` — the iverilog canonical shadow;
   `audit-exp.json` — the NUM-008 exp-boundary sweep; `synth_report.json`
   + `yosys_full.log` + `yosys_strip.log` — mapped area + strip control;

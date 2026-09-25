@@ -1,0 +1,108 @@
+{
+ "claims": "mapped area on the pre-synthesis RTL only; no P&R, no timing closure, no fit, no board claim (H10 measures clock closure)",
+ "delta_vs_h02": {
+  "attribution_basis": "declared RTL source groups (mapped cells do not preserve name groupings)",
+  "declared_groups": {
+   "env_units_declared": 440,
+   "mixbuf_declared": 0,
+   "note_bank_state_declared": 3731,
+   "queues_declared": 406
+  },
+  "declared_rom_bits": 67104,
+  "declared_total_bits": 28477,
+  "delta_flops": 109108,
+  "h02_measured_mapped_flops": 38781,
+  "h07_mapped_flops": 147889,
+  "note": "mapped < declared is expected (reset-value constants and ROM redundancy); the gate is the H02 floor"
+ },
+ "gates": {
+  "full": {
+   "cell_total": 36919,
+   "chip_area_um2": 1158826.3232,
+   "mapped_flops": 147889,
+   "requirement": "mapped flops > 38781 (the H02 note-bank slice is a strict subset of the core's state) and chip area > 0 and sequential area > 0 and cells > 0",
+   "seq_area_um2": 473572.6912,
+   "status": "PASS"
+  },
+  "strip_negative_control": {
+   "mapped_flops": 0,
+   "requirement": "strip-observability must make the flop gate FAIL (all state removed)",
+   "status": "MET (gate fails as required)"
+  }
+ },
+ "issue": 29,
+ "liberty": "/home/ubuntu/pdk/gf180mcu_fd_sc_mcu7t5v0/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+ "liberty_sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+ "rtl": {
+  "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+  "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+  "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+ },
+ "runs": {
+  "full": {
+   "cell_total": 36919,
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 31880,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 7121,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 1609,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 36041,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 95262,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 12188,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 7270,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 68133,
+    "gf180mcu_fd_sc_mcu7t5v0__buf_1": 6800,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 77661,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 147889,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 27449,
+    "gf180mcu_fd_sc_mcu7t5v0__mux4_1": 9385,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 233529,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 33819,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 5837,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 138945,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 8331,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 6088,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 15801,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 106212,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 6005,
+    "gf180mcu_fd_sc_mcu7t5v0__oai222_1": 185,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 10109,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 6392,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 3048,
+    "gf180mcu_fd_sc_mcu7t5v0__oai33_1": 181,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 22097,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 5256,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_1": 792,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 47484,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 6816,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 126051,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 33095
+   },
+   "chip_area_um2": 1158826.3232,
+   "dff_cells": {
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 147889
+   },
+   "flop_total": 147889,
+   "mode": "full",
+   "rom_representation": {
+    "detail": "the sinlog/sinexp/LFO-sine/freqlut ROMs dissolve to combinational gates (yosys MEMORY_MAP; no BRAM in this flow); final stat shows no memory cells",
+    "evidence": {
+     "memory_cells_in_final_stat": 0,
+     "memory_map_pass_ran": true
+    },
+    "representation": "logic"
+   },
+   "seq_area_um2": 473572.6912
+  },
+  "strip": {
+   "cell_total": 0,
+   "cells_by_name": {},
+   "chip_area_um2": null,
+   "dff_cells": {},
+   "flop_total": 0,
+   "mode": "strip",
+   "seq_area_um2": null
+  }
+ },
+ "unit": "dx7_core",
+ "yosys": "Yosys 0.57+72 (git sha1 fa02d71f6, clang++ 18.1.8 -fPIC -O3)"
+}

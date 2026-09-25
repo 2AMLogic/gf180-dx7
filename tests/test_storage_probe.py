@@ -14,7 +14,12 @@ Covers, per the issue's acceptance:
   - macro tiling arithmetic recomputed independently from the ciel LEF
     files and compared against the committed tool report;
   - the iverilog smoke bench (readback of all 113 banks);
-  - the report doc's required anchor citations and claim boundary.
+  - the report doc's required anchor citations and claim boundary;
+  - tools/storage_probe_synth.py parse_stat asserts the single-module
+    transcript shape its area number depends on (issue #95): the
+    committed yosys_full.log replay still yields 4,115,369.9776 um^2, and
+    a synthetic multi-module transcript must make the parser FAIL rather
+    than return a per-module block (the #82/#94 bug pattern).
 
 Stdlib only.
 """
@@ -24,6 +29,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -381,6 +387,146 @@ class TestReportDoc(unittest.TestCase):
                          "no full-chip fit claim"):
             self.assertIn(boundary, flat,
                           f"report must explicitly disclaim: {boundary!r}")
+
+
+def _storage_probe_synth():
+    """Import tools/storage_probe_synth.py for the stat-parser unit tests."""
+    tools = os.path.join(REPO, "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import storage_probe_synth
+    return storage_probe_synth
+
+
+# A synthetic transcript of the shape yosys emits once the top acquires a
+# submodule: one `Chip area for module` block PER module, then a
+# `=== design hierarchy ===` section whose `Chip area for top module` line
+# is the real whole-design total. The pre-#95 parser returned the FIRST
+# per-module block (98,432.11 um^2 here) as the design area -- the #82/#94
+# bug. Not committed evidence and not a measurement: a hand-built control.
+MULTI_MODULE_TRANSCRIPT = """
+=== storage_probe.note_bank ===
+
+     2048 9.84E+04 cells
+      576 3.67E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for module '\\storage_probe.note_bank': 98432.110000
+     of which used for sequential elements: 36676.339200 (37.26%)
+
+=== storage_probe ===
+
+   118657 4.12E+06 cells
+    38781 2.47E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for module '\\storage_probe': 4115369.977600
+     of which used for sequential elements: 2468829.484800 (59.99%)
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        |
+   120705 4.21E+06 storage_probe
+     2048 9.84E+04   storage_probe.note_bank
+
+   120705 4.21E+06 cells
+    39357 2.51E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for top module '\\storage_probe': 4213802.087600
+     of which used for sequential elements: 2505505.824000 (59.46%)
+"""
+
+TWO_BLOCK_TRANSCRIPT = """
+=== storage_probe.note_bank ===
+
+   Chip area for module '\\storage_probe.note_bank': 98432.110000
+     of which used for sequential elements: 36676.339200 (37.26%)
+
+=== storage_probe ===
+
+   Chip area for module '\\storage_probe': 4115369.977600
+     of which used for sequential elements: 2468829.484800 (59.99%)
+"""
+
+
+class TestSynthStatSingleModuleGuard(unittest.TestCase):
+    """tools/storage_probe_synth.py parse_stat must ASSERT the single-module
+    shape its area number silently depended on (issue #95, part of #91).
+
+    storage_probe is a flat single-module design today: the committed
+    evidence/h02-storage-probe/yosys_full.log carries exactly ONE `Chip area
+    for module` line and no `=== design hierarchy ===` section, so that
+    per-module block IS the whole-design total and the recorded
+    4,115,369.9776 um^2 is correct. Nothing in the pre-#95 parser checked
+    that, so a future submodule would have silently reintroduced the #82
+    (h07) / #94 (h08) bug pattern. These cases replay the committed
+    transcript -- no synthesis, no heavy host, so they run in the fast lane.
+    """
+
+    SYNTH_EVIDENCE = os.path.join(REPO, "evidence", "h02-storage-probe")
+    FULL_LOG = os.path.join(SYNTH_EVIDENCE, "yosys_full.log")
+    STRIP_LOG = os.path.join(SYNTH_EVIDENCE, "yosys_strip.log")
+    COMMITTED_AREA_UM2 = 4115369.9776
+    COMMITTED_DFF_AREA_UM2 = 2468829.4848
+    COMMITTED_DFF_TOTAL = 38781
+    # the per-module block a guard-less parser would hand back from the
+    # synthetic multi-module transcript below
+    SUBMODULE_LOCAL_AREA = 98432.11
+
+    def _log(self, path):
+        if not os.path.isfile(path):
+            self.skipTest(f"NOT_RUN: {path} absent")
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+
+    def test_synthparse_committed_log_single_module_keeps_area(self):
+        """POSITIVE: the committed transcript is still single-module, and
+        the guarded parser still returns today's recorded numbers."""
+        log = self._log(self.FULL_LOG)
+        self.assertEqual(log.count("Chip area for module"), 1,
+                         "evidence/h02-storage-probe/yosys_full.log is no "
+                         "longer single-module: this tool needs #94's "
+                         "hierarchy-total parser, not an assertion")
+        self.assertNotIn("=== design hierarchy ===", log)
+        self.assertNotIn("Chip area for top module", log)
+        st = _storage_probe_synth().parse_stat(log)
+        self.assertEqual(st["chip_area_um2"], self.COMMITTED_AREA_UM2)
+        self.assertEqual(st["dff_area_um2"], self.COMMITTED_DFF_AREA_UM2)
+        self.assertEqual(st["dff_total"], self.COMMITTED_DFF_TOTAL)
+
+    def test_synthparse_multi_module_transcript_fails_loudly(self):
+        """NEGATIVE CONTROL: per-module block + a `=== design hierarchy ===`
+        section -> parse_stat must FAIL, not return the per-module number
+        the pre-#95 parser returned here (98,432.11 um^2)."""
+        h = _storage_probe_synth()
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat(MULTI_MODULE_TRANSCRIPT)
+        self.assertIn("hierarch", str(ctx.exception).lower())
+        # and the control has resolution: the unguarded regex really would
+        # have returned a per-module block from this same transcript
+        self.assertEqual(
+            float(re.search(r"Chip area for module .*?: ([\d.]+)",
+                            MULTI_MODULE_TRANSCRIPT).group(1)),
+            self.SUBMODULE_LOCAL_AREA)
+
+    def test_synthparse_two_module_blocks_no_hierarchy_fail(self):
+        """NEGATIVE CONTROL: two per-module blocks and no hierarchy section
+        (a truncated hierarchical stat) must FAIL too -- taking the first
+        block would under-report the design."""
+        h = _storage_probe_synth()
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat(TWO_BLOCK_TRANSCRIPT)
+        self.assertIn("2 'Chip area for module' blocks", str(ctx.exception))
+
+    def test_synthparse_strip_control_transcript_stays_parseable(self):
+        """The strip-observability control maps NOTHING, so yosys prints no
+        area line at all. That hierarchy-free, area-free transcript must
+        stay parseable (zeros / None) or the negative control the H02 flop
+        gate depends on could not be evaluated."""
+        st = _storage_probe_synth().parse_stat(self._log(self.STRIP_LOG))
+        self.assertEqual(st["dff_total"], 0)
+        self.assertIsNone(st["chip_area_um2"])
+        self.assertIsNone(st["dff_area_um2"])
 
 
 if __name__ == "__main__":

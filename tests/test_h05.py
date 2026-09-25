@@ -27,7 +27,12 @@ Covers, per the issue's acceptance:
   - committed evidence: gates PASS/MET, artifact hashes not drifted
     (STALE detection), program.txt byte-identical to fresh generation;
   - RTL hygiene (default_nettype bookends, negative-control ifdefs) and
-    the report doc's required anchors and claim boundary.
+    the report doc's required anchors and claim boundary;
+  - tools/h05_synth.py parse_stat asserts the single-module transcript
+    shape its area number depends on (issue #95): the committed
+    yosys_full.log replay still yields 1,148,899.6288 um^2, and a
+    synthetic multi-module transcript must make the parser FAIL rather
+    than return a per-module block (the #82/#94 bug pattern).
 
 Stdlib only.
 """
@@ -35,6 +40,7 @@ Stdlib only.
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -456,6 +462,150 @@ class TestReportDoc(unittest.TestCase):
             self.assertIn(boundary, flat,
                           f"report must explicitly disclaim: {boundary!r}")
         self.assertIn("unmeasured", flat)
+
+
+def _h05_synth():
+    """Import tools/h05_synth.py for the stat-parser unit tests."""
+    tools = os.path.join(REPO, "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import h05_synth
+    return h05_synth
+
+
+# A synthetic transcript of the shape yosys emits once the top acquires a
+# submodule: one `Chip area for module` block PER module, then a
+# `=== design hierarchy ===` section whose `Chip area for top module` line
+# is the real whole-design total. The pre-#95 parser returned the FIRST
+# per-module block (64,218.88 um^2 here) as the design area -- the #82/#94
+# bug (in #82 it was this very module's block mistaken for the whole core).
+# Not committed evidence and not a measurement: a hand-built control.
+MULTI_MODULE_TRANSCRIPT = """
+=== alg_router.conn_lut ===
+
+     2048 6.42E+04 cells
+      128 8.15E+03   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for module '\\alg_router.conn_lut': 64218.880000
+     of which used for sequential elements: 8148.096000 (12.69%)
+
+=== alg_router ===
+
+    37930 1.15E+06 cells
+     7407 4.72E+05   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for module '\\alg_router': 1148899.628800
+     of which used for sequential elements: 471535.545600 (41.04%)
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        |
+    39978 1.21E+06 alg_router
+     2048 6.42E+04   alg_router.conn_lut
+
+    39978 1.21E+06 cells
+     7535 4.80E+05   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+
+   Chip area for top module '\\alg_router': 1213118.508800
+     of which used for sequential elements: 479683.641600 (39.54%)
+"""
+
+TWO_BLOCK_TRANSCRIPT = """
+=== alg_router.conn_lut ===
+
+   Chip area for module '\\alg_router.conn_lut': 64218.880000
+     of which used for sequential elements: 8148.096000 (12.69%)
+
+=== alg_router ===
+
+   Chip area for module '\\alg_router': 1148899.628800
+     of which used for sequential elements: 471535.545600 (41.04%)
+"""
+
+
+class TestSynthStatSingleModuleGuard(unittest.TestCase):
+    """tools/h05_synth.py parse_stat must ASSERT the single-module shape its
+    area number silently depended on (issue #95, part of #91).
+
+    This tool's alg_router build is a flat single-module design today: the
+    committed evidence/h05-routing-rtl/yosys_full.log carries exactly ONE
+    `Chip area for module` line and no `=== design hierarchy ===` section,
+    so that per-module block IS the whole-design total and the recorded
+    1,148,899.6288 um^2 is correct. Nothing in the pre-#95 parser checked
+    that, so a future submodule would have silently reintroduced the #82
+    (h07) / #94 (h08) bug pattern -- the same pattern whose h07 instance was
+    alg_router's own block being read as the whole core. These cases replay
+    the committed transcript -- no synthesis, no heavy host, fast lane.
+    """
+
+    FULL_LOG = os.path.join(EVIDENCE, "yosys_full.log")
+    STRIP_LOG = os.path.join(EVIDENCE, "yosys_strip.log")
+    COMMITTED_AREA_UM2 = 1148899.6288
+    COMMITTED_SEQ_AREA_UM2 = 471535.5456
+    COMMITTED_CELL_TOTAL = 37930
+    COMMITTED_FLOP_TOTAL = 7407
+    # the per-module block a guard-less parser would hand back from the
+    # synthetic multi-module transcript below
+    SUBMODULE_LOCAL_AREA = 64218.88
+
+    def _log(self, path):
+        if not os.path.isfile(path):
+            self.skipTest(f"NOT_RUN: {path} absent")
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+
+    def test_synthparse_committed_log_single_module_keeps_area(self):
+        """POSITIVE: the committed transcript is still single-module, and
+        the guarded parser still returns today's recorded numbers."""
+        log = self._log(self.FULL_LOG)
+        self.assertEqual(log.count("Chip area for module"), 1,
+                         "evidence/h05-routing-rtl/yosys_full.log is no "
+                         "longer single-module: this tool needs #94's "
+                         "hierarchy-total parser, not an assertion")
+        self.assertNotIn("=== design hierarchy ===", log)
+        self.assertNotIn("Chip area for top module", log)
+        st = _h05_synth().parse_stat(log)
+        self.assertEqual(st["chip_area_um2"], self.COMMITTED_AREA_UM2)
+        self.assertEqual(st["seq_area_um2"], self.COMMITTED_SEQ_AREA_UM2)
+        self.assertEqual(st["cell_total"], self.COMMITTED_CELL_TOTAL)
+        self.assertEqual(st["flop_total"], self.COMMITTED_FLOP_TOTAL)
+
+    def test_synthparse_multi_module_transcript_fails_loudly(self):
+        """NEGATIVE CONTROL: per-module block + a `=== design hierarchy ===`
+        section -> parse_stat must FAIL, not return the per-module number
+        the pre-#95 parser returned here (64,218.88 um^2)."""
+        h = _h05_synth()
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat(MULTI_MODULE_TRANSCRIPT)
+        self.assertIn("hierarch", str(ctx.exception).lower())
+        # and the control has resolution: the unguarded regex really would
+        # have returned a per-module block from this same transcript
+        self.assertEqual(
+            float(re.search(r"Chip area for module .*?: ([\d.]+)",
+                            MULTI_MODULE_TRANSCRIPT).group(1)),
+            self.SUBMODULE_LOCAL_AREA)
+
+    def test_synthparse_two_module_blocks_no_hierarchy_fail(self):
+        """NEGATIVE CONTROL: two per-module blocks and no hierarchy section
+        (a truncated hierarchical stat) must FAIL too -- taking the first
+        block would under-report the design."""
+        h = _h05_synth()
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat(TWO_BLOCK_TRANSCRIPT)
+        self.assertIn("2 'Chip area for module' blocks", str(ctx.exception))
+
+    def test_synthparse_strip_control_transcript_stays_parseable(self):
+        """The strip-observability control maps NOTHING, so yosys prints no
+        area line at all. That hierarchy-free, area-free transcript must
+        stay parseable (zeros / None) or the negative control the H05 gate
+        depends on could not be evaluated."""
+        st = _h05_synth().parse_stat(self._log(self.STRIP_LOG))
+        self.assertEqual(st["cell_total"], 0)
+        self.assertEqual(st["flop_total"], 0)
+        self.assertIsNone(st["chip_area_um2"])
+        self.assertIsNone(st["seq_area_um2"])
 
 
 if __name__ == "__main__":

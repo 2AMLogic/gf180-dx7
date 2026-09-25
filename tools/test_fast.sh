@@ -4,10 +4,12 @@
 # WAVE GATES: run via `make test` before judge approval and at merge waves,
 # not inside every builder/merge loop.
 #
-# `synthparse` selects the tools/h07_synth.py stat-parser cases (issue #82)
-# out of the otherwise heavy tests/test_h07.py: they replay the already
-# committed yosys transcripts, so they need no yosys, no verilator and no
-# ssh, and run in ~0.2 s.
+# `synthparse` selects the synth stat-parser cases out of otherwise heavy
+# suites: tools/h07_synth.py's hierarchy-total cases (issue #82) in
+# tests/test_h07.py, plus the single-module-assertion cases (issue #95) for
+# h01/h04/h05/h06/storage_probe. All of them replay already committed yosys
+# transcripts, so they need no yosys, no verilator and no ssh, and run in
+# well under a second.
 set -eu
 cd "$(dirname "$0")/.."
 #

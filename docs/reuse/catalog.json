@@ -2059,7 +2059,7 @@
   },
   {
    "path": "docs/decision-records/0012-exp-term-width-core-refreeze.md",
-   "sha256": "79d8744c60dde31091a1cebaf27e0cf0871eb710c869b615abd87904802044d6",
+   "sha256": "89e94e4a6198c8593475dd70786be35590c41ec2740595aa12389bdec4f76c43",
    "reason": "locally authored exp() term-width refreeze decision record (issue #98, escalation from #86): frozen core re-pinned to the widened-exp_t* revision, cone LEC + fresh H07 battery evidence, the no-out-of-range-select rule and its structural guard, H10 marked STALE, operator-ratification gate"
   },
   {

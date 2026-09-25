@@ -24,8 +24,8 @@ Statuses are PASS / FAIL / NOT_RUN / BLOCKED / NO_VERDICT / STALE as defined in
 | F | pinned-flow **mapped netlist census on this pin** | **BLOCKED** (host memory) | `orfs-synth-attempt-refrozen-2026-09-25.txt` |
 | G | H07 battery, fresh, Verilator, 34 cases | PASS 34/34 | `../h07-core/results-dr0012-p1.json` |
 | G′ | same battery vs the DR-0011-pin baseline, per-case captured PCM | 34/34 byte-identical | `../h07-core/results-h10-merged-p3.json` |
-| H | H07 battery, Icarus, the two AMS ≠ 0 cases | see row H below | `../h07-core/results-dr0012-iv-ams.json` |
-| I | host-yosys (0.69+post) cone LEC, independent of the pinned image | see row I below | `exp-hsum-lec-host-refrozen-2026-09-25.json` |
+| H | H07 battery, Icarus, on this pin | **NOT_RUN** (host throughput) | — |
+| I | host-yosys 0.69+post cone LEC, independent of the pinned image | PASS (same verdict, different yosys) | `exp-hsum-lec-host-refrozen-2026-09-25.json` |
 
 ## A — static range proof
 
@@ -137,22 +137,37 @@ RTL changes any Verilator-simulated value, stop"). Comparing per-case
 (`results-h10-merged-p3.json`, `rtl_sha256` `7bab93f5…` = the DR-0011 trio):
 **34 identical, 0 different**. The captured PCM is byte-for-byte the same.
 
-## H — the Icarus battery on the AMS ≠ 0 cases
+## H — the Icarus battery on this pin: NOT_RUN, with the reason measured
 
-Icarus interprets the whole 16-voice core and takes tens of minutes per case on
-this host, so the full 34-case shadow was not attempted here. The two cases
-that carry the AM path (`dev32-06`, `dev32-30`) were run as
-`--tool iverilog --tag dr0012-iv-ams`; see the row's artifact for the verdict,
-and row C for the tool-independent statement that Icarus no longer returns `x`
-for `exp_hsum` on this pin. A full Icarus shadow on the refrozen pin is
-NOT_RUN here.
+**NOT_RUN. No Icarus verdict on the refrozen pin is claimed here.**
+
+Two attempts were made at the two AMS ≠ 0 cases (`dev32-06`, `dev32-30`), the
+second with exactly the committed shadow's parameters
+(`--tool iverilog --frames 24 --jobs 2`; the generated `vector.txt` is
+byte-identical to `../h07-core/runs/iverilog-shadow-dev-dev32-06/vector.txt`).
+Both were abandoned: those two cases carry their last event at wire frame 1875,
+so the simulation has to reach ~120,000 samples, and Icarus — which interprets
+the whole 16-voice core — advanced ~6.4 frames/min on this host (192 of 1875
+frames in 30 min of wall time, two cases in parallel). That is ≈ 4.5 h per
+case-pair, against ~1 min/case for Verilator. The committed 34-case shadow was
+produced on a remote Linux host (`../h07-core/remote-run-timeline-2026-09-23.txt`),
+not here.
+
+What *is* established about Icarus on this pin is row C, which needs no full
+render: the probe cross-check returns `hsum_unknown_points: 0`, where the
+DR-0011 pin returned 64/64 unknown. That is the root cause behind issue #96.
+Completing the Icarus shadow on this pin (and closing #96 against it) needs a
+host like the one that produced the committed shadow.
 
 ## I — host-yosys cross-check
 
 The same cone LEC driven by the host's `Yosys 0.69+post` instead of the pinned
-0.68+post, as a tool-independence check on row E. It has no authority over the
-pinned flow's behaviour; the pinned image's result (row E) is the one that
-matters for a mapped claim.
+image's 0.68+post, exit 0, as a tool-independence check on row E: `cone_lec`
+PASS, whole-core driver an `$add` cell, `cone_lec_narrowed` FAIL with the mapped
+cone constant `57'h0`, `cone_lec_control` FAIL, `controls_behaved: true` — the
+same verdicts on a different yosys build, so the behaviour is not an artefact of
+one binary. It has no authority over the pinned flow; row E is the result that
+matters for anything mapped.
 
 ## What this directory does NOT establish
 

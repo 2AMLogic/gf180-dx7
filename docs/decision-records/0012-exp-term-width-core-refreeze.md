@@ -200,8 +200,8 @@ Full per-row detail, artifacts, tool hashes and the two negative-control runs:
 | F′ | standing pinned-flow census **for the widening** (#86, scratch copy differing only in comments) | `tools/exp_netlist_census.py` | as-written **0** exp datapath flops / 32,941,030.7 µm²; widened **564** flops / 34,839,310.1 µm² (+5.8 % synth-stage cell area) |
 | G | H07 battery, fresh, Verilator | `tools/h07_compare.py --set both --tag dr0012-p1` | **PASS 34/34**, `overrun`/`overflow` 0 everywhere, every latency inside the contracted window |
 | G′ | same battery vs the DR-0011-pin baseline run | per-case `actual_sha256` | **34/34 byte-identical** — no simulated value changed (this issue's stop/escalate condition, measured) |
-| H | H07 Icarus on the two AMS ≠ 0 cases (`dev32-06`, `dev32-30`) | `--tool iverilog --tag dr0012-iv-ams` | see README row H; the full 34-case Icarus shadow on this pin is **NOT_RUN** |
-| I | cone LEC under the host `Yosys 0.69+post` (tool-independence only) | `tools/exp_hsum_lec.py --yosys …` | see README row I |
+| H | H07 Icarus shadow on this pin | `--tool iverilog --frames 24` | **NOT_RUN** — abandoned twice: Icarus advances ~6.4 render frames/min on this host and these cases must reach frame 1875 (≈4.5 h/case-pair). Row C is the Icarus statement that does not need a full render |
+| I | cone LEC under the host `Yosys 0.69+post` (tool-independence only) | `tools/exp_hsum_lec.py --yosys …` | **PASS**, exit 0 — same verdicts as row E on a different yosys build (narrowed control still FAIL with a constant-`57'h0` cone) |
 | J | structural guard, fast lane, no tools | `tests/test_exp_range_proof.py::NoOutOfRangeSelects` | **PASS**, with both negative controls failing as required (DR-0011 narrowing; an unrelated narrowed part-selected wire) |
 
 ## Reproduce

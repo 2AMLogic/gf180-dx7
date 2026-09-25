@@ -31,3 +31,10 @@ Tool identities:
 Rule of this digest: a claim of synthegizability/fits may only cite rows that
 actually ran (rows E/F/G/H); estimation-derived fit claims fail review (issue
 #32 negative control). Row H is recorded as BLOCKED, not omitted.
+Addendum (H10 report, PR-B, issue #32): row H is diagnosed in
+`docs/H10-GF180-FEASIBILITY.md` section 6. In the pinned image's
+`flow/Makefile` the phony `do-3_5_place_dp` target depends only on
+`copyright.txt`, so invoking it without stages 3_1-3_4 aborts with ORD-0007.
+That is an invocation-order error, not a flow or driver defect. Row H stays
+BLOCKED as recorded; placement cannot run on either fixed die in any case,
+because the mapped cells exceed both cores.

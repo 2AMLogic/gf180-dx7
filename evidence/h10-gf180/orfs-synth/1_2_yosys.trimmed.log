@@ -1,0 +1,14 @@
+# trimmed copy of asic/orfs/work/logs/gf180/dx7core/natdie/1_2_yosys.log (sha256 e8ba7230a7d7d5fb0a42257db73054033cdc6febaefcec0ba4c27d2939c06d7d, 19041 B, not committed)
+
+# ---- final stat ----
+Printing statistics.
+22. Executing CHECK pass (checking for obvious problems).
+23. Executing Verilog backend.
+23.1. Executing BMUXMAP pass.
+23.2. Executing DEMUXMAP pass.
+End of script. Logfile hash: 0bde2a5b13, time: 2151.42s, user: 2008.07s, system: 9.01s, MEM: 7863.88 MB peak
+Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+Time spent: 34% 1x extract_fa (806 sec), 16% 1x abc (385 sec), ...
+Elapsed time: 35:55.70[h:]min:sec. CPU time: user 2362.68 sys 13.90 (110%). Peak memory: 11174488KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+1_2_yosys                 .v           2155          10912 598ac2360abfb3d5d1b5

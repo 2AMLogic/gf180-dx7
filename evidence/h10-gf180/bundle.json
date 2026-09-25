@@ -1,0 +1,350 @@
+{
+ "acceptance_rows": [
+  [
+   "Results are mapped (real cells), not estimated; tools/PDK/constraints recorded",
+   "PASS",
+   "primary: orfs_synth (pinned ORFS flow openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2, platform gf180 TRACK_OPTION=7t CORNER=TC, stock DONT_USE_CELLS=*_1, yosys in-image; flattened netlist); policy-synth mapped netlists under both policies; identities in bundle.tools; results are mapped cells, placement/routing NOT_RUN"
+  ],
+  [
+   "Worst-case timing vs target clock reported per stage",
+   "NO_VERDICT",
+   "synthesis stage (ideal clock) at ss/tt/ff; floorplan stage at tt on ['quarterslot', 'twoslot']; place/CTS/route/post-route: NOT_RUN -- reported for every stage that ran, but post-route timing (the deciding rows) does not exist"
+  ],
+  [
+   "Die/pad/margin budget stated with unaccounted items listed explicitly",
+   "PASS",
+   "report section 3"
+  ],
+  [
+   "16-note requirement retained unless an owner decision record says otherwise",
+   "PASS",
+   "the synthesised unit is the 16-note core (96 env_unit instances = 16 notes x 6 operators); no DR revises the goal; the area finding is escalated to the owner, not absorbed"
+  ],
+  [
+   "Negative control: 'fits' derived from estimates rather than mapped results fails review",
+   "PASS",
+   "tools/h10_report.py fit gate; live tests tests/test_h10_report.py (missing route, estimated synth, DRC>0, missing DRC count, negative slack, fabricated evidence all refuse)"
+  ],
+  [
+   "Contextualized against the family's measured quarter-slot data points; DONT_USE_CELLS policy difference stated with its measured area effect",
+   "PASS",
+   "report section 5: sibling numbers hash-pinned to their evidence files; this core's own policy A/B measured in policy-synth"
+  ]
+ ],
+ "clock_period_ns": 40.692,
+ "design": "dx7_core",
+ "family_context": {
+  "dont_use_policy": {
+   "policy_source": "pinned image flow/platforms/gf180/config.mk line 24: 'export DONT_USE_CELLS = *_1' (plain '=', overridable only on the make command line); file sha256 1ab8a25c54e376c5aa2ef5f983f969cdd943cc747785f9a641bb47467e64a6d3",
+   "provenance": "2AMLogic/gf180-parasynth @ be870e81103bb4b4e000c3414270702cde181491: docs/pnr-synth-top.md section 6; pnr/orfs/evidence/synth_top/joined-d1e5068/1_synth_x1.json (sha256 ba709998a82f9a864c84e12215cebfd28b078578c45b0d46eca8463104cc7c9b)",
+   "sibling_detail": "placeholder 925,387 vs 717,049 um^2 (+29.1 %); joined 1,979,380 vs 1,510,153 um^2 (+31.1 %); ORFS synth re-run with DONT_USE_CELLS= (empty) and nothing else different",
+   "sibling_pct": [
+    29.1,
+    31.1
+   ]
+  },
+  "sibling_joined": {
+   "cell_area_um2": 1979380.0,
+   "clock_mhz": 12.288,
+   "clock_period_ns": 81.38,
+   "design": "synth_top joined d1e5068 (parasynth drum engine chip)",
+   "drc_errors": 0,
+   "instances": 59289,
+   "of_quarterslot_pct": 118.285,
+   "policy": "stock ORFS gf180 DONT_USE_CELLS = *_1, same pinned image",
+   "provenance": "2AMLogic/gf180-parasynth @ be870e81103bb4b4e000c3414270702cde181491: pnr/orfs/evidence/synth_top/joined-d1e5068/1_synth.json (sha256 87bfbe32d386eb8c74d6786b4dc567ea82524b8fbf4182daf2ec0eb2b59cfcbb), sta_corners.log (sha256 86529b731c4c23f7c08ff6519c922df0c29d929229b4fab325e42506eed520f5), pnr/orfs/evidence/synth_top/quarterslot-does-not-fit/2_1_floorplan.json (sha256 4ef83a89886b730a3e84f20d409c53f0865b0605c6681d82be0d73b7872ab3ae); docs/pnr-synth-top.md sections 4-4.1. The issue names this the gf180-monosynth calibration: gf180-monosynth @ 395af2b carries byte-identical copies of these three files",
+   "ss_implied_fmax_mhz": 14.0,
+   "ss_setup_wns_ns": 10.173,
+   "twoslot_util_pct": 60.1
+  },
+  "sibling_placeholder": {
+   "cell_area_um2": 925387.0,
+   "design": "synth_top placeholder 2a88c35",
+   "instances": 28810,
+   "provenance": "2AMLogic/gf180-parasynth @ be870e81103bb4b4e000c3414270702cde181491: docs/pnr-synth-top.md sections 3 and 6",
+   "quarterslot_routed_util_pct": 56.7
+  }
+ },
+ "findings": [
+  "**PR-A row H diagnosed (not a flow defect).** `evidence/h10-legality/run-attempts.md` row H recorded `do-3_5_place_dp` aborting with `[ERROR ORD-0007] ...3_4_place_resized.odb does not exist`. In the pinned image's `flow/Makefile` the phony `do-3_5_place_dp` target depends only on `$(OBJECTS_DIR)/copyright.txt` (Makefile lines 403 and 507); the dependency on `3_4_place_resized.odb` exists only on the file-target rule. Invoking the `do-` step directly, without stages 3_1-3_4, produces exactly that error. It was an invocation-order error, not a flow or driver bug, and it is moot here: no placement stage can run on either fixed die (section 1).",
+  "**`exp_t3`/`exp_t4`/`exp_t5` out-of-range selects (DR-0011 Context 5), mapping resolution recorded.** The pinned flow's canonicalize step reports the same three warnings (`rtl/dx7_core.v:959-961`, 15/15/16 MSBs set to undef). The flow then runs `setundef -zero` (image `flow/scripts/synth.tcl` line 252), so the mapped netlist ties those bits to constant 0. Whether 0 is also what the simulated core computes for every reachable operand is NOT established here. Widths alone do not bound it: `exp_p3` is 44 bits times a 30-bit constant, declared 71 bits, while the select reads up to bit 85. Gate-level simulation or formal equivalence (`LEC_CHECK=0` in this run) is needed; tracked as a follow-up issue.",
+  "**H07 synth report area mislabel (#82).** `evidence/h07-core/synth_report.json` records `chip_area_um2 = 1,158,826 um^2`. That is `alg_router`'s module-local area; the same committed log's hierarchical top is 24,082,966 um^2 (`*_1` allowed, host yosys 0.57). It independently agrees with this run's `x1_allowed` 23,996,886 um^2 (within 0.4 %, different yosys build). The H07 number must not be read as the core's size.",
+  "**Tool identity discrepancy.** DR-0011 and `run-attempts.md` name the pinned image's yosys as `0.67 (2d1509d1b)`. The binary in the image pulled by the same digest here self-reports `Yosys 0.68+post (git sha1 UNKNOWN)` in every log of this run. OpenROAD self-reports `26Q3-1260-g06a5a02279`. The image digest, not a version string, is the identity of record."
+ ],
+ "orfs_synth": {
+  "check": "0 problems",
+  "evidence": {
+   "evidence/h10-gf180/orfs-synth/1_2_yosys.trimmed.log": "8b4058c10f214a63bc009f77f8e25ebb3ea602f63b156f69ad13037aaa4aa390",
+   "evidence/h10-gf180/orfs-synth/1_synth.json": "1b0da1c98d3fc4f41c2bd568f6f111c6db2f83e74b6529ae35e17b0dba00fffe",
+   "evidence/h10-gf180/orfs-synth/run.json": "1f4b8dad65dfbffb2bd991d010b906aed542455c362feec9560f8e79cdf54c9f",
+   "evidence/h10-gf180/orfs-synth/synth_check.txt": "9d2951dc08bc74660462ec3cfcb570ec9db3f5fbda4bdb480b40e8e829c8417a",
+   "evidence/h10-gf180/orfs-synth/synth_stat.txt": "bde1080a4bd87cc811e69728258f8e6acea3c73c4ffe79fcf3183673822e080e"
+  },
+  "flop_count": 90221,
+  "flow_errors": 0,
+  "instance_count": 966492,
+  "mapped": true,
+  "mapped_stdcell_area_um2": 32941030.706741,
+  "method": "pinned ORFS flow openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2, platform gf180 TRACK_OPTION=7t CORNER=TC, stock DONT_USE_CELLS=*_1, yosys in-image; flattened netlist",
+  "policy": "orfs_stock (DONT_USE_CELLS = *_1, image platform config)",
+  "run": {
+   "flow_variant": "natdie",
+   "image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2",
+   "results_not_committed": {
+    "1_2_yosys.v": {
+     "bytes": 240070399,
+     "committed": false,
+     "sha256": "08cd8331656c0004b6d85994886a7d972ca4bf26d2e9d401e4d04044d3718a2d"
+    },
+    "1_synth.odb": {
+     "bytes": 491341152,
+     "committed": false,
+     "sha256": "c371b4a2a0ada730216e2640f00e7b122e6fb3bb5aaf46f42fd4ebfc9e5e4354"
+    }
+   },
+   "rtl": {
+    "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+    "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+    "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+   }
+  },
+  "seq_area_um2": 6139647.315194,
+  "status": "PASS"
+ },
+ "packaging_budgets": {
+  "quarterslot": {
+   "core_area_um2": 1673400.0,
+   "die_area_um2": 1731850.0,
+   "die_um_h": 1317.12,
+   "die_um_w": 1314.88,
+   "source": "D01 (docs/PHYSICAL-CONSTRAINTS.md section 1): wafer.space quarter-slot seat inside the default pad ring; this repo has not purchased a seat"
+  },
+  "twoslot": {
+   "core_area_um2": 3382070.0,
+   "die_area_um2": 3464960.0,
+   "die_um_h": 1862.0,
+   "die_um_w": 1860.88,
+   "source": "gf180-parasynth docs/pnr-synth-top.md section 4.1 (the sibling's fixed two-slot die; D01 section 6 quotes its 3.4650 mm^2)"
+  }
+ },
+ "policy_synth": {
+  "dont_use_effect": {
+   "basis": "same RTL/liberty/script; only -dont_use differs",
+   "orfs_stock_um2": 33600929.779183,
+   "pct": 40.02,
+   "ratio": 1.4002,
+   "x1_allowed_um2": 23996885.875194
+  },
+  "evidence": {
+   "evidence/h10-gf180/policy-synth/synth_report.json": "0b090b419b915a4c5a82250a317dbb27443b906b7570f815efc1066708c2bac9",
+   "evidence/h10-gf180/policy-synth/yosys_orfs_stock.log": "42e67dc9e1bd29c4b05ae0ec5751842c1d8a0768af8a59433b4016fc9d33dd92",
+   "evidence/h10-gf180/policy-synth/yosys_x1_allowed.log": "173f4c185567bf3b40042e3f8ef8b024dc9f01b36857f1ad1483c965beb3d444"
+  },
+  "flop_count": 86767,
+  "instance_count": 1029674,
+  "mapped": true,
+  "mapped_stdcell_area_um2": 33600929.779183,
+  "method": "tools/h10_synth.py: Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0) (the pinned image's yosys) synth + dfflibmap + abc against the gf180mcu 7t tt_025C_5v00 liberty (sha256 330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a), hierarchy kept; check -assert clean",
+  "module_local_area_um2": {
+   "alg_router": 1499530.144,
+   "dx7_core": 8211830.502403,
+   "env_unit": 248246.3872,
+   "h07_op_kernel": 57915.9616
+  },
+  "netlists": {
+   "orfs_stock": {
+    "bytes": 35752811,
+    "committed": false,
+    "path": "asic/orfs/work/h10-policy-synth/dx7_core.orfs_stock.v",
+    "sha256": "b2cf2593afbea36afc1f12da358602bae406f3cdf1e9865d8a660403c32b55aa"
+   },
+   "x1_allowed": {
+    "bytes": 37908293,
+    "committed": false,
+    "path": "asic/orfs/work/h10-policy-synth/dx7_core.x1_allowed.v",
+    "sha256": "aa192382ed0902715ee20a9c317cd85bd6eccb48ed9191fe68c515597cd50b20"
+   }
+  },
+  "policy": "orfs_stock (dont_use *_1)",
+  "policy_areas_um2": {
+   "orfs_stock": 33600929.779183,
+   "x1_allowed": 23996885.875194
+  },
+  "policy_flops": {
+   "orfs_stock": 86767,
+   "x1_allowed": 86767
+  },
+  "policy_instances": {
+   "orfs_stock": 1029674,
+   "x1_allowed": 1060772
+  },
+  "rtl": {
+   "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+   "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+   "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+  },
+  "seq_area_um2": 5904598.470403,
+  "status": "PASS",
+  "top_submodule_instances": {
+   "alg_router": 1,
+   "env_unit": 96,
+   "h07_op_kernel": 1
+  }
+ },
+ "rtl": {
+  "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+  "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+  "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+ },
+ "stages": {
+  "natdie": {},
+  "quarterslot": {
+   "floorplan": {
+    "core_area_um2": 1673400.0,
+    "die_area_um2": 1731850.0,
+    "evidence": {
+     "evidence/h10-gf180/orfs/quarterslot/2_1_floorplan.json": "dfce496089a787c1443409b5a38a2ce07717566481240b46c6d4b243a4badb20",
+     "evidence/h10-gf180/orfs/quarterslot/2_1_floorplan.log": "f3764d8e07b23635ea8922776b3d7901bfb905574fa7e3511e00684c3b2e40b7"
+    },
+    "fmax_mhz": 15.268,
+    "hold_wns_ns": 0.566768,
+    "instance_area_um2": 32951100.0,
+    "note": "measured utilisation 1969.1 % of the fixed core -- cells exceed the core; no placement is possible",
+    "setup_tns_ns": -1775.46,
+    "setup_wns_ns": -24.8044,
+    "status": "FAIL",
+    "timing_corner": "tt (flow CORNER=TC, tt_025C_5v00)",
+    "utilisation_pct": 1969.11
+   }
+  },
+  "twoslot": {
+   "floorplan": {
+    "core_area_um2": 3382070.0,
+    "die_area_um2": 3464960.0,
+    "evidence": {
+     "evidence/h10-gf180/orfs/twoslot/2_1_floorplan.json": "99b4bf308c91806e0d29c87a443db17adc888dae328f34dfef188639bad0ccee",
+     "evidence/h10-gf180/orfs/twoslot/2_1_floorplan.log": "d7a9514b0eb77c6b85c2aa4643f7d75443aaef200852ba55184cc9c89990f8e3"
+    },
+    "fmax_mhz": 15.268,
+    "hold_wns_ns": 0.566768,
+    "instance_area_um2": 32951100.0,
+    "note": "measured utilisation 974.3 % of the fixed core -- cells exceed the core; no placement is possible",
+    "setup_tns_ns": -1775.46,
+    "setup_wns_ns": -24.8044,
+    "status": "FAIL",
+    "timing_corner": "tt (flow CORNER=TC, tt_025C_5v00)",
+    "utilisation_pct": 974.2900000000001
+   }
+  }
+ },
+ "synth": {
+  "check": "0 problems",
+  "evidence": {
+   "evidence/h10-gf180/orfs-synth/1_2_yosys.trimmed.log": "8b4058c10f214a63bc009f77f8e25ebb3ea602f63b156f69ad13037aaa4aa390",
+   "evidence/h10-gf180/orfs-synth/1_synth.json": "1b0da1c98d3fc4f41c2bd568f6f111c6db2f83e74b6529ae35e17b0dba00fffe",
+   "evidence/h10-gf180/orfs-synth/run.json": "1f4b8dad65dfbffb2bd991d010b906aed542455c362feec9560f8e79cdf54c9f",
+   "evidence/h10-gf180/orfs-synth/synth_check.txt": "9d2951dc08bc74660462ec3cfcb570ec9db3f5fbda4bdb480b40e8e829c8417a",
+   "evidence/h10-gf180/orfs-synth/synth_stat.txt": "bde1080a4bd87cc811e69728258f8e6acea3c73c4ffe79fcf3183673822e080e"
+  },
+  "flop_count": 90221,
+  "flow_errors": 0,
+  "instance_count": 966492,
+  "mapped": true,
+  "mapped_stdcell_area_um2": 32941030.706741,
+  "method": "pinned ORFS flow openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2, platform gf180 TRACK_OPTION=7t CORNER=TC, stock DONT_USE_CELLS=*_1, yosys in-image; flattened netlist",
+  "policy": "orfs_stock (DONT_USE_CELLS = *_1, image platform config)",
+  "policy_areas_um2": {
+   "orfs_flow_stock": 32941030.706741,
+   "yosys_orfs_stock": 33600929.779183,
+   "yosys_x1_allowed": 23996885.875194
+  },
+  "run": {
+   "flow_variant": "natdie",
+   "image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2",
+   "results_not_committed": {
+    "1_2_yosys.v": {
+     "bytes": 240070399,
+     "committed": false,
+     "sha256": "08cd8331656c0004b6d85994886a7d972ca4bf26d2e9d401e4d04044d3718a2d"
+    },
+    "1_synth.odb": {
+     "bytes": 491341152,
+     "committed": false,
+     "sha256": "c371b4a2a0ada730216e2640f00e7b122e6fb3bb5aaf46f42fd4ebfc9e5e4354"
+    }
+   },
+   "rtl": {
+    "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+    "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+    "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+   }
+  },
+  "seq_area_um2": 6139647.315194,
+  "source": "orfs_synth",
+  "status": "PASS"
+ },
+ "synth_sta": {
+  "orfs_natdie": {
+   "corners": {
+    "ff": {
+     "hold_tns_ns": 0.0,
+     "hold_wns_ns": 0.343,
+     "implied_fmax_mhz": 22.0,
+     "implied_min_period_ns": 45.47,
+     "setup_tns_ns": -18.947,
+     "setup_wns_ns": -4.773
+    },
+    "ss": {
+     "hold_tns_ns": 0.0,
+     "hold_wns_ns": 1.066,
+     "implied_fmax_mhz": 7.5,
+     "implied_min_period_ns": 133.63,
+     "setup_tns_ns": -227700.271,
+     "setup_wns_ns": -92.937
+    },
+    "tt": {
+     "hold_tns_ns": 0.0,
+     "hold_wns_ns": 0.567,
+     "implied_fmax_mhz": 13.8,
+     "implied_min_period_ns": 72.35,
+     "setup_tns_ns": -6252.444,
+     "setup_wns_ns": -31.661
+    }
+   },
+   "evidence": {
+    "evidence/h10-gf180/sta-synth/orfs_natdie.log": "106002ebdcf6966f1ed81d64a11ae33ea06b254438873accf60886c0295a11a7"
+   },
+   "label": "synthesis stage: unplaced netlist, ideal clock, no wire parasitics, no resizing",
+   "status": "PASS",
+   "worst_path_ss": "seq_ctr[1]$_SDFFE_PP0P_ -> tgt[1]$_SDFFE_PP0P_"
+  }
+ },
+ "target_clock_mhz": 24.576,
+ "tools": {
+  "host": "Apple Silicon macOS, Docker 29.8.0, linux/amd64 emulation (flow synth 35:56 wall)",
+  "liberty_tt_sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+  "openroad_self_reported": "26Q3-1260-g06a5a02279, in-image",
+  "orfs_image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2",
+  "pdk": "gf180mcuD, gf180mcu_fd_sc_mcu7t5v0 (7-track, 5 V)",
+  "platform_config_sha256": "1ab8a25c54e376c5aa2ef5f983f969cdd943cc747785f9a641bb47467e64a6d3",
+  "sdc": "asic/orfs/dx7core/constraint.sdc",
+  "yosys_self_reported": "Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU g++ 11.4.0), in-image"
+ },
+ "unaccounted": [
+  "pad ring and I/O cells: the quarter-slot core area is already inside the default pad ring (D01); the 9-pad H08 chassis (rtl/synth_top.v) is NOT in the synthesised unit -- only dx7_core is",
+  "placement density headroom: a routable design sits well below 100 % cell utilisation (sibling: 56.7-60.1 % routed); no utilisation headroom is assumed or subtracted in the area-alone verdicts",
+  "clock tree, timing-repair buffers, hold fixing, taps, endcaps, fillers (sibling: +2.6 % std-cell area over synthesis from place/resize/CTS; fillers/taps fill the rest of the rows)",
+  "power distribution network straps/rings and their routing blockage",
+  "routing congestion (5-metal gf180mcu; RT_MAX_LAYER=Metal4 on TT tiles)",
+  "IR drop / electromigration, antenna, KLayout signoff DRC, LVS (the ORFS gf180 platform has no signoff DRC deck and no LVS; H11)",
+  "any SRAM macro alternative for state storage (none requested: all state is flops, ROM tables are logic; D01 section 5 records no usable KB-scale macro)"
+ ],
+ "unproved": [
+  "no placement, CTS or routing ran for any die; no post-route timing exists at any corner",
+  "synthesis-stage timing is ideal-clock, zero-wire-load, pre-resize; the floorplan-stage timing is wire-load-model, after the floorplan resizer, on a die the cells cannot occupy -- neither is post-route timing, and neither establishes closure or non-closure of a routed design",
+  "the area-alone 'does not fit' verdicts need no place/route (cell area alone exceeds the core); they say nothing about what WOULD fit",
+  "no architecture alternative (time-multiplexed envelopes, SRAM-backed state, reduced polyphony) was synthesised; their area is unmeasured",
+  "no silicon, board, FPGA or original-hardware claim of any kind",
+  "musical usefulness is a listening question, not a mapped-area question"
+ ]
+}

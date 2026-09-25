@@ -1,0 +1,21 @@
+{
+ "flow_variant": "natdie",
+ "image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2",
+ "results_not_committed": {
+  "1_2_yosys.v": {
+   "bytes": 240070399,
+   "committed": false,
+   "sha256": "08cd8331656c0004b6d85994886a7d972ca4bf26d2e9d401e4d04044d3718a2d"
+  },
+  "1_synth.odb": {
+   "bytes": 491341152,
+   "committed": false,
+   "sha256": "c371b4a2a0ada730216e2640f00e7b122e6fb3bb5aaf46f42fd4ebfc9e5e4354"
+  }
+ },
+ "rtl": {
+  "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+  "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+  "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+ }
+}

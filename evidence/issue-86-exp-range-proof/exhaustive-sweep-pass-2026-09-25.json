@@ -1,0 +1,45 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (sweep)",
+ "rtl_file": "rtl/dx7_core.v",
+ "rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "rtl_matches_dr0011_pin": true,
+ "python": "3.14.7",
+ "mutate_bit": null,
+ "result": {
+  "points": 16777217,
+  "stride": 1,
+  "max_bits": {
+   "xq": 50,
+   "p2": 43,
+   "p3": 37,
+   "p4": 30,
+   "p5": 24,
+   "t3_full": 66,
+   "t4_full": 58,
+   "t5_full": 49
+  },
+  "max": {
+   "xq": 780414322382598,
+   "p2": 8452218294428,
+   "p3": 91541110981,
+   "p4": 991429079,
+   "p5": 10737597,
+   "t3_full": 65527679589456172242,
+   "t4_full": 177423143947730630,
+   "t5_full": 384313564840218
+  },
+  "argmax_y": {
+   "xq": 11946402,
+   "p2": 11946402,
+   "p3": 11946402,
+   "p4": 11946402,
+   "p5": 11946402,
+   "t3_full": 11946402,
+   "t4_full": 11946402,
+   "t5_full": 11946402
+  }
+ },
+ "runtime_s": 705.2,
+ "status": "PASS",
+ "problems": []
+}

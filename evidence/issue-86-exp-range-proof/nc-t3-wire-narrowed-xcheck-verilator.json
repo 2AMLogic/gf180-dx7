@@ -1,0 +1,73 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (xcheck)",
+ "rtl_file": "<scratch>/t3-wire-narrowed.v",
+ "rtl_sha256": "60e88e08618af4cc44b4dd4650c22315e19198f10a8229b6ef3ae4fb6ac4561f",
+ "rtl_matches_dr0011_pin": false,
+ "python": "3.14.7",
+ "result": {
+  "simulator": "verilator",
+  "points": 64,
+  "inrange_mismatches": [
+   [
+    11946402,
+    "t3",
+    "8d611567f52654d2",
+    "0x38d611567f52654d2"
+   ],
+   [
+    12345678,
+    "t3",
+    "235b424647e84c1a",
+    "0x2235b424647e84c1a"
+   ],
+   [
+    4519739,
+    "t3",
+    "864dfa211172c1fe",
+    "0x2864dfa211172c1fe"
+   ]
+  ],
+  "hsum_unknown_points": 0,
+  "hsum_vs_oor_zero_mismatches": [
+   [
+    0,
+    "173103ed6b59f8c",
+    "0x10144abb97a3431"
+   ],
+   [
+    1,
+    "17310435741e20a",
+    "0x10144b03a14cdfc"
+   ],
+   [
+    8388608,
+    "172935e045a1343",
+    "0x100c7c9de500161"
+   ]
+  ],
+  "hsum_vs_exact_widened_mismatches": [
+   [
+    0,
+    "173103ed6b59f8c",
+    "0x10144abb97a3431"
+   ],
+   [
+    1,
+    "17310435741e20a",
+    "0x10144b03a14cdfc"
+   ],
+   [
+    8388608,
+    "172935e045a1343",
+    "0x100c7c9de500161"
+   ]
+  ]
+ },
+ "status": "FAIL",
+ "problems": [
+  "20 in-range register/term mismatches",
+  "64 exp_hsum points differ from the out-of-range-bits-are-0 model",
+  "64 exp_hsum points differ from the exact (widened-product) model"
+ ],
+ "note": "mismatch lists truncated to first 3 entries"
+}

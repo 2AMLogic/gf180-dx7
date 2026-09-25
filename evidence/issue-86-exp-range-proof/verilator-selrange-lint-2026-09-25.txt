@@ -1,0 +1,12 @@
+$ verilator --lint-only -Wall -Wno-fatal -Irtl rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v   (SELRANGE entries at the exp_hsum lines only)
+%Warning-SELRANGE: rtl/dx7_core.v:959:25: Selection index out of range: 85:30 outside 70:0
+                                        : ... note: In instance 'dx7_core'
+  959 |         + {13'b0, exp_t3[85:30]}         
+--
+%Warning-SELRANGE: rtl/dx7_core.v:960:25: Selection index out of range: 85:30 outside 70:0
+                                        : ... note: In instance 'dx7_core'
+  960 |         + {13'b0, exp_t4[85:30]}         
+--
+%Warning-SELRANGE: rtl/dx7_core.v:961:25: Selection index out of range: 81:26 outside 65:0
+                                        : ... note: In instance 'dx7_core'
+  961 |         + {13'b0, exp_t5[81:26]};        

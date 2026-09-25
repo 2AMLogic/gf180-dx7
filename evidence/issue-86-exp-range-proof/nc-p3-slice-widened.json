@@ -1,0 +1,13 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (static)",
+ "rtl_file": "<scratch>/p3-slice-widened.v",
+ "rtl_sha256": "dcef58075b6beb5efe7b7a7f8c358e8595e277adbbaf3ea43266ddaad15d0d21",
+ "rtl_matches_dr0011_pin": false,
+ "python": "3.14.7",
+ "status": "FAIL",
+ "problems": [
+  "exp_t3: exact product needs 74 bits, declared wire is 71 bits",
+  "exp_p4: source product exp_p4w can exceed its 88-bit wire (truncation)"
+ ],
+ "exit_code": 1
+}

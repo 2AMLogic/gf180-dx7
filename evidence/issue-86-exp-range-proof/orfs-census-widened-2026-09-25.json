@@ -1,0 +1,28 @@
+{
+ "label": "scratch control: rtl/dx7_core.v with exp_t3/t4/t5 widened to [85:0]/[85:0]/[81:0] (sha256 752507494d5f85eeb5fa612d835e40fc6dfc0407ff221a83745e292ace1aa391)",
+ "netlist_sha256": "276d8c2dfe97d3b5a911998f827fdcfed24b5366003c573fed4639a05d03bd48",
+ "netlist_bytes": 260102928,
+ "mapped_flops_named_after": {
+  "exp_st": 12,
+  "exp_start": 1,
+  "exp_amd": 25,
+  "exp_ams": 4,
+  "exp_y": 25,
+  "exp_t1": 64,
+  "exp_arg": 65,
+  "exp_zq": 66,
+  "exp_k": 6,
+  "exp_T": 53,
+  "exp_xq": 50,
+  "exp_p2": 44,
+  "exp_p3": 39,
+  "exp_p4": 32,
+  "exp_p5": 26,
+  "exp_res": 62,
+  "exp_pt_q": 32,
+  "w_li": 32
+ },
+ "exp_datapath_flops_total": 564,
+ "all_flop_instances": 2349,
+ "chip_area_um2": 34839310.149958
+}

@@ -1,0 +1,12 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (static)",
+ "rtl_file": "<scratch>/t3-wire-narrowed.v",
+ "rtl_sha256": "60e88e08618af4cc44b4dd4650c22315e19198f10a8229b6ef3ae4fb6ac4561f",
+ "rtl_matches_dr0011_pin": false,
+ "python": "3.14.7",
+ "status": "FAIL",
+ "problems": [
+  "exp_t3: exact product needs 68 bits, declared wire is 64 bits"
+ ],
+ "exit_code": 1
+}

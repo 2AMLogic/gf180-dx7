@@ -1,0 +1,32 @@
+host: Linux ip-172-31-76-7 7.0.0-1012-aws #12~24.04.1-Ubuntu SMP PREEMPT Wed Aug 12 14:00:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+python: Python 3.12.3
+verilator: Verilator 5.050 2026-07-01 rev vUNKNOWN-built20260924
+commit: d3dcdadaf8acf3588f3dcd2d37aa216e0af27b46
+date: 2026-09-25T13:33:50Z
+
+Ran 386 tests in 49.076s
+OK (skipped=11)
+	Command being timed: "bash tools/test_fast.sh"
+	User time (seconds): 45.26
+	System time (seconds): 0.61
+	Percent of CPU this job got: 92%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:49.82
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 250040
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 166697
+	Voluntary context switches: 326
+	Involuntary context switches: 7669
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 4640
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+exit=0

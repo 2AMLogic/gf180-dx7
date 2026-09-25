@@ -177,7 +177,7 @@ Wall time on `repo-remote-gf180-dx7` (m5.2xlarge, 8 vCPU): full dev+stress
 Verilator run 4,226 s (run 1) / 4,092 s (run 2); iverilog shadow
 (24-frame slices) 18,071 s; yosys full+strip ~35 min. Local runs were
 limited to the negative-control suite (~3 min) and single-case probes
-(DR-0009).
+([DR-0009](decision-records/0009-test-tiering-fast-lane-budget.md)).
 
 ## 5. Host-side register map, vector grammar, run protocol
 
@@ -260,7 +260,8 @@ No synth/preset quality claim follows from any number above.
 - Sync: `rsync -az --delete --exclude .git <worktree>/ repo-remote-gf180-dx7:~/h07/`.
 - Efficiency rules: heavy sim/synth ONLY remote; sweeps under Verilator, final
   acceptance shadow under iverilog; local runs limited to the negative-control
-  suite + affected module (DR-0009).
+  suite + affected module
+  ([DR-0009](decision-records/0009-test-tiering-fast-lane-budget.md)).
 
 ### Debugging trail (dev32-30, finding 8)
 

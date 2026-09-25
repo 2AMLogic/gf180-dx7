@@ -337,8 +337,170 @@ class TestNegativeControls(unittest.TestCase):
                          "per-event interface")
 
 
+class TestSynthStatParser(unittest.TestCase):
+    """tools/h07_synth.py parse_stat: the reported area/cell/flop numbers
+    must be the WHOLE-CORE hierarchy totals, never a per-module block
+    (issue #82). These cases replay the already-committed yosys
+    transcripts -- no synthesis, no heavy host, so they run in the fast
+    lane and a future parser regression fails here instead of silently
+    shipping a wrong number.
+
+    Hierarchy totals of the committed evidence/h07-core/yosys_full.log
+    (`=== design hierarchy ===`, closed by `Chip area for top module
+    '\\dx7_core'`): 24,082,966.252793 um^2, 1,063,163 cells, 90,427
+    dffq_1, 5,756,655.161602 um^2 sequential."""
+
+    FULL_LOG = os.path.join(EVIDENCE, "yosys_full.log")
+    STRIP_LOG = os.path.join(EVIDENCE, "yosys_strip.log")
+    HIER = {"chip_area_um2": 24082966.252793,
+            "cell_total": 1063163,
+            "flop_total": 90427,
+            "seq_area_um2": 5756655.161602}
+    # the pre-fix (wrong) numbers: alg_router's LOCAL block, which is the
+    # first `Chip area for module` match in the same transcript, plus the
+    # across-all-blocks flop double count
+    ALG_ROUTER_LOCAL_AREA = 1158826.3232
+    ALG_ROUTER_LOCAL_CELLS = 36919
+    ALG_ROUTER_LOCAL_SEQ = 473572.6912
+    DOUBLE_COUNTED_FLOPS = 147889
+    # the non-final intermediate dx7_core block earlier in the same log
+    INTERMEDIATE_DX7_CORE_AREA = 6643568.646402
+
+    def _full(self):
+        if not os.path.exists(self.FULL_LOG):
+            self.skipTest(f"NOT_RUN: {self.FULL_LOG} absent")
+        with open(self.FULL_LOG) as f:
+            return f.read()
+
+    def test_synthparse_committed_log_yields_hierarchy_totals(self):
+        import h07_synth
+        st = h07_synth.parse_stat(self._full())
+        for key, want in self.HIER.items():
+            self.assertEqual(st[key], want,
+                             f"{key} must be the design-hierarchy total")
+        self.assertEqual(st["top_module"], "dx7_core")
+        self.assertEqual(
+            st["cells_by_name"]["gf180mcu_fd_sc_mcu7t5v0__dffq_1"], 90427)
+        self.assertIn("design hierarchy", st["totals_basis"])
+
+    def test_synthparse_does_not_report_a_per_module_block(self):
+        """The three specific wrong values #82 recorded must not come
+        back: alg_router's local area/cells/sequential area, the
+        all-blocks flop double count, and the non-final intermediate
+        dx7_core block (the trap for a fix that matches on module name
+        or takes the first match)."""
+        import h07_synth
+        st = h07_synth.parse_stat(self._full())
+        self.assertNotEqual(st["chip_area_um2"],
+                            self.ALG_ROUTER_LOCAL_AREA)
+        self.assertNotEqual(st["chip_area_um2"],
+                            self.INTERMEDIATE_DX7_CORE_AREA)
+        self.assertNotEqual(st["cell_total"], self.ALG_ROUTER_LOCAL_CELLS)
+        self.assertNotEqual(st["seq_area_um2"], self.ALG_ROUTER_LOCAL_SEQ)
+        self.assertNotEqual(st["flop_total"], self.DOUBLE_COUNTED_FLOPS)
+
+    def test_synthparse_refuses_a_transcript_without_hierarchy(self):
+        """NEGATIVE CONTROL: per-module blocks present, hierarchy section
+        absent -> the parser must FAIL, not return a module number."""
+        import h07_synth
+        transcript = (
+            "=== alg_router ===\n\n"
+            "    36919 1.16E+06 cells\n"
+            "     7439 4.74E+05   gf180mcu_fd_sc_mcu7t5v0__dffq_1\n\n"
+            "   Chip area for module '\\alg_router': 1158826.323200\n"
+            "     of which used for sequential elements: 473572.691200\n\n"
+            "=== dx7_core ===\n\n"
+            "   234527 6.64E+06 cells\n"
+            "    49676 3.16E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1\n\n"
+            "   Chip area for module '\\dx7_core': 6643568.646402\n"
+            "     of which used for sequential elements: 3162413.900802\n")
+        with self.assertRaises(h07_synth.CheckFailure) as ctx:
+            h07_synth.parse_stat(transcript)
+        self.assertIn("top module", str(ctx.exception))
+
+    def test_synthparse_refuses_cells_without_any_chip_area(self):
+        """NEGATIVE CONTROL: a truncated transcript with mapped cells but
+        no area anchor at all must FAIL rather than report an unanchored
+        count as the design total."""
+        import h07_synth
+        transcript = ("=== dx7_core ===\n\n"
+                      "   234527 6.64E+06 cells\n"
+                      "    49676 3.16E+06   "
+                      "gf180mcu_fd_sc_mcu7t5v0__dffq_1\n")
+        with self.assertRaises(h07_synth.CheckFailure):
+            h07_synth.parse_stat(transcript)
+
+    def test_synthparse_refuses_hierarchy_total_without_section(self):
+        """NEGATIVE CONTROL: a top-module area line with no preceding
+        `=== design hierarchy ===` section (so no bounded region to count
+        cells in) must FAIL."""
+        import h07_synth
+        transcript = ("   Chip area for module '\\alg_router': 1158826.32\n"
+                      "   Chip area for top module '\\dx7_core': "
+                      "24082966.252793\n")
+        with self.assertRaises(h07_synth.CheckFailure):
+            h07_synth.parse_stat(transcript)
+
+    def test_synthparse_empty_design_is_zero_not_an_error(self):
+        """The strip-obs control's transcript maps NOTHING: no hierarchy
+        section exists because there is nothing to report. That is the one
+        legitimate hierarchy-free case -- zero cells, zero flops, no
+        area -- and it must stay parseable, or the negative control
+        cannot be evaluated."""
+        import h07_synth
+        if not os.path.exists(self.STRIP_LOG):
+            self.skipTest(f"NOT_RUN: {self.STRIP_LOG} absent")
+        with open(self.STRIP_LOG) as f:
+            st = h07_synth.parse_stat(f.read())
+        self.assertEqual(st["cell_total"], 0)
+        self.assertEqual(st["flop_total"], 0)
+        self.assertIsNone(st["chip_area_um2"])
+        self.assertIsNone(st["seq_area_um2"])
+        self.assertEqual(st["cells_by_name"], {})
+        self.assertIn("empty design", st["totals_basis"])
+
+
 class TestStripObsControl(unittest.TestCase):
     """The synthesis control: committed evidence, freshness-checked."""
+
+    def test_committed_synth_report_area_is_the_hierarchy_total(self):
+        """The committed report's numeric fields must be the whole-core
+        hierarchy totals of its own committed transcript (issue #82).
+
+        Until the report is regenerated with the fixed parser on the
+        heavy host it still carries the pre-fix per-module numbers: that
+        is reported as STALE / NOT_RUN (guarded skip naming the host),
+        never as a pass."""
+        import h07_synth
+        path = os.path.join(EVIDENCE, "synth_report.json")
+        log_path = os.path.join(EVIDENCE, "yosys_full.log")
+        if not (os.path.exists(path) and os.path.exists(log_path)):
+            self.skipTest(
+                "NOT_RUN (guarded skip): no committed synth report/log; "
+                f"yosys + the ciel 7t liberty live on {REMOTE_ALIAS}")
+        with open(path) as f:
+            report = json.load(f)
+        with open(log_path) as f:
+            want = h07_synth.parse_stat(f.read())
+        got = report["runs"]["full"]
+        drift = {k: (got.get(k), want[k])
+                 for k in ("chip_area_um2", "cell_total", "flop_total",
+                           "seq_area_um2") if got.get(k) != want[k]}
+        if drift:
+            msg = ("STALE: evidence/h07-core/synth_report.json still "
+                   "carries pre-#82 parser output (recorded, hierarchy "
+                   f"total): {drift}. Re-run tools/h07_synth.py on "
+                   f"{REMOTE_ALIAS} (yosys + ciel 7t liberty) and commit "
+                   "the regenerated report.")
+            if remote_reachable():
+                self.fail(msg)
+            self.skipTest(f"NOT_RUN (guarded skip): heavy host "
+                          f"{REMOTE_ALIAS} unreachable. {msg}")
+        for key in ("chip_area_um2", "cell_total", "seq_area_um2"):
+            self.assertEqual(report["gates"]["full"][key], want[key],
+                             f"gates.full.{key} must match the run")
+        self.assertEqual(report["gates"]["full"]["mapped_flops"],
+                         want["flop_total"])
 
     def test_committed_synth_report_gates(self):
         path = os.path.join(EVIDENCE, "synth_report.json")

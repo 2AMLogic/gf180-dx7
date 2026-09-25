@@ -8,8 +8,9 @@ rtl/synth_top.v, a PIN-NET-ONLY wrapper over the hash-pinned H07 core
 instance, every port tied 1:1 to a pad, no clock generation, no reset
 sync, no glue logic). The expected measurement is therefore ZERO added
 state and ZERO added cells vs the committed H07 full build
-(evidence/h07-core/synth_report.json, 138,490 mapped flops / 36,803 cells
-/ 1,158,154.592 um2 chip area at the ciel gf180mcu 7t liberty).
+(evidence/h07-core/synth_report.json, at the ciel gf180mcu 7t liberty;
+its numbers are STALE pre-#82 per-module values until issue #93
+regenerates it).
 
 Runs yosys over the chassis (top synth_top) with the same script shape as
 tools/h07_synth.py (read_verilog -sv, hierarchy -check, synth, dfflibmap,
@@ -23,8 +24,9 @@ NEUTRALLY CHASE OR REMOVE top-exposed logic, never add any:
   full   the chassis as committed. Gates:
          (a) mapped flops stay above the H02 38,781 floor (state present,
              not optimized away); (b) mapped flops AND cell total do NOT
-             EXCEED the committed H07 core full build (138,490 flops /
-             36,803 cells) -- a passive wrapper adds no state or logic;
+             EXCEED the committed H07 core full build (gates.full_vs_h07,
+             hierarchy totals of the same core RTL on both sides, else
+             NOT_RUN) -- a passive wrapper adds no state or logic;
              any shortfall vs H07 is reported as attributed
              connection-state pruning of the unconnected tap/status/debug
              outputs (culled), never as overhead; (c) the committed
@@ -56,8 +58,16 @@ yosys_full.log / yosys_strip.log (their sha256s are recorded in the
 report), so the gate verdicts are re-checkable without the synthesis
 wall time.
 
+Stat parsing (issue #94): every reported cell/flop/area number is the
+`=== design hierarchy ===` total closed by the LAST `Chip area for top
+module` line, never a per-module block (the pre-#94 parser recorded
+alg_router's local block as the chassis total). Gate (b) is reported as
+gates.full_vs_h07 and is NOT_RUN unless both sides are hierarchy totals
+of the same core RTL.
+
 Exit codes: 0 pass, 1 gate/check failure, 2 could-not-run (missing tool
-or PDK path -- the message names what is missing). Stdlib only.
+or PDK path -- the message names what is missing -- or a gate NOT_RUN).
+Stdlib only.
 """
 
 import argparse
@@ -138,24 +148,195 @@ def run_yosys(yosys, liberty, strip, log_path):
     return log
 
 
+HIER_MARK = "=== design hierarchy ==="
+CELL_LINE = r"^\s+(\d+)\s+(\S+)\s+(gf180mcu\S+)\s*$"
+HIER_BASIS = "design hierarchy section (includes submodules)"
+
+
+def _parse_empty_stat(log):
+    """The one legitimate hierarchy-total-free transcript: a design that
+    mapped to NOTHING (the H07_STRIP_OBSERVABILITY control -- yosys
+    deletes every cell, so no `Chip area` line is printed at all).
+    Accepted only when the transcript really is cell-free; anything else
+    raises rather than reporting a per-module number as the total."""
+    if re.search(r"Chip area for module", log):
+        raise CheckFailure(
+            "stat transcript has per-module 'Chip area for module' blocks "
+            "but no 'Chip area for top module' line: the hierarchical "
+            "total is absent (truncated or non-hierarchical stat). "
+            "Refusing to substitute a per-module area as the design total "
+            "(issue #94).")
+    stray = re.findall(CELL_LINE, log, re.M)
+    if stray:
+        raise CheckFailure(
+            f"stat transcript reports {len(stray)} mapped cell line(s) but "
+            "no hierarchical total and no chip-area line -- refusing to "
+            "report an unanchored count (issue #94).")
+    return {
+        "cells_by_name": {},
+        "cell_total": 0,
+        "dff_cells": {},
+        "flop_total": 0,
+        "chip_area_um2": None,
+        "seq_area_um2": None,
+        "totals_basis": "empty design (no mapped cells in the transcript)",
+    }
+
+
 def parse_stat(log):
-    """Mapped cell/area facts from a `stat -liberty` transcript
-    (same parser contract as tools/h07_synth.py)."""
+    """Whole-design mapped cell/area facts from a `stat -liberty`
+    transcript (same parser contract as tools/h07_synth.py after #82).
+
+    yosys prints one LOCAL block per module (`=== <module> ===`, "Chip
+    area for module '\\<module>'") and then, for a multi-module design, a
+    final `=== design hierarchy ===` section whose counts INCLUDE
+    submodules, closed by `Chip area for top module '\\<top>'`. Only that
+    last section describes the chassis as a whole.
+
+    The pre-#94 parser took the FIRST `Chip area for module` match and
+    summed cell counts across every block, so the committed H08 report
+    recorded `alg_router`'s local area (1,158,154.592 um^2) and local
+    cell count as the chassis total. This parser therefore:
+
+      - anchors on `Chip area for top module` and takes the LAST match;
+      - bounds cell/flop counting to the hierarchy section preceding it,
+        so the per-module blocks cannot be added into the totals;
+      - raises CheckFailure rather than falling back to any per-module
+        number when the hierarchy totals are absent.
+    """
+    top_m = list(re.finditer(
+        r"Chip area for top module '\\?([\w$]+)': ([\d.]+)", log))
+    if not top_m:
+        return _parse_empty_stat(log)
+    top = top_m[-1]
+    start = log.rfind(HIER_MARK, 0, top.start())
+    if start < 0:
+        raise CheckFailure(
+            f"'Chip area for top module' found but no '{HIER_MARK}' "
+            "section precedes it -- refusing to report per-module numbers "
+            "as the design total (issue #94).")
+    sect = log[start:top.end()]
+    total = re.search(r"^\s+(\d+)\s+\S+\s+cells\s*$", sect, re.M)
+    if not total:
+        raise CheckFailure(
+            "no hierarchical 'cells' total line inside the "
+            f"'{HIER_MARK}' section (issue #94).")
     cells = {}
-    for m in re.finditer(r"^\s+(\d+)\s+([\d.]+E\+\d+|[\d.]+)\s+"
-                         r"(gf180mcu\S+)\s*$", log, re.M):
-        cells[m.group(3)] = cells.get(m.group(3), 0) + int(m.group(1))
-    chip = re.search(r"Chip area for module .*?: ([\d.]+)", log)
-    seq = re.search(r"of which used for sequential elements: ([\d.]+)", log)
-    total = re.search(r"^\s+(\d+)\s+[\d.]+E\+\d+\s+cells\s*$", log, re.M)
+    for m in re.finditer(CELL_LINE, sect, re.M):
+        # assignment, not accumulation: within the bounded hierarchy
+        # section each cell type appears exactly once, already summed
+        # over submodules by yosys.
+        cells[m.group(3)] = int(m.group(1))
+    seq = re.search(r"of which used for sequential elements: ([\d.]+)",
+                    log[top.end():top.end() + 400])
     return {
         "cells_by_name": dict(sorted(cells.items())),
-        "cell_total": int(total.group(1)) if total else sum(cells.values()),
-        "dff_cells": {k: v for k, v in cells.items() if "dff" in k},
+        "cell_total": int(total.group(1)),
+        "dff_cells": {k: v for k, v in sorted(cells.items()) if "dff" in k},
         "flop_total": sum(v for k, v in cells.items() if "dff" in k),
-        "chip_area_um2": float(chip.group(1)) if chip else None,
+        "chip_area_um2": float(top.group(2)),
         "seq_area_um2": float(seq.group(1)) if seq else None,
+        "top_module": top.group(1),
+        "totals_basis": HIER_BASIS,
     }
+
+
+CORE_RTL_RELS = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]
+
+
+def relative_gate(st, h07_report, h08_core_rtl):
+    """Gate (b): the chassis's mapped flops/cells do not exceed the H07
+    core-top build, and the shortfall is reported as `*_culled`.
+
+    Evaluated ONLY when both sides are comparable; otherwise NOT_RUN with
+    the reason (a guarded skip, never a smoothed-over number):
+      - both sides must be design-hierarchy totals: H08's from this
+        parser, H07's only once its report carries the #82 parser's
+        `totals_basis` tag (regeneration tracked by issue #93);
+      - both builds must be of the same core RTL (sha256 of the core
+        trio): comparing mapped counts across RTL revisions measures the
+        RTL change, not the wrapper.
+    `h08_core_rtl` is the {path: sha256} of the core RTL the H08 log was
+    synthesized from, or None when that is unknown.
+    """
+    h07_full = h07_report["runs"]["full"]
+    rec = {
+        "requirement": ("(b) mapped flops and cell total DO NOT EXCEED the "
+                        "committed H07 core full build, both sides "
+                        "design-hierarchy totals of the same core RTL (a "
+                        "wrapper adds no state or logic; the H08 top "
+                        "exposes fewer ports, so any shortfall is "
+                        "connection-state pruning of the unconnected "
+                        "tap/status/debug outputs, reported as *_culled, "
+                        "never overhead)"),
+        "h07_totals_basis": h07_full.get("totals_basis"),
+        "h08_totals_basis": st.get("totals_basis"),
+        "h07_core_flops": None,
+        "h07_core_cells": None,
+        "mapped_flops": st["flop_total"],
+        "cell_total": st["cell_total"],
+        "flops_culled_vs_h07_top_build": None,
+        "cells_culled_vs_h07_top_build": None,
+        "overhead_chip_area_um2": None,
+    }
+    why = []
+    if st.get("totals_basis") != HIER_BASIS:
+        why.append("H08 side is not a design-hierarchy total "
+                   f"(totals_basis={st.get('totals_basis')!r})")
+    if h07_full.get("totals_basis") != HIER_BASIS:
+        why.append("H07 side is STALE: evidence/h07-core/synth_report.json "
+                   "predates the #82 hierarchy-total parser (no "
+                   "totals_basis tag); regeneration on the heavy host is "
+                   "issue #93")
+    h07_rtl = {k: v for k, v in (h07_report.get("rtl") or {}).items()
+               if k in CORE_RTL_RELS}
+    if h08_core_rtl is None:
+        why.append("the core RTL the H08 log was synthesized from is "
+                   "unknown (no committed report recording it for this "
+                   "log sha256)")
+    elif h07_rtl != {k: h08_core_rtl.get(k) for k in CORE_RTL_RELS}:
+        diff = sorted(k for k in CORE_RTL_RELS
+                      if h07_rtl.get(k) != h08_core_rtl.get(k))
+        why.append("H07 and H08 builds are of different core RTL "
+                   f"({', '.join(diff)} sha256 differ): the comparison "
+                   "would measure the RTL change, not the wrapper")
+    if why:
+        rec["status"] = "NOT_RUN"
+        rec["not_run_reason"] = why
+        return rec
+    rec["h07_core_flops"] = h07_full["flop_total"]
+    rec["h07_core_cells"] = h07_full["cell_total"]
+    rec["flops_culled_vs_h07_top_build"] = (h07_full["flop_total"]
+                                            - st["flop_total"])
+    rec["cells_culled_vs_h07_top_build"] = (h07_full["cell_total"]
+                                            - st["cell_total"])
+    rec["overhead_chip_area_um2"] = ((st["chip_area_um2"] or 0.0)
+                                     - (h07_full["chip_area_um2"] or 0.0))
+    rec["culled_attribution"] = (
+        "shortfall vs the H07 core-top build only: the chassis top does "
+        "not expose the core's tap/status/debug outputs, so their driver "
+        "logic is pruned; the wrapper itself adds no state or logic "
+        "(structural check + do-not-exceed gates)")
+    ok = (st["flop_total"] <= h07_full["flop_total"]
+          and st["cell_total"] <= h07_full["cell_total"])
+    rec["status"] = "PASS" if ok else "FAIL"
+    return rec
+
+
+def logged_core_rtl(outdir, log_path):
+    """For --from-logs: the core RTL sha256s recorded (in the previously
+    committed synth_report.json) for exactly this log file, or None."""
+    prev = os.path.join(outdir, "synth_report.json")
+    if not os.path.isfile(prev):
+        return None
+    try:
+        with open(prev, encoding="utf-8") as f:
+            rep = json.load(f)
+        if rep["runs"]["full"]["log_sha256"] != sha256_file(log_path):
+            return None
+        return {k: rep["rtl"][k] for k in CORE_RTL_RELS}
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 def check_wrapper_structure(path):
@@ -235,57 +416,41 @@ def main(argv=None):
                       "--from-logs; run yosys first", file=sys.stderr)
                 return 2
             log = open(log_full, encoding="utf-8").read()
+            core_rtl = logged_core_rtl(args.outdir, log_full)
         else:
             log = run_yosys(args.yosys, liberty, strip=False,
                             log_path=log_full)
+            core_rtl = {r: sha256_file(os.path.join(REPO_ROOT, r))
+                        for r in CORE_RTL_RELS}
         st = parse_stat(log)
         st["mode"] = "full"
         st["log_sha256"] = sha256_file(log_full)
-        culled_flops = h07_full["flop_total"] - st["flop_total"]
-        culled_cells = h07_full["cell_total"] - st["cell_total"]
         ok = (wrap_ok
               and st["flop_total"] > H02_MAPPED_FLOPS
-              and st["flop_total"] <= h07_full["flop_total"]
-              and st["cell_total"] <= h07_full["cell_total"]
               and (st["chip_area_um2"] or 0.0) > 0.0
               and (st["seq_area_um2"] or 0.0) > 0.0)
         gates["full"] = {
-            "requirement": ("passive pin map: (a) mapped flops above the "
-                            "H02 floor (state present, not optimized "
-                            "away); (b) mapped flops and cell total DO "
-                            "NOT EXCEED the committed H07 core full build "
-                            "(a wrapper adds no state or logic; the H08 "
-                            "top exposes fewer ports, so any shortfall is "
-                            "connection-state pruning of the unconnected "
-                            "tap/status/debug outputs, reported as "
-                            "*_culled, never overhead); (c) the committed "
+            "requirement": ("passive pin map, absolute checks: (a) mapped "
+                            "flops above the H02 floor (state present, "
+                            "not optimized away); (c) the committed "
                             "wrapper source is structurally a pin map; "
-                            "chip/sequential area > 0"),
+                            "chip/sequential area > 0. Gate (b), the "
+                            "do-not-exceed comparison vs the H07 core "
+                            "build, is gates.full_vs_h07."),
             "wrapper_structure": {
                 "file": WRAP_REL,
                 "sha256": sha256_file(os.path.join(REPO_ROOT, WRAP_REL)),
                 "status": "PASS" if wrap_ok else "FAIL",
                 "detail": wrap_detail,
             },
-            "h07_core_flops": h07_full["flop_total"],
-            "h07_core_cells": h07_full["cell_total"],
             "mapped_flops": st["flop_total"],
             "cell_total": st["cell_total"],
-            "flops_culled_vs_h07_top_build": culled_flops,
-            "cells_culled_vs_h07_top_build": culled_cells,
-            "culled_attribution": ("shortfall vs the H07 core-top build "
-                                   "only: the chassis top does not "
-                                   "expose the core's tap/status/debug "
-                                   "outputs, so their driver logic is "
-                                   "pruned; the wrapper itself adds no "
-                                   "state or logic (structural check + "
-                                   "do-not-exceed gates)"),
             "chip_area_um2": st["chip_area_um2"],
-            "overhead_chip_area_um2": (
-                (st["chip_area_um2"] or 0.0)
-                - (h07_full["chip_area_um2"] or 0.0)),
+            "seq_area_um2": st["seq_area_um2"],
+            "totals_basis": st["totals_basis"],
             "status": "PASS" if ok else "FAIL",
         }
+        gates["full_vs_h07"] = relative_gate(st, h07, core_rtl)
         runs["full"] = st
     if args.mode in ("both", "strip"):
         log_strip = os.path.join(args.outdir, "yosys_strip.log")
@@ -329,6 +494,7 @@ def main(argv=None):
             "full_flops": h07_full["flop_total"],
             "full_cells": h07_full["cell_total"],
             "full_chip_area_um2": h07_full.get("chip_area_um2"),
+            "full_totals_basis": h07_full.get("totals_basis"),
         },
         "runs": runs,
         "gates": gates,
@@ -342,11 +508,16 @@ def main(argv=None):
         json.dump(report, f, indent=1, sort_keys=True)
         f.write("\n")
 
-    ok = all(g.get("status") in
-             ("PASS", "MET (control removes state as required)")
-             for g in gates.values())
+    passing = ("PASS", "MET (control removes state as required)")
+    statuses = [g.get("status") for g in gates.values()]
     print(json.dumps({"gates": gates, "report": out}, indent=1))
-    return 0 if ok else 1
+    if any(s not in passing and s != "NOT_RUN" for s in statuses):
+        return 1
+    if "NOT_RUN" in statuses:
+        print("NOT_RUN: at least one gate could not be evaluated (see "
+              "not_run_reason); this is not a pass", file=sys.stderr)
+        return 2
+    return 0
 
 
 if __name__ == "__main__":

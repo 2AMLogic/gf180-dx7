@@ -1899,18 +1899,18 @@
   },
   {
    "path": "tests/test_h08.py",
-   "sha256": "e5c66a5da6ff5fa9865335fc82b2984ac237a1510075cdafed49d9d51024a93e",
-   "reason": "CORE_SHA re-pinned to refrozen core (DR-0011)"
+   "sha256": "af3aa48a28128ceb123f85117d9651ea80a4ef4775d4a6d14bc021e5badeb1cc",
+   "reason": "CORE_SHA re-pinned to refrozen core (DR-0011); re-pinned for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks"
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "d6abbd55b3931cca06d93cd0d0c5b4f5bb0bbfaac7c0121e80f14834191e5b74",
-   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87)"
+   "sha256": "519d320d6a9f81cc212a195f07ce49d4a3e5ea21294f4770885ad984e9d2d6d5",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94)"
   },
   {
    "path": "tools/h08_synth.py",
-   "sha256": "138d141cc6a5641b8e1d0c87a5025825aab0a887114f7c0e51fa3629fac77c36",
-   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/"
+   "sha256": "f6ab78333954de45a3ba84c5f9e5250de55e14883957cd338e02e5c85321b849",
+   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94)"
   },
   {
    "path": "docs/REUSE-RULINGS.md",

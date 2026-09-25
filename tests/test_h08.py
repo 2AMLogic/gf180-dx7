@@ -360,5 +360,248 @@ class TestH08LiveControls(unittest.TestCase):
         self.assertEqual(mm.get("overrun"), "0")
 
 
+SYNTH_EVIDENCE = os.path.join(REPO, "evidence", "h08-chassis")
+H07_SYNTH_REPORT = os.path.join(REPO, "evidence", "h07-core",
+                                "synth_report.json")
+REMOTE_ALIAS = "repo-remote-gf180-dx7"
+
+
+def _h08_synth():
+    tools = os.path.join(REPO, "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import h08_synth
+    return h08_synth
+
+
+def remote_reachable():
+    """True when the heavy-execution host answers ssh (2 s budget)."""
+    try:
+        proc = subprocess.run(["ssh", "-o", "ConnectTimeout=2",
+                               "-o", "BatchMode=yes", REMOTE_ALIAS,
+                               "true"], capture_output=True, timeout=10)
+        return proc.returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+class TestH08SynthStatParser(unittest.TestCase):
+    """tools/h08_synth.py parse_stat: the reported area/cell/flop numbers
+    must be the WHOLE-CHASSIS hierarchy totals, never a per-module block
+    (issue #94; same bug and fix as H07's #82). These cases replay the
+    already-committed yosys transcripts -- no synthesis, no heavy host.
+
+    Hierarchy totals of the committed evidence/h08-chassis/yosys_full.log
+    (`=== design hierarchy ===`, closed by `Chip area for top module
+    '\\synth_top'` at line 132777): 23,297,622.476804 um^2, 1,014,491
+    cells, 92,045 dffq_1, 5,859,658.336 um^2 sequential."""
+
+    FULL_LOG = os.path.join(SYNTH_EVIDENCE, "yosys_full.log")
+    STRIP_LOG = os.path.join(SYNTH_EVIDENCE, "yosys_strip.log")
+    HIER = {"chip_area_um2": 23297622.476804,
+            "cell_total": 1014491,
+            "flop_total": 92045,
+            "seq_area_um2": 5859658.336}
+    # the pre-fix (wrong) numbers the committed report recorded:
+    # alg_router's LOCAL block, the first `Chip area for module` match
+    ALG_ROUTER_LOCAL_AREA = 1158154.592
+    ALG_ROUTER_LOCAL_CELLS = 36803
+    ALG_ROUTER_LOCAL_SEQ = 473572.6912
+    # synth_top's own local block (0.0) -- the trap for a fix that
+    # matches the top module's name instead of the hierarchy total
+    SYNTH_TOP_LOCAL_AREA = 0.0
+
+    def _full(self):
+        if not os.path.exists(self.FULL_LOG):
+            self.skipTest(f"NOT_RUN: {self.FULL_LOG} absent")
+        with open(self.FULL_LOG) as f:
+            return f.read()
+
+    def test_synthparse_h08_committed_log_yields_hierarchy_totals(self):
+        h = _h08_synth()
+        st = h.parse_stat(self._full())
+        for key, want in self.HIER.items():
+            self.assertEqual(st[key], want,
+                             f"{key} must be the design-hierarchy total")
+        self.assertEqual(st["top_module"], "synth_top")
+        self.assertEqual(
+            st["cells_by_name"]["gf180mcu_fd_sc_mcu7t5v0__dffq_1"], 92045)
+        self.assertEqual(st["dff_cells"],
+                         {"gf180mcu_fd_sc_mcu7t5v0__dffq_1": 92045})
+        self.assertEqual(sum(st["cells_by_name"].values()),
+                         st["cell_total"],
+                         "hierarchy cell-type lines must sum to the "
+                         "hierarchy cells total (no per-module blocks "
+                         "counted in)")
+        self.assertIn("design hierarchy", st["totals_basis"])
+
+    def test_synthparse_h08_does_not_report_a_per_module_block(self):
+        h = _h08_synth()
+        st = h.parse_stat(self._full())
+        self.assertNotEqual(st["chip_area_um2"], self.ALG_ROUTER_LOCAL_AREA)
+        self.assertNotEqual(st["chip_area_um2"], self.SYNTH_TOP_LOCAL_AREA)
+        self.assertNotEqual(st["cell_total"], self.ALG_ROUTER_LOCAL_CELLS)
+        self.assertNotEqual(st["seq_area_um2"], self.ALG_ROUTER_LOCAL_SEQ)
+
+    def test_synthparse_h08_refuses_a_transcript_without_hierarchy(self):
+        """NEGATIVE CONTROL: per-module blocks present, hierarchy section
+        absent -> the parser must FAIL, not return a module number (the
+        pre-fix parser returned alg_router's 1,158,154.592 here)."""
+        h = _h08_synth()
+        transcript = (
+            "=== alg_router ===\n\n"
+            "    36803 1.16E+06 cells\n"
+            "     7439 4.74E+05   gf180mcu_fd_sc_mcu7t5v0__dffq_1\n\n"
+            "   Chip area for module '\\alg_router': 1158154.592000\n"
+            "     of which used for sequential elements: 473572.691200\n\n"
+            "=== synth_top ===\n\n"
+            "   Chip area for module '\\synth_top': 0.000000\n"
+            "     of which used for sequential elements: 0.000000\n")
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat(transcript)
+        self.assertIn("top module", str(ctx.exception))
+
+    def test_synthparse_h08_refuses_cells_without_any_chip_area(self):
+        """NEGATIVE CONTROL: mapped cells but no area anchor at all."""
+        h = _h08_synth()
+        transcript = ("=== dx7_core ===\n\n"
+                      "   170035 4.83E+06 cells\n"
+                      "    49676 3.16E+06   "
+                      "gf180mcu_fd_sc_mcu7t5v0__dffq_1\n")
+        with self.assertRaises(h.CheckFailure):
+            h.parse_stat(transcript)
+
+    def test_synthparse_h08_refuses_top_total_without_section(self):
+        """NEGATIVE CONTROL: a top-module area line with no preceding
+        `=== design hierarchy ===` section must FAIL."""
+        h = _h08_synth()
+        transcript = ("   Chip area for module '\\alg_router': 1158154.59\n"
+                      "   Chip area for top module '\\synth_top': "
+                      "23297622.476804\n")
+        with self.assertRaises(h.CheckFailure):
+            h.parse_stat(transcript)
+
+    def test_synthparse_h08_strip_log_is_empty_design(self):
+        """The strip control maps NOTHING; it must stay parseable (zeros)
+        or the negative control cannot be evaluated."""
+        h = _h08_synth()
+        if not os.path.exists(self.STRIP_LOG):
+            self.skipTest(f"NOT_RUN: {self.STRIP_LOG} absent")
+        with open(self.STRIP_LOG) as f:
+            st = h.parse_stat(f.read())
+        self.assertEqual(st["cell_total"], 0)
+        self.assertEqual(st["flop_total"], 0)
+        self.assertIsNone(st["chip_area_um2"])
+        self.assertIn("empty design", st["totals_basis"])
+
+
+class TestH08RelativeGate(unittest.TestCase):
+    """gates.full_vs_h07: evaluated only on hierarchy totals of the same
+    core RTL on both sides; otherwise NOT_RUN (never smoothed over)."""
+
+    RTL = {"rtl/dx7_core.v": "a" * 64, "rtl/env_unit.v": "b" * 64,
+           "rtl/alg_router.v": "c" * 64}
+
+    def _st(self, flops, cells):
+        h = _h08_synth()
+        return {"flop_total": flops, "cell_total": cells,
+                "chip_area_um2": 2.0e7, "totals_basis": h.HIER_BASIS}
+
+    def _h07(self, flops, cells, tagged=True, rtl=None):
+        h = _h08_synth()
+        full = {"flop_total": flops, "cell_total": cells,
+                "chip_area_um2": 2.4e7}
+        if tagged:
+            full["totals_basis"] = h.HIER_BASIS
+        return {"runs": {"full": full}, "rtl": dict(rtl or self.RTL)}
+
+    def test_h08_relative_gate_pass_and_culled(self):
+        h = _h08_synth()
+        g = h.relative_gate(self._st(90000, 1000000),
+                            self._h07(90427, 1063163), self.RTL)
+        self.assertEqual(g["status"], "PASS")
+        self.assertEqual(g["flops_culled_vs_h07_top_build"], 427)
+        self.assertEqual(g["cells_culled_vs_h07_top_build"], 63163)
+
+    def test_h08_relative_gate_fails_when_chassis_exceeds_core(self):
+        """NEGATIVE CONTROL: a wrapper that adds state must FAIL (b)."""
+        h = _h08_synth()
+        g = h.relative_gate(self._st(92045, 1000000),
+                            self._h07(90427, 1063163), self.RTL)
+        self.assertEqual(g["status"], "FAIL")
+
+    def test_h08_relative_gate_not_run_on_stale_h07(self):
+        """A pre-#82 (untagged) H07 report is STALE: NOT_RUN, never a
+        comparison against its per-module numbers."""
+        h = _h08_synth()
+        g = h.relative_gate(self._st(92045, 1014491),
+                            self._h07(147889, 36919, tagged=False),
+                            self.RTL)
+        self.assertEqual(g["status"], "NOT_RUN")
+        self.assertIsNone(g["flops_culled_vs_h07_top_build"])
+        self.assertTrue(any("#93" in r for r in g["not_run_reason"]))
+
+    def test_h08_relative_gate_not_run_across_rtl(self):
+        h = _h08_synth()
+        other = dict(self.RTL, **{"rtl/dx7_core.v": "d" * 64})
+        g = h.relative_gate(self._st(90000, 1000000),
+                            self._h07(90427, 1063163, rtl=other), self.RTL)
+        self.assertEqual(g["status"], "NOT_RUN")
+        g = h.relative_gate(self._st(90000, 1000000),
+                            self._h07(90427, 1063163), None)
+        self.assertEqual(g["status"], "NOT_RUN")
+
+    def test_h08_relative_gate_on_committed_evidence(self):
+        """The H08-side recompute from the committed log, against the
+        committed H07 report: NOT_RUN today (H07 STALE until #93; the two
+        builds are of different core RTL since the DR-0011 refreeze)."""
+        h = _h08_synth()
+        log = os.path.join(SYNTH_EVIDENCE, "yosys_full.log")
+        if not (os.path.exists(log) and os.path.exists(H07_SYNTH_REPORT)):
+            self.skipTest("NOT_RUN: committed H08 log / H07 report absent")
+        with open(log) as f:
+            st = h.parse_stat(f.read())
+        with open(H07_SYNTH_REPORT) as f:
+            h07 = json.load(f)
+        g = h.relative_gate(st, h07, h.logged_core_rtl(SYNTH_EVIDENCE, log))
+        self.assertEqual(g["mapped_flops"], 92045)
+        self.assertEqual(g["cell_total"], 1014491)
+        if g["status"] == "NOT_RUN":
+            self.assertTrue(g["not_run_reason"])
+        else:
+            self.assertIn(g["status"], ("PASS", "FAIL"))
+
+
+class TestH08CommittedSynthReport(unittest.TestCase):
+    def test_h08_committed_synth_report_is_the_hierarchy_total(self):
+        """The committed report's numeric fields must be the hierarchy
+        totals of its own committed transcript (issue #94). Until it is
+        regenerated with the fixed parser on the heavy host it still
+        carries alg_router's per-module numbers: reported as STALE /
+        NOT_RUN (guarded skip naming the host), never as a pass."""
+        h = _h08_synth()
+        path = os.path.join(SYNTH_EVIDENCE, "synth_report.json")
+        log = os.path.join(SYNTH_EVIDENCE, "yosys_full.log")
+        if not (os.path.exists(path) and os.path.exists(log)):
+            self.skipTest("NOT_RUN (guarded skip): no committed H08 synth "
+                          f"report/log; yosys lives on {REMOTE_ALIAS}")
+        with open(path) as f:
+            got = json.load(f)["runs"]["full"]
+        with open(log) as f:
+            want = h.parse_stat(f.read())
+        drift = {k: (got.get(k), want[k])
+                 for k in ("chip_area_um2", "cell_total", "flop_total",
+                           "seq_area_um2") if got.get(k) != want[k]}
+        if drift:
+            msg = ("STALE: evidence/h08-chassis/synth_report.json carries "
+                   "pre-#94 parser output (recorded, hierarchy total): "
+                   f"{drift}. Re-run tools/h08_synth.py on {REMOTE_ALIAS} "
+                   "and commit the regenerated report.")
+            if remote_reachable():
+                self.fail(msg)
+            self.skipTest(f"NOT_RUN (guarded skip): heavy host "
+                          f"{REMOTE_ALIAS} unreachable. {msg}")
+
+
 if __name__ == "__main__":
     unittest.main()

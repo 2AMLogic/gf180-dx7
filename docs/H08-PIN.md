@@ -1,11 +1,14 @@
 # H08 — SPI/I2S pin-level integration
 
-> **Supersession note (2026-09-24, DR-0011):** the frozen core this
-> document pins (`335599ea…`) was re-freezed to the single-driver merged
-> revision `34f93d2d…` (H10, see `docs/decision-records/0011-*`). The
-> H08 evidence below remains the historical record of the chassis on the
-> pre-refreeze core; the chassis files themselves are re-verified against
-> the refrozen core by the H07 battery (bit-exact, unmodified chassis).
+> **Supersession note (2026-09-24, DR-0011; updated 2026-09-25, DR-0012):**
+> the frozen core this document pins (`335599ea…`) was re-freezed to the
+> single-driver merged revision `34f93d2d…` (H10, see
+> `docs/decision-records/0011-*`), and again to the widened-`exp_t*`
+> revision `f33cecbd…` (issue #98, see `docs/decision-records/0012-*`).
+> The H08 evidence below remains the historical record of the chassis on
+> the pre-refreeze core; the chassis files themselves are re-verified
+> against the refrozen core by the H07 battery (bit-exact, unmodified
+> chassis). `tests/test_h08.py` CORE_SHA tracks the current pin.
 
 Issue #30, branch `loom/h08-spi` (rebases onto `origin/main`; core
 lineage is the H07 record, PRs #73/#75/#76 — the hash-pinned core is the

@@ -1,0 +1,17 @@
+test_committed_synth_report_gates (test_h07.TestStripObsControl.test_committed_synth_report_gates) ... FAIL
+
+======================================================================
+FAIL: test_committed_synth_report_gates (test_h07.TestStripObsControl.test_committed_synth_report_gates)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-98/tests/test_h07.py", line 543, in test_committed_synth_report_gates
+    self.fail(msg)
+    ~~~~~~~~~^^^^^
+AssertionError: STALE: evidence/h07-core/synth_report.json was produced on a different core revision: {'rtl/dx7_core.v': ('f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa', '34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58')}. Re-run tools/h07_synth.py on repo-remote-gf180-dx7 (yosys + ciel 7t liberty) and commit the regenerated report.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)
+failures: 1 skipped: 0
+CONTROL OK: reachable heavy host => FAIL (not a skip, not a pass)

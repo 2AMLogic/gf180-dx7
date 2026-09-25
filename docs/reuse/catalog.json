@@ -1859,8 +1859,8 @@
   },
   {
    "path": "rtl/dx7_core.v",
-   "sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
-   "reason": "H10 single-driver refreeze (DR-0011): fused blocks, set-only st_overflow"
+   "sha256": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+   "reason": "exp() term-width refreeze (DR-0012, issue #98): exp_t3/exp_t4/exp_t5 widened to [85:0]/[85:0]/[81:0] so the exp_hsum reads are in range (no simulated value changes; synthesis stops deleting the exp() datapath). Prior: H10 single-driver refreeze (DR-0011): fused blocks, set-only st_overflow"
   },
   {
    "path": "rtl/tb_dx7_core.v",
@@ -1869,8 +1869,8 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "f6de20fd2ffc89b74d951af3d871fa74f0247111da38b2ab27506f32237c07a9",
-   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes"
+   "sha256": "2743742b833d61726b7be4dddc82ad5d7afde539ad1a4d35aab7ccae099be104",
+   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes Issue #98 (DR-0012): core-pin note on section 4 \u2014 the battery re-certified on the refrozen pin, the mapped-area and iverilog-shadow rows explicitly not re-established on it."
   },
   {
    "path": "tools/h07_compare.py",
@@ -1884,8 +1884,8 @@
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes",
-   "sha256": "ed3f79b1e3522816122ac69a1ee15f063de09ef4a57a43fa0f8d1a7dfa014ae6"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can.",
+   "sha256": "81a419091998461c62058b574f385c804512e2a78c73f497d52e3cd0ce051960"
   },
   {
    "path": "rtl/tb_synth_top.v",
@@ -1899,13 +1899,13 @@
   },
   {
    "path": "tests/test_h08.py",
-   "sha256": "af3aa48a28128ceb123f85117d9651ea80a4ef4775d4a6d14bc021e5badeb1cc",
-   "reason": "CORE_SHA re-pinned to refrozen core (DR-0011); re-pinned for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks"
+   "sha256": "ecffc523c5de7408ad7f8a88b4bf095b45b79c232c3ef3250deb54972c732478",
+   "reason": "CORE_SHA re-pinned to the DR-0012 refrozen core (issue #98); previously re-pinned to the DR-0011 refrozen core and for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks"
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "519d320d6a9f81cc212a195f07ce49d4a3e5ea21294f4770885ad984e9d2d6d5",
-   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94)"
+   "sha256": "85df9c982589e1d74efefe40af7e35821ca5d095f6ed50022e30f6ab3e73143d",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98)"
   },
   {
    "path": "tools/h08_synth.py",
@@ -2058,6 +2058,11 @@
    "reason": "locally authored single-driver core refreeze decision record (issue #32 PR-A): frozen core re-pinned to the single-driver revision, synthesis-path legality evidence chain (witnesses A-E, battery h10-merged-p3), supersession of the 2026-09-23 '9 fatals' note, silent const-resolution finding (exp_t* selects), operator-ratification gate"
   },
   {
+   "path": "docs/decision-records/0012-exp-term-width-core-refreeze.md",
+   "sha256": "4412af392a11cb501a64168860258014ece9f689d72a825c0f0412a4eb31d8f7",
+   "reason": "locally authored exp() term-width refreeze decision record (issue #98, escalation from #86): frozen core re-pinned to the widened-exp_t* revision, cone LEC + fresh H07 battery evidence, the no-out-of-range-select rule and its structural guard, H10 marked STALE, operator-ratification gate"
+  },
+  {
    "path": "evidence/h10-legality/run-attempts.md",
    "sha256": "3b4b789384a09e2e77ef16eaed77ae6dedde53a19215d91084964ce24b4ef00d",
    "reason": "run-by-run digest of the legality evidence incl. superseded attempts, recorded tool deadlock, and H07 re-cert rows; re-pinned for H10 PR-B: row H diagnosis addendum (issue #32)"
@@ -2074,13 +2079,13 @@
   },
   {
    "path": "tools/h10_collect.py",
-   "sha256": "091c7928386fde97fccf2996a9eddf25589563cfa6d3a37f8b282cc0792262ee",
-   "reason": "locally authored H10 evidence-bundle assembler (issue #32): hash-pins every number to committed evidence, NOT_RUN for absent stages, never carries numbers across stages; no upstream bytes"
+   "sha256": "7c48f27e862da031062b1a48da387cc263a6be96450a67a9377019e1ca3799f2",
+   "reason": "locally authored H10 evidence-bundle assembler (issue #32): hash-pins every number to committed evidence, NOT_RUN for absent stages, never carries numbers across stages; no upstream bytes; issue #98: records the RTL the runs measured (never a re-hash of the working tree) and carries the DR-0012 supersession record"
   },
   {
    "path": "tools/h10_report.py",
-   "sha256": "8d0e64cdfea8db19d995caf262621f23176623b0d2ea03ad55b3fb775831ddfc",
-   "reason": "locally authored H10 report generator with the fit gate (issue #32 negative control): positive fit only on a full hash-verified synth/place/route(0 DRC)/sta(ss WNS>=0) chain; area-alone non-fit from mapped cells; no upstream bytes"
+   "sha256": "dbc574daa99fb30fddc32a9f1fd14743ac57399fb5c25e1c6b944a933bb93569",
+   "reason": "locally authored H10 report generator with the fit gate (issue #32 negative control): positive fit only on a full hash-verified synth/place/route(0 DRC)/sta(ss WNS>=0) chain; area-alone non-fit from mapped cells; no upstream bytes; issue #98: emits the supersession/STALE banner from the bundle"
   },
   {
    "path": "tools/h10_synth.py",
@@ -2094,8 +2099,8 @@
   },
   {
    "path": "tests/test_h10_report.py",
-   "sha256": "e2c322fb01ec77a35c784947b8ad18a8130c0fc21dac07e416d8c0b8f3aa2811",
-   "reason": "locally authored H10 fit-gate live negative controls (issue #32); no upstream bytes"
+   "sha256": "261d47e914bff947a564392e9ec5e4dbe7dd78d05fc9b30aedd63f60aa277251",
+   "reason": "locally authored H10 fit-gate live negative controls (issue #32); issue #98 adds cases N (bundle RTL provenance is the runs', not the working tree's) and O (the STALE banner tracks the frozen pin in both directions); no upstream bytes"
   },
   {
    "path": "tests/test_h10_synth.py",
@@ -2109,13 +2114,13 @@
   },
   {
    "path": "tools/exp_range_proof.py",
-   "sha256": "f6f3217ed461031efd91dcd41ba027d10931b2e508df916760b0b91192621e96",
-   "reason": "locally authored issue #86 range-proof tool (static/sweep/xcheck of exp_t3/4/5 out-of-range selects); not a reuse import"
+   "sha256": "2f333d5c38dabd115663c9c4091739a5a94b37dbf67d6c5f139271928f861bf8",
+   "reason": "locally authored issue #86 range-proof tool (static/sweep/xcheck of the exp_t3/4/5 term widths), re-pinned for the DR-0012 refreeze (issue #98); not a reuse import"
   },
   {
    "path": "tools/exp_hsum_lec.py",
-   "sha256": "d7cf93fb2e32aca889dc1302853339669960bd10a9df2a4a86a6d3a55d81bb07",
-   "reason": "locally authored issue #86 exp_hsum cone LEC + full-core RTLIL driver check via the pinned image's yosys; not a reuse import"
+   "sha256": "c0d3c1092e9e4f12ab1297a6ddde070350f1521cac70e16684dd660459069bb9",
+   "reason": "locally authored issue #86 exp_hsum cone LEC + full-core RTLIL driver check via the pinned image's yosys, extended in issue #98 with the DR-0011-width live negative controls and declared-width reading; not a reuse import"
   },
   {
    "path": "tools/exp_netlist_census.py",
@@ -2129,8 +2134,8 @@
   },
   {
    "path": "tools/ams_window_compare.py",
-   "sha256": "7c2e5beeca2019a52e4466a27f578cfd4b2653fb4e0deda4e403a7f83377908a",
-   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import"
+   "sha256": "a92d436c5c525619ca8f749d00096780f90f7724634abd9ac0f6c50134a553dd",
+   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import Issue #98 (DR-0012): the declared expectation is derived from the RTL under test (out-of-range exp_t* reads present or not) instead of being pinned to the DR-0011 revision, so the repaired core is not reported as a FAIL and a re-narrowing regression flips the expectation back."
   },
   {
    "path": "tools/h07_ams_audit.py",

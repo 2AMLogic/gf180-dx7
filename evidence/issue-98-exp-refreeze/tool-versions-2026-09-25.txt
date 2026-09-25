@@ -1,0 +1,31 @@
+issue #98 / DR-0012 tool + input identities (2026-09-25)
+
+host: Apple Silicon macOS (Darwin 27.0.0); the pinned ORFS image runs under linux/amd64 emulation
+
+-- RTL under test (the DR-0012 frozen core) --
+f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa  rtl/dx7_core.v
+d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28  rtl/env_unit.v
+dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d  rtl/alg_router.v
+h07 rtl_fingerprint (sha256 of the three files concatenated, tools/h07_compare.py): 45696e3e7f6c9362b7774f99b4ccd14f03363a8dba408d423891ff157a0ec46e
+
+-- superseded pin (negative control input) --
+34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58  build/i98/dx7_core_dr0011.v  (= DR-0011 pin, git show 3de0095:rtl/dx7_core.v)
+scratch copy at DR-0011 widths used for the lint control: fb6ce475a570db48d7044ea1c6bb1365305922c5c56c5d102725d6136b007f4f  (diff: nc-dr0011-widths.diff)
+
+-- tools --
+2f333d5c38dabd115663c9c4091739a5a94b37dbf67d6c5f139271928f861bf8  tools/exp_range_proof.py
+c0d3c1092e9e4f12ab1297a6ddde070350f1521cac70e16684dd660459069bb9  tools/exp_hsum_lec.py
+773a48c569553733e50112b844fda27a5891e3dfc5def3364f770bec93bcbf74  tools/exp_netlist_census.py
+c4d8dfb53f697ea872aaaf3d88c87aefe5998bc2c21c3913c6d30167debc66b3  tools/h07_compare.py
+7c48f27e862da031062b1a48da387cc263a6be96450a67a9377019e1ca3799f2  tools/h10_collect.py
+dbc574daa99fb30fddc32a9f1fd14743ac57399fb5c25e1c6b944a933bb93569  tools/h10_report.py
+
+-- simulators / synthesis --
+Python 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+Verilator 5.052 2026-09-05 rev vUNKNOWN-built20260905
+Icarus Verilog version 13.0 (stable) (v13_0)
+host yosys: Yosys 0.69+post (git sha1 143eb14f9cc55d6f8927e68523b0c9d2166ed02c, Release, AppleClang clang++ 21.0.0.21000101)
+pinned image: openroad/orfs@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2
+pinned yosys inside that image: /OpenROAD-flow-scripts/tools/install/yosys/bin/yosys -> Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU 11.4.0)
+docker: Docker version 29.8.1, build 4a63305d74
+docker VM capacity at the time of the synthesis attempt: MemTotal=8317267968 bytes, NCPU=18

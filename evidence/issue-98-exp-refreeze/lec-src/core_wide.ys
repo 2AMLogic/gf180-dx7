@@ -1,0 +1,5 @@
+read_verilog -defer -sv -I rtl /private/tmp/i86lec39wcjxtq/dx7_core_widened.v rtl/env_unit.v rtl/alg_router.v
+hierarchy -check -top dx7_core
+proc
+opt_expr
+write_rtlil /private/tmp/i86lec39wcjxtq/core_wide.il

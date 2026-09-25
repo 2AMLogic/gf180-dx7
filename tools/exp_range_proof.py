@@ -1,26 +1,29 @@
 #!/usr/bin/env python3
-"""exp_t3/exp_t4/exp_t5 out-of-range-select range proof (issue #86).
+"""exp_t3/exp_t4/exp_t5 term-width range proof (issues #86, #98).
 
 `rtl/dx7_core.v` computes the degree-5 Taylor-series terms of the AM/LFO
-`exp()` unit as::
+`exp()` unit as `exp_tk = exp_pk * C_k`, then reads `exp_t3[85:30]`,
+`exp_t4[85:30]` and `exp_t5[81:26]` into `exp_hsum`.
 
-    wire [70:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
-    wire [70:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
-    wire [65:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
+The question this tool answers is whether the exact (infinite-precision)
+product `p_k * C_k` is always below 2^W, W being the declared wire width.
+If it is, the wire holds the exact product with no truncation, and every bit
+at or above the product's own width -- including the top read bits -- is 0.
 
-and then reads part-selects that exceed those declared widths::
+That proof carries two loads:
 
-    + {13'b0, exp_t3[85:30]}        // bits 71-85 do not exist (wire is [70:0])
-    + {13'b0, exp_t4[85:30]}        // bits 71-85 do not exist (wire is [70:0])
-    + {13'b0, exp_t5[81:26]};       // bits 66-81 do not exist (wire is [65:0])
+* At the DR-0011 pin the wires were declared [70:0]/[70:0]/[65:0], narrower
+  than the reads.  The proof is what established that the missing bits were
+  0 in exact arithmetic, so the Verilator-simulated core was right, while
+  synthesis (which treats them as undef, folds the adder to x, then zeroes
+  it) was building something else -- issue #86, docs/EXP-RANGE-PROOF-86.md.
+* DR-0012 (issue #98) widens the declarations to [85:0]/[85:0]/[81:0] so the
+  reads are in range.  The same bound is what makes that a no-op for every
+  simulated value, and it stays live to catch any later change (a narrowed
+  wire, a widened upstream slice) that would reintroduce truncation.
 
-Yosys marks the missing bits undef; the pinned ORFS flow's `setundef -zero`
-ties them to 0 in the mapped netlist.  The question is whether 0 is the
-value the design math actually needs there, i.e. whether the exact
-(infinite-precision) product `p_k * C_k` is always below 2^W (W = declared
-wire width).  If it is, the wire holds the exact product with no truncation
-and every bit at position >= W of the exact product -- including all of the
-out-of-range read bits -- is 0.
+`out_of_range_bits` in the static result is therefore `None` on the current
+core, and the term still reports its exact-product bound and headroom.
 
 Two independent checks
 ----------------------
@@ -66,7 +69,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 DX7_CORE = REPO / "rtl" / "dx7_core.v"
+# Frozen-core pins.  DR-0011 froze the single-driver revision; DR-0012
+# (issue #98) re-freezes to the widened-exp_t* revision, which changes no
+# simulated value but keeps the exp() datapath through synthesis.
 DR0011_PIN = "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58"
+FROZEN_PIN = "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa"
 
 # Chain of registers analysed, in dependency order.  Each is written only
 # with `<name> <= <src>[hi:lo];` (plus a constant-0 reset).
@@ -341,6 +348,7 @@ def main() -> int:
                         if args.rtl.resolve().is_relative_to(REPO) else str(args.rtl)),
            "rtl_sha256": digest,
            "rtl_matches_dr0011_pin": digest == DR0011_PIN,
+           "rtl_matches_frozen_pin": digest == FROZEN_PIN,
            "python": sys.version.split()[0]}
 
     if args.mode == "static":

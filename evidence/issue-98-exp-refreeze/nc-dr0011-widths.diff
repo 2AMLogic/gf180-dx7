@@ -1,0 +1,15 @@
+--- rtl/dx7_core.v	2026-09-25 12:13:08
++++ /tmp/i98/nc/dx7_core.v	2026-09-25 11:19:42
+@@ -959,9 +959,9 @@
+     // -zero` then makes the constant 0 -- deleting the exp() datapath from
+     // the mapped netlist while every simulator stays bit-exact (issue #86,
+     // docs/EXP-RANGE-PROOF-86.md; DR-0012).
+-    wire [85:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
+-    wire [85:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
+-    wire [81:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
++    wire [70:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
++    wire [70:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
++    wire [65:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
+     wire [56:0]  exp_hsum = (57'd1 << 56)
+         + {1'b0, exp_xq}
+         + {13'b0, exp_p2[44:1]}         // x^2/2, Q0.56

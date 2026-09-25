@@ -1,0 +1,6 @@
+read_verilog /private/tmp/i86lec39wcjxtq/ctrl_gold.v
+read_verilog /private/tmp/i86lec39wcjxtq/ctrl_mapped.v
+proc
+miter -equiv -flatten -make_outputs gold cone m
+hierarchy -top m
+sat -prove trigger 0 -show-inputs -show-outputs -timeout 600 m

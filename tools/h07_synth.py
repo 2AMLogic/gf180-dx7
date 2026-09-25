@@ -28,7 +28,11 @@ frozen model on the pre-synthesis RTL by tools/h07_compare.py.
 
 What is reported and how it is labelled:
   - cell counts, flop counts, per-cell table, chip area: measured
-    (yosys stat -liberty against the named liberty).
+    (yosys stat -liberty against the named liberty), read from the
+    transcript's `=== design hierarchy ===` totals -- the whole-core
+    numbers INCLUDING submodules. A per-module ("local") block is never
+    reported as a design total; if the hierarchy totals are absent the
+    run fails instead of substituting one (issue #82).
   - ROM representation: measured from the transcript (the sinlog/sinexp/
     LFO-sin/freqLUT memories dissolve to logic gates via MEMORY_MAP; no
     BRAM exists in this flow).
@@ -174,22 +178,98 @@ def run_yosys(yosys, liberty, strip, log_path):
     return log
 
 
+HIER_MARK = "=== design hierarchy ==="
+CELL_LINE = r"^\s+(\d+)\s+(\S+)\s+(gf180mcu\S+)\s*$"
+
+
+def _parse_empty_stat(log):
+    """The one legitimate hierarchy-free transcript: a design that mapped
+    to NOTHING (the H07_STRIP_OBSERVABILITY control -- yosys deletes every
+    cell, leaving one module with no cells and no `Chip area` line at
+    all). Accepted only when the transcript really is cell-free; anything
+    else raises rather than reporting a per-module number as the total."""
+    if re.search(r"Chip area for module", log):
+        raise CheckFailure(
+            "stat transcript has per-module 'Chip area for module' blocks "
+            "but no 'Chip area for top module' line: the hierarchical "
+            "total is absent (truncated or non-hierarchical stat). "
+            "Refusing to substitute a per-module area as the design total "
+            "(issue #82).")
+    stray = re.findall(CELL_LINE, log, re.M)
+    if stray:
+        raise CheckFailure(
+            f"stat transcript reports {len(stray)} mapped cell line(s) but "
+            "no hierarchical total and no chip-area line -- refusing to "
+            "report an unanchored count (issue #82).")
+    return {
+        "cells_by_name": {},
+        "cell_total": 0,
+        "dff_cells": {},
+        "flop_total": 0,
+        "chip_area_um2": None,
+        "seq_area_um2": None,
+        "totals_basis": "empty design (no mapped cells in the transcript)",
+    }
+
+
 def parse_stat(log):
-    """Mapped cell/area facts from a `stat -liberty` transcript."""
+    """Whole-design mapped cell/area facts from a `stat -liberty`
+    transcript.
+
+    yosys prints one LOCAL block per module (`=== <module> ===`, "Chip
+    area for module '\\<module>'") and then, for a multi-module design, a
+    final `=== design hierarchy ===` section whose counts INCLUDE
+    submodules, closed by `Chip area for TOP module '\\<top>'`. Only that
+    last section describes the core as a whole.
+
+    The pre-#82 parser took the FIRST `Chip area for module` match and
+    summed cell counts across every block, so it recorded `alg_router`'s
+    local area (1,158,826 um^2) as the core total and double-counted
+    flops. This parser therefore:
+
+      - anchors on `Chip area for top module` and takes the LAST match
+        (a non-final intermediate `Chip area for module '\\dx7_core'`
+        block exists earlier in the same transcript and is NOT the
+        total);
+      - bounds cell/flop counting to the hierarchy section, so the
+        per-module blocks cannot be added into the totals;
+      - raises CheckFailure rather than falling back to any per-module
+        number when the hierarchy totals are absent.
+    """
+    top_m = list(re.finditer(
+        r"Chip area for top module '\\?([\w$]+)': ([\d.]+)", log))
+    if not top_m:
+        return _parse_empty_stat(log)
+    top = top_m[-1]
+    start = log.rfind(HIER_MARK, 0, top.start())
+    if start < 0:
+        raise CheckFailure(
+            f"'Chip area for top module' found but no '{HIER_MARK}' "
+            "section precedes it -- refusing to report per-module numbers "
+            "as the design total (issue #82).")
+    sect = log[start:top.end()]
+    total = re.search(r"^\s+(\d+)\s+\S+\s+cells\s*$", sect, re.M)
+    if not total:
+        raise CheckFailure(
+            "no hierarchical 'cells' total line inside the "
+            f"'{HIER_MARK}' section (issue #82).")
     cells = {}
-    for m in re.finditer(r"^\s+(\d+)\s+([\d.]+E\+\d+|[\d.]+)\s+"
-                         r"(gf180mcu\S+)\s*$", log, re.M):
-        cells[m.group(3)] = cells.get(m.group(3), 0) + int(m.group(1))
-    chip = re.search(r"Chip area for module .*?: ([\d.]+)", log)
-    seq = re.search(r"of which used for sequential elements: ([\d.]+)", log)
-    total = re.search(r"^\s+(\d+)\s+[\d.]+E\+\d+\s+cells\s*$", log, re.M)
+    for m in re.finditer(CELL_LINE, sect, re.M):
+        # assignment, not accumulation: within the bounded hierarchy
+        # section each cell type appears exactly once, already summed
+        # over submodules by yosys.
+        cells[m.group(3)] = int(m.group(1))
+    seq = re.search(r"of which used for sequential elements: ([\d.]+)",
+                    log[top.end():top.end() + 400])
     return {
         "cells_by_name": dict(sorted(cells.items())),
-        "cell_total": int(total.group(1)) if total else sum(cells.values()),
-        "dff_cells": {k: v for k, v in cells.items() if "dff" in k},
+        "cell_total": int(total.group(1)),
+        "dff_cells": {k: v for k, v in sorted(cells.items()) if "dff" in k},
         "flop_total": sum(v for k, v in cells.items() if "dff" in k),
-        "chip_area_um2": float(chip.group(1)) if chip else None,
+        "chip_area_um2": float(top.group(2)),
         "seq_area_um2": float(seq.group(1)) if seq else None,
+        "top_module": top.group(1),
+        "totals_basis": "design hierarchy section (includes submodules)",
     }
 
 
@@ -259,6 +339,7 @@ def main(argv=None):
             "chip_area_um2": st["chip_area_um2"],
             "seq_area_um2": st["seq_area_um2"],
             "cell_total": st["cell_total"],
+            "totals_basis": st.get("totals_basis"),
             "status": "PASS" if ok else "FAIL",
         }
         runs["full"] = st
@@ -322,4 +403,11 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except CheckFailure as exc:                       # gate / parse refusal
+        print(f"CHECK-FAILURE: {exc}", file=sys.stderr)
+        sys.exit(1)
+    except CouldNotRun as exc:
+        print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
+        sys.exit(2)

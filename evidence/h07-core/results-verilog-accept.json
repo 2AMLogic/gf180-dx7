@@ -1751,7 +1751,7 @@
   "stress-sum16": "6b307fbfb8f951ffcfb6547561686e3313e056e5d44f8cdb266741ec58e8139b"
  },
  "latency_contract": "H03 section 4.5: [(64-p), (64-p)+65]",
- "rtl_sha256": "7bab93f514f49a3f6819818e66ed3e4581c00ebb0063082ef1e2b7f2f06bc188",
+ "rtl_sha256": "45696e3e7f6c9362b7774f99b4ccd14f03363a8dba408d423891ff157a0ec46e",
  "tag": "verilog-accept",
  "tool": "verilator"
 }

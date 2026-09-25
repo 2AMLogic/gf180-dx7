@@ -25,7 +25,9 @@ Statuses are PASS / FAIL / NOT_RUN / BLOCKED / NO_VERDICT / STALE as defined in
 | G | H07 battery, fresh, Verilator, 34 cases | PASS 34/34 | `../h07-core/results-dr0012-p1.json` |
 | G′ | same battery vs the DR-0011-pin baseline, per-case captured PCM | 34/34 byte-identical | `../h07-core/results-h10-merged-p3.json` |
 | G″ | second clean battery on the same pin (DR-0011's two-clean-runs rule) | PASS 34/34, artifact-hash identical to G | `../h07-core/results-dr0012-p2.json` |
-| H | H07 battery, Icarus, on this pin | **NOT_RUN** (host throughput) | — |
+| H | Icarus end-to-end over a window containing the live note, both AMS ≠ 0 cases | PASS — bit-exact, 0 mismatches (#104 measured FAIL on the DR-0011 pin) | `window-iverilog-dev32-{30,06}-refrozen-2026-09-25.json` |
+| H′ | same, `dev32-03` (AMS = 0 harness/truncation control) | PASS | `window-iverilog-dev32-03-refrozen-2026-09-25.json` |
+| H″ | full-length 34-case Icarus shadow on this pin | **NOT_RUN** (host throughput) | — |
 | I | host-yosys 0.69+post cone LEC, independent of the pinned image | PASS (same verdict, different yosys) | `exp-hsum-lec-host-refrozen-2026-09-25.json` |
 | K | live control for the weakened H07 synth-report gate | FAIL as required when the heavy host is reachable | `h07-synth-report-stale-control-2026-09-25.txt` |
 
@@ -149,27 +151,46 @@ reads the newest-pin results file and still fails if its `rtl_sha256` is not
 the current three-file fingerprint — that assertion is what caught the stale
 `results-verilog-accept.json` in CI on this PR, exactly as intended.
 
-## H — the Icarus battery on this pin: NOT_RUN, with the reason measured
+## H, H′, H″ — Icarus on the refrozen pin
 
-**NOT_RUN. No Icarus verdict on the refrozen pin is claimed here.**
+**The AM path now renders bit-exactly under Icarus.** Issue #104 (merged to
+main while this PR was open) built the bounded comparison that makes this
+cheap: `tools/ams_window_compare.py` drives `h07_compare.py`'s own vector
+builder, simulator build, player and bit-exact comparator over a 120-block
+window that reaches past the note-on at block 75, instead of the ~1875-frame
+full vector. On the DR-0011 pin it recorded `dev32-30` and `dev32-06` as
+conformance **FAIL**s under Icarus 13.0 — 0 of 2,856 / 2,864 nonzero golden
+samples reproduced, first mismatch in block 75, `state_obs x`.
 
-Two attempts were made at the two AMS ≠ 0 cases (`dev32-06`, `dev32-30`), the
-second with exactly the committed shadow's parameters
-(`--tool iverilog --frames 24 --jobs 2`; the generated `vector.txt` is
-byte-identical to `../h07-core/runs/iverilog-shadow-dev-dev32-06/vector.txt`).
-Both were abandoned: those two cases carry their last event at wire frame 1875,
-so the simulation has to reach ~120,000 samples, and Icarus — which interprets
-the whole 16-voice core — advanced ~6.4 frames/min on this host (192 of 1875
-frames in 30 min of wall time, two cases in parallel). That is ≈ 4.5 h per
-case-pair, against ~1 min/case for Verilator. The committed 34-case shadow was
-produced on a remote Linux host (`../h07-core/remote-run-timeline-2026-09-23.txt`),
-not here.
+On the refrozen core, same tool, same unmodified corpus cases, same frozen
+goldens, exit 0 on all three:
 
-What *is* established about Icarus on this pin is row C, which needs no full
-render: the probe cross-check returns `hsum_unknown_points: 0`, where the
-DR-0011 pin returned 64/64 unknown. That is the root cause behind issue #96.
-Completing the Icarus shadow on this pin (and closing #96 against it) needs a
-host like the one that produced the committed shadow.
+| case | AMS | checked | mismatches | nonzero golden reproduced | `state_obs` |
+|---|---|---|---|---|---|
+| `dev32-30` | 3 on OP6 | 7,680 | **0** | 2,856 / 2,856 | not `x` |
+| `dev32-06` | 3 on OP6 | 7,680 | **0** | 2,864 / 2,864 | not `x` |
+| `dev32-03` (control) | 0 | 7,680 | **0** | 2,870 / 2,870 | not `x` |
+
+`dev32-03` is #104's live control for the method itself (an AMS = 0 case with
+an identical event trace, truncated the same way): it passed before and still
+passes, so what changed between the two runs is the AM path, not the window or
+the harness.
+
+The tool's declared expectation is **derived from the RTL under test** in this
+PR rather than pinned to one revision: while the `exp_t3`/`exp_t4`/`exp_t5`
+reads exceed their declared widths the iverilog/nonzero-AMS row is expected to
+FAIL (the #96 finding), and once they are in range it is expected to pass. A
+regression that re-narrowed the wires would flip the expectation back and be
+caught, not accommodated — before this change the tool would have reported the
+*correct* core as `status: FAIL`.
+
+H″: the **full-length** 34-case Icarus shadow on this pin is still NOT_RUN.
+Two attempts were abandoned; Icarus advanced ~6.4 render frames/min on this
+host and those cases run to frame 1875 (≈4.5 h for the pair), and the
+committed 34-case shadow was produced on a remote Linux host
+(`../h07-core/remote-run-timeline-2026-09-23.txt`). Row C is the third,
+tool-independent Icarus statement: the probe cross-check returns
+`hsum_unknown_points: 0` where the DR-0011 pin returned 64/64.
 
 ## I — host-yosys cross-check
 
@@ -180,14 +201,6 @@ cone constant `57'h0`, `cone_lec_control` FAIL, `controls_behaved: true` — the
 same verdicts on a different yosys build, so the behaviour is not an artefact of
 one binary. It has no authority over the pinned flow; row E is the result that
 matters for anything mapped.
-
-## What this directory does NOT establish
-
-- Nothing about timing, fit, placement, routing, signoff or silicon. The area
-  numbers in row F are synthesis-stage cell area from #86's runs.
-- No claim that the mapped netlist of **this pin** was measured (row F).
-- Nothing about musical quality or original-DX7 fidelity; bit-exactness to the
-  frozen model is claim (1) of `AGENTS.md` only.
 
 ## K — the one assertion this PR weakened, with its control
 
@@ -203,3 +216,14 @@ Because that trades a hard failure for a guarded skip, the skip is controlled:
 with `remote_reachable()` forced true, the drift **fails**, and the artifact
 records the run. The skip message itself always names the drift (both hashes)
 and the command that clears it, so the condition is never invisible.
+
+## What this directory does NOT establish
+
+- Nothing about timing, fit, placement, routing, signoff or silicon. The area
+  numbers in row F are synthesis-stage cell area from #86's runs.
+- No claim that the mapped netlist of **this pin** was measured (row F).
+- No **full-length** Icarus shadow on this pin (row H″): the Icarus statements
+  here are a 120-block end-to-end window per AM case plus a 64-point probe
+  cross-check, not the 34-case full-vector shadow.
+- Nothing about musical quality or original-DX7 fidelity; bit-exactness to the
+  frozen model is claim (1) of `AGENTS.md` only.

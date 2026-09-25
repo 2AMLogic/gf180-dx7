@@ -1869,7 +1869,7 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "f911a3a24c2c2d739d11b3670144e9804062df2678436cf1d214e382756be265",
+   "sha256": "2743742b833d61726b7be4dddc82ad5d7afde539ad1a4d35aab7ccae099be104",
    "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes Issue #98 (DR-0012): core-pin note on section 4 \u2014 the battery re-certified on the refrozen pin, the mapped-area and iverilog-shadow rows explicitly not re-established on it."
   },
   {
@@ -2059,7 +2059,7 @@
   },
   {
    "path": "docs/decision-records/0012-exp-term-width-core-refreeze.md",
-   "sha256": "e723d6ef9fa370c50a3f0eb36c993d49d8793a5ef8618188f8d28f349f5ced12",
+   "sha256": "4412af392a11cb501a64168860258014ece9f689d72a825c0f0412a4eb31d8f7",
    "reason": "locally authored exp() term-width refreeze decision record (issue #98, escalation from #86): frozen core re-pinned to the widened-exp_t* revision, cone LEC + fresh H07 battery evidence, the no-out-of-range-select rule and its structural guard, H10 marked STALE, operator-ratification gate"
   },
   {
@@ -2134,8 +2134,8 @@
   },
   {
    "path": "tools/ams_window_compare.py",
-   "sha256": "7c2e5beeca2019a52e4466a27f578cfd4b2653fb4e0deda4e403a7f83377908a",
-   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import"
+   "sha256": "a92d436c5c525619ca8f749d00096780f90f7724634abd9ac0f6c50134a553dd",
+   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import Issue #98 (DR-0012): the declared expectation is derived from the RTL under test (out-of-range exp_t* reads present or not) instead of being pinned to the DR-0011 revision, so the repaired core is not reported as a FAIL and a re-narrowing regression flips the expectation back."
   },
   {
    "path": "tools/h07_ams_audit.py",

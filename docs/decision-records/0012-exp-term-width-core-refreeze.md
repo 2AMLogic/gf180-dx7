@@ -7,7 +7,10 @@
   is a merge gate for this PR — see Decision 4)
 - **Related issues:** #98 (this refreeze; escalation from #86), #86 (the range
   proof and the synthesis finding), #96 (the Icarus all-x shadow, same root
-  cause), #32 (H10 mapped feasibility, whose figures this makes STALE)
+  cause) and #104 (which proved that hazard live and built the bounded
+  comparison this DR's rows H/H′ use), #32 (H10 mapped feasibility, whose
+  figures this makes STALE), #103 (the mapped census and H10 re-run on this
+  pin, BLOCKED on a >=12 GB synthesis host)
 - **Relation to DR-0011:** extends and supersedes its **core pin** and its
   Consequence (d). Every other decision of DR-0011 (single-driver merge, claim
   boundary, evidence hygiene) stands unchanged.
@@ -161,7 +164,13 @@
 
 - **Enables:** a mapped netlist whose exp() unit exists, so any future
   gate-level or PnR work is done against a core that computes what the frozen
-  model computes; #96's Icarus shadow, which the same fix resolves.
+  model computes; and the Icarus tier, which the same fix repairs — #96's
+  hazard was demonstrated live in #104 (the AM cases' x reaching the mixer,
+  two corpus passes masked by a silence-only compare window) and both of
+  those cases now render bit-exactly under Icarus over a window containing
+  the note (Evidence rows H/H′). #96 can be closed against that evidence
+  rather than re-investigated; the full-length Icarus shadow on this pin
+  (row H″) is still NOT_RUN and is the one thing left on that thread.
 - **Forbids:** (a) citing the `34f93d2d…` pin as the current core after merge;
   (b) citing any `docs/H10-GF180-FEASIBILITY.md` figure as the refrozen core's
   area, instance count or utilisation until H10 is re-run on this pin;
@@ -208,7 +217,9 @@ Full per-row detail, artifacts, tool hashes and the two negative-control runs:
 | G | H07 battery, fresh, Verilator | `tools/h07_compare.py --set both --tag dr0012-p1` | **PASS 34/34**, `overrun`/`overflow` 0 everywhere, every latency inside the contracted window |
 | G′ | same battery vs the DR-0011-pin baseline run | per-case `actual_sha256` | **34/34 byte-identical** — no simulated value changed (this issue's stop/escalate condition, measured) |
 | G″ | second clean battery on the refrozen pin (DR-0011's two-clean-runs rule) | `--tag dr0012-p2 --embed-prior` p1 | **PASS 34/34**, every per-case artifact hash identical to p1; `determinism_run2` embedded. 68 case-runs on this pin, all byte-identical to each other and to the pre-refreeze baseline |
-| H | H07 Icarus shadow on this pin | `--tool iverilog --frames 24` | **NOT_RUN** — abandoned twice: Icarus advances ~6.4 render frames/min on this host and these cases must reach frame 1875 (≈4.5 h/case-pair). Row C is the Icarus statement that does not need a full render |
+| H | Icarus end-to-end over a window containing the live note, both AMS ≠ 0 cases (#104's tool, unmodified corpus + frozen goldens) | `tools/ams_window_compare.py --tool iverilog` | **PASS**, exit 0 — `dev32-30` 7,680 checked / 0 mismatches / 2,856 of 2,856 nonzero golden samples reproduced; `dev32-06` 2,864 of 2,864. #104 measured **0 of 2,856 / 2,864** for the same windows on the DR-0011 pin |
+| H′ | the same on `dev32-03` (AMS = 0; #104's harness/truncation control) | idem | **PASS** — 2,870 of 2,870, so what moved between the two runs is the AM path, not the window or the harness |
+| H″ | full-length 34-case Icarus shadow on this pin | `--tool iverilog --frames 24` | **NOT_RUN** — abandoned twice: Icarus advances ~6.4 render frames/min on this host and those cases run to frame 1875 (≈4.5 h/case-pair); the committed shadow was made on a remote Linux host |
 | I | cone LEC under the host `Yosys 0.69+post` (tool-independence only) | `tools/exp_hsum_lec.py --yosys …` | **PASS**, exit 0 — same verdicts as row E on a different yosys build (narrowed control still FAIL with a constant-`57'h0` cone) |
 | J | structural guard, fast lane, no tools | `tests/test_exp_range_proof.py::NoOutOfRangeSelects` | **PASS**, with both negative controls failing as required (DR-0011 narrowing; an unrelated narrowed part-selected wire) |
 

@@ -29,7 +29,15 @@ prefix under the same simulator.  If truncation were unsound, that
 control would fail too.  ``tests/test_ams_audit.py`` keeps the recorded
 control live.
 
-Expected outcomes on the frozen DR-0011 core:
+The declared expectation is **derived from the RTL under test**, not
+hard-coded: the iverilog/nonzero-AMS row is expected to FAIL only while
+``rtl/dx7_core.v`` still reads ``exp_t3``/``exp_t4``/``exp_t5`` past their
+declared widths, because that read is the x source.  DR-0012 (issue #98)
+widened those declarations, so on the current core the same row is
+expected to PASS -- and a regression that re-narrowed them would flip the
+expectation back and be caught rather than accommodated.
+
+Expected outcomes on the frozen DR-0011 core (out-of-range reads present):
 
 * ``--case dev32-30 --tool iverilog`` -> **FAIL**, first mismatch in the
   first block after the note-on, actual = 0 where the golden is audio
@@ -37,6 +45,10 @@ Expected outcomes on the frozen DR-0011 core:
 * ``--case dev32-30 --tool verilator`` -> **PASS** (same window).
 * ``--case dev32-03 --tool iverilog`` -> **PASS** (AMS = 0 control; also
   the truncation control).
+
+Expected outcomes on the DR-0012 core (reads in range):
+
+* every row above -> **PASS**, including iverilog on dev32-06/dev32-30.
 
 Exit codes: 0 the compare ran and matched its declared expectation, 1 it
 ran and did not, 2 could-not-run (NOT_RUN).  Stdlib only.
@@ -61,6 +73,22 @@ DR0011_PIN = "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58"
 
 class NotRun(Exception):
     pass
+
+
+def exp_reads_within_declared_width(rtl_text: str) -> bool:
+    """True when every `exp_hsum` term read fits its wire's declared width.
+
+    That read is the x source this tool exists to measure (issue #96): an
+    out-of-range part-select is `x` to a 4-state simulator, and IEEE
+    4-state `+` turns the whole sum into `x`.  DR-0012 (issue #98) widened
+    the three declarations, so the property -- and therefore the declared
+    expectation below -- is read off the RTL under test instead of being
+    pinned to one revision.  The widths come from tools/exp_hsum_lec.py so
+    there is one definition of the reads, not two.
+    """
+    from exp_hsum_lec import T_TERM, declared_hi
+    decl = declared_hi(rtl_text)
+    return all(decl[name] >= read_hi for name, (_, read_hi) in T_TERM.items())
 
 
 def sha256_file(path: Path) -> str:
@@ -111,6 +139,8 @@ def main() -> int:
             raise NotRun(f"{args.case}: not an H07 dev corpus case")
         case = copy.deepcopy(cases[args.case])
         ams = ams_of(args.case, cases, cache)
+        in_range = exp_reads_within_declared_width(
+            (REPO / "rtl" / "dx7_core.v").read_text(encoding="utf-8"))
 
         kept = [r for r in case["event_trace"]
                 if r["block"] < args.window_blocks]
@@ -158,6 +188,7 @@ def main() -> int:
             "rtl_sha256": sha256_file(REPO / "rtl" / "dx7_core.v"),
             "rtl_matches_dr0011_pin":
                 sha256_file(REPO / "rtl" / "dx7_core.v") == DR0011_PIN,
+            "exp_reads_within_declared_width": in_range,
             "actual_sha256": sha256_file(afile),
             "overrun": int(meta.get("overrun", ["1"])[0]),
             "overflow": int(meta.get("overflow", ["1"])[0]),
@@ -171,10 +202,14 @@ def main() -> int:
         if res["mismatches"]:
             report["first_mismatch_block"] = res["mismatches"][0]["block"]
 
-        # Declared expectation: a nonzero-AMS case under iverilog must NOT
-        # pass this window (that is the whole point -- it is the negative
-        # control the recorded shadow never ran); everything else must.
-        expect_pass = not (args.tool == "iverilog" and any(ams))
+        # Declared expectation, derived from the RTL under test (#98):
+        # a nonzero-AMS case under iverilog must NOT pass this window while
+        # the out-of-range exp_t* reads are present (that is the whole point
+        # -- it is the negative control the recorded shadow never ran).
+        # Once those reads are in range the x source is gone and the same
+        # row must pass; re-narrowing the wires flips the expectation back.
+        expect_pass = not (args.tool == "iverilog" and any(ams)
+                           and not in_range)
         problems = []
         if expect_pass and not res["pass"]:
             problems.append(
@@ -192,8 +227,12 @@ def main() -> int:
         report["problems"] = problems
         report["note"] = (
             "status is the verdict on the DECLARED EXPECTATION, not on the "
-            "case: the iverilog/nonzero-AMS row is expected to be a "
-            "conformance FAIL, and `pass: false` there is the finding."
+            "case. The expectation is derived from the RTL under test: while "
+            "the exp_t3/t4/t5 reads exceed their declared widths the "
+            "iverilog/nonzero-AMS row is expected to be a conformance FAIL "
+            "and `pass: false` there is the finding (issue #96); once they "
+            "are in range (DR-0012, issue #98) the same row is expected to "
+            "pass."
         )
 
         text = json.dumps(report, indent=1)

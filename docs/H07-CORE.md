@@ -169,10 +169,14 @@ complete vector set, not a sample.
 > the mapped-area row (the committed `synth_report.json` was produced on a
 > superseded revision, and yosys + the ciel 7t liberty live on
 > `repo-remote-gf180-dx7`) and the iverilog shadow row
-> (`results-iverilog-shadow.json` is on a superseded revision; Icarus
-> throughput on the DR-0012 builder host made a re-run infeasible — see
-> `evidence/issue-98-exp-refreeze/README.md` rows C and H, where the
-> tool-independent Icarus statement on the current pin is recorded instead).
+> (`results-iverilog-shadow.json` is still the superseded pin's file, and a
+> full-length 34-case shadow on the refrozen pin is NOT_RUN — Icarus
+> throughput on the DR-0012 builder host made that infeasible). What *is*
+> established on the refrozen pin, through the same harness, is the bounded
+> Icarus comparison the correction note below records: both nonzero-AMS cases
+> bit-exact over a window containing the live note, with the AMS = 0 control
+> still passing (`evidence/issue-98-exp-refreeze/README.md` rows C, H, H′,
+> H″).
 
 | Acceptance item | Status |
 |---|---|
@@ -216,6 +220,20 @@ per case (`results-iverilog-shadow.json`).
 > the AM/exp() path. Full analysis, probe, and controls:
 > [`AMS-XPROBE-96.md`](AMS-XPROBE-96.md). The Verilator acceptance
 > evidence below is unaffected. The RTL width fix is tracked in #98.
+>
+> **RESOLVED by DR-0012 (issue #98), 2026-09-25.** On the refrozen core
+> (`rtl/dx7_core.v` `f33cecbd…`, the `exp_t*` declarations widened so the
+> reads are in range) the *same* tool, the same unmodified corpus cases and
+> the same untouched frozen goldens give `dev32-30` and `dev32-06`
+> **bit-exact** over that 120-block window under Icarus 13.0 (stable): 7,680
+> samples compared, **0** mismatches, 2,856 / 2,856 and 2,864 / 2,864 nonzero
+> golden samples reproduced, `state_obs` no longer `x`; the AMS = 0 control
+> `dev32-03` still passes (2,870 / 2,870), so what moved is the AM path and
+> not the window. Reports:
+> `evidence/issue-98-exp-refreeze/window-iverilog-dev32-{30,06,03}-refrozen-2026-09-25.json`.
+> The paragraph's two STALE-coverage statements stand as the record of the
+> DR-0011 pin: `results-iverilog-shadow.json` is still that pin's file, and a
+> **full-length** 34-case Icarus shadow on the refrozen pin is NOT_RUN.
 
 Wall time on `repo-remote-gf180-dx7` (m5.2xlarge, 8 vCPU): full dev+stress
 Verilator run 4,226 s (run 1) / 4,092 s (run 2); iverilog shadow

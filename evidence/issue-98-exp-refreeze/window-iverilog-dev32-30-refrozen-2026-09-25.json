@@ -1,0 +1,42 @@
+{
+ "check": "issue #96: H07 conformance compare over a window that contains the live note",
+ "case": "dev32-30",
+ "tool": "iverilog",
+ "tool_version": "Icarus Verilog version 13.0 (stable) (v13_0)",
+ "window_blocks": 120,
+ "compared_samples": 7680,
+ "first_event_block": 75,
+ "event_blocks_kept": [
+  75
+ ],
+ "event_blocks_dropped_after_window": [
+  750,
+  1125,
+  1875
+ ],
+ "amp_mod_sensitivity_op1_to_op6": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  3
+ ],
+ "ams_nonzero": true,
+ "rtl_sha256": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+ "rtl_matches_dr0011_pin": false,
+ "exp_reads_within_declared_width": true,
+ "actual_sha256": "07411094cdf716876ce21b1ae0c83798fcffab6d756eff3c2df5fd5cb5d3dbb9",
+ "overrun": 0,
+ "overflow": 0,
+ "state_obs": "1",
+ "golden_nonzero_samples": 2856,
+ "actual_nonzero_samples": 2856,
+ "pass": true,
+ "checked": 7680,
+ "mismatches": [],
+ "expect_pass": true,
+ "status": "PASS",
+ "problems": [],
+ "note": "status is the verdict on the DECLARED EXPECTATION, not on the case. The expectation is derived from the RTL under test: while the exp_t3/t4/t5 reads exceed their declared widths the iverilog/nonzero-AMS row is expected to be a conformance FAIL and `pass: false` there is the finding (issue #96); once they are in range (DR-0012, issue #98) the same row is expected to pass."
+}

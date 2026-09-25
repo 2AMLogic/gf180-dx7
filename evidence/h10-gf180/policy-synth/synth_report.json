@@ -1,0 +1,191 @@
+{
+ "claims": "mapped synthesis only: real-cell instance counts and cell area at tt_025C_5v00; no placement, routing, timing closure or fit claim",
+ "design": "dx7_core",
+ "dont_use_effect": {
+  "basis": "same RTL/liberty/script; only -dont_use differs",
+  "orfs_stock_um2": 33600929.779183,
+  "pct": 40.02,
+  "ratio": 1.4002,
+  "x1_allowed_um2": 23996885.875194
+ },
+ "issue": 32,
+ "liberty": "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+ "liberty_sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+ "rtl": {
+  "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+  "rtl/dx7_core.v": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+  "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28"
+ },
+ "runs": {
+  "orfs_stock": {
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_2": 102389,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_2": 26047,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_2": 8667,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_2": 29461,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_2": 66266,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_2": 4665,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_2": 2110,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_2": 51715,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_2": 63423,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_2": 86767,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_2": 55998,
+    "gf180mcu_fd_sc_mcu7t5v0__mux4_2": 7711,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_2": 111449,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_2": 6712,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_2": 1258,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_2": 70785,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_2": 2137,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_2": 786,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_2": 6310,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_2": 48037,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_2": 2005,
+    "gf180mcu_fd_sc_mcu7t5v0__oai222_2": 55,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_2": 5103,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_2": 5248,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_2": 2669,
+    "gf180mcu_fd_sc_mcu7t5v0__oai33_2": 316,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_2": 42403,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_2": 12565,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_2": 5210,
+    "gf180mcu_fd_sc_mcu7t5v0__tiel": 2,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_2": 112234,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_2": 25507,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_2": 60294,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_2": 3370
+   },
+   "check_assert": "PASS",
+   "dont_use": "*_1",
+   "flop_count": 86767,
+   "full_log_sha256": "345c8db86f079abc9bc97720f24a6536187d9637e6aedf33ba2792ebca086c4d",
+   "hierarchy_tree": {
+    "alg_router": {
+     "area_incl_sub_um2_3sf": 1500000.0,
+     "count_incl_sub": 36909
+    },
+    "dx7_core": {
+     "area_incl_sub_um2_3sf": 33600000.0,
+     "count_incl_sub": 1029674
+    },
+    "env_unit": {
+     "area_incl_sub_um2_3sf": 248000.0,
+     "count_incl_sub": 8103
+    },
+    "h07_op_kernel": {
+     "area_incl_sub_um2_3sf": 57900.0,
+     "count_incl_sub": 1987
+    }
+   },
+   "instance_count": 1029674,
+   "log": "evidence/h10-gf180/policy-synth/yosys_orfs_stock.log",
+   "module_local_area_um2": {
+    "alg_router": 1499530.144,
+    "dx7_core": 8211830.502403,
+    "env_unit": 248246.3872,
+    "h07_op_kernel": 57915.9616
+   },
+   "netlist": "asic/orfs/work/h10-policy-synth/dx7_core.orfs_stock.v",
+   "netlist_bytes": 35752811,
+   "netlist_committed": false,
+   "netlist_sha256": "b2cf2593afbea36afc1f12da358602bae406f3cdf1e9865d8a660403c32b55aa",
+   "policy": "orfs_stock",
+   "seq_area_um2": 5904598.470403,
+   "status": "PASS",
+   "stdcell_area_um2": 33600929.779183,
+   "top": "dx7_core",
+   "top_submodule_instances": {
+    "alg_router": 1,
+    "env_unit": 96,
+    "h07_op_kernel": 1
+   },
+   "wall_s": 1546.7,
+   "x1_cells_used": 0
+  },
+  "x1_allowed": {
+   "cells_by_name": {
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1": 29000,
+    "gf180mcu_fd_sc_mcu7t5v0__and3_1": 7958,
+    "gf180mcu_fd_sc_mcu7t5v0__and4_1": 1106,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi211_1": 21931,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi21_1": 87015,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi221_1": 8665,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi222_1": 4344,
+    "gf180mcu_fd_sc_mcu7t5v0__aoi22_1": 43315,
+    "gf180mcu_fd_sc_mcu7t5v0__clkinv_1": 70303,
+    "gf180mcu_fd_sc_mcu7t5v0__dffq_1": 86767,
+    "gf180mcu_fd_sc_mcu7t5v0__mux2_1": 24711,
+    "gf180mcu_fd_sc_mcu7t5v0__mux4_1": 3447,
+    "gf180mcu_fd_sc_mcu7t5v0__nand2_1": 194913,
+    "gf180mcu_fd_sc_mcu7t5v0__nand3_1": 26405,
+    "gf180mcu_fd_sc_mcu7t5v0__nand4_1": 4106,
+    "gf180mcu_fd_sc_mcu7t5v0__nor2_1": 100941,
+    "gf180mcu_fd_sc_mcu7t5v0__nor3_1": 8884,
+    "gf180mcu_fd_sc_mcu7t5v0__nor4_1": 4108,
+    "gf180mcu_fd_sc_mcu7t5v0__oai211_1": 10322,
+    "gf180mcu_fd_sc_mcu7t5v0__oai21_1": 82659,
+    "gf180mcu_fd_sc_mcu7t5v0__oai221_1": 3136,
+    "gf180mcu_fd_sc_mcu7t5v0__oai222_1": 286,
+    "gf180mcu_fd_sc_mcu7t5v0__oai22_1": 10756,
+    "gf180mcu_fd_sc_mcu7t5v0__oai31_1": 5811,
+    "gf180mcu_fd_sc_mcu7t5v0__oai32_1": 2736,
+    "gf180mcu_fd_sc_mcu7t5v0__oai33_1": 313,
+    "gf180mcu_fd_sc_mcu7t5v0__or2_1": 15649,
+    "gf180mcu_fd_sc_mcu7t5v0__or3_1": 4084,
+    "gf180mcu_fd_sc_mcu7t5v0__or4_1": 653,
+    "gf180mcu_fd_sc_mcu7t5v0__tiel": 2,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor2_1": 38824,
+    "gf180mcu_fd_sc_mcu7t5v0__xnor3_1": 7940,
+    "gf180mcu_fd_sc_mcu7t5v0__xor2_1": 120366,
+    "gf180mcu_fd_sc_mcu7t5v0__xor3_1": 29316
+   },
+   "check_assert": "PASS",
+   "dont_use": null,
+   "flop_count": 86767,
+   "full_log_sha256": "63063e810fa814b4030d6826cbbf8ca2e5b90e915b09aecc7ab18e2bd4785a49",
+   "hierarchy_tree": {
+    "alg_router": {
+     "area_incl_sub_um2_3sf": 1150000.0,
+     "count_incl_sub": 37983
+    },
+    "dx7_core": {
+     "area_incl_sub_um2_3sf": 24000000.0,
+     "count_incl_sub": 1060772
+    },
+    "env_unit": {
+     "area_incl_sub_um2_3sf": 172000.0,
+     "count_incl_sub": 8263
+    },
+    "h07_op_kernel": {
+     "area_incl_sub_um2_3sf": 36000.0,
+     "count_incl_sub": 1951
+    }
+   },
+   "instance_count": 1060772,
+   "log": "evidence/h10-gf180/policy-synth/yosys_x1_allowed.log",
+   "module_local_area_um2": {
+    "alg_router": 1147393.7216,
+    "dx7_core": 6303975.596801,
+    "env_unit": 171974.1632,
+    "h07_op_kernel": 35996.8896
+   },
+   "netlist": "asic/orfs/work/h10-policy-synth/dx7_core.x1_allowed.v",
+   "netlist_bytes": 37908293,
+   "netlist_committed": false,
+   "netlist_sha256": "aa192382ed0902715ee20a9c317cd85bd6eccb48ed9191fe68c515597cd50b20",
+   "policy": "x1_allowed",
+   "seq_area_um2": 5523656.633601,
+   "status": "PASS",
+   "stdcell_area_um2": 23996885.875194,
+   "top": "dx7_core",
+   "top_submodule_instances": {
+    "alg_router": 1,
+    "env_unit": 96,
+    "h07_op_kernel": 1
+   },
+   "wall_s": 1540.6,
+   "x1_cells_used": 1060770
+  }
+ },
+ "stage": "synthesis (yosys, mapped to real 7t cells)",
+ "yosys": "Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)"
+}

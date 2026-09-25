@@ -1,0 +1,301 @@
+# yosys script (cwd=/Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32):
+#   read_liberty -lib /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   read_verilog -sv /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/alg_router.v
+#   hierarchy -check -top dx7_core
+#   synth -top dx7_core
+#   dfflibmap -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   abc -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   setundef -zero
+#   hilomap -singleton -hicell gf180mcu_fd_sc_mcu7t5v0__tieh Z -locell gf180mcu_fd_sc_mcu7t5v0__tiel ZN
+#   opt_clean -purge
+#   check -assert
+#   stat -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   write_verilog -noattr -noexpr /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/asic/orfs/work/h10-policy-synth/dx7_core.x1_allowed.v
+# full log sha256 63063e810fa814b4030d6826cbbf8ca2e5b90e915b09aecc7ab18e2bd4785a49 (33644108 B, not committed)
+# wall 1540.6 s, rc 0
+# ---- warnings/errors ----
+Warning: Replacing memory \cmt_scaleB with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
+Warning: Replacing memory \cmt_scaleA with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
+Warning: Replacing memory \cmt_elevels with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
+Warning: Replacing memory \cmt_erates with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
+Warning: Replacing memory \cmt_fterm with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
+Warning: Replacing memory \cmt_opitch with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
+Warning: Replacing memory \levels_q with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v:476
+Warning: Replacing memory \rates_q with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v:472
+Warning: Replacing memory \cmt_scaleB with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
+Warning: Replacing memory \cmt_scaleA with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
+Warning: Replacing memory \cmt_elevels with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
+Warning: Replacing memory \cmt_erates with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
+Warning: Replacing memory \cmt_fterm with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
+Warning: Replacing memory \cmt_opitch with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
+# ---- final stat ----
+Printing statistics.
+
+=== dx7_core ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+   183361        - wires
+   245056        - wire bits
+     1875        - public wires
+    63353        - public wire bits
+       16        - ports
+       68        - port bits
+   227590  6.3E+06 cells
+     2198 3.86E+04   gf180mcu_fd_sc_mcu7t5v0__and2_1
+      295  6475.84   gf180mcu_fd_sc_mcu7t5v0__and3_1
+      328 7.92E+03   gf180mcu_fd_sc_mcu7t5v0__and4_1
+     1621 3.56E+04   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+    16934 2.97E+05   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+     1663 4.02E+04   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+     3741 1.15E+05   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+    26426 5.22E+05   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+     7971    7E+04   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+    46048 2.93E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+    11018 3.14E+05   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+     1919 1.35E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+    38427 4.22E+05   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+     8636 1.33E+05   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+     1858 3.67E+04   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+    16648 2.19E+05   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+     1236 2.17E+04   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+     2142  4.7E+04   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+     1278 2.81E+04   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+    20611 3.62E+05   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+      571  1.5E+04   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+       90  2963.52   gf180mcu_fd_sc_mcu7t5v0__oai222_1
+     1162 2.55E+04   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+      508 1.23E+04   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+      270 7.11E+03   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+       23  757.344   gf180mcu_fd_sc_mcu7t5v0__oai33_1
+     1286 2.26E+04   gf180mcu_fd_sc_mcu7t5v0__or2_1
+      215  4719.68   gf180mcu_fd_sc_mcu7t5v0__or3_1
+      170 4.48E+03   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        1    8.781   gf180mcu_fd_sc_mcu7t5v0__tiel
+     2228 6.36E+04   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+      509 2.68E+04   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+     6111 1.61E+05   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+     3448 1.74E+05   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+       98        - submodules
+        1        -   alg_router
+       96        -   env_unit
+        1        -   h07_op_kernel
+
+   Chip area for module '\dx7_core': 6303975.596801
+     of which used for sequential elements: 2931452.518401 (46.50%)
+
+=== env_unit ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     7944        - wires
+     8567        - wire bits
+       29        - public wires
+      652        - public wire bits
+       12        - ports
+      484        - port bits
+     8263 1.72E+05 cells
+      276 4.85E+03   gf180mcu_fd_sc_mcu7t5v0__and2_1
+       79 1.73E+03   gf180mcu_fd_sc_mcu7t5v0__and3_1
+        8  193.178   gf180mcu_fd_sc_mcu7t5v0__and4_1
+      208 4.57E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+      715 1.26E+04   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+       66 1.59E+03   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+        5  153.664   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+      166 3.28E+03   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+      644 5.65E+03   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+      347 2.21E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+      134 3.82E+03   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+        1   70.246   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+     1529 1.68E+04   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+      176  2.7E+03   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+       23  454.406   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      867 1.14E+04   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+       78 1.37E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+       20   439.04   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+       87 1.91E+03   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+      566 9.94E+03   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+       25   658.56   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+        2   65.856   gf180mcu_fd_sc_mcu7t5v0__oai222_1
+       99 2.17E+03   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+       54  1.3E+03   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+       25   658.56   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+        3   98.784   gf180mcu_fd_sc_mcu7t5v0__oai33_1
+      147 2.58E+03   gf180mcu_fd_sc_mcu7t5v0__or2_1
+       40   878.08   gf180mcu_fd_sc_mcu7t5v0__or3_1
+        5  131.712   gf180mcu_fd_sc_mcu7t5v0__or4_1
+      380 1.08E+04   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+       77  4056.73   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+     1172 3.09E+04   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+      239 1.21E+04   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+
+   Chip area for module '\env_unit': 171974.163200
+     of which used for sequential elements: 22090.297600 (12.85%)
+
+=== alg_router ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+    30741        - wires
+    38241        - wire bits
+      281        - public wires
+     7774        - public wire bits
+       26        - ports
+      349        - port bits
+    37983 1.15E+06 cells
+      262  4.6E+03   gf180mcu_fd_sc_mcu7t5v0__and2_1
+       57 1.25E+03   gf180mcu_fd_sc_mcu7t5v0__and3_1
+        1   24.147   gf180mcu_fd_sc_mcu7t5v0__and4_1
+      244 5.36E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+     1258 2.21E+04   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+      582 1.41E+04   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+      123 3.78E+03   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+      904 1.79E+04   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+      491 4.31E+03   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+     7407 4.72E+05   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+      790 2.25E+04   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+     1424    1E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+     9421 1.03E+05   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+      748 1.15E+04   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+       12  237.082   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      802 1.06E+04   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+       59 1.04E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+       22  482.944   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+      584 1.28E+04   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+     7545 1.33E+05   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+      120 3.16E+03   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+        2   65.856   gf180mcu_fd_sc_mcu7t5v0__oai222_1
+       61 1.34E+03   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+       59 1.42E+03   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+       29   763.93   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+      223 3.92E+03   gf180mcu_fd_sc_mcu7t5v0__or2_1
+       18  395.136   gf180mcu_fd_sc_mcu7t5v0__or3_1
+       92 2.63E+03   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+       37 1.95E+03   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+     1689 4.45E+04   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+     2917 1.47E+05   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+
+   Chip area for module '\alg_router': 1147393.721600
+     of which used for sequential elements: 471535.545600 (41.10%)
+
+=== h07_op_kernel ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     1940        - wires
+     2017        - wire bits
+        4        - public wires
+       81        - public wire bits
+        3        - ports
+       80        - port bits
+     1951  3.6E+04 cells
+       44   772.71   gf180mcu_fd_sc_mcu7t5v0__and2_1
+       22  482.944   gf180mcu_fd_sc_mcu7t5v0__and3_1
+        9  217.325   gf180mcu_fd_sc_mcu7t5v0__and4_1
+       98 2.15E+03   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+      183 3.21E+03   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+       84 2.03E+03   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+       49  968.083   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+       17  149.274   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+       39 1.11E+03   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+        8  561.971   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+      281 3.08E+03   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+      125   1920.8   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+       28   553.19   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+      259 3.41E+03   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+      101 1.77E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+       24  526.848   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+      108 2.37E+03   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+      167 2.93E+03   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+       45 1.19E+03   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+        2   65.856   gf180mcu_fd_sc_mcu7t5v0__oai222_1
+       29  636.608   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+       60 1.45E+03   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+       37  974.669   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+        2   65.856   gf180mcu_fd_sc_mcu7t5v0__oai33_1
+       28  491.725   gf180mcu_fd_sc_mcu7t5v0__or2_1
+       11  241.472   gf180mcu_fd_sc_mcu7t5v0__or3_1
+        3   79.027   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        1    8.781   gf180mcu_fd_sc_mcu7t5v0__tiel
+       24  684.902   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+        2   105.37   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+       54  1422.49   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+        7  353.427   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+
+   Chip area for module '\h07_op_kernel': 35996.889600
+     of which used for sequential elements: 0.000000 (0.00%)
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        | 
+  1060772  2.4E+07 dx7_core
+    37983 1.15E+06 alg_router
+     8263 1.72E+05 env_unit
+     1951  3.6E+04 h07_op_kernel
+
+        +----------Count including submodules.
+        |        +-Area including submodules.
+        |        | 
+   978666        - wires
+  1107746        - wire bits
+     4944        - public wires
+   133800        - public wire bits
+     1197        - ports
+    46961        - port bits
+        -        - memories
+        -        - memory bits
+        -        - processes
+  1060772  2.4E+07 cells
+    29000 5.09E+05   gf180mcu_fd_sc_mcu7t5v0__and2_1
+     7958 1.75E+05   gf180mcu_fd_sc_mcu7t5v0__and3_1
+     1106 2.67E+04   gf180mcu_fd_sc_mcu7t5v0__and4_1
+    21931 4.81E+05   gf180mcu_fd_sc_mcu7t5v0__aoi211_1
+    87015 1.53E+06   gf180mcu_fd_sc_mcu7t5v0__aoi21_1
+     8665 2.09E+05   gf180mcu_fd_sc_mcu7t5v0__aoi221_1
+     4344 1.34E+05   gf180mcu_fd_sc_mcu7t5v0__aoi222_1
+    43315 8.56E+05   gf180mcu_fd_sc_mcu7t5v0__aoi22_1
+    70303 6.17E+05   gf180mcu_fd_sc_mcu7t5v0__clkinv_1
+    86767 5.52E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+    24711 7.05E+05   gf180mcu_fd_sc_mcu7t5v0__mux2_1
+     3447 2.42E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_1
+   194913 2.14E+06   gf180mcu_fd_sc_mcu7t5v0__nand2_1
+    26405 4.06E+05   gf180mcu_fd_sc_mcu7t5v0__nand3_1
+     4106 8.11E+04   gf180mcu_fd_sc_mcu7t5v0__nand4_1
+   100941 1.33E+06   gf180mcu_fd_sc_mcu7t5v0__nor2_1
+     8884 1.56E+05   gf180mcu_fd_sc_mcu7t5v0__nor3_1
+     4108 9.02E+04   gf180mcu_fd_sc_mcu7t5v0__nor4_1
+    10322 2.27E+05   gf180mcu_fd_sc_mcu7t5v0__oai211_1
+    82659 1.45E+06   gf180mcu_fd_sc_mcu7t5v0__oai21_1
+     3136 8.26E+04   gf180mcu_fd_sc_mcu7t5v0__oai221_1
+      286 9.42E+03   gf180mcu_fd_sc_mcu7t5v0__oai222_1
+    10756 2.36E+05   gf180mcu_fd_sc_mcu7t5v0__oai22_1
+     5811  1.4E+05   gf180mcu_fd_sc_mcu7t5v0__oai31_1
+     2736 7.21E+04   gf180mcu_fd_sc_mcu7t5v0__oai32_1
+      313 1.03E+04   gf180mcu_fd_sc_mcu7t5v0__oai33_1
+    15649 2.75E+05   gf180mcu_fd_sc_mcu7t5v0__or2_1
+     4084 8.97E+04   gf180mcu_fd_sc_mcu7t5v0__or3_1
+      653 1.72E+04   gf180mcu_fd_sc_mcu7t5v0__or4_1
+        2   17.562   gf180mcu_fd_sc_mcu7t5v0__tiel
+    38824 1.11E+06   gf180mcu_fd_sc_mcu7t5v0__xnor2_1
+     7940 4.18E+05   gf180mcu_fd_sc_mcu7t5v0__xnor3_1
+   120366 3.17E+06   gf180mcu_fd_sc_mcu7t5v0__xor2_1
+    29316 1.48E+06   gf180mcu_fd_sc_mcu7t5v0__xor3_1
+       98 1.77E+07 submodules
+        1 1.15E+06   alg_router
+       96 1.65E+07   env_unit
+        1  3.6E+04   h07_op_kernel
+
+   Chip area for top module '\dx7_core': 23996885.875194
+     of which used for sequential elements: 5523656.633601 (23.02%)
+
+14. Executing Verilog backend.
+Dumping module `\alg_router'.
+Dumping module `\dx7_core'.
+Dumping module `\env_unit'.
+Dumping module `\h07_op_kernel'.

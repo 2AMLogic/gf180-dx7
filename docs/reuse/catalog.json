@@ -560,13 +560,68 @@
    "maintainer": "loom-builder + owner review",
    "requalification": {
     "check": "flow rerun end-to-end on our design; committed evidence per stage before any synthesis/PnR claim",
-    "result": "NOT_RUN (no ASIC work started)"
+    "result": "PASS for the stages that ran on dx7_core (issue #32): 1_1/1_2/1_synth (check 0 problems) and do-2_1_floorplan on the quarter-slot and two-slot fixed dies, evidence evidence/h10-gf180/ (hash-pinned in bundle.json). place/CTS/route NOT_RUN (mapped cells exceed both fixed cores), so the driver is NOT requalified for those stages"
    },
    "negative_control": "a flow run with a stale/missing stage report must fail the evidence checklist",
    "notes": "Working ORFS driver for gf180mcu. Import trigger: D02/ASIC work. Committed sibling reports are design-specific history (see orfs-evidence-records).",
    "adaptations": [
-    "retarget top/constraints to our design; never inherit the sibling's floorplan/clock assumptions"
-   ]
+    "retarget top/constraints to our design; never inherit the sibling's floorplan/clock assumptions",
+    "H10 (#32): one added block -- bind-mount reference/tables/ read-only at /OpenROAD-flow-scripts/flow/reference/tables so the RTL's $readmemh defaults resolve inside the container (diff vs upstream a827c1c3...: +5 lines, nothing removed; the inherited gf180-polysynth mount is a no-op here)"
+   ],
+   "adapted_sha256": {
+    "asic/orfs/run-orfs.sh": "a248d01ec9beca95c75feee83b11f1a1a6201386d21b93ea22cb1792ee354b73"
+   }
+  },
+  {
+   "component": "orfs-dx7core-design-and-synth-sta",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "2AMLogic/gf180-parasynth",
+    "commit": "cbcc8b9e10e49c84f630550e2e145cc6da8a659c",
+    "path": [
+     "pnr/orfs/run-orfs.sh",
+     "pnr/orfs/sta-corners.tcl",
+     "pnr/orfs/synth_top/config.mk",
+     "pnr/orfs/synth_top/constraint.sdc"
+    ]
+   },
+   "sha256": {
+    "pnr/orfs/run-orfs.sh": "a827c1c3e875815a3679d138d7ad4647ba3af0c23ce7818911c84f4c2894be10",
+    "pnr/orfs/sta-corners.tcl": "255deb050b4b1229bdfc16ff5e0b14fdd2a3a01e7c510a52120f5d51e787fa3b",
+    "pnr/orfs/synth_top/config.mk": "5bf54b72b6bf471e2312a0ef53f6f20bdc1477f56bed78c3e2b4fdc3cbc52a28",
+    "pnr/orfs/synth_top/constraint.sdc": "e426ffa4cb5d5a13bb368fa797eedc96500b543f98a5256401b28bd70faa74ba"
+   },
+   "license": "Apache-2.0 (repository declaration, LICENSE anchor below)",
+   "license_basis": "Apache-2.0",
+   "license_anchor": {
+    "path": "LICENSE",
+    "sha256": "d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+   },
+   "destination": [
+    "asic/orfs/dx7core/config.mk",
+    "asic/orfs/dx7core/constraint.sdc",
+    "asic/orfs/sta-synth.sh",
+    "asic/orfs/sta-synth.tcl"
+   ],
+   "maintainer": "loom-builder + owner review",
+   "requalification": {
+    "check": "each adapted file drove a committed, hash-pinned H10 run on dx7_core (issue #32): config.mk + constraint.sdc -> the pinned-flow 1_1/1_2/1_synth run (evidence/h10-gf180/orfs-synth/, yosys check 0 problems, RTL hashes in run.json match rtl/) and the two fixed-die do-2_1_floorplan runs (evidence/h10-gf180/orfs/); sta-synth.tcl via sta-synth.sh -> evidence/h10-gf180/sta-synth/orfs_natdie.log (tt/ss/ff === CORNER lines parsed by tools/h10_collect.py, report_checks paths present). tools/h10_report.py --check re-verifies every pinned evidence hash (drift exits 4).",
+    "result": "PASS for the synthesis and floorplan stages and the synthesis-stage (ideal-clock, no-parasitics) STA that ran, 2026-09-24/25. NOT requalified for place/CTS/route or post-route STA (NOT_RUN: mapped cells exceed both fixed cores). The upstream post-route STA path (6_final.odb, OpenRCX, propagated clock) is not imported and not requalified."
+   },
+   "negative_control": "tools/check_reuse.py now governs asic/ (git-ignored build trees skipped): run without this entry it FAILs, listing exactly these four files as imports with no provenance record (observed 2026-09-25); tests/test_check_reuse.py keeps an unrecorded-asic-file case live. tests/test_h10_report.py: negative synthesis-stage slack, a missing stage, and fabricated/drifted evidence each refuse a fit verdict.",
+   "notes": "Recorded on judge review of PR #84. The PR first shipped these files described as 'this repository' and said sta-corners.tcl was 'not imported'; that was wrong. Verbatim overlap with upstream (non-blank lines, at the as-run bytes): sta-synth.tcl 15 of 43 lines from sta-corners.tcl (corner setup, period lookup, the whole per-corner worst_slack/total_negative_slack/=== CORNER block); constraint.sdc 3 of its 4 statement lines from synth_top/constraint.sdc (create_clock, 20 % I/O delays); config.mk 8 variable lines from synth_top/config.mk (PLATFORM, TRACK_OPTION, CORNER, DESIGN_DIR, SDC_FILE, SYNTH_MEMORY_MAX_BITS, PWR/GND_NETS_VOLTAGES), the same settings with changed whitespace for ABC_AREA, the 7t techmap overrides and LEC_CHECK, and paraphrased gotcha comments; sta-synth.sh 4 wrapper lines from run-orfs.sh (shebang, set -euo pipefail, HERE resolver, ORFS_IMAGE default). Upstream bytes are unchanged through gf180-parasynth be870e8. After the evidence runs, only comments changed (provenance headers and a yosys-version correction in config.mk). As-run sha256: config.mk 1ff1ff5bc7663fe4cd44ec32d51064762cce1e0f81cb8325938befe71489afec, constraint.sdc 1c98397caafa36ee5da46f7b31e7d723a35dc2dbfbf39bdb0f20371605b40995, sta-synth.tcl 31d16b6dce0471f62e292cd7bc3558bed48e42332905230efcad02586adf626d, sta-synth.sh f7c4ca7b7b4263a49c02ef3985a96db23f47fe89ea4c1d7925ab6c748d165148 (all at e451f1f).",
+   "adaptations": [
+    "config.mk: retargeted to dx7_core (DESIGN_NAME/NICKNAME, VERILOG_FILES = rtl/dx7_core.v + env_unit.v + alg_router.v, TOP, include dir); upstream SYNTH_SCRIPT wrapper (synth_unsigned.tcl) dropped, so the stock synthesis runs; no hard-coded DIE_AREA/CORE_AREA/PLACE_DENSITY (the fixed die is passed per run on the make command line); techmaps point at the in-repo rederived 7t maps (orfs-gf180-7t-techmaps-rederived), not the sibling's; DONT_USE/clock/ROM-as-logic/ABC policy declarations and the table-IP note added",
+    "constraint.sdc: clock period 81.38 ns (sibling 12.288 MHz) -> 40.692 ns (24.576 MHz, DR-0008 design point); header comment rewritten",
+    "sta-synth.tcl: reads a standalone mapped netlist (read_verilog + link_design) instead of the ORFS 6_final.odb/6_final.sdc; ideal clock (no set_propagated_clock), no OpenRCX extraction or SPEF (no placement exists); liberty and SDC paths from the environment; the report set changed (setup paths ss/tt/ff, one ff hold path, no clock-skew report); new header",
+    "sta-synth.sh: new wrapper built on run-orfs.sh idioms: runs the image's standalone /OpenROAD-flow-scripts/tools/install/OpenROAD/bin/sta on sta-synth.tcl, with the liberty directory mounted read-only at /pdklib"
+   ],
+   "adapted_sha256": {
+    "asic/orfs/dx7core/config.mk": "3beaa431687af53c9b02c371cabdc679d5cfceb23d63c2159044420c68183988",
+    "asic/orfs/dx7core/constraint.sdc": "415ad326a17aa7b42cdc22d85275d18370889011438228e99de2f36cafd50d02",
+    "asic/orfs/sta-synth.sh": "a494504382d6e84a605373a1d41f79ff14ccb24f1c84624165e8612c143838b2",
+    "asic/orfs/sta-synth.tcl": "3de9dd5a365da9154ea72c49359a9a6ad6271aa3aae4224bbb51ea6b424789df"
+   }
   },
   {
    "component": "orfs-gf180-7t-techmaps",
@@ -599,6 +654,51 @@
    },
    "negative_control": null,
    "notes": "REJECTED per A01 acceptance ('ORFS techmaps unless re-verified'): attribution gate unresolved; cell contents unverified. May be re-ruled adopt/adapt only after tracing original ORFS provenance and cell-by-cell re-verification against the PDK -- a new decision record."
+  },
+  {
+   "component": "orfs-gf180-7t-techmaps-rederived",
+   "ruling": "adapt",
+   "upstream": {
+    "repo": "The-OpenROAD-Project/OpenROAD-flow-scripts (as shipped in image openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2)",
+    "commit": "26Q3-296-gda37dce1c (image tag; the image digest is the identity of record)",
+    "path": [
+     "flow/platforms/gf180/cells_adders.v",
+     "flow/platforms/gf180/cells_latch.v",
+     "LICENSE_BUILD_RUN_SCRIPTS"
+    ]
+   },
+   "sha256": {
+    "flow/platforms/gf180/cells_adders.v": "b310f12c9f6003b46c1f7e4d4fa98de1304af435efe31de12f41a5952a821cbf",
+    "flow/platforms/gf180/cells_latch.v": "7e0cfebde5bab67c6ea7f2334c6ae786ef8f475cd18027fce53f8c26ed975626",
+    "LICENSE_BUILD_RUN_SCRIPTS": "fae0db7a4c00c3125f037e5818e8cd0c8aa5c67fff2e8c558312068e9f2d1592"
+   },
+   "license": "BSD-3-Clause (ORFS LICENSE_BUILD_RUN_SCRIPTS, the nearest stated license; the image's flow/platforms/gf180/ carries no license file -- recorded gap, DR-0010 item 4)",
+   "license_basis": "BSD-3-Clause text committed byte-identical at asic/orfs/gf180_7t/LICENSE-ORFS-BSD-3-Clause; owner review of the platform-level license gap pending",
+   "license_anchor": {
+    "path": "asic/orfs/gf180_7t/LICENSE-ORFS-BSD-3-Clause",
+    "sha256": "fae0db7a4c00c3125f037e5818e8cd0c8aa5c67fff2e8c558312068e9f2d1592"
+   },
+   "destination": [
+    "asic/orfs/gf180_7t/LICENSE-ORFS-BSD-3-Clause",
+    "asic/orfs/gf180_7t/cells_adders.v",
+    "asic/orfs/gf180_7t/cells_latch.v"
+   ],
+   "adapted_sha256": {
+    "asic/orfs/gf180_7t/cells_adders.v": "538fd44f0658f472b75cbaa52da71b2fe47f19caf3db4ec5156c1482311828b4",
+    "asic/orfs/gf180_7t/cells_latch.v": "fe9bd6e8d9806edc3ec7739c7b895c858c4bdbf15369b86caf2ca20739dfca75",
+    "asic/orfs/gf180_7t/LICENSE-ORFS-BSD-3-Clause": "fae0db7a4c00c3125f037e5818e8cd0c8aa5c67fff2e8c558312068e9f2d1592"
+   },
+   "maintainer": "loom-builder + owner review (DR-0010 is Proposed)",
+   "requalification": {
+    "check": "tools/verify_gf180_7t_techmaps.py --image-dir <extracted image platform files>: byte re-derivation by the single substitution mcu9t5v0 -> mcu7t5v0 + every referenced cell present in the pinned 7t tt liberty (sha256 330aa943...); tests/test_h10_techmaps.py in the fast lane",
+    "result": "PASS 2026-09-24 (issue #32; image files re-extracted by digest, hashes above reproduced); the ORFS 1_2 synthesis that uses these maps passed check -assert with 0 problems"
+   },
+   "negative_control": "tests/test_h10_techmaps.py: a missing liberty cell and a drifted transform each fail the verifier; a zero-cell liberty is refused",
+   "notes": "Supersedes the operational conclusion of orfs-gf180-7t-techmaps (reject), which is retained verbatim as the historical record. No sibling bytes are imported: derived from the pinned image's own platform files (DR-0010). The sibling's 7t files equal this derivation plus a 4-line header.",
+   "adaptations": [
+    "token substitution gf180mcu_fd_sc_mcu9t5v0 -> gf180mcu_fd_sc_mcu7t5v0",
+    "provenance header comment added to each techmap"
+   ]
   },
   {
    "component": "orfs-evidence-records",
@@ -1194,7 +1294,7 @@
   },
   {
    "path": "tools/check_reuse.py",
-   "sha256": "78cd8ba47e28264ae35f941e77742f87a1198fe0f096e611e698de65e87118f0",
+   "sha256": "144f9ad56d8efe75c2328fdf424106e0a5715baf72d161f98b3bedac5f9a38a5",
    "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
   },
   {
@@ -1744,8 +1844,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "01a9e53eaa4fe0a6eb5cb8adcc3cf78e225a77eea1ae548d313a0de921a061ac",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36)"
+   "sha256": "8cf71ac6be7ee7f91ec13786da6020f73b9b58174891f34ab5fd8328ad72cf91",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32)"
   },
   {
    "path": "tools/u02_candidates.py",
@@ -1954,13 +2054,13 @@
   },
   {
    "path": "docs/decision-records/0011-single-driver-core-refreeze.md",
-   "sha256": "b47f69649ee5b6ca97e1043f1ad82b58a16bd8f0d4453417892438bf06559e7e",
+   "sha256": "5db1a18f61d261bb1c84b94b73312ac2de524e5a74300cbe3fd2927b8af32a5b",
    "reason": "locally authored single-driver core refreeze decision record (issue #32 PR-A): frozen core re-pinned to the single-driver revision, synthesis-path legality evidence chain (witnesses A-E, battery h10-merged-p3), supersession of the 2026-09-23 '9 fatals' note, silent const-resolution finding (exp_t* selects), operator-ratification gate"
   },
   {
    "path": "evidence/h10-legality/run-attempts.md",
-   "sha256": "4f60069032c94917b2973f0960c7dbc44b0bb1f6d900d0c13722726e3e9e363e",
-   "reason": "run-by-run digest of the legality evidence incl. superseded attempts, recorded tool deadlock, and H07 re-cert rows"
+   "sha256": "3b4b789384a09e2e77ef16eaed77ae6dedde53a19215d91084964ce24b4ef00d",
+   "reason": "run-by-run digest of the legality evidence incl. superseded attempts, recorded tool deadlock, and H07 re-cert rows; re-pinned for H10 PR-B: row H diagnosis addendum (issue #32)"
   },
   {
    "path": "tools/validate_bank128.py",
@@ -1971,6 +2071,41 @@
    "path": "tests/test_bank128.py",
    "sha256": "3ffbbf7a46bb14b84b14164488eb0c6ce3ff00ed273c44b07e1feaa7d56b0993",
    "reason": "locally authored U03 validator test suite (issue #36): synthetic in-code fixtures only (FIXTURE-nnn, fake catalog), positive case plus negative controls incl. identical-hash-without-alias-note; no upstream bytes, no curated content"
+  },
+  {
+   "path": "tools/h10_collect.py",
+   "sha256": "091c7928386fde97fccf2996a9eddf25589563cfa6d3a37f8b282cc0792262ee",
+   "reason": "locally authored H10 evidence-bundle assembler (issue #32): hash-pins every number to committed evidence, NOT_RUN for absent stages, never carries numbers across stages; no upstream bytes"
+  },
+  {
+   "path": "tools/h10_report.py",
+   "sha256": "8d0e64cdfea8db19d995caf262621f23176623b0d2ea03ad55b3fb775831ddfc",
+   "reason": "locally authored H10 report generator with the fit gate (issue #32 negative control): positive fit only on a full hash-verified synth/place/route(0 DRC)/sta(ss WNS>=0) chain; area-alone non-fit from mapped cells; no upstream bytes"
+  },
+  {
+   "path": "tools/h10_synth.py",
+   "sha256": "7c6d47eff505e15f67d8dbd9b2c5f3bde45a93449c0abd4455a2811a6d7ea38a",
+   "reason": "locally authored H10 two-policy (DONT_USE) mapped synthesis with hierarchy-aware stat parsing and check -assert (issue #32); no upstream bytes"
+  },
+  {
+   "path": "tools/verify_gf180_7t_techmaps.py",
+   "sha256": "ce0e88ab120932217e7918dd23af9ef47ad5d49f3899ddf4d5da74742c40f3b8",
+   "reason": "locally authored DR-0010 techmap round-trip + liberty cell verifier (issue #32); no upstream bytes"
+  },
+  {
+   "path": "tests/test_h10_report.py",
+   "sha256": "e2c322fb01ec77a35c784947b8ad18a8130c0fc21dac07e416d8c0b8f3aa2811",
+   "reason": "locally authored H10 fit-gate live negative controls (issue #32); no upstream bytes"
+  },
+  {
+   "path": "tests/test_h10_synth.py",
+   "sha256": "9264b5a3f35abfe72f82f033781275eabbf3fb5e4949fdd6d1beed7055c7fb23",
+   "reason": "locally authored H10 synth-script and hierarchy-parse guards (issue #32); fixture is a yosys transcript of a two-module probe; no upstream bytes"
+  },
+  {
+   "path": "tests/test_h10_techmaps.py",
+   "sha256": "95d53eec0092a06f63bc18685e4076166c783b7c82478bbd20ff16b6a3513902",
+   "reason": "locally authored DR-0010 techmap verifier tests (issue #32); no upstream bytes"
   }
  ]
 }

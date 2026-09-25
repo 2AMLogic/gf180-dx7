@@ -17,10 +17,17 @@ python3 -m unittest discover -s tests \
   -p "test_*.py" \
   -k contract -k sysex -k check_reuse -k numeric_profile -k physical \
   -k compare -k registry -k capabilities -k issue_dag -k host_mock \
-  -k audition -k reference_manifest -k h08 -k u05_demo -k bank128 \
+  -k audition -k reference_manifest -k h08 -k u05_demo -k bank128 -k h10 \
   >"$log" 2>&1
 rc=$?
 set -e
-tail -3 "$log"
+# Print the unittest summary ("Ran N tests" + "OK"/"FAILED (...)"), not a
+# blind tail: tests may print their own output last (PR #84 review). On
+# failure show the log tail so the failing case is visible.
+if [ "$rc" -eq 0 ]; then
+  grep -E '^(Ran [0-9]+ tests? in |OK$|OK \(|FAILED)' "$log" | tail -2
+else
+  tail -60 "$log"
+fi
 rm -f "$log"
 test "$rc" -eq 0

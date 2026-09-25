@@ -1844,8 +1844,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "8cf71ac6be7ee7f91ec13786da6020f73b9b58174891f34ab5fd8328ad72cf91",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32)"
+   "sha256": "45fd0e882f3e7205059ca51cf6a7d3d254eb13704e3b585b58a9dc1ec0cf6b61",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82)"
   },
   {
    "path": "tools/u02_candidates.py",
@@ -1869,8 +1869,8 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "0585dc290b3f1bd17809d5b531a4fb7286e0901111f47b494bb9febca4df4dbc",
-   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); no upstream bytes"
+   "sha256": "cd1af470b61e3a3e82d1be99c75bbd6ace9ca59f2320baa3ecb1dfb2103ffb17",
+   "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes"
   },
   {
    "path": "tools/h07_compare.py",
@@ -1879,13 +1879,13 @@
   },
   {
    "path": "tools/h07_synth.py",
-   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; no upstream bytes",
-   "sha256": "0a106abf199246ec8edca0b93754b4a66afa32492f076eae213e1fce8a9f6805"
+   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes",
+   "sha256": "b681d857d9826db306b14ef6fe43184c162de1e488f8eef35eb580ab50ce9e91"
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; no upstream bytes",
-   "sha256": "30c4dc075eadb9bb5be841c0669e966ed9c19c070242598987a18f1a6dc9f35e"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes",
+   "sha256": "ed3f79b1e3522816122ac69a1ee15f063de09ef4a57a43fa0f8d1a7dfa014ae6"
   },
   {
    "path": "rtl/tb_synth_top.v",

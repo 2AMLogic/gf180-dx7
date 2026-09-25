@@ -146,6 +146,25 @@ The H08-specific acceptances and their status (final numbers in
   core instance, no procedural logic, all nine pads mapped). Chassis
   overhead vs the H07 core is now **measured at zero, not inferred.**
 
+  **Correction (2026-09-25, issue #94): the numbers above are STALE and
+  the "0 culled / 0 overhead" result is withdrawn.** The pre-#94
+  `tools/h08_synth.py::parse_stat()` took the FIRST `Chip area for
+  module` match, so 1,158,154.592 um² / 36,803 cells are `alg_router`'s
+  *module-local* block, not the chassis total — and the H07 side it was
+  compared against carried the same bug (#82), which is why the two
+  matched exactly. Replaying the committed `yosys_full.log` through the
+  fixed parser (hierarchy section closed by `Chip area for top module
+  '\synth_top'`) gives **23,297,622.476804 um², 1,014,491 cells, 92,045
+  flops (dffq_1), 5,859,658.336 um² sequential** — gate (a) still holds
+  (92,045 > 38,781). Gate (b) (`gates.full_vs_h07`) is **NOT_RUN**:
+  `evidence/h07-core/synth_report.json` is still pre-#82 output (STALE
+  until #93), and the committed H08 log was synthesized from the
+  pre-DR-0011 core (`dx7_core.v` `335599ea…`) while the H07 report is of
+  the refrozen core, so no same-RTL hierarchy-total comparison exists
+  yet. `evidence/h08-chassis/synth_report.json` itself is not
+  regenerated (heavy host unreachable; not hand-edited) and remains
+  STALE; `tests/test_h08.py` reports that as a guarded NOT_RUN skip.
+
 ## I2S format: contract vs as-built (the finding record)
 
 Measured against the frozen contract (48 kHz audio, 4× oversample, MSB

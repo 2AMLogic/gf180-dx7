@@ -1,0 +1,19 @@
+Pinned ORFS synth of the as-written core (issue #86), 2026-09-25
+command: ORFS_WORK=/tmp/i86orfs ./asic/orfs/run-orfs.sh dx7core FLOW_VARIANT=natdie synth   (wall 32:32.97 under linux/amd64 emulation on an arm64 host; exit 0)
+image:   openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2 (asic/orfs/run-orfs.sh default)
+image flow/scripts/synth.tcl sha256 4725557a1a74a1ea6495140db1142a5cfe84f4b46ba7b6cfb20835935e611319 (line 252: setundef -zero)
+
+1_2_yosys.log banner:
+Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+
+1_1_yosys_canonicalize.log (paths made repo-relative):
+rtl/dx7_core.v:959: Warning: Range [85:30] select out of bounds on signal `\exp_t3': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:960: Warning: Range [85:30] select out of bounds on signal `\exp_t4': Setting 15 MSB bits to undef.
+rtl/dx7_core.v:961: Warning: Range [81:26] select out of bounds on signal `\exp_t5': Setting 16 MSB bits to undef.
+
+1_2_yosys.log timing:
+Elapsed time: 31:38.55[h:]min:sec. CPU time: user 2103.36 sys 10.61 (111%). Peak memory: 11174648KB.
+
+results/1_2_yosys.v sha256 998a17ee4c3e90aa75794977f5a6d56d7b30821f21bb8d71cf65090418651cea (240632592 bytes; not committed, reproducible with the command above)
+reports/synth_stat.txt:    Chip area for module '\dx7_core': 32941030.706741
+census: orfs-census-asis-2026-09-25.json

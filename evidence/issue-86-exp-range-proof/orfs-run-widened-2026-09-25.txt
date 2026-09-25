@@ -1,0 +1,24 @@
+Pinned ORFS synth of the WIDENED scratch control (issue #86), 2026-09-25
+RTL: rtl/dx7_core.v (DR-0011 pin) with ONLY lines 953-955 changed (tools/exp_hsum_lec.py:widened_rtl):
+953,955c953,955
+<     wire [70:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
+<     wire [70:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
+<     wire [65:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
+---
+>     wire [85:0]  exp_t3  = exp_p3 * 30'h2AAAAAAA;      // p3/6,  Q0.62
+>     wire [85:0]  exp_t4  = exp_p4 * 28'h0AAAAAAA;      // p4/24, Q0.60
+>     wire [81:0]  exp_t5  = exp_p5 * 26'h02222222;      // p5/120, Q0.58
+widened copy sha256 752507494d5f85eeb5fa612d835e40fc6dfc0407ff221a83745e292ace1aa391 (not committed; regenerate with widened_rtl())
+
+config: a scratch copy of asic/orfs/dx7core/config.mk (not committed) identical except VERILOG_FILES[0] -> the widened copy and SDC_FILE -> ../dx7core/constraint.sdc
+command: ORFS_WORK=/tmp/i86orfs_w ./asic/orfs/run-orfs.sh scratch86w FLOW_VARIANT=natdie synth   (wall 32:23.31 under emulation; exit 0)
+image: same pinned digest as orfs-run-asis-2026-09-25.txt
+
+1_2_yosys.log banner:
+Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+canonicalize out-of-bounds select warnings: 0
+Elapsed time: 31:30.98[h:]min:sec. CPU time: user 2106.82 sys 9.07 (111%). Peak memory: 11411552KB.
+
+results/1_2_yosys.v sha256 276d8c2dfe97d3b5a911998f827fdcfed24b5366003c573fed4639a05d03bd48
+reports/synth_stat.txt:    Chip area for module '\dx7_core': 34839310.149958
+census: orfs-census-widened-2026-09-25.json

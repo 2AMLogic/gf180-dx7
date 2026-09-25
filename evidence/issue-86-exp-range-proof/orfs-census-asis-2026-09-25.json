@@ -1,0 +1,28 @@
+{
+ "label": "as-written rtl/dx7_core.v (DR-0011 pin)",
+ "netlist_sha256": "998a17ee4c3e90aa75794977f5a6d56d7b30821f21bb8d71cf65090418651cea",
+ "netlist_bytes": 240632592,
+ "mapped_flops_named_after": {
+  "exp_st": 12,
+  "exp_start": 1,
+  "exp_amd": 0,
+  "exp_ams": 0,
+  "exp_y": 0,
+  "exp_t1": 0,
+  "exp_arg": 0,
+  "exp_zq": 0,
+  "exp_k": 0,
+  "exp_T": 0,
+  "exp_xq": 0,
+  "exp_p2": 0,
+  "exp_p3": 0,
+  "exp_p4": 0,
+  "exp_p5": 0,
+  "exp_res": 0,
+  "exp_pt_q": 0,
+  "w_li": 32
+ },
+ "exp_datapath_flops_total": 0,
+ "all_flop_instances": 1756,
+ "chip_area_um2": 32941030.706741
+}

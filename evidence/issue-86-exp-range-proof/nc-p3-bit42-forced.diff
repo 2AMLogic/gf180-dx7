@@ -1,0 +1,11 @@
+--- rtl/dx7_core.v	2026-09-25 07:03:07
++++ <scratch>/p3-bit42-forced.v	2026-09-25 07:52:46
+@@ -991,7 +991,7 @@
+                     exp_st <= 4'd5;
+                 end
+                 4'd5: begin exp_p2 <= exp_p2w[100:56]; exp_st <= 4'd6; end
+-                4'd6: begin exp_p3 <= exp_p3w[99:56]; exp_st <= 4'd7; end
++                4'd6: begin exp_p3 <= exp_p3w[99:56] | (44'd1 << 42); exp_st <= 4'd7; end
+                 4'd7: begin exp_p4 <= exp_p4w[87:56]; exp_st <= 4'd8; end
+                 4'd8: begin exp_p5 <= exp_p5w[81:56]; exp_st <= 4'd9; end
+                 4'd9: begin exp_res <= exp_rp[117:56]; exp_st <= 4'd10; end

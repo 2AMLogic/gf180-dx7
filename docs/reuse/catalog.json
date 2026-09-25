@@ -1844,8 +1844,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "45fd0e882f3e7205059ca51cf6a7d3d254eb13704e3b585b58a9dc1ec0cf6b61",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82)"
+   "sha256": "fdbe165a23ffa29cf6424a4493b81daf23008f9108fad90252d52d91a0aacb6e",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token"
   },
   {
    "path": "tools/u02_candidates.py",
@@ -2106,6 +2106,21 @@
    "path": "tests/test_h10_techmaps.py",
    "sha256": "95d53eec0092a06f63bc18685e4076166c783b7c82478bbd20ff16b6a3513902",
    "reason": "locally authored DR-0010 techmap verifier tests (issue #32); no upstream bytes"
+  },
+  {
+   "path": "tools/exp_range_proof.py",
+   "sha256": "f6f3217ed461031efd91dcd41ba027d10931b2e508df916760b0b91192621e96",
+   "reason": "locally authored issue #86 range-proof tool (static/sweep/xcheck of exp_t3/4/5 out-of-range selects); not a reuse import"
+  },
+  {
+   "path": "tools/exp_hsum_lec.py",
+   "sha256": "d7cf93fb2e32aca889dc1302853339669960bd10a9df2a4a86a6d3a55d81bb07",
+   "reason": "locally authored issue #86 exp_hsum cone LEC + full-core RTLIL driver check via the pinned image's yosys; not a reuse import"
+  },
+  {
+   "path": "tools/exp_netlist_census.py",
+   "sha256": "773a48c569553733e50112b844fda27a5891e3dfc5def3364f770bec93bcbf74",
+   "reason": "locally authored issue #86 mapped-netlist exp() register census; not a reuse import"
   }
  ]
 }

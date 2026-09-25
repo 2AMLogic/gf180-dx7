@@ -1,0 +1,47 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (sweep)",
+ "rtl_file": "rtl/dx7_core.v",
+ "rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "rtl_matches_dr0011_pin": true,
+ "python": "3.14.7",
+ "mutate_bit": 42,
+ "result": {
+  "points": 4101,
+  "stride": 4093,
+  "max_bits": {
+   "xq": 50,
+   "p2": 43,
+   "p3": 43,
+   "p4": 32,
+   "p5": 26,
+   "t3_full": 72,
+   "t4_full": 60,
+   "t5_full": 51
+  },
+  "max": {
+   "xq": 780191851775806,
+   "p2": 8447400079122,
+   "p3": 4489509358266,
+   "p4": 4294380227,
+   "p5": 45262183,
+   "t3_full": 3213715975146729972612,
+   "t4_full": 768509273451832190,
+   "t5_full": 1619996625053102
+  },
+  "argmax_y": {
+   "xq": 10486266,
+   "p2": 10486266,
+   "p3": 10486266,
+   "p4": 9025065,
+   "p5": 9025065,
+   "t3_full": 10486266,
+   "t4_full": 9025065,
+   "t5_full": 9025065
+  }
+ },
+ "runtime_s": 0.0,
+ "status": "FAIL",
+ "problems": [
+  "t3: reachable exact product needs 72 bits, declared wire is 71 bits"
+ ]
+}

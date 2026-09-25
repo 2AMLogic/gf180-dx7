@@ -3,8 +3,9 @@
 
 Fails when:
   - a source file exists under a governed destination (src/, rtl/, tools/,
-    spec/reference/tables/) without a covering adopt/adapt entry in
-    docs/reuse/catalog.json (or a catalog exemption);
+    asic/, spec/reference/tables/) without a covering adopt/adapt entry in
+    docs/reuse/catalog.json (or a catalog exemption). Git-ignored
+    directories (build output such as asic/orfs/work/) are not scanned;
   - an adopted destination file's bytes drift from the recorded upstream
     SHA-256 (adopt) or the recorded adapted SHA-256 (adapt);
   - an adapt destination exists without a recorded adapted SHA-256 (a
@@ -26,7 +27,7 @@ import os
 import subprocess
 import sys
 
-GOVERNED_DIRS = ("src", "rtl", "tools", "spec/reference/tables")
+GOVERNED_DIRS = ("src", "rtl", "tools", "asic", "spec/reference/tables")
 SOURCE_EXTENSIONS = {
     ".py", ".v", ".sv", ".vh", ".svh", ".tcl", ".sh", ".mk",
     ".sdc", ".lpf", ".c", ".h", ".cpp", ".hpp", ".f",
@@ -67,13 +68,29 @@ def load_catalog(repo_root, catalog_path):
     return catalog
 
 
+def git_ignored_dir(repo_root, reldir):
+    """True only when git positively reports the directory as ignored
+    (e.g. asic/orfs/work/ build output). Outside a git work tree, or if git
+    is unavailable, nothing is treated as ignored (scan stays maximal)."""
+    try:
+        proc = subprocess.run(
+            ["git", "-C", repo_root, "check-ignore", "-q", "--",
+             reldir + "/"], capture_output=True)
+    except OSError:
+        return False
+    return proc.returncode == 0
+
+
 def iter_source_files(repo_root, exempt):
     """Yield governed source files as repo-relative paths."""
     for gov in GOVERNED_DIRS:
         base = os.path.join(repo_root, gov)
         for dirpath, dirnames, filenames in os.walk(base):
-            dirnames[:] = sorted(d for d in dirnames
-                                 if d != "__pycache__" and not d.startswith("."))
+            reldir = os.path.relpath(dirpath, repo_root).replace(os.sep, "/")
+            dirnames[:] = sorted(
+                d for d in dirnames
+                if d != "__pycache__" and not d.startswith(".")
+                and not git_ignored_dir(repo_root, f"{reldir}/{d}"))
             for name in sorted(filenames):
                 if name.startswith("."):
                     continue

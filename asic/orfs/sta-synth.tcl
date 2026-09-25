@@ -1,6 +1,9 @@
 # sta-synth.tcl -- SYNTHESIS-STAGE static timing of a mapped gf180mcu 7t netlist at the three 5.0 V
-# corners (H10, issue #32). This repository's own script, modelled on the sibling sta-corners.tcl
-# (same corner set, same "=== CORNER" line format so tools/h10_collect.py parses both).
+# corners (H10, issue #32). Adapted from 2AMLogic/gf180-parasynth pnr/orfs/sta-corners.tcl @ cbcc8b9e
+# (Apache-2.0): the corner setup, period lookup and per-corner "=== CORNER" block are upstream
+# verbatim (tools/h10_collect.py parses that line format); netlist input, ideal clock, no
+# extraction and the report set are ours. Provenance: docs/reuse/catalog.json entry
+# orfs-dx7core-design-and-synth-sta.
 #
 # What this stage is and is not:
 #   * the netlist is the unplaced, unsized synthesis result: NO wire parasitics (no placement exists),

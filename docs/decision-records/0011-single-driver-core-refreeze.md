@@ -169,3 +169,38 @@
 - **H08 chassis:** `docs/H08-PIN.md` evidence remains the historical record
   on the pre-refreeze core; the chassis re-verifies on the refrozen core via
   the 34/34 battery (chassis files unmodified).
+## Addendum (2026-09-25, H10 PR-B review, issue #32): which yosys ran
+
+This addendum is a clarification, not a change to the decision. The pinned
+ORFS image (`openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142d…`) ships
+**two** yosys builds, and the image tag or digest alone does not say which
+one ran:
+
+| Binary | Self-report | sha256 |
+|--------|-------------|--------|
+| `/usr/local/bin/yosys` (first on `PATH`) | `Yosys 0.67 (git sha1 2d1509d1b)` | `21cf7fad1cccb4dea0e5c8fdb0085a7c766a3b401dbdd59d4316e6b6e820afd5` |
+| `/OpenROAD-flow-scripts/tools/install/yosys/bin/yosys` | `Yosys 0.68+post (git sha1 UNKNOWN)` | `5cd52bc790d39b1e59a88112e9132ef8de338c2a26e4b0df8222d937e65bab92` |
+
+The ORFS flow selects the second binary. Image `flow/scripts/variables.mk`
+lines 117-120 (sha256 `3cba7ede…`) default `YOSYS_EXE` to
+`tools/install/yosys/bin/yosys` outside a nix shell. Applied to this DR's
+witnesses (`evidence/h10-legality/run-attempts.md`):
+
+- **Witnesses A and C** (`sh -c 'yosys …'` `check -assert` on the 1_1
+  RTLIL) ran the **0.67** `PATH` binary. Their committed logs print the
+  0.67 banner. Their header comments say "yosys 0.57"; that is a typo, and
+  the banner is authoritative.
+- **Rows D/E/F** (flow `do-yosys` 1_2 and `1_synth`) ran through the flow
+  Makefile. By the flow default they therefore ran **0.68+post**, not the
+  "0.67" in Context 1 and in the D witness header. The committed D excerpt
+  carries no banner, and the E/F logs are not committed. This is inferred
+  from the flow's selection rule, not observed. The legality result (the
+  frozen core fails, the refrozen core passes) does not depend on which of
+  the two builds ran, but the tool attribution in Context 1 is corrected
+  here.
+- These witnesses cite the image by tag only, so digest equality with the
+  H10 image is not recorded for them.
+
+The H10 report (`docs/H10-GF180-FEASIBILITY.md` section 6) records the
+binary path and sha256 for each of its own runs in
+`evidence/h10-gf180/bundle.json` `tools.yosys_runs`.

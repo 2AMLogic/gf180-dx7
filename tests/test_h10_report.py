@@ -25,6 +25,11 @@ and assert:
      policy's mapped area is within the core, "does not fit" is refused.
   K. the committed bundle re-verifies, the committed report is FRESH,
      and --require-fit on it exits 3 (no die has a routed chain).
+  L. the committed bundle records, for each yosys run, the binary path and
+     sha256 (the image ships two builds), fresh against committed evidence,
+     with the logged banner matching that binary.
+  M. negative control for L: a log carrying the other binary's banner is
+     recorded as a mismatch, and a missing banner as unknown, never a match.
 
 Fast lane (DR-0009): stdlib only, runs in well under a second.
 """
@@ -272,6 +277,40 @@ class TestCommittedBundle(unittest.TestCase):
             v, reasons = h10_report.fit_gate(b, pk)
             self.assertNotEqual(v, "fits", (pk, reasons))
         self.assertTrue(b["synth"].get("mapped"))
+
+    def test_l_yosys_identity_per_run(self):
+        # PR #84 judge finding: the image ships two yosys builds, so the
+        # digest alone does not identify the binary. Each run must record
+        # path + sha256, and its committed banner must match that binary.
+        import h10_collect
+        with open(BUNDLE) as f:
+            tools = json.load(f)["tools"]
+        runs = tools["yosys_runs"]
+        self.assertEqual(set(runs), {"orfs_flow_synth", "policy_ab"})
+        ev = os.path.join(REPO_ROOT, h10_collect.EV_REL)
+        self.assertEqual(runs, h10_collect.yosys_runs(ev),
+                         "bundle.tools.yosys_runs is stale vs committed "
+                         "evidence; rerun tools/h10_collect.py")
+        for name, r in runs.items():
+            self.assertTrue(r["path"].startswith("/"), name)
+            self.assertRegex(r["sha256"], r"^[0-9a-f]{64}$", name)
+            self.assertIs(r["banner_matches"], True, (name, r["banner"]))
+        self.assertNotEqual(tools["yosys_not_used"]["sha256"],
+                            runs["orfs_flow_synth"]["sha256"])
+
+    def test_m_yosys_banner_mismatch_is_recorded_not_assumed(self):
+        # negative control: a run whose log carries the PATH binary's 0.67
+        # banner must not be recorded as the 0.68+post flow binary, and a
+        # missing banner is None (unknown), never True.
+        import h10_collect
+        with tempfile.TemporaryDirectory() as ev:
+            os.makedirs(os.path.join(ev, "orfs-synth"))
+            with open(os.path.join(ev, "orfs-synth",
+                                   "1_2_yosys.trimmed.log"), "w") as f:
+                f.write(h10_collect.YOSYS_PATH["self_reported"] + "\n")
+            runs = h10_collect.yosys_runs(ev)
+        self.assertIs(runs["orfs_flow_synth"]["banner_matches"], False)
+        self.assertIsNone(runs["policy_ab"]["banner_matches"])
 
 
 if __name__ == "__main__":

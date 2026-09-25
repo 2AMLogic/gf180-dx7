@@ -9,6 +9,9 @@
 #
 # Repo/netlist paths inside the container equal host paths; the liberty directory is mounted at
 # /pdklib (a same-path bind under ~/.ciel proved unreliable on Docker Desktop).
+# Wrapper idioms (strict mode, HERE resolver, ORFS_IMAGE default) adapted from 2AMLogic/gf180-parasynth
+# pnr/orfs/run-orfs.sh @ cbcc8b9e (Apache-2.0); provenance: docs/reuse/catalog.json entry
+# orfs-dx7core-design-and-synth-sta.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 NETLIST="$(cd "$(dirname "${1:?usage: sta-synth.sh <netlist.v> <log-out> [top]}")" && pwd -P)/$(basename "$1")"

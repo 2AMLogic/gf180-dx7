@@ -173,13 +173,93 @@ FINDINGS = [
     "It independently agrees with this run's `x1_allowed` 23,996,886 um^2 "
     "(within 0.4 %, different yosys build). The H07 number must not be "
     "read as the core's size.",
-    "**Tool identity discrepancy.** DR-0011 and `run-attempts.md` name the "
-    "pinned image's yosys as `0.67 (2d1509d1b)`. The binary in the image "
-    "pulled by the same digest here self-reports `Yosys 0.68+post (git "
-    "sha1 UNKNOWN)` in every log of this run. OpenROAD self-reports "
-    "`26Q3-1260-g06a5a02279`. The image digest, not a version string, is "
-    "the identity of record.",
+    "**Tool identity: the pinned image ships two yosys builds.** The image "
+    "digest alone does not identify the yosys that ran; the invocation "
+    "does. `/usr/local/bin/yosys` (on `PATH`) self-reports `Yosys 0.67 "
+    "(git sha1 2d1509d1b)`, sha256 `21cf7fad1ccc...`. "
+    "`/OpenROAD-flow-scripts/tools/install/yosys/bin/yosys` self-reports "
+    "`Yosys 0.68+post (git sha1 UNKNOWN)`, sha256 `5cd52bc790d3...`. The "
+    "ORFS flow selects the second: image `flow/scripts/variables.mk` lines "
+    "117-120 default `YOSYS_EXE` to `tools/install/yosys/bin/yosys` outside "
+    "a nix shell. Both runs of this report used the 0.68+post binary: the "
+    "flow run by that default, and the policy A/B because it was passed "
+    "that path explicitly (`--yosys`). Each run's banner in its committed "
+    "log matches that binary's self-report; path and sha256 per run are in "
+    "`bundle.tools.yosys_runs`. DR-0011's `0.67 (2d1509d1b)` is correct "
+    "for its witnesses A and C, which called `yosys` from `PATH` (their "
+    "committed logs print the 0.67 banner). Its flow `do-yosys` rows D/E/F "
+    "ran through the flow Makefile and so, by the same default, ran "
+    "0.68+post. Their committed evidence carries no banner, so this is "
+    "inferred from the flow, not observed (addendum in `run-attempts.md` "
+    "and DR-0011). OpenROAD self-reports `26Q3-1260-g06a5a02279`.",
 ]
+
+# Yosys binaries in the pinned image (verified in the image by digest with
+# `sha256sum` and `-V`, 2026-09-25). The flow's selection rule is recorded
+# with the hash of the file that states it.
+YOSYS_FLOW = {
+    "path": "/OpenROAD-flow-scripts/tools/install/yosys/bin/yosys",
+    "sha256": "5cd52bc790d39b1e59a88112e9132ef8de338c2a26e4b0df8222d937"
+              "e65bab92",
+    "self_reported": "Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU "
+                     "/usr/local/bin/wrapped-cc/g++ 11.4.0)",
+}
+YOSYS_PATH = {
+    "path": "/usr/local/bin/yosys",
+    "sha256": "21cf7fad1cccb4dea0e5c8fdb0085a7c766a3b401dbdd59d4316e6b6"
+              "e820afd5",
+    "self_reported": "Yosys 0.67 (git sha1 2d1509d1b, Release, GNU "
+                     "/usr/local/bin/wrapped-cc/g++ 11.4.0)",
+}
+VARIABLES_MK = {
+    "path": "/OpenROAD-flow-scripts/flow/scripts/variables.mk",
+    "sha256": "3cba7ede6cdd606381df39dc3f4060ddc7927d4312a9cd79694490f1"
+              "f19af46b",
+    "lines": "117-120",
+    "rule": "ifneq (${IN_NIX_SHELL},) YOSYS_EXE ?= $(shell command -v "
+            "yosys) else YOSYS_EXE ?= $(abspath $(FLOW_HOME)/../tools/"
+            "install/yosys/bin/yosys)",
+}
+
+
+def yosys_runs(ev):
+    """Per-run yosys identity: binary path + sha256, how it was selected,
+    and whether the banner in the run's committed evidence matches the
+    binary's self-report. A mismatch or missing banner is recorded as such
+    (banner_matches False / None); it is never assumed."""
+    def banner_in_log(p):
+        if not os.path.isfile(p):
+            return None
+        with open(p, errors="replace") as f:
+            for line in f:
+                s = line.strip()
+                if s.startswith("Yosys ") and "(git sha1" in s:
+                    return s
+        return None
+
+    flow_log = os.path.join(ev, "orfs-synth", "1_2_yosys.trimmed.log")
+    rep = os.path.join(ev, "policy-synth", "synth_report.json")
+    runs = {}
+    b = banner_in_log(flow_log)
+    runs["orfs_flow_synth"] = dict(
+        YOSYS_FLOW,
+        selected_by="ORFS flow default YOSYS_EXE (image %s lines %s, sha256 "
+                    "%s); run-orfs.sh does not set YOSYS_EXE"
+                    % (VARIABLES_MK["path"], VARIABLES_MK["lines"],
+                       VARIABLES_MK["sha256"]),
+        banner_evidence=rel(flow_log),
+        banner=b,
+        banner_matches=None if b is None else b == YOSYS_FLOW["self_reported"])
+    r = load_json(rep)
+    b = (r or {}).get("yosys")
+    runs["policy_ab"] = dict(
+        YOSYS_FLOW,
+        selected_by="explicit: tools/h10_synth.py --yosys %s "
+                    "(asic/orfs/README.md Run step 4)" % YOSYS_FLOW["path"],
+        banner_evidence=rel(rep),
+        banner=b,
+        banner_matches=None if b is None else b == YOSYS_FLOW["self_reported"])
+    return runs
 
 UNPROVED_FIXED = [
     "synthesis-stage timing is ideal-clock, zero-wire-load, pre-resize; the "
@@ -277,7 +357,8 @@ def policy_synth(ev):
     return {
         "status": "PASS",
         "mapped": True,
-        "method": "tools/h10_synth.py: %s (the pinned image's yosys) "
+        "method": "tools/h10_synth.py: %s (the pinned image's "
+                  "tools/install/yosys/bin/yosys; bundle.tools.yosys_runs) "
                   "synth + dfflibmap + abc against the gf180mcu 7t "
                   "tt_025C_5v00 liberty (sha256 %s), hierarchy kept; "
                   "check -assert clean" % (r.get("yosys", "?"),
@@ -338,7 +419,9 @@ def orfs_synth(ev):
         "mapped": True,
         "method": f"pinned ORFS flow {ORFS_IMAGE}, platform gf180 "
                   "TRACK_OPTION=7t CORNER=TC, stock DONT_USE_CELLS=*_1, "
-                  "yosys in-image; flattened netlist",
+                  "yosys 0.68+post at the image's tools/install/yosys/bin/"
+                  "yosys (flow default; bundle.tools.yosys_runs); flattened "
+                  "netlist",
         "policy": "orfs_stock (DONT_USE_CELLS = *_1, image platform config)",
         "mapped_stdcell_area_um2": area,
         "seq_area_um2": float(seq.group(1)) if seq else None,
@@ -599,8 +682,15 @@ def build_bundle():
         "tools": {
             "orfs_image": ORFS_IMAGE,
             "pdk": "gf180mcuD, gf180mcu_fd_sc_mcu7t5v0 (7-track, 5 V)",
-            "yosys_self_reported": "Yosys 0.68+post (git sha1 UNKNOWN, "
-                                   "Release, GNU g++ 11.4.0), in-image",
+            "yosys_self_reported": YOSYS_FLOW["self_reported"] + ", "
+                                   "in-image at " + YOSYS_FLOW["path"],
+            "yosys_runs": yosys_runs(ev),
+            "yosys_not_used": dict(
+                YOSYS_PATH,
+                note="also in the pinned image, first on PATH; used by no "
+                     "H10 PR-B run; used by DR-0011 witnesses A and C "
+                     "(`sh -c 'yosys ...'`, their logs print this banner)"),
+            "yosys_flow_selection": VARIABLES_MK,
             "openroad_self_reported": "26Q3-1260-g06a5a02279, in-image",
             "liberty_tt_sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f"
                                  "9fb0cd0a712400e9bd80e38a",

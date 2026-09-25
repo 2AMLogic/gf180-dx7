@@ -1,5 +1,7 @@
 # OpenROAD-flow-scripts design config: dx7core -- the H07 integrated polyphonic DX7 core
 # (rtl/dx7_core.v + rtl/env_unit.v + rtl/alg_router.v, top dx7_core) -- gf180mcu, 7-track, 5.0 V.
+# Adapted from 2AMLogic/gf180-parasynth pnr/orfs/synth_top/config.mk @ cbcc8b9e (Apache-2.0);
+# provenance: docs/reuse/catalog.json entry orfs-dx7core-design-and-synth-sta.
 #
 # Run with ../run-orfs.sh dx7core   (see ../README.md). Die is a FIXED INPUT per run,
 # passed on the make command line (FLOW_VARIANT / DIE_AREA / CORE_AREA / PLACE_DENSITY);
@@ -49,7 +51,8 @@ export ADDER_MAP_FILE  = $(DESIGN_DIR)/../gf180_7t/cells_adders.v
 export LATCH_MAP_FILE  = $(DESIGN_DIR)/../gf180_7t/cells_latch.v
 # The stock flow handles the two SystemVerilog size casts in dx7_core.v itself: the
 # canonicalize step reads all VERILOG_FILES with `read_verilog -defer -sv` (image
-# /OpenROAD-flow-scripts/flow/scripts/synth_preamble.tcl, yosys 0.67). No custom
+# /OpenROAD-flow-scripts/flow/scripts/synth_preamble.tcl; the flow's yosys is the image's
+# tools/install/yosys/bin/yosys, 0.68+post -- not the 0.67 on PATH). No custom
 # SYNTH_SCRIPT is needed, so the stock synthesis pipeline (liberty load, dfflibmap,
 # abc, opt) runs unmodified.
 # The image sets LEC_CHECK=1 with a Kepler formal binary that dies with "illegal

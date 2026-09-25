@@ -193,6 +193,47 @@ class CheckReuseTestCase(unittest.TestCase):
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("missing from the tree", proc.stdout)
 
+    def _compliant_tree(self):
+        catalog = make_catalog(originals=[
+            {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
+             "reason": "local package marker"}])
+        tmp = tempfile.mkdtemp(prefix="reuse-check-")
+        write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+              json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
+        write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
+        return tmp
+
+    def test_unrecorded_asic_file_fails(self):
+        # PR #84 judge finding: sibling-derived ORFS files under asic/ shipped
+        # with no provenance record because asic/ was not governed.
+        tmp = self._compliant_tree()
+        write(os.path.join(tmp, "asic", "orfs", "sta-synth.tcl"),
+              b"define_corners tt ss ff\n")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("asic/orfs/sta-synth.tcl", proc.stdout)
+
+    def test_git_ignored_build_tree_not_scanned(self):
+        tmp = self._compliant_tree()
+        try:
+            subprocess.run(["git", "init", "-q", tmp], check=True,
+                           capture_output=True)
+        except (OSError, subprocess.CalledProcessError):
+            self.skipTest("git unavailable")
+        write(os.path.join(tmp, ".gitignore"), b"work/\n")
+        write(os.path.join(tmp, "asic", "orfs", "work", "results", "x.v"),
+              b"module x; endmodule\n")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        # the same file outside an ignored directory is still governed
+        write(os.path.join(tmp, "asic", "orfs", "results", "x.v"),
+              b"module x; endmodule\n")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("asic/orfs/results/x.v", proc.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

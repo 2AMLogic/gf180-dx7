@@ -38,3 +38,18 @@ Addendum (H10 report, PR-B, issue #32): row H is diagnosed in
 That is an invocation-order error, not a flow or driver defect. Row H stays
 BLOCKED as recorded; placement cannot run on either fixed die in any case,
 because the mapped cells exceed both cores.
+Addendum (tool identity, H10 PR-B review, issue #32): the "yosys 0.67
+(git `2d1509d1b`)" above is the pinned image's `PATH` binary
+`/usr/local/bin/yosys` (sha256 `21cf7fad1ccc…`). The image also ships
+`/OpenROAD-flow-scripts/tools/install/yosys/bin/yosys`, which self-reports
+`0.68+post` (sha256 `5cd52bc790d3…`), and the flow Makefile selects that one
+(image `flow/scripts/variables.mk` lines 117-120).
+- Rows A and C called `yosys` from `PATH`: 0.67, observed in their logs.
+  Their "yosys 0.57" header comments are typos; the banner is
+  authoritative.
+- Rows D/E/F (flow synthesis) ran through the flow: 0.68+post by the flow
+  default. This is
+  inferred, not observed, because no committed log for those rows carries a
+  banner.
+- Rows above are not rewritten. See the DR-0011 addendum and the H10 bundle's
+  `tools.yosys_runs`.

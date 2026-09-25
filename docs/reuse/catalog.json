@@ -1744,8 +1744,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "24991a8078784bf0ace0e91ba12f445cd53045e01206ff5855ee49deddb80fe5",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38)"
+   "sha256": "01a9e53eaa4fe0a6eb5cb8adcc3cf78e225a77eea1ae548d313a0de921a061ac",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36)"
   },
   {
    "path": "tools/u02_candidates.py",
@@ -1961,6 +1961,16 @@
    "path": "evidence/h10-legality/run-attempts.md",
    "sha256": "4f60069032c94917b2973f0960c7dbc44b0bb1f6d900d0c13722726e3e9e363e",
    "reason": "run-by-run digest of the legality evidence incl. superseded attempts, recorded tool deadlock, and H07 re-cert rows"
+  },
+  {
+   "path": "tools/validate_bank128.py",
+   "sha256": "c486fc8d90e1b8f7a476d1203f1657bfd57e1e8ba2ae59716e4081eef5bb5b35",
+   "reason": "locally authored U03 curated-bank manifest validator (issue #36): schema gf180-dx7.bank128/1 per docs/BANK128-POLICY.md, catalog resolution, alias-declared duplicates, distribution-status gate, catalog-drift STALE; validates only, selects/authors no patches; no upstream bytes"
+  },
+  {
+   "path": "tests/test_bank128.py",
+   "sha256": "3ffbbf7a46bb14b84b14164488eb0c6ce3ff00ed273c44b07e1feaa7d56b0993",
+   "reason": "locally authored U03 validator test suite (issue #36): synthetic in-code fixtures only (FIXTURE-nnn, fake catalog), positive case plus negative controls incl. identical-hash-without-alias-note; no upstream bytes, no curated content"
   }
  ]
 }

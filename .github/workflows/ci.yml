@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python: ["3.11", "3.12", "3.13"]
@@ -31,7 +31,7 @@ jobs:
     # Single Python version is enough — this job's purpose is validating the
     # fast-lane script itself, not full version coverage (the `test` job
     # above already matrices 3.11/3.12/3.13 for that).
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,7 +43,7 @@ jobs:
   mermaid:
     # README mermaid blocks must render: a syntax error here breaks the GitHub
     # rich display of the whole README (regression fixed 2026-09-20).
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   dag-fresh:
     # Staleness guard: the committed README block must equal a fresh render
     # (tools/render_issue_dag.py runs its own mermaid lint before comparing).
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     if: github.event_name == 'pull_request'
     permissions:
@@ -96,7 +96,7 @@ jobs:
     # a covered-byte change or a hand-edited view fails here. (--strict, the
     # every-node-PASS release gate, is deliberately NOT run yet: most nodes
     # are honestly NO_VERDICT until their claims are evidenced.)
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     if: github.event_name == 'pull_request'
     steps:

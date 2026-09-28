@@ -55,6 +55,7 @@ corpus/u02-candidates/renders/
 .loom-in-use
 .loom-checkpoint
 .loom-managed
+.loom-cargo-target-dir
 .no-changes-needed
 .snapshots/
 .loom/.daemon.pid
@@ -82,6 +83,9 @@ corpus/u02-candidates/renders/
 .loom/exit-codes/
 .loom/sweep-checkpoint/
 .loom/sweep-run/
+.loom/state/ci-telemetry/
+.loom/state/fleet-captain/
+.loom/concierge/
 .loom/stats/
 .loom/diagnostics/
 .loom/guide-docs-state.json
@@ -93,6 +97,8 @@ corpus/u02-candidates/renders/
 .loom/claude-config/
 .loom/native-tools/
 .loom/tokens/
+.loom/tokens.*/
+.loom/tokens-*/
 .loom/accounts.env
 .loom/api-keys/
 .loom/account-health.json

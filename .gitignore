@@ -55,6 +55,7 @@ corpus/u02-candidates/renders/
 .loom-in-use
 .loom-checkpoint
 .loom-managed
+.loom-cargo-target-dir
 .no-changes-needed
 .snapshots/
 .loom/.daemon.pid
@@ -82,6 +83,9 @@ corpus/u02-candidates/renders/
 .loom/exit-codes/
 .loom/sweep-checkpoint/
 .loom/sweep-run/
+.loom/state/ci-telemetry/
+.loom/state/fleet-captain/
+.loom/concierge/
 .loom/stats/
 .loom/diagnostics/
 .loom/guide-docs-state.json
@@ -91,10 +95,18 @@ corpus/u02-candidates/renders/
 .loom/metrics/
 .loom/usage-cache.json
 .loom/claude-config/
+.loom/claude-config.*/
+.loom/claude-config-*/
 .loom/native-tools/
 .loom/tokens/
+.loom/tokens.*/
+.loom/tokens-*/
 .loom/accounts.env
+.loom/accounts.env.*
+.loom/accounts.env-*
 .loom/api-keys/
+.loom/api-keys.*/
+.loom/api-keys-*/
 .loom/account-health.json
 .loom/account-health.lock
 .loom/CANARY
@@ -106,7 +118,11 @@ corpus/u02-candidates/renders/
 .loom/logs/
 .loom/.resync-in-progress
 .loom/gh-config/
+.loom/gh-config.*/
+.loom/gh-config-*/
 .loom/gh-config-by-owner/
+.loom/gh-config-by-owner.*/
+.loom/gh-config-by-owner-*/
 .loom-local/
 # <<< loom-managed <<<
 evidence/h07-core/sim/

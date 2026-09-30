@@ -11,9 +11,6 @@ requires-python = ">=3.11"
 license = { file = "LICENSE" }
 dependencies = []
 
-[project.optional-dependencies]
-metrics = ["numpy"]
-
 [project.scripts]
 gf180-dx7 = "gf180_dx7.cli:main"
 

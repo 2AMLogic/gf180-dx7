@@ -30,10 +30,16 @@ and assert:
      with the logged banner matching that binary.
   M. negative control for L: a log carrying the other binary's banner is
      recorded as a mismatch, and a missing banner as unknown, never a match.
+  N. the bundle's RTL provenance is what the runs recorded, never a re-hash
+     of the working tree (DR-0012, issue #98).
+  O. while the measured core differs from the frozen core, the report
+     carries a supersession banner -- and must stop carrying one when H10
+     is re-run on the current pin.
 
 Fast lane (DR-0009): stdlib only, runs in well under a second.
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -311,6 +317,44 @@ class TestCommittedBundle(unittest.TestCase):
             runs = h10_collect.yosys_runs(ev)
         self.assertIs(runs["orfs_flow_synth"]["banner_matches"], False)
         self.assertIsNone(runs["policy_ab"]["banner_matches"])
+
+    def test_n_measured_rtl_is_the_runs_not_the_worktree(self):
+        """DR-0012 (#98). The bundle's `rtl` map must be what the runs
+        recorded, never a re-hash of whatever is checked out when the
+        bundle is collected -- otherwise editing the core silently
+        re-stamps a stale bundle with the new core's provenance."""
+        import h10_collect
+        with open(BUNDLE) as f:
+            b = json.load(f)
+        ev = os.path.join(REPO_ROOT, h10_collect.EV_REL)
+        self.assertEqual(b["rtl"], h10_collect.measured_rtl(ev))
+        with open(os.path.join(ev, "orfs-synth", "run.json")) as f:
+            self.assertEqual(b["rtl"], json.load(f)["rtl"])
+
+    def test_o_stale_banner_tracks_the_frozen_pin(self):
+        """DR-0012 (#98). While the core the H10 runs measured differs from
+        the core now in the tree, the report MUST carry a supersession
+        banner; once H10 is re-run on the current pin, the banner must be
+        removed rather than left as decoration."""
+        with open(BUNDLE) as f:
+            b = json.load(f)
+        measured = (b.get("rtl") or {}).get("rtl/dx7_core.v")
+        with open(os.path.join(REPO_ROOT, "rtl", "dx7_core.v"), "rb") as f:
+            current = hashlib.sha256(f.read()).hexdigest()
+        report = open(REPORT).read()
+        if measured == current:
+            self.assertIsNone(b.get("superseded_by"),
+                              "H10 was re-run on the current pin; drop "
+                              "h10_collect.SUPERSEDED_BY and regenerate")
+            self.assertNotIn("**STALE —", report)
+        else:
+            sup = b.get("superseded_by")
+            self.assertIsNotNone(
+                sup, "bundle measured a core that is no longer the frozen "
+                     "core; it must carry a supersession record")
+            self.assertEqual(sup["core_pin_measured"], measured)
+            self.assertEqual(sup["core_pin_current"], current)
+            self.assertIn("**STALE —", report)
 
 
 if __name__ == "__main__":

@@ -257,6 +257,14 @@ def render_report(bundle, verdicts):
         f"**{b['target_clock_mhz']} MHz ({period} ns)**, the DR-0008 "
         "design point.")
     add("")
+    sup = b.get("superseded_by")
+    if sup:
+        add(f"> **{sup.get('status', 'STALE')} — superseded by "
+            f"`{sup.get('decision_record')}` (issue #{sup.get('issue')}).** "
+            f"{sup.get('reason')} Core pin measured here: "
+            f"`{str(sup.get('core_pin_measured'))[:8]}…`; current frozen pin: "
+            f"`{str(sup.get('core_pin_current'))[:8]}…`.")
+        add("")
     add("> **Scope.** Mapped synthesis (real gf180mcu 7t cells, pinned ORFS "
         "flow + a two-policy yosys A/B), synthesis-stage static timing, and ORFS "
         "floorplan on the fixed dies"

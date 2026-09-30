@@ -1,0 +1,18 @@
+{
+ "check": "issue #86 exp_t3/t4/t5 out-of-range-select range proof (xcheck)",
+ "rtl_file": "rtl/dx7_core.v",
+ "rtl_sha256": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+ "rtl_matches_dr0011_pin": false,
+ "rtl_matches_frozen_pin": true,
+ "python": "3.14.7",
+ "result": {
+  "simulator": "verilator",
+  "points": 64,
+  "inrange_mismatches": [],
+  "hsum_unknown_points": 0,
+  "hsum_vs_oor_zero_mismatches": [],
+  "hsum_vs_exact_widened_mismatches": []
+ },
+ "status": "PASS",
+ "problems": []
+}

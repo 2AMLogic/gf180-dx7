@@ -1,7 +1,18 @@
 # exp_t3/4/5 out-of-range selects: simulated core vs mapped netlist (issue #86)
 
-**Verdict: FAIL. The two disagree, and the issue's stop/escalate condition
-applies.** The out-of-range bits are 0 in exact arithmetic for every
+> **Resolved by DR-0012 (issue #98), 2026-09-25.** This document records the
+> FAIL as measured on the DR-0011 pin `34f93d2d…`; it is the historical
+> finding, not the current state of the core. The three wires are now
+> declared `[85:0]`/`[85:0]`/`[81:0]`, the reads are in range, and the
+> repaired result is recorded in
+> `docs/decision-records/0012-exp-term-width-core-refreeze.md` with its own
+> evidence under `evidence/issue-98-exp-refreeze/`. The controls in section 6
+> stay live: the tools reproduce this FAIL on demand against a scratch copy
+> at the DR-0011 widths. **Every command in section 7 that omits `--rtl` now
+> runs against the repaired core and is expected to PASS** — see section 7.
+
+**Verdict (on the DR-0011 pin): FAIL. The two disagree, and the issue's
+stop/escalate condition applies.** The out-of-range bits are 0 in exact arithmetic for every
 reachable operand, and the Verilator-simulated core evaluates them as 0.
 Synthesis does something else. The pinned flow does **not** tie just those
 15/15/16 bits to 0. Before `setundef -zero` runs, yosys applies IEEE 4-state
@@ -246,18 +257,33 @@ The static-proof controls and the pinned-RTL bound stay live in
 
 ## 7. Reproduce
 
+The core in the tree is the **repaired** one (DR-0012). These commands
+therefore report the repaired state; the FAIL this document records is
+reproduced by pointing the tools at a scratch copy at the DR-0011 widths.
+
 ```sh
+# Repaired core (expected PASS):
 python3 tools/exp_range_proof.py                          # static proof (<1 s)
 python3 tools/exp_range_proof.py --mode sweep             # ~10 min
 python3 tools/exp_range_proof.py --mode xcheck --sim verilator
 python3 tools/exp_range_proof.py --mode xcheck --sim iverilog
-python3 tools/exp_hsum_lec.py                             # pinned image via docker, ~10 min emulated
-ORFS_WORK=/tmp/w ./asic/orfs/run-orfs.sh dx7core FLOW_VARIANT=natdie synth   # ~33 min emulated
+python3 tools/exp_hsum_lec.py                             # pinned image via docker
+ORFS_WORK=/tmp/w ./asic/orfs/run-orfs.sh dx7core FLOW_VARIANT=natdie synth   # ~35 min emulated
 python3 tools/exp_netlist_census.py /tmp/w/results/gf180/dx7core/natdie/1_2_yosys.v \
     --stat /tmp/w/reports/gf180/dx7core/natdie/synth_stat.txt
+
+# This document's FAIL, reproduced (expected FAIL, exit 1):
+mkdir -p build/i98 && git show <dr0011-commit>:rtl/dx7_core.v > build/i98/dx7_core_dr0011.v
+python3 tools/exp_hsum_lec.py --rtl build/i98/dx7_core_dr0011.v
 ```
 
-Tool identities and input hashes: `tool-versions-2026-09-25.txt`.
+`tools/exp_hsum_lec.py` also carries the DR-0011 widths as a built-in live
+negative control on every run (`cone_lec_narrowed`,
+`core_hsum_undef_narrowed`), so the failure stays demonstrable without a
+scratch file.
+
+Tool identities and input hashes: `tool-versions-2026-09-25.txt` (this
+document's runs) and `evidence/issue-98-exp-refreeze/` (the repaired core's).
 
 ## 8. What remains unproved
 

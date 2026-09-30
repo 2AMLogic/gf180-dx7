@@ -1,0 +1,22 @@
+$ python3 -m unittest tests.test_exp_range_proof -v   (fast lane, no simulator or synthesis tool)
+test_control_p3_slice_widened_fails (tests.test_exp_range_proof.ExpRangeProofStatic.test_control_p3_slice_widened_fails) ... ok
+test_control_t3_wire_narrowed_fails (tests.test_exp_range_proof.ExpRangeProofStatic.test_control_t3_wire_narrowed_fails) ... ok
+test_control_unrecognised_write_refuses (tests.test_exp_range_proof.ExpRangeProofStatic.test_control_unrecognised_write_refuses) ... ok
+test_control_xq_slice_widened_fails (tests.test_exp_range_proof.ExpRangeProofStatic.test_control_xq_slice_widened_fails) ... ok
+test_pinned_rtl_passes_with_expected_bounds (tests.test_exp_range_proof.ExpRangeProofStatic.test_pinned_rtl_passes_with_expected_bounds) ... ok
+test_sampled_pipeline_within_static_bound (tests.test_exp_range_proof.ExpRangeProofStatic.test_sampled_pipeline_within_static_bound) ... ok
+test_sweep_control_mutation_fails (tests.test_exp_range_proof.ExpRangeProofStatic.test_sweep_control_mutation_fails) ... ok
+test_core_has_no_out_of_range_part_selects (tests.test_exp_range_proof.NoOutOfRangeSelects.test_core_has_no_out_of_range_part_selects) ... ok
+test_guard_catches_an_unrelated_narrowing (tests.test_exp_range_proof.NoOutOfRangeSelects.test_guard_catches_an_unrelated_narrowing)
+The guard is not special-cased to exp_t3/4/5: narrowing another ... ok
+test_guard_catches_the_dr0011_narrowing (tests.test_exp_range_proof.NoOutOfRangeSelects.test_guard_catches_the_dr0011_narrowing)
+Live negative control: re-narrowing the three term wires to their ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.334s
+
+OK
+
+-- the same structural guard applied to the superseded pin (build/i98/dx7_core_dr0011.v) --
+out-of-range selects found: [('exp_t3', 85, 70), ('exp_t4', 85, 70), ('exp_t5', 81, 65)]
+out-of-range selects in the refrozen core: []

@@ -1,38 +1,54 @@
 #!/usr/bin/env python3
-"""Issue #86: does the synthesised exp_hsum agree with the simulated core?
+"""Issues #86/#98: does the synthesised exp_hsum agree with the simulated core?
 
-`rtl/dx7_core.v` reads `exp_t3[85:30]`, `exp_t4[85:30]` and `exp_t5[81:26]`
-from wires declared [70:0]/[70:0]/[65:0].  The Verilator-simulated core (the
-H07 bit-exact reference) evaluates the missing bits as 0, which
-tools/exp_range_proof.py proves is also the exact value.  This tool checks
-what the synthesis flow makes of the same text, using the pinned ORFS
-image's yosys (the binary the flow selects, see docs/H10-GF180-FEASIBILITY.md
-section 6) unless --yosys is given.
+`rtl/dx7_core.v` reads `exp_t3[85:30]`, `exp_t4[85:30]` and `exp_t5[81:26]`.
+The exact products need only 68/60/52 bits (tools/exp_range_proof.py), so the
+simulated core -- the H07 bit-exact reference -- evaluates every read bit at
+or above the product width as 0.  This tool checks what the synthesis flow
+makes of the same text, using the pinned ORFS image's yosys (the binary the
+flow selects, see docs/H10-GF180-FEASIBILITY.md section 6) unless --yosys is
+given.
+
+The verdict therefore depends on the DECLARED widths of the three term wires
+in the RTL under test, which this tool reads from the file rather than
+assuming.  At the DR-0011 pin they were [70:0]/[70:0]/[65:0], narrower than
+the reads: the missing bits are undef to the yosys frontend, its 4-state `+`
+folds the whole adder to x, and `setundef -zero` then makes exp_hsum the
+constant 0 (issue #86, FAIL).  DR-0012 widens them to [85:0]/[85:0]/[81:0]
+(issue #98), which changes no simulated value and keeps the adder.
+
+Every cone check drives the SAME primary inputs: exp_xq, exp_p2 and the
+exp_t3/t4/t5 *products* at their exact widths [70:0]/[70:0]/[65:0] (the
+values the frozen model produces).  The cone under test zero-extends each
+product to the declared width of the RTL under test, then runs the verbatim
+exp_hsum assignment.  The gold cone is always the simulated-core semantics:
+the reads with explicit zeros above the product width.
 
 Checks (each reports PASS / FAIL / NOT_RUN):
 
-1. cone-lec (acceptance path (b), scoped to the exp_hsum adder cone).  The
-   `exp_hsum` assignment is extracted verbatim from the RTL into a cone
-   module whose inputs are exp_xq, exp_p2 and exp_t3/t4/t5 at their declared
-   widths.  The cone is taken through the pinned synth.tcl pass order up to
-   and including `setundef -zero` (then `abc` to generic gates), and a
-   SAT miter proves or refutes equivalence against the gold cone in which
-   the out-of-range bits are explicit zeros (the simulated-core semantics).
-   PASS = equivalent for every input.
-2. cone-lec-widened (positive control / candidate fix): the same with the
-   three wires widened to [85:0]/[85:0]/[81:0] (zero-extended).  Must PASS,
-   showing the harness can pass.
-3. cone-lec-control (failure control required by the issue): the widened
+1. cone-lec (acceptance path (b), scoped to the exp_hsum adder cone): the
+   cone at the declared widths of the RTL under test, through the pinned
+   synth.tcl pass order up to and including `setundef -zero` (then `abc` to
+   generic gates), SAT-mitered against the gold cone.  PASS = equivalent for
+   every input.
+2. cone-lec-widened (positive control): the same with the three wires forced
+   to [85:0]/[85:0]/[81:0].  Must PASS, showing the harness can pass.
+3. cone-lec-narrowed (live negative control, #98): the same with the three
+   wires forced back to the DR-0011 widths [70:0]/[70:0]/[65:0], i.e. the
+   as-written RTL.  Must FAIL -- it is the defect this tool exists to catch,
+   and it stays demonstrable after the RTL is fixed.
+4. cone-lec-control (failure control required by the issue): the widened
    cone against a gold that sets one out-of-range bit of exp_t3 to 1.  Must
    FAIL (SAT finds a counterexample).
-4. core-hsum-undef: on the FULL dx7_core, run the flow's opening passes
+5. core-hsum-undef: on the FULL dx7_core, run the flow's opening passes
    (read_verilog -sv, hierarchy, proc, opt_expr) and inspect the RTLIL: is
    the wire driving `exp_hsum` tied to an all-x constant?  If so, the later
    `setundef -zero` makes the synthesised exp_hsum the constant 0 and the
-   core FAILS agreement.  The widened scratch copy must still drive
-   exp_hsum from an adder cell (control).
+   core FAILS agreement.  Two scratch copies of the same core are the
+   controls: widened must still be driven by an adder cell, narrowed
+   (DR-0011 widths) must be all-x.
 
-Exit: 0 = the as-written RTL agrees (cone-lec PASS, core driver not x) and
+Exit: 0 = the RTL under test agrees (cone-lec PASS, core driver not x) and
 all controls behaved; 1 = disagreement found (controls behaved); 2 = NOT_RUN
 or a control misbehaved (no verdict).
 """
@@ -56,12 +72,17 @@ PINNED_IMAGE = ("openroad/orfs@sha256:"
 PINNED_YOSYS = "/OpenROAD-flow-scripts/tools/install/yosys/bin/yosys"
 
 HSUM_RE = re.compile(r"wire \[56:0\]\s+exp_hsum = .*?exp_t5\[81:26\]\};", re.S)
-T_DECL = {  # name: (declared hi, widened hi)
-    "exp_t3": (70, 85), "exp_t4": (70, 85), "exp_t5": (65, 81)}
+# name: (exact-product hi, read hi).  The product hi bits are the widths the
+# frozen model's exact products occupy (tools/exp_range_proof.py); the read hi
+# is the top bit exp_hsum selects.  Both are properties of the arithmetic, not
+# of any particular revision's declarations.
+T_TERM = {"exp_t3": (70, 85), "exp_t4": (70, 85), "exp_t5": (65, 81)}
+NARROW_HI = {k: v[0] for k, v in T_TERM.items()}   # DR-0011 declarations
+WIDE_HI = {k: v[1] for k, v in T_TERM.items()}     # DR-0012 declarations
 OOR_GOLD = {  # verbatim read -> explicit-zero (simulated-core) form
-    "exp_t3[85:30]": "{15'b0, exp_t3[70:30]}",
-    "exp_t4[85:30]": "{15'b0, exp_t4[70:30]}",
-    "exp_t5[81:26]": "{16'b0, exp_t5[65:26]}",
+    "exp_t3[85:30]": "{15'b0, exp_t3_in[70:30]}",
+    "exp_t4[85:30]": "{15'b0, exp_t4_in[70:30]}",
+    "exp_t5[81:26]": "{16'b0, exp_t5_in[65:26]}",
 }
 
 # Pinned image flow/scripts/synth.tcl (sha256 4725557a...) pass order for
@@ -82,46 +103,68 @@ write_verilog -noattr {out}
 """
 
 
-def cone_source(rtl: str, widened: bool) -> str:
+def hsum_body(rtl: str) -> str:
     m = HSUM_RE.search(rtl)
     if not m:
         raise RuntimeError("exp_hsum assignment not found in RTL")
-    body = m.group(0)
+    return m.group(0)
+
+
+def declared_hi(rtl: str) -> dict[str, int]:
+    """Declared `wire [HI:0]` of each term wire, read from the RTL under test."""
+    out = {}
+    for name in T_TERM:
+        m = re.findall(rf"wire \[(\d+):0\]\s+{name}\b", rtl)
+        if len(m) != 1:
+            raise RuntimeError(f"expected one `wire [HI:0] {name}`, found {len(m)}")
+        out[name] = int(m[0])
+    return out
+
+
+def cone_source(rtl: str, decl_hi: dict[str, int]) -> str:
+    """Cone whose primary inputs are the exact products at [70:0]/[70:0]/[65:0]
+    (the frozen-model values), zero-extended to `decl_hi` before the verbatim
+    exp_hsum assignment runs."""
     ports = ["input [55:0] exp_xq", "input [45:0] exp_p2"]
     decls = []
-    for name, (hi, whi) in T_DECL.items():
-        if widened:
-            ports.append(f"input [{hi}:0] {name}_in")
-            decls.append(f"wire [{whi}:0] {name} = {{{whi - hi}'b0, {name}_in}};")
-        else:
-            ports.append(f"input [{hi}:0] {name}")
+    for name, (phi, _) in T_TERM.items():
+        hi = decl_hi[name]
+        if hi < phi:
+            raise RuntimeError(f"{name} declared [{hi}:0], narrower than its product")
+        ports.append(f"input [{phi}:0] {name}_in")
+        pad = "" if hi == phi else f"{{{hi - phi}'b0, "
+        end = "" if hi == phi else "}"
+        decls.append(f"wire [{hi}:0] {name} = {pad}{name}_in{end};")
     return ("module cone(" + ", ".join(ports) + ", output [56:0] o);\n"
-            + "\n".join(decls) + "\n" + body + "\nassign o = exp_hsum;\nendmodule\n")
+            + "\n".join(decls) + "\n" + hsum_body(rtl)
+            + "\nassign o = exp_hsum;\nendmodule\n")
 
 
-def gold_source(rtl: str, bad: bool, widened_ports: bool) -> str:
-    src = cone_source(rtl, widened=False)
+def gold_source(rtl: str, bad: bool) -> str:
+    """Simulated-core semantics: the reads with explicit zeros above the exact
+    product width, on the same `_in` primary inputs the cone uses."""
+    ports = ["input [55:0] exp_xq", "input [45:0] exp_p2"]
+    ports += [f"input [{phi}:0] {n}_in" for n, (phi, _) in T_TERM.items()]
+    body = hsum_body(rtl)
     for k, v in OOR_GOLD.items():
-        if k not in src:
+        if k not in body:
             raise RuntimeError(f"expected read {k} not found")
-        src = src.replace(k, v)
+        body = body.replace(k, v)
     if bad:  # failure control: one out-of-range bit of exp_t3 forced to 1
-        src = src.replace("{15'b0, exp_t3[70:30]}", "{14'b0, 1'b1, exp_t3[70:30]}")
-    if widened_ports:  # same port names as the widened cone
-        for name in T_DECL:
-            src = src.replace(f" {name},", f" {name}_in,").replace(
-                f" {name})", f" {name}_in)")
-            src = re.sub(rf"\b{name}\[", f"{name}_in[", src)
-    return src.replace("module cone(", "module gold(")
+        body = body.replace("{15'b0, exp_t3_in[70:30]}",
+                            "{14'b0, 1'b1, exp_t3_in[70:30]}")
+    return ("module gold(" + ", ".join(ports) + ", output [56:0] o);\n"
+            + body + "\nassign o = exp_hsum;\nendmodule\n")
 
 
-def widened_rtl(rtl: str) -> str:
+def retyped_rtl(rtl: str, decl_hi: dict[str, int]) -> str:
+    """Scratch copy of the core with the three term wires redeclared."""
     out = rtl
-    for name, (hi, whi) in T_DECL.items():
-        pat = re.compile(rf"wire \[{hi}:0\](\s+){name}\b")
-        out, n = pat.subn(rf"wire [{whi}:0]\g<1>{name}", out)
+    for name, hi in decl_hi.items():
+        pat = re.compile(rf"wire \[\d+:0\](\s+){name}\b")
+        out, n = pat.subn(rf"wire [{hi}:0]\g<1>{name}", out)
         if n != 1:
-            raise RuntimeError(f"could not widen {name}")
+            raise RuntimeError(f"could not redeclare {name} (matched {n})")
     return out
 
 
@@ -223,7 +266,7 @@ def main() -> int:
     args = ap.parse_args()
     rtl_path = args.rtl.resolve()
     rtl = rtl_path.read_text()
-    out = {"check": "issue #86 exp_hsum synthesis agreement",
+    out = {"check": "issues #86/#98 exp_hsum synthesis agreement",
            "rtl_file": (str(rtl_path.relative_to(REPO)) if rtl_path.is_relative_to(REPO)
                         else str(rtl_path)),
            "rtl_sha256": hashlib.sha256(rtl.encode()).hexdigest(),
@@ -233,15 +276,23 @@ def main() -> int:
     try:
         y = Yosys(args.yosys, work)
         out["yosys_version"] = y.version()
+        decl = declared_hi(rtl)
+        out["declared_term_widths"] = {k: f"[{v}:0]" for k, v in decl.items()}
+        out["reads_within_declared_width"] = all(
+            decl[k] >= rhi for k, (_, rhi) in T_TERM.items())
         wide_path = work / "dx7_core_widened.v"
-        wide_path.write_text(widened_rtl(rtl))
-        out["cone_lec"] = lec(y, cone_source(rtl, False), gold_source(rtl, False, False), "asis")
-        out["cone_lec_widened"] = lec(y, cone_source(rtl, True),
-                                      gold_source(rtl, False, True), "wide")
-        out["cone_lec_control"] = lec(y, cone_source(rtl, True),
-                                      gold_source(rtl, True, True), "ctrl")
+        wide_path.write_text(retyped_rtl(rtl, WIDE_HI))
+        narrow_path = work / "dx7_core_narrowed.v"
+        narrow_path.write_text(retyped_rtl(rtl, NARROW_HI))
+        gold = gold_source(rtl, False)
+        out["cone_lec"] = lec(y, cone_source(rtl, decl), gold, "asis")
+        out["cone_lec_widened"] = lec(y, cone_source(rtl, WIDE_HI), gold, "wide")
+        out["cone_lec_narrowed"] = lec(y, cone_source(rtl, NARROW_HI), gold, "narrow")
+        out["cone_lec_control"] = lec(y, cone_source(rtl, WIDE_HI),
+                                      gold_source(rtl, True), "ctrl")
         out["core_hsum_undef"] = core_hsum_undef(y, rtl_path, "core_asis")
         out["core_hsum_undef_widened"] = core_hsum_undef(y, wide_path, "core_wide")
+        out["core_hsum_undef_narrowed"] = core_hsum_undef(y, narrow_path, "core_narrow")
     except RuntimeError as e:
         out.update(status="NOT_RUN", reason=str(e))
         print(json.dumps(out, indent=1))
@@ -251,13 +302,15 @@ def main() -> int:
             args.keep.mkdir(parents=True, exist_ok=True)
             for f in work.glob("*"):
                 if f.suffix in (".v", ".ys") and "mapped" not in f.name \
-                        and "widened" not in f.name:
+                        and not f.name.startswith("dx7_core"):
                     shutil.copy(f, args.keep / f.name)
         shutil.rmtree(work, ignore_errors=True)
 
     controls_ok = (out["cone_lec_widened"]["status"] == "PASS"
+                   and out["cone_lec_narrowed"]["status"] == "FAIL"
                    and out["cone_lec_control"]["status"] == "FAIL"
-                   and out["core_hsum_undef_widened"]["exp_hsum_driver_all_x"] is False)
+                   and out["core_hsum_undef_widened"]["exp_hsum_driver_all_x"] is False
+                   and out["core_hsum_undef_narrowed"]["exp_hsum_driver_all_x"] is True)
     asis = out["cone_lec"]["status"]
     core = out["core_hsum_undef"]["exp_hsum_driver_all_x"]
     out["controls_behaved"] = controls_ok

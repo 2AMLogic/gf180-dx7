@@ -1,0 +1,62 @@
+{
+ "check": "issues #86/#98 exp_hsum synthesis agreement",
+ "rtl_file": "build/i98/dx7_core_dr0011.v",
+ "rtl_sha256": "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+ "yosys_source": "openroad/orfs@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2 /OpenROAD-flow-scripts/tools/install/yosys/bin/yosys",
+ "yosys_version": "Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)",
+ "declared_term_widths": {
+  "exp_t3": "[70:0]",
+  "exp_t4": "[70:0]",
+  "exp_t5": "[65:0]"
+ },
+ "reads_within_declared_width": false,
+ "cone_lec": {
+  "status": "FAIL",
+  "mapped_output_is_constant_zero": true,
+  "counterexample": {
+   "gate_o": "0x0",
+   "gold_o": "0x1000ffffffffffd"
+  }
+ },
+ "cone_lec_widened": {
+  "status": "PASS",
+  "mapped_output_is_constant_zero": false,
+  "counterexample": null
+ },
+ "cone_lec_narrowed": {
+  "status": "FAIL",
+  "mapped_output_is_constant_zero": true,
+  "counterexample": {
+   "gate_o": "0x0",
+   "gold_o": "0x1000ffffffffffd"
+  }
+ },
+ "cone_lec_control": {
+  "status": "FAIL",
+  "mapped_output_is_constant_zero": false,
+  "counterexample": {
+   "gate_o": "0x1ffe0ef520eca3f",
+   "gold_o": "0x1ffe2ef520eca3f"
+  }
+ },
+ "core_hsum_undef": {
+  "exp_hsum_driver": "$add$/Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-98/build/i98/dx7_core_dr0011.v:956$29131_Y",
+  "exp_hsum_driver_tied_to": "69'x",
+  "exp_hsum_driver_is_cell_output": false,
+  "exp_hsum_driver_all_x": true
+ },
+ "core_hsum_undef_widened": {
+  "exp_hsum_driver": "$add$/private/tmp/i86lecaqp5g7yq/dx7_core_widened.v:956$29131_Y",
+  "exp_hsum_driver_tied_to": null,
+  "exp_hsum_driver_is_cell_output": true,
+  "exp_hsum_driver_all_x": false
+ },
+ "core_hsum_undef_narrowed": {
+  "exp_hsum_driver": "$add$/private/tmp/i86lecaqp5g7yq/dx7_core_narrowed.v:956$29131_Y",
+  "exp_hsum_driver_tied_to": "69'x",
+  "exp_hsum_driver_is_cell_output": false,
+  "exp_hsum_driver_all_x": true
+ },
+ "controls_behaved": true,
+ "status": "FAIL"
+}

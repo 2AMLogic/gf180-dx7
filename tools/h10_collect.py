@@ -124,6 +124,32 @@ FAMILY_CONTEXT = {
     },
 }
 
+# DR-0012 (issue #98): this bundle's runs were all made on the DR-0011 core
+# pin, whose mapped netlist is missing the whole exp() datapath (see FINDINGS
+# below and docs/EXP-RANGE-PROOF-86.md).  Set to None -- and delete this
+# comment -- only when the H10 runs have been redone on the current frozen
+# pin, at which point the bundle stops carrying a supersession banner.
+SUPERSEDED_BY = {
+    "status": "STALE",
+    "decision_record": "docs/decision-records/"
+                       "0012-exp-term-width-core-refreeze.md",
+    "issue": 98,
+    "core_pin_measured":
+        "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58",
+    "core_pin_current":
+        "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+    "reason": "Every run in this bundle synthesised the DR-0011 core, whose "
+              "out-of-range `exp_t3`/`exp_t4`/`exp_t5` reads make the whole "
+              "`exp_hsum` adder undef, so the pinned flow deleted the exp() "
+              "datapath (0 mapped flops for `exp_y` .. `exp_pt_q`). Every "
+              "area, instance count and utilisation figure here is a LOWER "
+              "BOUND for the current frozen core, not its size. The "
+              "direction of the non-fit verdicts cannot reverse by adding "
+              "logic, so no conclusion here is withdrawn -- but no number "
+              "may be cited as the refrozen core's size until these runs "
+              "are redone on the current pin.",
+}
+
 UNACCOUNTED = [
     "pad ring and I/O cells: the quarter-slot core area is already inside "
     "the default pad ring (D01); the 9-pad H08 chassis (rtl/synth_top.v) "
@@ -155,17 +181,25 @@ FINDINGS = [
     "error. It was an invocation-order error, not a flow or driver bug, and "
     "it is moot here: no placement stage can run on either fixed die "
     "(section 1).",
-    "**`exp_t3`/`exp_t4`/`exp_t5` out-of-range selects (DR-0011 Context 5), "
-    "mapping resolution recorded.** The pinned flow's canonicalize step "
-    "reports the same three warnings (`rtl/dx7_core.v:959-961`, 15/15/16 "
-    "MSBs set to undef). The flow then runs `setundef -zero` (image "
-    "`flow/scripts/synth.tcl` line 252), so the mapped netlist ties those "
-    "bits to constant 0. Whether 0 is also what the simulated core computes "
-    "for every reachable operand is NOT established here. Widths alone do "
-    "not bound it: `exp_p3` is 44 bits times a 30-bit constant, declared "
-    "71 bits, while the select reads up to bit 85. Gate-level simulation or "
-    "formal equivalence (`LEC_CHECK=0` in this run) is needed; tracked as a "
-    "follow-up issue.",
+    "**`exp_t3`/`exp_t4`/`exp_t5` out-of-range selects (DR-0011 Context 5) "
+    "-- CORRECTED, and the reason this report is STALE.** This run's "
+    "canonicalize step reported three out-of-bounds warnings "
+    "(`rtl/dx7_core.v:959-961`, 15/15/16 MSBs set to undef), and an earlier "
+    "revision of this bullet concluded that the flow's `setundef -zero` "
+    "(image `flow/scripts/synth.tcl` line 252) therefore ties those bits to "
+    "constant 0. **That was wrong.** Issue #86 measured what the flow "
+    "actually does: the yosys frontend makes the missing bits constant `x` "
+    "inside the addends, and the first `opt_expr` (inside `proc`) folds each "
+    "`$add` with an `x` operand bit to an ALL-x result -- IEEE 4-state `+`, "
+    "applied even with `-keepdc` -- so `exp_hsum` is `x` before `setundef "
+    "-zero` makes the whole sum the constant 0. The netlist behind every "
+    "number in this report has **0** mapped flops for the exp() datapath "
+    "(`exp_y` .. `exp_pt_q`): the AM/LFO exp() unit was deleted, and the "
+    "mapped core applies no AM attenuation where the frozen model does. "
+    "See `docs/EXP-RANGE-PROOF-86.md`. DR-0012 (issue #98) re-freezes the "
+    "core with the three wires widened to `[85:0]`/`[85:0]`/`[81:0]`, which "
+    "changes no simulated value and keeps the unit; every area and instance "
+    "figure here is therefore a LOWER BOUND for the current frozen core.",
     "**H07 synth report area mislabel (#82).** `evidence/h07-core/"
     "synth_report.json` records `chip_area_um2 = 1,158,826 um^2`. That is "
     "`alg_router`'s module-local area; the same committed log's "
@@ -672,13 +706,32 @@ def acceptance_rows(bundle):
     return rows
 
 
+def measured_rtl(ev):
+    """RTL hashes as recorded BY THE RUNS in this evidence tree.
+
+    Never a re-hash of the working tree (issue #98): the bundle must say
+    what was synthesised, not what happens to be checked out when it is
+    collected.  Re-hashing silently re-stamped a stale bundle with a newer
+    core's hashes, which would turn a STALE result into a false provenance
+    claim.  `rtl_worktree_at_collect` keeps the working-tree hashes beside
+    it so the drift is visible instead of hidden.
+    """
+    for rel in ("orfs-synth/run.json", "policy-synth/synth_report.json"):
+        d = load_json(os.path.join(ev, *rel.split("/")))
+        if isinstance(d, dict) and isinstance(d.get("rtl"), dict):
+            return d["rtl"]
+    return None
+
+
 def build_bundle():
     ev = os.path.join(REPO_ROOT, EV_REL)
     b = {
         "design": "dx7_core",
         "target_clock_mhz": 24.576,
         "clock_period_ns": 40.692,
-        "rtl": {r: sha256_file(os.path.join(REPO_ROOT, r)) for r in RTL_RELS},
+        "rtl": measured_rtl(ev),
+        "rtl_worktree_at_collect": {
+            r: sha256_file(os.path.join(REPO_ROOT, r)) for r in RTL_RELS},
         "tools": {
             "orfs_image": ORFS_IMAGE,
             "pdk": "gf180mcuD, gf180mcu_fd_sc_mcu7t5v0 (7-track, 5 V)",
@@ -710,6 +763,7 @@ def build_bundle():
         "family_context": FAMILY_CONTEXT,
         "unaccounted": UNACCOUNTED,
         "findings": FINDINGS,
+        "superseded_by": SUPERSEDED_BY,
     }
     b["synth"] = primary_synth(b["orfs_synth"], b["policy_synth"])
     b["unproved"] = unproved(b)

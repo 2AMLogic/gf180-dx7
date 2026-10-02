@@ -28,8 +28,9 @@ claim only — no P&R, timing, board, or original-DX7 fidelity claim (§6).
   composition, Freqlut), one shared H05 `alg_router` around a
   combinational H01 op kernel, the NUM-010 unclamped mixer (>>4 / clip
   ±2^24 with the +32768 quirk / >>9, per-voice clip then integer sum),
-  double-buffered I2S master (BCLK = clk/4, LRCLK = clk/256, data delayed
-  1 BCLK, left-justified), status word `{0xD7, 1, OVERRUN, QUEUE,
+  double-buffered I2S master (as built: BCLK period 8 clk, LRCLK period 512 clk, 22-bit
+  left-justified payload; the earlier clk/4 / clk/256 wording is superseded by
+  the issue #78 contract amendment, `docs/CONTRACT-CORE-v1.md` §5), status word `{0xD7, 1, OVERRUN, QUEUE,
   OVERFLOW, FRESH, FRAME}` and two-flop reset sync.
 * `rtl/tb_dx7_core.v` — host-side bench: SPI master (SCK = clk/16, inside
   the contracted SCK ≤ clk/4 bound), I2S DAC-model decoder + PCM dump via

@@ -343,9 +343,31 @@ worst-case link budget (§2 rows 9–12, §4.2).
 
 ## 5. Module boundaries for RTL (H04–H07)
 
-Single clock domain, no derived clocks; BCLK (= clk/4) and LRCLK (= clk/256)
-are frame-counter bits driven as registered outputs (parasynth pattern — no
-CDC anywhere except the two-flop-synchronized SPI pins). Each module's
+Single clock domain, no derived clocks; BCLK and LRCLK are frame-counter
+bits driven as registered outputs (parasynth pattern — no CDC anywhere except
+the two-flop-synchronized SPI pins).
+
+**I2S TX geometry (binding; amended by issue #78, operator ruling
+2026-09-26).** The as-built geometry is the contract, replacing the earlier
+"BCLK = clk/4, LRCLK = clk/256" figures (which were not realized by the core
+and were ambiguous between period and toggle divider):
+
+| Quantity | Binding value |
+|---|---|
+| BCLK period | **8** `clk` (3.072 MHz = 64 fs at the 24.576 MHz design point) |
+| LRCLK period | **512** `clk` (one 48 kHz frame, DEC-009) |
+| Payload | **22-bit**, MSB first, left-justified, carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); same sample in both LR halves |
+| Alignment | first data bit rises **6 BCLKs** after the LRCLK rise (measured `first_bit_delay = 6`) |
+
+Binding reader: the **frame-aligned left-justified 22-bit recovery reader**
+(reference implementation: the `w24` slot-window decode in
+`rtl/tb_synth_top.v`, documented in `docs/H08-PIN.md` "I2S format"). A
+right-justified 24-bit reader is **not** a conforming reader of this
+contract: it recovers only the top 22 bits in the nominal window and
+misreads bit 23/22 at the LR edge. H10 (front-end closure) and H11 (wrapper)
+consume exactly this shape. This is a documentation-only contract change:
+the H07 core is unchanged, and the amendment is not evidence that the RTL
+was re-verified (see `docs/H08-PIN.md`). Each module's
 conformance oracle is the N08 frozen release (`tools/n08_verify_release.py`,
 sha256-exact after declared latency alignment) restricted to the listed
 vector subsets, plus the named probe controls.

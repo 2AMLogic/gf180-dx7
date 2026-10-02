@@ -1904,7 +1904,7 @@
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "85df9c982589e1d74efefe40af7e35821ca5d095f6ed50022e30f6ab3e73143d",
+   "sha256": "8f75647846fd63db06db1e06dd7678b8f4ab9b001b28d2d0b85f6eadfa675ee0",
    "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98)"
   },
   {

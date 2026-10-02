@@ -170,9 +170,26 @@ The H08-specific acceptances and their status (final numbers in
 
 ## I2S format: contract vs as-built (the finding record)
 
-Measured against the frozen contract (48 kHz audio, 4× oversample, MSB
-first, 24-bit data, BCLK/LRCLK as defined in the plan section for the
-digital front end):
+**Amended by issue #78 (operator ruling, Joseph Turian, 2026-09-26).**
+The as-built geometry below is now the **binding** front-end contract
+(`docs/CONTRACT-CORE-v1.md` §5): BCLK period 8 `clk`, LRCLK period 512
+`clk`, 22-bit left-justified payload (`{mix[21:0], 2'b00}` in the 24-bit
+field), first data bit 6 BCLKs after the LRCLK rise, read by the
+frame-aligned left-justified 22-bit recovery reader (the `w24` decode in
+`rtl/tb_synth_top.v`). F-I2S-1/F-I2S-2 are therefore **resolved by contract
+amendment, not by an RTL fix**: the "contract" figures quoted in the
+findings below are the *superseded* (never-realized) clk/4 / clk/256 / 24-bit
+right-justified wording. H10 and H11 must consume this shape; the H11
+wrapper must not assume 4/256 or a right-justified 24-bit reader. F-I2S-3
+is unaffected.
+
+What this does not establish: the H07 core and its hash pin are untouched
+and no RTL was re-verified by this amendment (the evidence for the geometry
+remains the H08 pin-capture measurements recorded here). No synthesis,
+timing, DAC/hardware playback, or audio-quality claim is made.
+
+Original finding record (measured against the previously stated contract:
+48 kHz audio, 4× oversample, MSB first, 24-bit data):
 
 - **F-I2S-1 (deviation, as-built):** BCLK period is **8** `clk` (not 4)
   and LRCLK period is **512** `clk` (not 256). Data alignment still

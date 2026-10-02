@@ -1,33 +1,33 @@
-# yosys script (cwd=/Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32):
-#   read_liberty -lib /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
-#   read_verilog -sv /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/alg_router.v
+# yosys script (cwd=/home/ubuntu/claude-dx7-main):
+#   read_liberty -lib /home/ubuntu/pdk/gf180mcu_fd_sc_mcu7t5v0/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   read_verilog -sv /home/ubuntu/claude-dx7-main/rtl/dx7_core.v /home/ubuntu/claude-dx7-main/rtl/env_unit.v /home/ubuntu/claude-dx7-main/rtl/alg_router.v
 #   hierarchy -check -top dx7_core
 #   synth -top dx7_core
-#   dfflibmap -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib -dont_use *_1
-#   abc -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib -dont_use *_1
+#   dfflibmap -liberty /home/ubuntu/pdk/gf180mcu_fd_sc_mcu7t5v0/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib -dont_use *_1
+#   abc -liberty /home/ubuntu/pdk/gf180mcu_fd_sc_mcu7t5v0/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib -dont_use *_1
 #   setundef -zero
 #   hilomap -singleton -hicell gf180mcu_fd_sc_mcu7t5v0__tieh Z -locell gf180mcu_fd_sc_mcu7t5v0__tiel ZN
 #   opt_clean -purge
 #   check -assert
-#   stat -liberty /pdklib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
-#   write_verilog -noattr -noexpr /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/asic/orfs/work/h10-policy-synth/dx7_core.orfs_stock.v
-# full log sha256 345c8db86f079abc9bc97720f24a6536187d9637e6aedf33ba2792ebca086c4d (33644128 B, not committed)
-# wall 1546.7 s, rc 0
+#   stat -liberty /home/ubuntu/pdk/gf180mcu_fd_sc_mcu7t5v0/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib
+#   write_verilog -noattr -noexpr /home/ubuntu/claude-dx7-main/asic/orfs/work/h10-policy-synth/dx7_core.orfs_stock.v
+# full log sha256 043aa15c97347278fc9990f645b88d36e7bd27531583e4e1bd5ce06ec49200b4 (29733700 B, not committed)
+# wall 48786.9 s, rc 0
 # ---- warnings/errors ----
-Warning: Replacing memory \cmt_scaleB with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
-Warning: Replacing memory \cmt_scaleA with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
-Warning: Replacing memory \cmt_elevels with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
-Warning: Replacing memory \cmt_erates with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
-Warning: Replacing memory \cmt_fterm with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
-Warning: Replacing memory \cmt_opitch with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
-Warning: Replacing memory \levels_q with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v:476
-Warning: Replacing memory \rates_q with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/env_unit.v:472
-Warning: Replacing memory \cmt_scaleB with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
-Warning: Replacing memory \cmt_scaleA with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1477
-Warning: Replacing memory \cmt_elevels with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
-Warning: Replacing memory \cmt_erates with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1476
-Warning: Replacing memory \cmt_fterm with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
-Warning: Replacing memory \cmt_opitch with list of registers. See /Users/rwalters/GitHub/gf180-dx7/.loom/worktrees/issue-32/rtl/dx7_core.v:1475
+Warning: Replacing memory \cmt_scaleB with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1486
+Warning: Replacing memory \cmt_scaleA with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1486
+Warning: Replacing memory \cmt_elevels with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1485
+Warning: Replacing memory \cmt_erates with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1485
+Warning: Replacing memory \cmt_fterm with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1484
+Warning: Replacing memory \cmt_opitch with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1484
+Warning: Replacing memory \levels_q with list of registers. See /home/ubuntu/claude-dx7-main/rtl/env_unit.v:476
+Warning: Replacing memory \rates_q with list of registers. See /home/ubuntu/claude-dx7-main/rtl/env_unit.v:472
+Warning: Replacing memory \cmt_scaleB with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1486
+Warning: Replacing memory \cmt_scaleA with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1486
+Warning: Replacing memory \cmt_elevels with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1485
+Warning: Replacing memory \cmt_erates with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1485
+Warning: Replacing memory \cmt_fterm with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1484
+Warning: Replacing memory \cmt_opitch with list of registers. See /home/ubuntu/claude-dx7-main/rtl/dx7_core.v:1484
 # ---- final stat ----
 Printing statistics.
 
@@ -36,54 +36,54 @@ Printing statistics.
         +----------Local Count, excluding submodules.
         |        +-Local Area, excluding submodules.
         |        | 
-   168661        - wires
-   230356        - wire bits
-     1875        - public wires
-    63353        - public wire bits
+   261180        - wires
+   323758        - wire bits
+     1892        - public wires
+    64253        - public wire bits
        16        - ports
        68        - port bits
-   212890 8.21E+06 cells
-    16754 3.31E+05   gf180mcu_fd_sc_mcu7t5v0__and2_2
-     3276 7.91E+04   gf180mcu_fd_sc_mcu7t5v0__and3_2
-     2941 8.39E+04   gf180mcu_fd_sc_mcu7t5v0__and4_2
-     5444 2.03E+05   gf180mcu_fd_sc_mcu7t5v0__aoi211_2
-     5349 1.53E+05   gf180mcu_fd_sc_mcu7t5v0__aoi21_2
-      391 1.97E+04   gf180mcu_fd_sc_mcu7t5v0__aoi221_2
-     1861 1.02E+05   gf180mcu_fd_sc_mcu7t5v0__aoi222_2
-    30345 1.07E+06   gf180mcu_fd_sc_mcu7t5v0__aoi22_2
-    12414 1.64E+05   gf180mcu_fd_sc_mcu7t5v0__clkinv_2
-    46048 3.13E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_2
-    21635 7.12E+05   gf180mcu_fd_sc_mcu7t5v0__mux2_2
-     5704 4.26E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_2
-    15160    3E+05   gf180mcu_fd_sc_mcu7t5v0__nand2_2
-      687 1.96E+04   gf180mcu_fd_sc_mcu7t5v0__nand3_2
-      184 6.46E+03   gf180mcu_fd_sc_mcu7t5v0__nand4_2
-    16299 3.58E+05   gf180mcu_fd_sc_mcu7t5v0__nor2_2
-      274 8.42E+03   gf180mcu_fd_sc_mcu7t5v0__nor3_2
-      102 4.03E+03   gf180mcu_fd_sc_mcu7t5v0__nor4_2
-      855 3.38E+04   gf180mcu_fd_sc_mcu7t5v0__oai211_2
-     6911 2.28E+05   gf180mcu_fd_sc_mcu7t5v0__oai21_2
-      191 9.64E+03   gf180mcu_fd_sc_mcu7t5v0__oai221_2
-       42 2.49E+03   gf180mcu_fd_sc_mcu7t5v0__oai222_2
-      336  1.4E+04   gf180mcu_fd_sc_mcu7t5v0__oai22_2
-      371 1.55E+04   gf180mcu_fd_sc_mcu7t5v0__oai31_2
-      125   6311.2   gf180mcu_fd_sc_mcu7t5v0__oai32_2
-       25  1481.76   gf180mcu_fd_sc_mcu7t5v0__oai33_2
-     3046 6.69E+04   gf180mcu_fd_sc_mcu7t5v0__or2_2
-     1272 3.35E+04   gf180mcu_fd_sc_mcu7t5v0__or3_2
-     2546 7.82E+04   gf180mcu_fd_sc_mcu7t5v0__or4_2
+   305984 1.09E+07 cells
+    33056 6.53E+05   gf180mcu_fd_sc_mcu7t5v0__and2_2
+     6403 1.55E+05   gf180mcu_fd_sc_mcu7t5v0__and3_2
+     3631 1.04E+05   gf180mcu_fd_sc_mcu7t5v0__and4_2
+     2821 1.05E+05   gf180mcu_fd_sc_mcu7t5v0__aoi211_2
+    16733 4.78E+05   gf180mcu_fd_sc_mcu7t5v0__aoi21_2
+      474 2.39E+04   gf180mcu_fd_sc_mcu7t5v0__aoi221_2
+     1213 6.66E+04   gf180mcu_fd_sc_mcu7t5v0__aoi222_2
+    34426 1.21E+06   gf180mcu_fd_sc_mcu7t5v0__aoi22_2
+    18044 2.38E+05   gf180mcu_fd_sc_mcu7t5v0__clkinv_2
+    46640 3.17E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_2
+    25016 8.24E+05   gf180mcu_fd_sc_mcu7t5v0__mux2_2
+     5517 4.12E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_2
+    24666 4.87E+05   gf180mcu_fd_sc_mcu7t5v0__nand2_2
+      808 2.31E+04   gf180mcu_fd_sc_mcu7t5v0__nand3_2
+      212 7.45E+03   gf180mcu_fd_sc_mcu7t5v0__nand4_2
+    20846 4.58E+05   gf180mcu_fd_sc_mcu7t5v0__nor2_2
+      479 1.47E+04   gf180mcu_fd_sc_mcu7t5v0__nor3_2
+       97 3.83E+03   gf180mcu_fd_sc_mcu7t5v0__nor4_2
+     1019 4.03E+04   gf180mcu_fd_sc_mcu7t5v0__oai211_2
+    11068 3.64E+05   gf180mcu_fd_sc_mcu7t5v0__oai21_2
+      248 1.25E+04   gf180mcu_fd_sc_mcu7t5v0__oai221_2
+       54  3.2E+03   gf180mcu_fd_sc_mcu7t5v0__oai222_2
+      502 2.09E+04   gf180mcu_fd_sc_mcu7t5v0__oai22_2
+      445 1.86E+04   gf180mcu_fd_sc_mcu7t5v0__oai31_2
+      189 9.54E+03   gf180mcu_fd_sc_mcu7t5v0__oai32_2
+       19 1.13E+03   gf180mcu_fd_sc_mcu7t5v0__oai33_2
+     6206 1.36E+05   gf180mcu_fd_sc_mcu7t5v0__or2_2
+     1875    49392   gf180mcu_fd_sc_mcu7t5v0__or3_2
+     2751 8.45E+04   gf180mcu_fd_sc_mcu7t5v0__or4_2
         1    8.781   gf180mcu_fd_sc_mcu7t5v0__tiel
-     5983 2.23E+05   gf180mcu_fd_sc_mcu7t5v0__xnor2_2
-     3221 1.98E+05   gf180mcu_fd_sc_mcu7t5v0__xnor3_2
-     2675 1.06E+05   gf180mcu_fd_sc_mcu7t5v0__xor2_2
-      422 2.69E+04   gf180mcu_fd_sc_mcu7t5v0__xor3_2
+    20836 7.78E+05   gf180mcu_fd_sc_mcu7t5v0__xnor2_2
+     4620 2.84E+05   gf180mcu_fd_sc_mcu7t5v0__xnor3_2
+    14205 5.61E+05   gf180mcu_fd_sc_mcu7t5v0__xor2_2
+      864  5.5E+04   gf180mcu_fd_sc_mcu7t5v0__xor3_2
        98        - submodules
         1        -   alg_router
        96        -   env_unit
         1        -   h07_op_kernel
 
-   Chip area for module '\dx7_core': 8211830.502403
-     of which used for sequential elements: 3133621.657603 (38.16%)
+   Chip area for module '\dx7_core': 10853433.203202
+     of which used for sequential elements: 3173907.968003 (29.24%)
 
 === env_unit ===
 
@@ -234,7 +234,7 @@ Printing statistics.
         +----------Count including submodules.
         |        +-Area including submodules.
         |        | 
-  1029674 3.36E+07 dx7_core
+  1122768 3.62E+07 dx7_core
     36909  1.5E+06 alg_router
      8103 2.48E+05 env_unit
      1987 5.79E+04 h07_op_kernel
@@ -242,57 +242,57 @@ Printing statistics.
         +----------Count including submodules.
         |        +-Area including submodules.
         |        | 
-   947568        - wires
-  1076648        - wire bits
-     4944        - public wires
-   133800        - public wire bits
+  1040087        - wires
+  1170050        - wire bits
+     4961        - public wires
+   134700        - public wire bits
      1197        - ports
     46961        - port bits
         -        - memories
         -        - memory bits
         -        - processes
-  1029674 3.36E+07 cells
-   102389 2.02E+06   gf180mcu_fd_sc_mcu7t5v0__and2_2
-    26047 6.29E+05   gf180mcu_fd_sc_mcu7t5v0__and3_2
-     8667 2.47E+05   gf180mcu_fd_sc_mcu7t5v0__and4_2
-    29461  1.1E+06   gf180mcu_fd_sc_mcu7t5v0__aoi211_2
-    66266 1.89E+06   gf180mcu_fd_sc_mcu7t5v0__aoi21_2
-     4665 2.36E+05   gf180mcu_fd_sc_mcu7t5v0__aoi221_2
-     2110 1.16E+05   gf180mcu_fd_sc_mcu7t5v0__aoi222_2
-    51715 1.82E+06   gf180mcu_fd_sc_mcu7t5v0__aoi22_2
-    63423 8.35E+05   gf180mcu_fd_sc_mcu7t5v0__clkinv_2
-    86767  5.9E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_2
-    55998 1.84E+06   gf180mcu_fd_sc_mcu7t5v0__mux2_2
-     7711 5.76E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_2
-   111449  2.2E+06   gf180mcu_fd_sc_mcu7t5v0__nand2_2
-     6712 1.92E+05   gf180mcu_fd_sc_mcu7t5v0__nand3_2
-     1258 4.42E+04   gf180mcu_fd_sc_mcu7t5v0__nand4_2
-    70785 1.55E+06   gf180mcu_fd_sc_mcu7t5v0__nor2_2
-     2137 6.57E+04   gf180mcu_fd_sc_mcu7t5v0__nor3_2
-      786 3.11E+04   gf180mcu_fd_sc_mcu7t5v0__nor4_2
-     6310 2.49E+05   gf180mcu_fd_sc_mcu7t5v0__oai211_2
-    48037 1.58E+06   gf180mcu_fd_sc_mcu7t5v0__oai21_2
-     2005 1.01E+05   gf180mcu_fd_sc_mcu7t5v0__oai221_2
-       55 3.26E+03   gf180mcu_fd_sc_mcu7t5v0__oai222_2
-     5103 2.13E+05   gf180mcu_fd_sc_mcu7t5v0__oai22_2
-     5248 2.19E+05   gf180mcu_fd_sc_mcu7t5v0__oai31_2
-     2669 1.35E+05   gf180mcu_fd_sc_mcu7t5v0__oai32_2
-      316 1.87E+04   gf180mcu_fd_sc_mcu7t5v0__oai33_2
-    42403 9.31E+05   gf180mcu_fd_sc_mcu7t5v0__or2_2
-    12565 3.31E+05   gf180mcu_fd_sc_mcu7t5v0__or3_2
-     5210  1.6E+05   gf180mcu_fd_sc_mcu7t5v0__or4_2
+  1122768 3.62E+07 cells
+   118691 2.34E+06   gf180mcu_fd_sc_mcu7t5v0__and2_2
+    29174 7.04E+05   gf180mcu_fd_sc_mcu7t5v0__and3_2
+     9357 2.67E+05   gf180mcu_fd_sc_mcu7t5v0__and4_2
+    26838    1E+06   gf180mcu_fd_sc_mcu7t5v0__aoi211_2
+    77650 2.22E+06   gf180mcu_fd_sc_mcu7t5v0__aoi21_2
+     4748  2.4E+05   gf180mcu_fd_sc_mcu7t5v0__aoi221_2
+     1462 8.02E+04   gf180mcu_fd_sc_mcu7t5v0__aoi222_2
+    55796 1.96E+06   gf180mcu_fd_sc_mcu7t5v0__aoi22_2
+    69053  9.1E+05   gf180mcu_fd_sc_mcu7t5v0__clkinv_2
+    87359 5.94E+06   gf180mcu_fd_sc_mcu7t5v0__dffq_2
+    59379 1.96E+06   gf180mcu_fd_sc_mcu7t5v0__mux2_2
+     7524 5.62E+05   gf180mcu_fd_sc_mcu7t5v0__mux4_2
+   120955 2.39E+06   gf180mcu_fd_sc_mcu7t5v0__nand2_2
+     6833 1.95E+05   gf180mcu_fd_sc_mcu7t5v0__nand3_2
+     1286 4.52E+04   gf180mcu_fd_sc_mcu7t5v0__nand4_2
+    75332 1.65E+06   gf180mcu_fd_sc_mcu7t5v0__nor2_2
+     2342  7.2E+04   gf180mcu_fd_sc_mcu7t5v0__nor3_2
+      781 3.09E+04   gf180mcu_fd_sc_mcu7t5v0__nor4_2
+     6474 2.56E+05   gf180mcu_fd_sc_mcu7t5v0__oai211_2
+    52194 1.72E+06   gf180mcu_fd_sc_mcu7t5v0__oai21_2
+     2062 1.04E+05   gf180mcu_fd_sc_mcu7t5v0__oai221_2
+       67 3.97E+03   gf180mcu_fd_sc_mcu7t5v0__oai222_2
+     5269  2.2E+05   gf180mcu_fd_sc_mcu7t5v0__oai22_2
+     5322 2.22E+05   gf180mcu_fd_sc_mcu7t5v0__oai31_2
+     2733 1.38E+05   gf180mcu_fd_sc_mcu7t5v0__oai32_2
+      310 1.84E+04   gf180mcu_fd_sc_mcu7t5v0__oai33_2
+    45563    1E+06   gf180mcu_fd_sc_mcu7t5v0__or2_2
+    13168 3.47E+05   gf180mcu_fd_sc_mcu7t5v0__or3_2
+     5415 1.66E+05   gf180mcu_fd_sc_mcu7t5v0__or4_2
         2   17.562   gf180mcu_fd_sc_mcu7t5v0__tiel
-   112234 4.19E+06   gf180mcu_fd_sc_mcu7t5v0__xnor2_2
-    25507 1.57E+06   gf180mcu_fd_sc_mcu7t5v0__xnor3_2
-    60294 2.38E+06   gf180mcu_fd_sc_mcu7t5v0__xor2_2
-     3370 2.15E+05   gf180mcu_fd_sc_mcu7t5v0__xor3_2
+   127087 4.74E+06   gf180mcu_fd_sc_mcu7t5v0__xnor2_2
+    26906 1.65E+06   gf180mcu_fd_sc_mcu7t5v0__xnor3_2
+    71824 2.84E+06   gf180mcu_fd_sc_mcu7t5v0__xor2_2
+     3812 2.43E+05   gf180mcu_fd_sc_mcu7t5v0__xor3_2
        98 2.54E+07 submodules
         1  1.5E+06   alg_router
        96 2.38E+07   env_unit
         1 5.79E+04   h07_op_kernel
 
-   Chip area for top module '\dx7_core': 33600929.779183
-     of which used for sequential elements: 5904598.470403 (17.57%)
+   Chip area for top module '\dx7_core': 36242532.480014
+     of which used for sequential elements: 5944884.780803 (16.40%)
 
 14. Executing Verilog backend.
 Dumping module `\alg_router'.

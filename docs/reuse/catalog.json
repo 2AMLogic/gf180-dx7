@@ -1694,8 +1694,8 @@
   },
   {
    "path": "docs/CONTRACT-CORE-v1.md",
-   "sha256": "cca1e1abe37d1221eb34d9927bb9b84d070af9a4d65951f697b0ce0e22062804",
-   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry"
+   "sha256": "e2f1919dd70165d91320318a4bc1bf3b43eb47f562cd11cd974cae22d7071589",
+   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry; binding table corrected per judge review (one sample per LRCLK period in the high half, low half zeros; first_bit_delay is in bench clk ticks, not BCLKs)"
   },
   {
    "path": "spec/core-contract-v1.json",
@@ -1904,8 +1904,8 @@
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "8f75647846fd63db06db1e06dd7678b8f4ab9b001b28d2d0b85f6eadfa675ee0",
-   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98)"
+   "sha256": "b3bc56ebd8946c9ab1e6776092f9810794b31cd65b5c76f9def5898b6b13f0dd",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98); issue #78 amendment note and F-I2S-1 alignment prose corrected per judge review (first_bit_delay is bench clk ticks)"
   },
   {
    "path": "tools/h08_synth.py",

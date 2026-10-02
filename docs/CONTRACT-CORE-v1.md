@@ -356,8 +356,8 @@ and were ambiguous between period and toggle divider):
 |---|---|
 | BCLK period | **8** `clk` (3.072 MHz = 64 fs at the 24.576 MHz design point) |
 | LRCLK period | **512** `clk` (one 48 kHz frame, DEC-009) |
-| Payload | **22-bit**, MSB first, left-justified, carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); same sample in both LR halves |
-| Alignment | first data bit rises **6 BCLKs** after the LRCLK rise (measured `first_bit_delay = 6`) |
+| Payload | **22-bit**, MSB first, left-justified, carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); **one sample per LRCLK period, carried in the LRCLK-high half only; the LRCLK-low half is all zeros** (not a duplicate of the sample) |
+| Alignment | the MSB is on D from the LRCLK-rise load tick; the first BCLK rise of the LRCLK-high half (**5 `clk`** after the LRCLK pad edge, i.e. within the first BCLK period, no BCLK delay) samples the MSB, and BCLK rises 1..22 carry s21..s0. The bench's recorded `first_bit_delay = 6` is in **bench `clk` ticks**, not BCLKs |
 
 Binding reader: the **frame-aligned left-justified 22-bit recovery reader**
 (reference implementation: the `w24` slot-window decode in

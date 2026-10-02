@@ -174,7 +174,10 @@ The H08-specific acceptances and their status (final numbers in
 The as-built geometry below is now the **binding** front-end contract
 (`docs/CONTRACT-CORE-v1.md` §5): BCLK period 8 `clk`, LRCLK period 512
 `clk`, 22-bit left-justified payload (`{mix[21:0], 2'b00}` in the 24-bit
-field), first data bit 6 BCLKs after the LRCLK rise, read by the
+field), one sample per LRCLK period in the LRCLK-high half (low half all
+zeros), MSB valid from the LRCLK-rise load with the first BCLK rise 5 `clk`
+later sampling it (bench `first_bit_delay = 6` is in bench `clk` ticks, not
+BCLKs), read by the
 frame-aligned left-justified 22-bit recovery reader (the `w24` decode in
 `rtl/tb_synth_top.v`). F-I2S-1/F-I2S-2 are therefore **resolved by contract
 amendment, not by an RTL fix**: the "contract" figures quoted in the
@@ -193,8 +196,10 @@ Original finding record (measured against the previously stated contract:
 
 - **F-I2S-1 (deviation, as-built):** BCLK period is **8** `clk` (not 4)
   and LRCLK period is **512** `clk` (not 256). Data alignment still
-  satisfies MSB-first-into-BCLK with the first data bit rising 6 BCLKs
-  after the LRCLK edge (measured `first_bit_delay = 6`). The bench
+  satisfies MSB-first-into-BCLK with the first BCLK rise of the
+  LRCLK-high half (5 `clk` after the LRCLK pad edge) sampling the MSB
+  (measured `first_bit_delay = 6` is in bench `clk` ticks, not BCLKs; an
+  earlier revision of this sentence misstated it as 6 BCLKs). The bench
   asserts the as-built constants and records them in every run's meta;
   the contract violation is recorded, not fixed (core is H07-pinned).
 - **F-I2S-2 (deviation, as-built):** the register is loaded on the LRclk

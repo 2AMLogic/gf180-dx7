@@ -347,15 +347,17 @@ class TestSynthStatParser(unittest.TestCase):
 
     Hierarchy totals of the committed evidence/h07-core/yosys_full.log
     (`=== design hierarchy ===`, closed by `Chip area for top module
-    '\\dx7_core'`): 24,082,966.252793 um^2, 1,063,163 cells, 90,427
-    dffq_1, 5,756,655.161602 um^2 sequential."""
+    '\\dx7_core'`), regenerated on the DR-0012 core pin (f33cecbd...,
+    issue #93): 25,829,181.99677 um^2, 1,149,746 cells, 91,019 dffq_1,
+    5,794,342.355202 um^2 sequential.  The pre-regen log (DR-0011 pin)
+    read 24,082,966.252793 / 1,063,163 / 90,427 / 5,756,655.161602."""
 
     FULL_LOG = os.path.join(EVIDENCE, "yosys_full.log")
     STRIP_LOG = os.path.join(EVIDENCE, "yosys_strip.log")
-    HIER = {"chip_area_um2": 24082966.252793,
-            "cell_total": 1063163,
-            "flop_total": 90427,
-            "seq_area_um2": 5756655.161602}
+    HIER = {"chip_area_um2": 25829181.99677,
+            "cell_total": 1149746,
+            "flop_total": 91019,
+            "seq_area_um2": 5794342.355202}
     # the pre-fix (wrong) numbers: alg_router's LOCAL block, which is the
     # first `Chip area for module` match in the same transcript, plus the
     # across-all-blocks flop double count
@@ -380,7 +382,7 @@ class TestSynthStatParser(unittest.TestCase):
                              f"{key} must be the design-hierarchy total")
         self.assertEqual(st["top_module"], "dx7_core")
         self.assertEqual(
-            st["cells_by_name"]["gf180mcu_fd_sc_mcu7t5v0__dffq_1"], 90427)
+            st["cells_by_name"]["gf180mcu_fd_sc_mcu7t5v0__dffq_1"], 91019)
         self.assertIn("design hierarchy", st["totals_basis"])
 
     def test_synthparse_does_not_report_a_per_module_block(self):

@@ -1694,8 +1694,8 @@
   },
   {
    "path": "docs/CONTRACT-CORE-v1.md",
-   "sha256": "12182ea4a0f1d5a46c76507ae3a3690661a295dc684450ec4e80ceefd47b0e54",
-   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata"
+   "sha256": "cca1e1abe37d1221eb34d9927bb9b84d070af9a4d65951f697b0ce0e22062804",
+   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry"
   },
   {
    "path": "spec/core-contract-v1.json",

@@ -1694,7 +1694,7 @@
   },
   {
    "path": "docs/CONTRACT-CORE-v1.md",
-   "sha256": "e2f1919dd70165d91320318a4bc1bf3b43eb47f562cd11cd974cae22d7071589",
+   "sha256": "0b0d2ae82ad280706710fdbcec9db918b977ae760cc34c3b768adb57fd6bb56f",
    "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry; binding table corrected per judge review (one sample per LRCLK period in the high half, low half zeros; first_bit_delay is in bench clk ticks, not BCLKs)"
   },
   {
@@ -1869,7 +1869,7 @@
   },
   {
    "path": "docs/H07-CORE.md",
-   "sha256": "9d9f89873e49e27cf2c1726ca35d5d17a352c7c1f6bd3f2c8c5bafb7bce4f4ff",
+   "sha256": "180f22e62ca5839541efd6ac353a807e333f2d6ec60385f385f36dfb91dd80a7",
    "reason": "locally authored H07 record (issue #29, WIP bring-up revision): as-built architecture, seven integration findings with resolutions, honest NOT_RUN acceptance table, ordered remaining work; DR-0009 citations linked (issue #87); re-pinned for issue #82: the mapped-area acceptance row now quotes the design-hierarchy totals of the committed transcript and records the synth_report.json STALE/NOT_RUN state; no upstream bytes Issue #98 (DR-0012): core-pin note on section 4 \u2014 the battery re-certified on the refrozen pin, the mapped-area and iverilog-shadow rows explicitly not re-established on it. Issue #93 (DR-0012 regen): the mapped-area row now quotes the regenerated yosys_full.log hierarchy totals on the current frozen core pin f33cecbd\u2026 (91,019 flops / 1,149,746 cells / 25,829,182.0 \u00b5m\u00b2 chip / 5,794,342.4 \u00b5m\u00b2 sequential), superseding the DR-0011-pin totals (90,427 flops / 1,063,163 cells / 24,082,966.3 \u00b5m\u00b2) the prior revision recorded; no upstream bytes."
   },
   {
@@ -1904,7 +1904,7 @@
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "b3bc56ebd8946c9ab1e6776092f9810794b31cd65b5c76f9def5898b6b13f0dd",
+   "sha256": "09ceb10d81a4f56eb838fcf2f53dc7a7beab0afe3baded7181f0fe82649d7ac5",
    "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98); issue #78 amendment note and F-I2S-1 alignment prose corrected per judge review (first_bit_delay is bench clk ticks)"
   },
   {

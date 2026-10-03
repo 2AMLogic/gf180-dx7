@@ -343,9 +343,32 @@ worst-case link budget (§2 rows 9–12, §4.2).
 
 ## 5. Module boundaries for RTL (H04–H07)
 
-Single clock domain, no derived clocks; BCLK (= clk/4) and LRCLK (= clk/256)
-are frame-counter bits driven as registered outputs (parasynth pattern — no
-CDC anywhere except the two-flop-synchronized SPI pins). Each module's
+Single clock domain, no derived clocks; BCLK and LRCLK are frame-counter
+bits driven as registered outputs (parasynth pattern — no CDC anywhere except
+the two-flop-synchronized SPI pins).
+
+**I2S TX geometry (binding; amended by issue #78, operator ruling
+2026-09-26).** The as-built geometry is the contract, replacing the earlier
+"BCLK = clk/4, LRCLK = clk/256" figures (which were not realized by the core
+and were ambiguous between period and toggle divider):
+
+| Quantity | Binding value |
+|---|---|
+| BCLK period | **8** `clk` (3.072 MHz = 64 fs at the 24.576 MHz design point) |
+| LRCLK period | **512** `clk` (one 48 kHz frame, DEC-009) |
+| Payload | **22-bit**, MSB first, frame-aligned to the LRCLK rise (not standard left-justified one-bit-per-BCLK timing; see Alignment), carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); **one sample per LRCLK period, carried in the LRCLK-high half only; the LRCLK-low half is all zeros** (not a duplicate of the sample) |
+| Alignment | the 24-bit field loads at the LRCLK-rise tick, and BCLK falls on that same tick. Each bit cell is **4 `clk` (half a BCLK period)**: D carries s21 for [0, 8) `clk` after the LRCLK pad rise, then s20..s0 in successive 4-`clk` cells (s0 in [88, 92)), then 0 for the rest of the high half. D changes on every BCLK edge from +8 `clk`, at the same tick as the BCLK edge. The first BCLK rise is **4 `clk`** after the LRCLK pad rise. A reader that samples D on BCLK rises (standard I2S or left-justified timing) recovers only alternate bits and is **not** a conforming reader. The bench's recorded `first_bit_delay = 6` is in **bench `clk` ticks** (it includes detector latency), not BCLKs |
+
+Binding reader: the **frame-aligned 22-bit recovery reader**, which samples
+once per 4-`clk` window aligned to the LRCLK rise
+(reference implementation: the `w24` slot-window decode in
+`rtl/tb_synth_top.v`, documented in `docs/H08-PIN.md` "I2S format"). A
+right-justified 24-bit reader is **not** a conforming reader of this
+contract: it recovers only the top 22 bits in the nominal window and
+misreads bit 23/22 at the LR edge. H10 (front-end closure) and H11 (wrapper)
+consume exactly this shape. This is a documentation-only contract change:
+the H07 core is unchanged, and the amendment is not evidence that the RTL
+was re-verified (see `docs/H08-PIN.md`). Each module's
 conformance oracle is the N08 frozen release (`tools/n08_verify_release.py`,
 sha256-exact after declared latency alignment) restricted to the listed
 vector subsets, plus the named probe controls.

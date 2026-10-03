@@ -356,10 +356,11 @@ and were ambiguous between period and toggle divider):
 |---|---|
 | BCLK period | **8** `clk` (3.072 MHz = 64 fs at the 24.576 MHz design point) |
 | LRCLK period | **512** `clk` (one 48 kHz frame, DEC-009) |
-| Payload | **22-bit**, MSB first, left-justified, carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); **one sample per LRCLK period, carried in the LRCLK-high half only; the LRCLK-low half is all zeros** (not a duplicate of the sample) |
-| Alignment | the MSB is on D from the LRCLK-rise load tick; the first BCLK rise of the LRCLK-high half (**5 `clk`** after the LRCLK pad edge, i.e. within the first BCLK period, no BCLK delay) samples the MSB, and BCLK rises 1..22 carry s21..s0. The bench's recorded `first_bit_delay = 6` is in **bench `clk` ticks**, not BCLKs |
+| Payload | **22-bit**, MSB first, frame-aligned to the LRCLK rise (not standard left-justified one-bit-per-BCLK timing; see Alignment), carried as `{mix[21:0], 2'b00}` in a 24-bit field (low 2 bits always 0); **one sample per LRCLK period, carried in the LRCLK-high half only; the LRCLK-low half is all zeros** (not a duplicate of the sample) |
+| Alignment | the 24-bit field loads at the LRCLK-rise tick, and BCLK falls on that same tick. Each bit cell is **4 `clk` (half a BCLK period)**: D carries s21 for [0, 8) `clk` after the LRCLK pad rise, then s20..s0 in successive 4-`clk` cells (s0 in [88, 92)), then 0 for the rest of the high half. D changes on every BCLK edge from +8 `clk`, at the same tick as the BCLK edge. The first BCLK rise is **4 `clk`** after the LRCLK pad rise. A reader that samples D on BCLK rises (standard I2S or left-justified timing) recovers only alternate bits and is **not** a conforming reader. The bench's recorded `first_bit_delay = 6` is in **bench `clk` ticks** (it includes detector latency), not BCLKs |
 
-Binding reader: the **frame-aligned left-justified 22-bit recovery reader**
+Binding reader: the **frame-aligned 22-bit recovery reader**, which samples
+once per 4-`clk` window aligned to the LRCLK rise
 (reference implementation: the `w24` slot-window decode in
 `rtl/tb_synth_top.v`, documented in `docs/H08-PIN.md` "I2S format"). A
 right-justified 24-bit reader is **not** a conforming reader of this

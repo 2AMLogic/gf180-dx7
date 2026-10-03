@@ -175,10 +175,10 @@ The as-built geometry below is now the **binding** front-end contract
 (`docs/CONTRACT-CORE-v1.md` §5): BCLK period 8 `clk`, LRCLK period 512
 `clk`, 22-bit left-justified payload (`{mix[21:0], 2'b00}` in the 24-bit
 field), one sample per LRCLK period in the LRCLK-high half (low half all
-zeros), MSB valid from the LRCLK-rise load with the first BCLK rise 5 `clk`
-later sampling it (bench `first_bit_delay = 6` is in bench `clk` ticks, not
-BCLKs), read by the
-frame-aligned left-justified 22-bit recovery reader (the `w24` decode in
+zeros), MSB valid from the LRCLK-rise load, 4-`clk` bit cells (two data changes
+per BCLK period; the first BCLK rise is 4 `clk` after the LRCLK pad rise;
+bench `first_bit_delay = 6` is in bench `clk` ticks, not BCLKs), read by the
+frame-aligned 22-bit recovery reader (the `w24` decode in
 `rtl/tb_synth_top.v`). F-I2S-1/F-I2S-2 are therefore **resolved by contract
 amendment, not by an RTL fix**: the "contract" figures quoted in the
 findings below are the *superseded* (never-realized) clk/4 / clk/256 / 24-bit
@@ -195,10 +195,10 @@ Original finding record (measured against the previously stated contract:
 48 kHz audio, 4× oversample, MSB first, 24-bit data):
 
 - **F-I2S-1 (deviation, as-built):** BCLK period is **8** `clk` (not 4)
-  and LRCLK period is **512** `clk` (not 256). Data alignment still
-  satisfies MSB-first-into-BCLK with the first BCLK rise of the
-  LRCLK-high half (5 `clk` after the LRCLK pad edge) sampling the MSB
-  (measured `first_bit_delay = 6` is in bench `clk` ticks, not BCLKs; an
+  and LRCLK period is **512** `clk` (not 256). Data is MSB-first
+  in 4-`clk` bit cells (half a BCLK period), loaded at the LRCLK rise; the
+  first BCLK rise is 4 `clk` after the LRCLK pad edge, and a reader
+  sampling D on BCLK rises recovers only alternate bits (measured `first_bit_delay = 6` is in bench `clk` ticks, not BCLKs; an
   earlier revision of this sentence misstated it as 6 BCLKs). The bench
   asserts the as-built constants and records them in every run's meta;
   the contract violation is recorded, not fixed (core is H07-pinned).

@@ -15,21 +15,28 @@
 //     half; the lrclk low half is all zeros; see synth_top.v header) and
 //     appended little-endian to the actual dump.
 //
-// As-built timing (traced from the DUT I2S TX in rtl/dx7_core.v; BCLK
-// period 8 clk — the DUT comment says clk/4, the as-built divider is
-// clk/8, finding F-I2S-1):
-//   * on the LR RISING edge at tick T the shift register loads
-//     {sample[21:0], 2'b00} (24-bit LJS field, bits 23:22 are field
-//     zeros); the BCLK fall at T+1 does not shift; the field shifts on
-//     each BCLK fall from T+9;
-//   * no BCLK rise exposes the MSB (s21): D carries it from T+1 to
-//     T+8 only; it is captured one bench tick after the LR pad rise and
-//     cross-checked against the first BCLK rise, which still shows it;
-//   * BCLK rises 1..22 of the lr-HIGH half (T+5, T+13, ..., T+173)
-//     carry s21..s0 (MSB first); rises 23..32 carry zeros; the whole
+// As-built timing (traced from the DUT I2S TX in rtl/dx7_core.v and
+// measured on a pad-level VCD, issue #118; BCLK period 8 clk, LRCLK
+// period 512 clk — the DUT comments say clk/4 and clk/256, finding
+// F-I2S-1). T is the clk posedge at which the LR pad rises; all T+n
+// figures in this file are pad-level ticks unless labelled bench-tick:
+//   * at T the shift register loads {sample[21:0], 2'b00} (24-bit LJS
+//     field, bits 1:0 are field zeros) and BCLK falls on the same tick;
+//     the field shifts once per 4-clk bit cell, on every BCLK edge (rise
+//     and fall) from T+8 through T+100;
+//   * D carries the MSB (s21) from T to T+8, then s20..s0 in successive
+//     4-clk cells (s0 in [T+88, T+92)), then 0 for the rest of the half;
+//   * the first BCLK rise is at T+4 (4 clk after the LR pad rise) and
+//     shows s21; every later rise lands on a D transition: rise k
+//     (k = 2..12, at T+8k-4 = T+12 .. T+92) has s(24-2k) on D before the
+//     edge and s(23-2k) (or a field zero) after it, so a BCLK-rise reader
+//     recovers only alternate bits; rises 13..32 carry zeros; the whole
 //     lr-LOW half is zeros (asserted in-bench);
-//   * I2S D changes only on BCLK-fall ticks and at the LR load tick, is
-//     stable while BCLK is high otherwise (asserted in-bench).
+//   * the bench detectors see a pad edge late (lr_rise_hi one tick,
+//     brise two ticks), so the first rise lands 6 bench ticks after T
+//     (first_bit_delay = 6, bench-tick; see the structural checks);
+//   * I2S D changes only on ticks where BCLK also toggles (the LR load
+//     tick is a BCLK-fall tick) — asserted in-bench.
 //
 // Vector grammar (P/C/E/S/T/R/W identical semantics to tb_dx7_core.v;
 // Q/X/Y/Z are H08 additions):
@@ -109,23 +116,26 @@ module tb_synth_top;
     reg [31:0] qword;
 
     // --------------------------------------------------------------
-    // pin-truth edge detectors. All pulses fire one bench tick after
+    // pin-truth edge detectors. Each pulse is seen by a posedge after
     // the pad edge tick, so captures read the settled post-edge pad
     // value (no same-tick NBA hazard):
-    //   brise      : one tick after each BCLK pad rise;
-    //   lr_rise_hi : one tick after the LR pad 0->1 edge;
-    //   lr_fall_lo : one tick after the LR pad 1->0 edge.
+    //   brise      : seen two ticks after each BCLK pad rise (bclk_d0 ->
+    //                bclk_d1 registration);
+    //   lr_rise_hi : seen one tick after the LR pad 0->1 edge;
+    //   lr_fall_lo : seen one tick after the LR pad 1->0 edge.
     //
-    // Timing ground truth (traced from the DUT I2S TX, rtl/dx7_core.v):
+    // Timing ground truth (traced from the DUT I2S TX, rtl/dx7_core.v;
+    // pad-level VCD measurement, issue #118):
     //   * BCLK period = 8 clk, LRCLK period = 512 clk (32 BCLK cycles
     //     per LR half);
     //   * the LR pad rises at tick T: the shift register loads
-    //     {sample[21:0], 2'b00} at T; the BCLK fall at T+1 does not
-    //     shift; the field shifts on each BCLK fall from T+9;
-    //   * D carries the MSB (s21) from T+1 to T+8 with no BCLK rise in
-    //     that window; the lr-HIGH-half BCLK rises (T+5, T+13, ...,
-    //     T+253) successively carry s21..s0 (rises 1..22) then zeros
-    //     (rises 23..32); the lr-LOW half D is all zeros.
+    //     {sample[21:0], 2'b00} at T and BCLK falls at T; the field
+    //     shifts on every BCLK edge (4-clk bit cells) from T+8;
+    //   * D carries the MSB (s21) from T to T+8; the first BCLK rise is at
+    //     T+4 (pad-level, 4 clk after the LR rise) and shows s21; rise k
+    //     (k = 2..12, T+12 .. T+92) sits on a D transition, s(24-2k)
+    //     before / s(23-2k) after the edge (alternate bits only); rises
+    //     13..32 carry zeros; the lr-LOW half D is all zeros.
     // --------------------------------------------------------------
     reg bclk_d0 = 1'b0, bclk_d1 = 1'b0, lr_q_d = 1'b0;
     wire brise    = bclk_d0 & ~bclk_d1;    // bench tick after each bclk rise
@@ -167,9 +177,12 @@ module tb_synth_top;
     // --------------------------------------------------------------
     // structural checks (tick-counter based):
     //   BCLK rise interval = 8 clk, LR rising-edge interval = 512 clk.
-    // first_bit_delay := bench ticks from the lr-rise bench pulse to
-    // the first high-half BCLK-rise bench pulse (as-built: 6; pad
-    // edges are 5 clk apart).
+    // first_bit_delay := bench ticks from the LR pad rise tick T to the
+    // posedge that sees the first high-half brise pulse (as-built: 6).
+    // The pad edges are 4 clk apart; brise is seen 2 ticks after the pad
+    // BCLK rise (T+6). lr_rise_hi is seen 1 tick after T (T+1), so the
+    // pulse-to-pulse distance is 5 ticks; the "+1" below restores the
+    // lr_rise_hi tick, referencing the count to T: 6 = 4 + 2 - 1 + 1.
     // --------------------------------------------------------------
     integer bclk_run = 0, bclk_count = 0, bclk_prev = -1;
     integer lr_run = 0, lr_count = 0, lr_prev = -1;
@@ -228,7 +241,8 @@ module tb_synth_top;
     // --------------------------------------------------------------
     // I2S decoder, as-built format (EMPIRICALLY VERIFIED against a
     // verbatim model of the dx7_core I2S TX):
-    //   LRCLK = clk/256 (half_cnt 0..255); the new sample loads a 24-bit
+    //   LR half = 256 clk (half_cnt 0..255; LRCLK period 512 clk, not the
+    //   DUT comment's clk/256); the new sample loads a 24-bit
     //   field {mix22, 2'b00} at the lr LOW->HIGH boundary posedge; BCLK is
     //   50% duty, period 8 clks; the register shifts once per 4-clk window
     //   (DUT `falls` events 1..24).

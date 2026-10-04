@@ -368,7 +368,11 @@ contract: it recovers only the top 22 bits in the nominal window and
 misreads bit 23/22 at the LR edge. H10 (front-end closure) and H11 (wrapper)
 consume exactly this shape. This is a documentation-only contract change:
 the H07 core is unchanged, and the amendment is not evidence that the RTL
-was re-verified (see `docs/H08-PIN.md`). Each module's
+was re-verified (see `docs/H08-PIN.md`). The pinned core's own I2S
+comments (`rtl/dx7_core.v` lines 54-55, 77-78, 2300-2303: clk/4, clk/256,
+"delayed 1 BCLK", "duplicated on both slots") are known-stale and are not
+binding; see "Known-stale comments in the pinned core" in
+`docs/H08-PIN.md` (issue #118). Each module's
 conformance oracle is the N08 frozen release (`tools/n08_verify_release.py`,
 sha256-exact after declared latency alignment) restricted to the listed
 vector subsets, plus the named probe controls.

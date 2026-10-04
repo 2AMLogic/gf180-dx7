@@ -589,6 +589,15 @@ class TestSynthStatSingleModuleGuard(unittest.TestCase):
         self.assertIsNone(st["chip_area_um2"])
         self.assertIsNone(st["seq_area_um2"])
 
+    def test_synthparse_top_area_only_transcript_fails_loudly(self):
+        """NEGATIVE CONTROL (issue #119): a `Chip area for top module` line
+        alone (no hierarchy header, no per-module block) must FAIL with this
+        tool's CheckFailure and name its module."""
+        h = _h04_synth()
+        with self.assertRaises(h.CheckFailure) as ctx:
+            h.parse_stat("Chip area for top module '\\top': 123.0\n")
+        self.assertIn("env_unit", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

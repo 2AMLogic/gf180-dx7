@@ -191,6 +191,33 @@ and no RTL was re-verified by this amendment (the evidence for the geometry
 remains the H08 pin-capture measurements recorded here). No synthesis,
 timing, DAC/hardware playback, or audio-quality claim is made.
 
+**Known-stale comments in the pinned core (issue #118).** `rtl/dx7_core.v`
+is hash-pinned (sha256 `f33cecbd…`, DR-0012) and was deliberately left
+byte-identical, so its I2S comments still describe the superseded geometry.
+They are known to be wrong; this section and §5 of
+`docs/CONTRACT-CORE-v1.md` are authoritative. Correcting them in place would
+invalidate the pin and the synthesis evidence attributed to it, so it needs
+a deliberate decision-record re-pin, not a drive-by edit.
+
+| `dx7_core.v` site | Stale comment | Measured (pad-level VCD, issue #118) |
+|---|---|---|
+| header, lines 54-55 (FRAME SCHEDULE) | "BCLK = clk/4 and LRCLK = clk/256" | BCLK period **8** `clk` (clk/8); LRCLK period **512** `clk` (LR half = 256 `clk`) |
+| header, lines 77-78 (I2S OUTPUT) | "BCLK = clk/4, LRCLK = clk/256, data delayed 1 BCLK after each LRCLK edge, … the same sample duplicated on both slots" | as above; no 1-BCLK delay: s21 is on D from the LRCLK-rise tick itself (BCLK falls on that tick; first BCLK rise 4 `clk` later; first shift at +8 `clk`, then a shift on every BCLK edge, 4-`clk` bit cells); one sample per LRCLK period in the high half, the low half is all zeros (not a duplicate) |
+| I2S TX block banner, lines 2300-2303 | "BCLK = clk/4, LRCLK = clk/256, data delayed 1 BCLK after each LRCLK edge, … duplicated on both slots" | same as the header row |
+
+Measurement (issue #118, one local Icarus Verilog run of the
+`rtl/tb_synth_top.v` pin bench with a throwaway VCD-dump module, no bench
+or core edit): LRCLK-rise → first-BCLK-rise gap **4** `clk` on every frame;
+BCLK rise interval **8** `clk`; LRCLK rise interval **512** `clk`; every D
+transition coincides with a BCLK edge; the bench recorded
+`first_bit_delay = 6` (bench ticks: `brise` is seen 2 ticks after the pad
+BCLK rise). The data-cell mapping was confirmed in the same way with a
+forensic-only probe that injected known non-zero samples into `mixbuf`
+(the default iverilog run renders silence): all 61 complete high halves
+showed `[s21, s21, s20 … s0, 0 …]` per 4-`clk` window and all-zero low
+halves. This establishes comment fidelity only; it is not a re-verification
+of the core and makes no synthesis, hardware, or audio claim.
+
 Original finding record (measured against the previously stated contract:
 48 kHz audio, 4× oversample, MSB first, 24-bit data):
 

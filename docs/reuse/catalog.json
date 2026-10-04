@@ -1694,8 +1694,8 @@
   },
   {
    "path": "docs/CONTRACT-CORE-v1.md",
-   "sha256": "0b0d2ae82ad280706710fdbcec9db918b977ae760cc34c3b768adb57fd6bb56f",
-   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry; binding table corrected per judge review (one sample per LRCLK period in the high half, low half zeros; first_bit_delay is in bench clk ticks, not BCLKs)"
+   "sha256": "6dbbea405ab8241019612082b26f369bac2d2aaca46b5e37dee535a734b329d5",
+   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry; binding table corrected per judge review (one sample per LRCLK period in the high half, low half zeros; first_bit_delay is in bench clk ticks, not BCLKs) Re-pinned for issue #118: one cross-link sentence in the I2S TX section pointing at the known-stale dx7_core.v I2S comments record in docs/H08-PIN.md; no contract value changed; no upstream bytes."
   },
   {
    "path": "spec/core-contract-v1.json",
@@ -1889,8 +1889,8 @@
   },
   {
    "path": "rtl/tb_synth_top.v",
-   "sha256": "8ab92be516f075be1fcd6c9fcd8f5dccc659391461836ad20c537b0923da856d",
-   "reason": "locally authored H08 pin-level bench (issue #30): timed SPI master +\n    BCLK/LRCLK/D wire decoder (empirically mapped against a verbatim model\n    of the dx7_core I2S TX), structural period/phase assertions, injection\n    directives (X truncated / V F=0 / Y rate-violation / Z pad reset / Q\n    status read), forensic frame-latch + st_overrun witnesses; pattern\n    adapted from rtl/tb_dx7_core.v (this repo, H07)"
+   "sha256": "33f77b02dc2ed693456250eb74cfdc12ac71db3439554ebe73b971cdbca0e0a5",
+   "reason": "locally authored H08 pin-level bench (issue #30): timed SPI master +\n    BCLK/LRCLK/D wire decoder (empirically mapped against a verbatim model\n    of the dx7_core I2S TX), structural period/phase assertions, injection\n    directives (X truncated / V F=0 / Y rate-violation / Z pad reset / Q\n    status read), forensic frame-latch + st_overrun witnesses; pattern\n    adapted from rtl/tb_dx7_core.v (this repo, H07). Re-hashed for issue #118: comment-only correction of the I2S timing comments to the pad-level VCD measurement (first BCLK rise 4 clk after the LRCLK rise, BCLK period 8 clk, LRCLK period 512 clk, 4-clk bit cells; first_bit_delay = 6 explained as bench ticks incl. detector latency); no code token changed; no upstream bytes"
   },
   {
    "path": "tools/h08_pin_check.py",
@@ -1904,8 +1904,8 @@
   },
   {
    "path": "docs/H08-PIN.md",
-   "sha256": "09ceb10d81a4f56eb838fcf2f53dc7a7beab0afe3baded7181f0fe82649d7ac5",
-   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98); issue #78 amendment note and F-I2S-1 alignment prose corrected per judge review (first_bit_delay is bench clk ticks)"
+   "sha256": "2cc5dbd6dbccaca370561fb9628b98fd2357dd9d101fe5bde0b5b2a22664c541",
+   "reason": "locally authored H08 record (issue #30): as-built pin integration,\n    as-built I2S/SPI findings (F-I2S-1/2, F-OVF-1, F-STA-1, F-I2S-3),\n    H07-side stale-golden note (F-H07-STALE), injection-suite results,\n    reuse rulings; DR-0009 citation linked (issue #87); A7 chassis-synth\n    numbers marked STALE with hierarchy-total correction (issue #94); supersession note extended to the DR-0012 core pin (issue #98); issue #78 amendment note and F-I2S-1 alignment prose corrected per judge review (first_bit_delay is bench clk ticks) Re-pinned for issue #118: known-stale note for the pinned dx7_core.v I2S comments (lines 54-55, 77-78, 2300-2303: clk/4, clk/256, delayed 1 BCLK, duplicated) with the pad-level VCD measurement (4 clk LRCLK-rise to first BCLK rise, BCLK 8 clk, LRCLK 512 clk); core pin untouched; no upstream bytes."
   },
   {
    "path": "tools/h08_synth.py",

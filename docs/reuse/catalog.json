@@ -1813,6 +1813,11 @@
    "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py"
   },
   {
+   "path": "tools/hierarchy_stat.py",
+   "sha256": "1d5c6d2818f8ef66244b92a9a35c60553c20ec642d48dd62bde64968447af021",
+   "reason": "locally authored shared hierarchy-total yosys stat-transcript parser (issue #124): the #82/#94 design-hierarchy-total parsing (last 'Chip area for top module' match, cell counting bounded to the preceding '=== design hierarchy ===' section, refusal to substitute a per-module block, empty-design acceptance) moved verbatim out of the locally authored tools/h07_synth.py and tools/h08_synth.py, which keep their own parse_stat and CheckFailure and pass their issue tag; separate from tools/single_module_stat.py (opposite contract); no upstream source, no upstream bytes, stdlib only"
+  },
+  {
    "path": "tools/single_module_stat.py",
    "sha256": "f1092888c2e673612f7d6907aebe69325ddfdb8ca2c19f6644927af1fcdeae9d",
    "reason": "locally authored shared single-module yosys stat-transcript parser (issue #119): the issue #95 single-module guard (raise on a design-hierarchy section, a Chip area for top module line, or more than one Chip area for module block) and the cell/area parsing, moved verbatim out of the four locally authored tools/h01_synth.py, h04_synth.py, h05_synth.py, h06_synth.py, which keep their own parse_stat and CheckFailure; no upstream source, no upstream bytes, stdlib only"
@@ -1884,13 +1889,13 @@
   },
   {
    "path": "tools/h07_synth.py",
-   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes",
-   "sha256": "b681d857d9826db306b14ef6fe43184c162de1e488f8eef35eb580ab50ce9e91"
+   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes; issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h08_synth.py); parse_stat stays here and passes this tool's CheckFailure and #82 issue tag, no upstream bytes",
+   "sha256": "0001cabfd4b72166ead1dda92661c6c707d2edc1bb0ba5da6e0d64b1a5fe482f"
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd… (91,019 flops / 1,149,746 cells / 25,829,182.0 µm² chip / 5,794,342.4 µm² sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes.",
-   "sha256": "80b2a7fd0708caa5ddbba4df895530d3d7cca8c536a7a1a955217d483bf6716c"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd… (91,019 flops / 1,149,746 cells / 25,829,182.0 µm² chip / 5,794,342.4 µm² sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes. Issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #82 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes.",
+   "sha256": "99cccecfef786eb3ea2098536d0c76f7f721db2e6be02c170ed594c591f94901"
   },
   {
    "path": "rtl/tb_synth_top.v",
@@ -1904,8 +1909,8 @@
   },
   {
    "path": "tests/test_h08.py",
-   "sha256": "ecffc523c5de7408ad7f8a88b4bf095b45b79c232c3ef3250deb54972c732478",
-   "reason": "CORE_SHA re-pinned to the DR-0012 refrozen core (issue #98); previously re-pinned to the DR-0011 refrozen core and for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks"
+   "sha256": "22656ae520b80f3cce30d0883032f9c6afe3ba4216597729d774aa4036380955",
+   "reason": "CORE_SHA re-pinned to the DR-0012 refrozen core (issue #98); previously re-pinned to the DR-0011 refrozen core and for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks; issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #94 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes"
   },
   {
    "path": "docs/H08-PIN.md",
@@ -1914,8 +1919,8 @@
   },
   {
    "path": "tools/h08_synth.py",
-   "sha256": "f6ab78333954de45a3ba84c5f9e5250de55e14883957cd338e02e5c85321b849",
-   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94)"
+   "sha256": "357001a29dab15878fdcf91d1ea4c445c022839016159e195585892dcedbabf9",
+   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94); issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h07_synth.py); parse_stat stays here and passes this tool's CheckFailure and #94 issue tag, HIER_BASIS is re-exported from it for relative_gate, no upstream bytes"
   },
   {
    "path": "docs/REUSE-RULINGS.md",

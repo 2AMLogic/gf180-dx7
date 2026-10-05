@@ -443,6 +443,21 @@ class TestSynthStatParser(unittest.TestCase):
         with self.assertRaises(h07_synth.CheckFailure):
             h07_synth.parse_stat(transcript)
 
+    def test_synthparse_refuses_section_without_cells_total(self):
+        """NEGATIVE CONTROL: a hierarchy section closed by a top-module
+        area but missing its `cells` total line must FAIL with H07's own
+        CheckFailure and #82 diagnostic (the parsing is shared with H08
+        in tools/hierarchy_stat.py since issue #124)."""
+        import h07_synth
+        transcript = ("=== design hierarchy ===\n\n"
+                      "    49676 3.16E+06   "
+                      "gf180mcu_fd_sc_mcu7t5v0__dffq_1\n\n"
+                      "   Chip area for top module '\\dx7_core': 1.0\n")
+        with self.assertRaises(h07_synth.CheckFailure) as ctx:
+            h07_synth.parse_stat(transcript)
+        self.assertIn("'cells' total", str(ctx.exception))
+        self.assertIn("(issue #82)", str(ctx.exception))
+
     def test_synthparse_empty_design_is_zero_not_an_error(self):
         """The strip-obs control's transcript maps NOTHING: no hierarchy
         section exists because there is nothing to report. That is the one

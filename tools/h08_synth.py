@@ -78,6 +78,9 @@ import re
 import subprocess
 import sys
 
+# HIER_BASIS: the totals-basis tag relative_gate requires on both sides.
+from hierarchy_stat import HIER_BASIS, parse_hierarchy_stat
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_CIEL = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
@@ -148,41 +151,6 @@ def run_yosys(yosys, liberty, strip, log_path):
     return log
 
 
-HIER_MARK = "=== design hierarchy ==="
-CELL_LINE = r"^\s+(\d+)\s+(\S+)\s+(gf180mcu\S+)\s*$"
-HIER_BASIS = "design hierarchy section (includes submodules)"
-
-
-def _parse_empty_stat(log):
-    """The one legitimate hierarchy-total-free transcript: a design that
-    mapped to NOTHING (the H07_STRIP_OBSERVABILITY control -- yosys
-    deletes every cell, so no `Chip area` line is printed at all).
-    Accepted only when the transcript really is cell-free; anything else
-    raises rather than reporting a per-module number as the total."""
-    if re.search(r"Chip area for module", log):
-        raise CheckFailure(
-            "stat transcript has per-module 'Chip area for module' blocks "
-            "but no 'Chip area for top module' line: the hierarchical "
-            "total is absent (truncated or non-hierarchical stat). "
-            "Refusing to substitute a per-module area as the design total "
-            "(issue #94).")
-    stray = re.findall(CELL_LINE, log, re.M)
-    if stray:
-        raise CheckFailure(
-            f"stat transcript reports {len(stray)} mapped cell line(s) but "
-            "no hierarchical total and no chip-area line -- refusing to "
-            "report an unanchored count (issue #94).")
-    return {
-        "cells_by_name": {},
-        "cell_total": 0,
-        "dff_cells": {},
-        "flop_total": 0,
-        "chip_area_um2": None,
-        "seq_area_um2": None,
-        "totals_basis": "empty design (no mapped cells in the transcript)",
-    }
-
-
 def parse_stat(log):
     """Whole-design mapped cell/area facts from a `stat -liberty`
     transcript (same parser contract as tools/h07_synth.py after #82).
@@ -203,42 +171,11 @@ def parse_stat(log):
         so the per-module blocks cannot be added into the totals;
       - raises CheckFailure rather than falling back to any per-module
         number when the hierarchy totals are absent.
+
+    The parsing is shared with tools/h07_synth.py in hierarchy_stat.py
+    (issue #124); this wrapper passes H08's CheckFailure and issue tag.
     """
-    top_m = list(re.finditer(
-        r"Chip area for top module '\\?([\w$]+)': ([\d.]+)", log))
-    if not top_m:
-        return _parse_empty_stat(log)
-    top = top_m[-1]
-    start = log.rfind(HIER_MARK, 0, top.start())
-    if start < 0:
-        raise CheckFailure(
-            f"'Chip area for top module' found but no '{HIER_MARK}' "
-            "section precedes it -- refusing to report per-module numbers "
-            "as the design total (issue #94).")
-    sect = log[start:top.end()]
-    total = re.search(r"^\s+(\d+)\s+\S+\s+cells\s*$", sect, re.M)
-    if not total:
-        raise CheckFailure(
-            "no hierarchical 'cells' total line inside the "
-            f"'{HIER_MARK}' section (issue #94).")
-    cells = {}
-    for m in re.finditer(CELL_LINE, sect, re.M):
-        # assignment, not accumulation: within the bounded hierarchy
-        # section each cell type appears exactly once, already summed
-        # over submodules by yosys.
-        cells[m.group(3)] = int(m.group(1))
-    seq = re.search(r"of which used for sequential elements: ([\d.]+)",
-                    log[top.end():top.end() + 400])
-    return {
-        "cells_by_name": dict(sorted(cells.items())),
-        "cell_total": int(total.group(1)),
-        "dff_cells": {k: v for k, v in sorted(cells.items()) if "dff" in k},
-        "flop_total": sum(v for k, v in cells.items() if "dff" in k),
-        "chip_area_um2": float(top.group(2)),
-        "seq_area_um2": float(seq.group(1)) if seq else None,
-        "top_module": top.group(1),
-        "totals_basis": HIER_BASIS,
-    }
+    return parse_hierarchy_stat(log, CheckFailure, "#94")
 
 
 CORE_RTL_RELS = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]

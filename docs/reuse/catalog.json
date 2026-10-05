@@ -1554,13 +1554,13 @@
   },
   {
    "path": "tools/h01_synth.py",
-   "sha256": "37f5f507a63ef62c11118af23242724da603d63f285a08a5d878eb5412dc4299",
-   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
+   "sha256": "b83d2a03e417bf1d30624b008b5099098a03c16c1372e93f247246ddcb9bb91f",
+   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
   },
   {
    "path": "tests/test_h01.py",
-   "sha256": "fa4a4e0dd854b953c49aaadc40c023cb32be88740ac148289e87d9f69bce7feb",
-   "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
+   "sha256": "341e003d2b865ee10458d176fd09791006c5ad615593b5a90c95093e1eb88df6",
+   "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py"
   },
   {
    "path": "src/gf180_dx7/model/algorithm.py",
@@ -1734,13 +1734,13 @@
   },
   {
    "path": "tools/h04_synth.py",
-   "sha256": "7c7e56785c9b344224b1765d6ecfc62051eabc492c9397949e94e0f77e8111b6",
-   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
+   "sha256": "34f6cda1c8d21261f04805cc184c8124d224da916f591abb304d65547b03425a",
+   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "8d8af19a57d362dfd0817428a662be2eb040fd9cdaa0c7d1fe4882de21e85943",
-   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
+   "sha256": "cc7a970493abae0c274aa81d705dccd5709ff9daccb73b88dfbc7ae7d6e510bf",
+   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py"
   },
   {
    "path": "docs/H04-ENV-RTL.md",
@@ -1774,13 +1774,13 @@
   },
   {
    "path": "tools/h05_synth.py",
-   "sha256": "d300a966c4510a6da385373c4c39c3ac58634f14e20f4d6b2c1c9ec4953d7983",
-   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
+   "sha256": "46ed6f911b821a01110a8d86615fa531658d842039c885de2f7233a947f0766a",
+   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "422878f35e637780b11b796be163981f7fd06f73b74c719662330ff07beee9ec",
-   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
+   "sha256": "c6915fe6633eeb0c737e007a8b64b90cac56fbbc7499eef9eec55a31d9eb87bc",
+   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py"
   },
   {
    "path": "docs/H05-ROUTING-RTL.md",
@@ -1804,13 +1804,18 @@
   },
   {
    "path": "tools/h06_synth.py",
-   "sha256": "0f583f1fd049aab36d91f8d82456e412bea6620b293be2d8124ac5e867561a58",
-   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
+   "sha256": "4854eee14289fd9166f55264e2841e917ef0600466ec73e44cf80b5ec0cba6f9",
+   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
   },
   {
    "path": "tests/test_h06.py",
-   "sha256": "a8ff570f3c0a8886ed8096aa52bbf491193e3cd5530e2ada753087fc433009f9",
-   "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95)"
+   "sha256": "41e7eac8b67f266103718d9251830b6074509c97adaeda392052e114beacc4d1",
+   "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py"
+  },
+  {
+   "path": "tools/single_module_stat.py",
+   "sha256": "f1092888c2e673612f7d6907aebe69325ddfdb8ca2c19f6644927af1fcdeae9d",
+   "reason": "locally authored shared single-module yosys stat-transcript parser (issue #119): the issue #95 single-module guard (raise on a design-hierarchy section, a Chip area for top module line, or more than one Chip area for module block) and the cell/area parsing, moved verbatim out of the four locally authored tools/h01_synth.py, h04_synth.py, h05_synth.py, h06_synth.py, which keep their own parse_stat and CheckFailure; no upstream source, no upstream bytes, stdlib only"
   },
   {
    "path": "reference/tables/lfo_sin_table.hex",

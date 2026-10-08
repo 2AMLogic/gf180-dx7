@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-08
+
+- **Issue #116** (closed): H08: regenerate evidence/h08-chassis/synth_report.json with the #94 hierarchy-total parser (heavy host)
+
 ### 2026-10-05
 
 - **PR #125**: refactor: share H07/H08 hierarchy-total Yosys stat parser

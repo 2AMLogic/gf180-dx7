@@ -31,7 +31,7 @@ _None._
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#122**: chore(deps): update github-actions
 
 ## Approved (Awaiting Merge)
 
@@ -69,7 +69,7 @@ _None._
 | Operator priority | 0 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 0 |
-| PRs awaiting review | 0 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
 | Curated | 8 |
 | Architect / Hermit proposals | 0 |

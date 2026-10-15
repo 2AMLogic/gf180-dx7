@@ -59,6 +59,14 @@ repositories, each adoption with a provenance record and requalification:
 - **External GPL engines** (Dexed Mark I, VDX7, Hexter) are comparison
   oracles only — never copied into this Apache-2.0 repository.
 
+## Dependency updates
+
+Dependabot owns all dependency updates (`github-actions` and `pip`). There is
+no Renovate config in this repository. `.github/dependabot.yml` is generated
+from 2AMLogic/fleet-gitops `dependency-updates.json`; change the policy there
+rather than hand-editing the file (see its header; runbook: 2AMLogic/2am
+`infra/dependabot/README.md`).
+
 ## License
 
 Apache License 2.0 (repo-level, per 2AMLogic convention). See

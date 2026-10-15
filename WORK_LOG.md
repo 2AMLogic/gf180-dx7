@@ -2,6 +2,18 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-15
+
+- **PR #135**: docs: state Dependabot owns dependency updates in README
+- **PR #133**: Bump Repo Skills 0.19.5 -> 0.24.1
+- **Issue #134** (closed): Two dependency bots (Renovate and Dependabot) both manage GitHub Actions versions
+
+### 2026-10-13
+
+- **PR #132**: chore(deps): bump the github-actions group across 1 directory with 3 updates
+- **PR #131**: Remove Renovate config: Dependabot takes over
+- **PR #130**: Dependabot: render dependabot.yml from the org policy
+
 ### 2026-10-10
 
 - **PR #128**: renovate: move onto the 2AMLogic org preset

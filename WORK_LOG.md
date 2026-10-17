@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-17
+
+- **PR #142**: refactor: share sha256_file helper across five unpinned test suites
+
 ### 2026-10-16
 
 - **PR #138**: Bump Repo Skills 0.24.1 -> 0.24.3

@@ -128,6 +128,7 @@ jobs:
         # bench or a simulator-version mismatch is visible in the log.
         run: |
           python3 tools/h01_compare.py --skip-mutate --outdir "$RUNNER_TEMP/h01" || true
+          cat "$RUNNER_TEMP/h01/compare_report.json" || true
           bash signoff/cold-start-benches.sh
       - name: Install the pinned klt grading build
         run: pip install "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@7ee09483b74867a47a05eb353015c2cf5ca33ef3"

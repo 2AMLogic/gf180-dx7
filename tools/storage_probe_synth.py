@@ -71,6 +71,7 @@ _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
+from yosys_run import yosys_version as _yosys_version  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -203,13 +204,7 @@ def check_rtl_matches_accounting(acc, params):
 # ---------------------------------------------------------------------------
 
 def yosys_version(yosys):
-    try:
-        out = subprocess.run([yosys, "-V"], capture_output=True, text=True)
-    except OSError:
-        raise CouldNotRun(f"yosys binary not found: {yosys}")
-    if out.returncode != 0 or not out.stdout:
-        raise CouldNotRun(f"yosys -V failed: {out.stderr.strip()[:200]}")
-    return out.stdout.strip()
+    return _yosys_version(yosys, CouldNotRun)
 
 
 def run_yosys(yosys, repo_root, liberty, strip, abc, log_path):

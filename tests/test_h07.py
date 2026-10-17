@@ -48,6 +48,8 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, "src"))
 sys.path.insert(0, os.path.join(REPO, "tools"))
 
+from sha256_helpers import sha256_file  # noqa: E402
+
 COMPARE_TOOL = os.path.join(REPO, "tools", "h07_compare.py")
 SYNTH_TOOL = os.path.join(REPO, "tools", "h07_synth.py")
 RTL = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v",
@@ -61,14 +63,6 @@ CIEL_LIB = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
             "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
             "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
 REMOTE_ALIAS = "repo-remote-gf180-dx7"
-
-
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def rtl_fingerprint():

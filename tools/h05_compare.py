@@ -92,12 +92,10 @@ def w32(v: int) -> int:
     return v - (1 << 32) if v >= (1 << 31) else v
 
 
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+_TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from sha256_helpers import sha256_file  # noqa: E402,F401
 
 
 # ---------------------------------------------------------------------------

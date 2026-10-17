@@ -58,7 +58,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -66,6 +65,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
+
+from sha256_helpers import sha256_file  # noqa: E402,F401
 
 N = 64
 DR0011_PIN = "34f93d2d391412fc8d8495653c1a00f2860beabf9d6fb0deaffccdbd53159f58"
@@ -89,10 +90,6 @@ def exp_reads_within_declared_width(rtl_text: str) -> bool:
     from exp_hsum_lec import T_TERM, declared_hi
     decl = declared_hi(rtl_text)
     return all(decl[name] >= read_hi for name, (_, read_hi) in T_TERM.items())
-
-
-def sha256_file(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def tool_version(tool: str) -> str | None:

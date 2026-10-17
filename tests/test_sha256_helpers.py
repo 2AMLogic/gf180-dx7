@@ -40,6 +40,7 @@ MIGRATED = (
     "tests/test_u02_kit.py",
     "tools/ams_window_compare.py",
     "tools/check_reuse.py",
+    "tools/demo/fixtures_dx7.py",
     "tools/h01_compare.py",
     "tools/h01_synth.py",
     "tools/h03_budget_check.py",

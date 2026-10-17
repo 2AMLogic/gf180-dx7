@@ -36,7 +36,6 @@ pred frame) and are covered by the same three-way cross-check.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 import zipfile
@@ -50,6 +49,7 @@ for _p in (str(THIS_DIR), str(REPO / "src"), str(REPO / "tools")):
         sys.path.insert(0, _p)
 
 from catalog_archive import canonical_hash  # noqa: E402
+from sha256_helpers import sha256_bytes, sha256_file  # noqa: E402,F401
 from gf180_dx7 import sysex  # noqa: E402
 from gf180_dx7 import host as hostmod  # noqa: E402
 
@@ -85,14 +85,6 @@ class LinkEvent:
     @property
     def frame(self) -> int:
         return self.sample // FRAME_SAMPLES
-
-
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def sha256_file(path: Path) -> str:
-    return sha256_bytes(Path(path).read_bytes())
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 10,
+  "summary": "T1 item 10 (Repo hygiene): 5/5 attestation checks passed (klt signoff --attest)",
+  "source": "signoff/inventory-item10.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 5,
+    "passed_count": 5,
+    "checks": [
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": ".github/workflows/ci.yml",
+        "passed": true,
+        "content_hash": "sha256:271569a27e957ad54129e7edf9b6b088d3085c23783b673846a9ef23a7522608"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "LICENSE",
+        "passed": true,
+        "content_hash": "sha256:d47483eb3e7e0b8cdc6f5252d857935661943f6c10bcecf49ae4b8dfe8c26317"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "README.md",
+        "passed": true,
+        "content_hash": "sha256:881b5c49833457a992a995c552f09fd526246477f193ca99f493173eeed8aaa1"
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "byte-compile",
+        "argv": [
+          "python3",
+          "-m",
+          "compileall",
+          "-q",
+          "src",
+          "tools"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "repo-checks",
+        "argv": [
+          "bash",
+          "tools/check_all.sh"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.7.1.dev1743+g7ee09483b748",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "signoff/inventory-item10.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:b6be4f4d7a6c29640925e8fd6cea49eae424d8dce6a53de0b1d9e51fd0be0c36"
+    }
+  }
+}

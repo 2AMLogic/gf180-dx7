@@ -43,7 +43,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
-import hashlib
 import json
 import re
 import sys
@@ -82,12 +81,10 @@ class NotRun(Exception):
     """Environment problem: an input needed for validation is absent."""
 
 
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+_TOOLS_DIR = str(Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from sha256_helpers import sha256_file  # noqa: E402,F401
 
 
 def _text(value) -> bool:

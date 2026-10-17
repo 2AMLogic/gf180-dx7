@@ -1294,8 +1294,8 @@
   },
   {
    "path": "tools/check_reuse.py",
-   "sha256": "144f9ad56d8efe75c2328fdf424106e0a5715baf72d161f98b3bedac5f9a38a5",
-   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
+   "sha256": "11b021d39c7746bda0e6eb9575ad318de8b4fc437a2509255d74ac8ea989cb69",
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/sha256_helpers.py",
@@ -1404,8 +1404,8 @@
   },
   {
    "path": "tools/r07_compare.py",
-   "sha256": "b80bd15bb5e489bde962b71a6a2feb38ae39285eb288ab2a081360cfefeaa8e3",
-   "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported"
+   "sha256": "f971bbf3b5a032dc8eae1d3dd8d4f09cd470b5e61e6a5d6a08ac11039771d90d",
+   "reason": "locally authored R07 targeted oracle-disagreement driver (issue #14); drives two external GPL oracles (Dexed Mark I reference + pinned hexter second oracle), no upstream bytes imported; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/check_numeric_profile.py",
@@ -1534,8 +1534,8 @@
   },
   {
    "path": "tools/storage_probe_synth.py",
-   "sha256": "49671c71fc82cb92a1fc955ff0b9a48c418e6b5bf3c42be1ec7343dadc21871c",
-   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95)"
+   "sha256": "d4c93b81064605307f1edad86be88377e5dfc897c2b7740435a2f0350d40ebe3",
+   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_storage_probe.py",
@@ -1554,13 +1554,13 @@
   },
   {
    "path": "tools/h01_compare.py",
-   "sha256": "5368c6ff1e1e1b32a05eb55127bd5da9b285ea04f9d6b83b55b25f4ee9f8a0f6",
-   "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes"
+   "sha256": "cabaedc76f7f05bc42bdfe9dfb13d9a1f01cab7e1cde6c8eaa214b789b74e0ff",
+   "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/h01_synth.py",
-   "sha256": "b83d2a03e417bf1d30624b008b5099098a03c16c1372e93f247246ddcb9bb91f",
-   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
+   "sha256": "60a2c91e0cc6c450db412f9f6a481d567bc8ca11e04265daca7f4d0734f6aa9a",
+   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h01.py",
@@ -1709,8 +1709,8 @@
   },
   {
    "path": "tools/h03_budget_check.py",
-   "sha256": "9df7c1cedadbb438205938b7782fce134b474cd2bdb14c4ecb71c82796c5547f",
-   "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes"
+   "sha256": "8e1e747c8f09ff1919de133027cc38af12aa551f21a7e5fa5bac68ed5fa820f8",
+   "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h03_contract.py",
@@ -1734,13 +1734,13 @@
   },
   {
    "path": "tools/h04_compare.py",
-   "sha256": "4ced08b0644ff4be0924ddde442c6b401b33833eeb806be2408117603a81f731",
-   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls"
+   "sha256": "0bea63440ffb24c94571f23645d8c6d2e98e2f5b7899164d566e8b5f979ce5fe",
+   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/h04_synth.py",
-   "sha256": "34f6cda1c8d21261f04805cc184c8124d224da916f591abb304d65547b03425a",
-   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
+   "sha256": "0bcbe52391074f077c191e9f7262c0673d41cc8f85f2c0e5ab75285ddcaf685f",
+   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h04.py",
@@ -1774,13 +1774,13 @@
   },
   {
    "path": "tools/h05_compare.py",
-   "sha256": "35a285d859b7b575e49a0706f7b8b9f8b71023bce8f53b90f21ff1243118518f",
-   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes"
+   "sha256": "c2a5334d26468b5d3f2f52052d70326626a282ea69bba2f518d0b480e5238d9a",
+   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/h05_synth.py",
-   "sha256": "46ed6f911b821a01110a8d86615fa531658d842039c885de2f7233a947f0766a",
-   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
+   "sha256": "93f8c7d0a18bc15afd91f9dc66cea88525749105f2582f76024b981a8b79176e",
+   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h05.py",
@@ -1804,13 +1804,13 @@
   },
   {
    "path": "tools/h06_compare.py",
-   "sha256": "259de1f5e4c4dd792b7b12529dc001bc0bee96d461e27661e4964a5dcc197381",
-   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only"
+   "sha256": "78e07c252f31a3a28b0d68c1a76d982c076f1a79d2892e2c562a183f3caa5232",
+   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/h06_synth.py",
-   "sha256": "4854eee14289fd9166f55264e2841e917ef0600466ec73e44cf80b5ec0cba6f9",
-   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes"
+   "sha256": "a5df7ae1ea0e6b059e539d0c3439f6d4757d1ebf13b6c388950691b3a2acd740",
+   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h06.py",
@@ -1869,8 +1869,8 @@
   },
   {
    "path": "tests/test_u02_kit.py",
-   "sha256": "358fdfebf7b7b70da8b30d8f0adf0ac87f08bf765e10430ebfe6b519cb683ca6",
-   "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes"
+   "sha256": "76d4fde516b0bd27aa6fdb8317faadd1f4c25ddd8a5007e130c29e68acfd3ef1",
+   "reason": "locally authored U02 kit test suite (issue #35): manifest schema/coverage, dev32+favorite exclusion, catalog resolution, kit byte-regeneration minus timestamps, mutation negative controls, zip/oracle guarded skips with reasons; no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "rtl/dx7_core.v",
@@ -1894,13 +1894,13 @@
   },
   {
    "path": "tools/h07_synth.py",
-   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes; issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h08_synth.py); parse_stat stays here and passes this tool's CheckFailure and #82 issue tag, no upstream bytes",
-   "sha256": "0001cabfd4b72166ead1dda92661c6c707d2edc1bb0ba5da6e0d64b1a5fe482f"
+   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes; issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h08_synth.py); parse_stat stays here and passes this tool's CheckFailure and #82 issue tag, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)",
+   "sha256": "c5077f7f743aaeb5323decaf2526e3d600280158cdb389ca029190946932d5d1"
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd… (91,019 flops / 1,149,746 cells / 25,829,182.0 µm² chip / 5,794,342.4 µm² sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes. Issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #82 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes.",
-   "sha256": "99cccecfef786eb3ea2098536d0c76f7f721db2e6be02c170ed594c591f94901"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd… (91,019 flops / 1,149,746 cells / 25,829,182.0 µm² chip / 5,794,342.4 µm² sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes. Issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #82 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes.; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)",
+   "sha256": "74c30428190add9586dc91abf7ce36615eec786d953ca7f29abeb0b454cb4ce5"
   },
   {
    "path": "rtl/tb_synth_top.v",
@@ -1924,8 +1924,8 @@
   },
   {
    "path": "tools/h08_synth.py",
-   "sha256": "357001a29dab15878fdcf91d1ea4c445c022839016159e195585892dcedbabf9",
-   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94); issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h07_synth.py); parse_stat stays here and passes this tool's CheckFailure and #94 issue tag, HIER_BASIS is re-exported from it for relative_gate, no upstream bytes"
+   "sha256": "080f847a01151ff44b16d6ad293a61975ce8749bd705019237440455f1ffb667",
+   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94); issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h07_synth.py); parse_stat stays here and passes this tool's CheckFailure and #94 issue tag, HIER_BASIS is re-exported from it for relative_gate, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "docs/REUSE-RULINGS.md",
@@ -2084,8 +2084,8 @@
   },
   {
    "path": "tools/validate_bank128.py",
-   "sha256": "c486fc8d90e1b8f7a476d1203f1657bfd57e1e8ba2ae59716e4081eef5bb5b35",
-   "reason": "locally authored U03 curated-bank manifest validator (issue #36): schema gf180-dx7.bank128/1 per docs/BANK128-POLICY.md, catalog resolution, alias-declared duplicates, distribution-status gate, catalog-drift STALE; validates only, selects/authors no patches; no upstream bytes"
+   "sha256": "e0955a309635f5cc8767f9bc4043e7e214eb270c30b3942982e0572e513cf054",
+   "reason": "locally authored U03 curated-bank manifest validator (issue #36): schema gf180-dx7.bank128/1 per docs/BANK128-POLICY.md, catalog resolution, alias-declared duplicates, distribution-status gate, catalog-drift STALE; validates only, selects/authors no patches; no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_bank128.py",
@@ -2104,8 +2104,8 @@
   },
   {
    "path": "tools/h10_synth.py",
-   "sha256": "7c6d47eff505e15f67d8dbd9b2c5f3bde45a93449c0abd4455a2811a6d7ea38a",
-   "reason": "locally authored H10 two-policy (DONT_USE) mapped synthesis with hierarchy-aware stat parsing and check -assert (issue #32); no upstream bytes"
+   "sha256": "6563190a9f01f057e94c5a5cc85bc8db4b943fe7c5536ecc9712a1109b13af2e",
+   "reason": "locally authored H10 two-policy (DONT_USE) mapped synthesis with hierarchy-aware stat parsing and check -assert (issue #32); no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/verify_gf180_7t_techmaps.py",
@@ -2149,8 +2149,8 @@
   },
   {
    "path": "tools/ams_window_compare.py",
-   "sha256": "a92d436c5c525619ca8f749d00096780f90f7724634abd9ac0f6c50134a553dd",
-   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import Issue #98 (DR-0012): the declared expectation is derived from the RTL under test (out-of-range exp_t* reads present or not) instead of being pinned to the DR-0011 revision, so the repaired core is not reported as a FAIL and a re-narrowing regression flips the expectation back."
+   "sha256": "fc8f73b1bb74d73c5e7444d96a214f63c68cc5d00c822eab193e9898c561a332",
+   "reason": "locally authored issue #96 windowed conformance compare (drives tools/h07_compare.py's own vector/build/play/compare helpers over a window containing the note-on); not a reuse import Issue #98 (DR-0012): the declared expectation is derived from the RTL under test (out-of-range exp_t* reads present or not) instead of being pinned to the DR-0011 revision, so the repaired core is not reported as a FAIL and a re-narrowing regression flips the expectation back.; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
   },
   {
    "path": "tools/h07_ams_audit.py",

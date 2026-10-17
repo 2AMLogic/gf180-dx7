@@ -27,7 +27,6 @@ PDK path -- the message names what is missing). Stdlib only.
 """
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -68,12 +67,10 @@ class CouldNotRun(Exception):
     pass
 
 
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+_TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from sha256_helpers import sha256_file  # noqa: E402,F401
 
 
 # ---------------------------------------------------------------------------

@@ -1298,6 +1298,11 @@
    "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition"
   },
   {
+   "path": "tools/sha256_helpers.py",
+   "sha256": "3dfd68f8a23ebad463e17856999970e9f587d13a2b158c3484558e4f6017deb1",
+   "reason": "locally authored shared SHA-256 file/bytes helper (issue #141); replaces per-test copies of sha256_file, stdlib only, no upstream bytes; tool scripts keep their own copies until their catalog and evidence pins are re-qualified"
+  },
+  {
    "path": "tools/check_all.sh",
    "sha256": "7e13170117ac69768e329b8a42a952ffacf049bb17b48aa678ff846aa47de011",
    "reason": "locally authored CI entry point; re-pinned after R02 added the guarded render_selfcheck run (issue #7); re-pinned at merge; re-pinned after H03 added the core-contract budget gate (issue #25)"

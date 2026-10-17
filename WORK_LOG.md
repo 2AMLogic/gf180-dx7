@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-17
 
+- **PR #145**: refactor: share sha256 helpers in demo fixtures_dx7 and re-pin adapt record
+- **PR #144**: refactor: use shared sha256_file in 19 catalog-only tool and test scripts
 - **PR #142**: refactor: share sha256_file helper across five unpinned test suites
 
 ### 2026-10-16

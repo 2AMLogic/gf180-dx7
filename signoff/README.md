@@ -48,10 +48,11 @@ allows. That is a follow-up and is not made here, so item 6 is uncited.
   or live-control pass only; mutant sweeps stay in `make test`. The
   inventory's `pins` record the versions attested on 2026-10-17 (iverilog
   13.0, Verilator 5.050, Yosys 0.67+post, ciel PDK revision as in DR-0010,
-  ORFS image digest). klt checks only that pins are non-empty; **CI installs
-  the Ubuntu 24.04 apt simulators, whose versions differ from those pins**,
-  so CI shows the benches pass on the runner's versions, not on the pinned
-  ones.
+  ORFS image digest). klt checks only that pins are non-empty; CI builds
+  iverilog `v13_0` and Verilator `v5.050` from their release tags (cached),
+  because the Ubuntu 24.04 apt iverilog 12.0 cannot parse
+  `rtl/tb_operator_probe.v`. The Yosys, PDK and ORFS pins are not exercised
+  by CI.
 - Item 10: README, LICENSE and the CI workflow exist, and the byte-compile
   and `tools/check_all.sh` steps that CI's `test` job runs exit 0 locally.
   It does not attest that any remote CI run succeeded.

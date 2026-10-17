@@ -1554,8 +1554,8 @@
   },
   {
    "path": "tools/h01_compare.py",
-   "sha256": "cabaedc76f7f05bc42bdfe9dfb13d9a1f01cab7e1cde6c8eaa214b789b74e0ff",
-   "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "62799dd94e595cca2e1bcdc217b7f2b6701ed4f9d3119026452afea972d731e3",
+   "reason": "locally authored H01 equivalence harness (issue #20); golden-vector generation from the frozen model, bit-exact comparison with first-mismatch localization, MUTATE_ADDRWIDTH negative control, 0/1/2 exit convention, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited)"
   },
   {
    "path": "tools/h01_synth.py",
@@ -1734,8 +1734,8 @@
   },
   {
    "path": "tools/h04_compare.py",
-   "sha256": "0bea63440ffb24c94571f23645d8c6d2e98e2f5b7899164d566e8b5f979ce5fe",
-   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "4d655345123dc6fe210438d4f931a302f6c90a930cdefe67e1430627be25c442",
+   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited)"
   },
   {
    "path": "tools/h04_synth.py",
@@ -1774,8 +1774,8 @@
   },
   {
    "path": "tools/h05_compare.py",
-   "sha256": "c2a5334d26468b5d3f2f52052d70326626a282ea69bba2f518d0b480e5238d9a",
-   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "1ae4a907f357a94917ae00d003318d49939273871ff7a2e002845ad65ecea970",
+   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited)"
   },
   {
    "path": "tools/h05_synth.py",
@@ -1804,8 +1804,8 @@
   },
   {
    "path": "tools/h06_compare.py",
-   "sha256": "78e07c252f31a3a28b0d68c1a76d982c076f1a79d2892e2c562a183f3caa5232",
-   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "fbe3730df8c57aec0cfacb82dad47c129f457ce7c3d8853054555449a4b591d6",
+   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited)"
   },
   {
    "path": "tools/h06_synth.py",
@@ -1831,6 +1831,11 @@
    "path": "tools/yosys_run.py",
    "sha256": "1cb8451571b55c4d7204d9d30704281512d4086a4a520779ce6c2df6c636d518",
    "reason": "locally authored shared yosys invocation helper (issue #146): the byte-identical yosys -V probe (eight copies) and the yosys -p run / log-header / CheckFailure tail (six copies in the H01/H04/H05/H06/H07/H08 synth tools) moved verbatim, with the CouldNotRun/CheckFailure classes passed in by each caller; no upstream source, no upstream bytes, stdlib only"
+  },
+  {
+   "path": "tools/iverilog_run.py",
+   "sha256": "de0e2c0d785809b36c1f52936d7c2414c3b3ceb16c25a26b1cf4995e57445133",
+   "reason": "locally authored shared iverilog invocation helper (issue #152): the iverilog -V probe and the compile / vvp run / FAIL and PASS-summary check skeleton moved verbatim out of the locally authored tools/h01_compare.py, h04_compare.py, h05_compare.py and h06_compare.py, with the CouldNotRun/CheckFailure classes passed in by each caller; no upstream source, no upstream bytes, stdlib only"
   },
   {
    "path": "reference/tables/lfo_sin_table.hex",

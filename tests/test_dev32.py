@@ -11,7 +11,6 @@ unittest).
 
 from __future__ import annotations
 
-import hashlib
 import importlib.util
 import json
 import subprocess
@@ -21,6 +20,10 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+if str(REPO / "tools") not in sys.path:
+    sys.path.insert(0, str(REPO / "tools"))
+
+from sha256_helpers import sha256_file  # noqa: E402
 
 CATALOG = REPO / "corpus" / "archive-catalogs" / "alltheweb-catalog.json"
 MANIFEST = REPO / "corpus" / "dev32.json"
@@ -46,14 +49,6 @@ def load_tool(path: Path, name: str):
     sys.modules[name] = mod
     spec.loader.exec_module(mod)  # type: ignore[union-attr]
     return mod
-
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 select_dev32 = load_tool(SELECT, "select_dev32_test")

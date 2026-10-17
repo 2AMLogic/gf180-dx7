@@ -9,7 +9,6 @@ everywhere (stdlib-only, no oracle).
 from __future__ import annotations
 
 import array
-import hashlib
 import importlib.util
 import json
 import stat
@@ -21,6 +20,10 @@ import wave
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+if str(REPO / "tools") not in sys.path:
+    sys.path.insert(0, str(REPO / "tools"))
+
+from sha256_helpers import sha256_file  # noqa: E402
 _SRC = REPO / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
@@ -52,14 +55,6 @@ def load_tool():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
-
-
-def sha256_file(path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def run_harness(*extra: str) -> subprocess.CompletedProcess:

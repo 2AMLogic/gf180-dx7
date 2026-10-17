@@ -30,6 +30,7 @@ sys.path.insert(0, str(REPO / "tools"))
 
 from gf180_dx7 import sysex  # noqa: E402
 import registry_coverage  # noqa: E402
+from sha256_helpers import sha256_file  # noqa: E402
 
 REGISTRY_PATH = REPO / "spec" / "compatibility-registry-v1.json"
 SMOKE_PATH = REPO / "reference" / "evidence" / "registry-smoke.json"
@@ -52,14 +53,6 @@ def load_tool(path: Path, name: str):
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
-
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def oracle_ready() -> bool:

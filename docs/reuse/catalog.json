@@ -1534,8 +1534,8 @@
   },
   {
    "path": "tools/storage_probe_synth.py",
-   "sha256": "d4c93b81064605307f1edad86be88377e5dfc897c2b7740435a2f0350d40ebe3",
-   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "4dd6dc6c047f1f221efc16c4a282b3c3641afb81eb08aa6708c5d2bd13be3e52",
+   "reason": "locally authored H02 yosys synth + flop-gate + SRAM-macro analysis tool (issue #21); stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys is unchanged) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_storage_probe.py",
@@ -1559,8 +1559,8 @@
   },
   {
    "path": "tools/h01_synth.py",
-   "sha256": "60a2c91e0cc6c450db412f9f6a481d567bc8ca11e04265daca7f4d0734f6aa9a",
-   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "3da2a22d0751ad5e0a7b64dcfccb19bb461cb749a3a4a547b2924b39d5fbedf6",
+   "reason": "locally authored H01 yosys synth + area/flop-gate tool (issue #20); H02 storage_probe_synth.py's gate discipline re-expressed for the operator datapath, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h01.py",
@@ -1739,8 +1739,8 @@
   },
   {
    "path": "tools/h04_synth.py",
-   "sha256": "0bcbe52391074f077c191e9f7262c0673d41cc8f85f2c0e5ab75285ddcaf685f",
-   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "bb18f9f14369630a1cf547bb9b347366465765162c3d232355b8cb1fd7492b5e",
+   "reason": "locally authored H04 synthesis tool (issue #26): yosys mapped run on the ciel gf180mcu 7t liberty with the >133-flop observability gate and the strip-observability negative control (H01/H02 pattern); no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h04.py",
@@ -1779,8 +1779,8 @@
   },
   {
    "path": "tools/h05_synth.py",
-   "sha256": "93f8c7d0a18bc15afd91f9dc66cea88525749105f2582f76024b981a8b79176e",
-   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "d5bce3aa66dbe3a10ce11bcf2db6bacac50089fa06702b35f931a2e3c35f8af9",
+   "reason": "locally authored H05 yosys synth + bus-flop-gate tool (issue #27); H01 h01_synth.py gate discipline re-expressed for the router, strip-observability control, ROM mapping recorded, stdlib only, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h05.py",
@@ -1809,8 +1809,8 @@
   },
   {
    "path": "tools/h06_synth.py",
-   "sha256": "a5df7ae1ea0e6b059e539d0c3439f6d4757d1ebf13b6c388950691b3a2acd740",
-   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "651bb8600c293d33aa84652bc53393e0b5256889be349bad07ccaaead89a92b0",
+   "reason": "locally authored H06 synthesis tool (issue #28): yosys mapped report on the ciel 7t liberty, flop/area gates, strip-observability negative control, ROM-as-logic accounting; adapted H01 probe flow, no upstream bytes; parse_stat asserts single-module transcript shape (exactly one 'Chip area for module' block, no design-hierarchy section) and raises instead of reporting a per-module block as the design total (issue #95); issue #119: the single-module guard and cell/area parsing moved verbatim into the locally authored tools/single_module_stat.py (shared with the other three H01/H04/H05/H06 synth tools); parse_stat stays here and passes this tool's CheckFailure and module name, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tests/test_h06.py",
@@ -1826,6 +1826,11 @@
    "path": "tools/single_module_stat.py",
    "sha256": "f1092888c2e673612f7d6907aebe69325ddfdb8ca2c19f6644927af1fcdeae9d",
    "reason": "locally authored shared single-module yosys stat-transcript parser (issue #119): the issue #95 single-module guard (raise on a design-hierarchy section, a Chip area for top module line, or more than one Chip area for module block) and the cell/area parsing, moved verbatim out of the four locally authored tools/h01_synth.py, h04_synth.py, h05_synth.py, h06_synth.py, which keep their own parse_stat and CheckFailure; no upstream source, no upstream bytes, stdlib only"
+  },
+  {
+   "path": "tools/yosys_run.py",
+   "sha256": "1cb8451571b55c4d7204d9d30704281512d4086a4a520779ce6c2df6c636d518",
+   "reason": "locally authored shared yosys invocation helper (issue #146): the byte-identical yosys -V probe (eight copies) and the yosys -p run / log-header / CheckFailure tail (six copies in the H01/H04/H05/H06/H07/H08 synth tools) moved verbatim, with the CouldNotRun/CheckFailure classes passed in by each caller; no upstream source, no upstream bytes, stdlib only"
   },
   {
    "path": "reference/tables/lfo_sin_table.hex",
@@ -1894,8 +1899,8 @@
   },
   {
    "path": "tools/h07_synth.py",
-   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes; issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h08_synth.py); parse_stat stays here and passes this tool's CheckFailure and #82 issue tag, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)",
-   "sha256": "c5077f7f743aaeb5323decaf2526e3d600280158cdb389ca029190946932d5d1"
+   "reason": "locally authored H07 synthesis report + strip-observability gate (issue #29): yosys dfflibmap/abc against the ciel gf180mcu 7t liberty, mapped-flop floor gate vs the H02 38,781 accounting, delta attribution by declared RTL source groups; re-pinned for issue #82: parse_stat now reads the design-hierarchy totals (last 'Chip area for top module' match, cell counting bounded to that section) and refuses to fall back to a per-module block; no upstream bytes; issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h08_synth.py); parse_stat stays here and passes this tool's CheckFailure and #82 issue tag, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)",
+   "sha256": "31023c1f3630a3b124269eb8d41a23109d4acea5bcd7c943b81544a1a52c59bc"
   },
   {
    "path": "tests/test_h07.py",
@@ -1924,8 +1929,8 @@
   },
   {
    "path": "tools/h08_synth.py",
-   "sha256": "080f847a01151ff44b16d6ad293a61975ce8749bd705019237440455f1ffb667",
-   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94); issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h07_synth.py); parse_stat stays here and passes this tool's CheckFailure and #94 issue tag, HIER_BASIS is re-exported from it for relative_gate, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "5a26150f06d062696cf4e494d7fc29841ac91d2177218e38433dc628237900a3",
+   "reason": "locally authored H08 chassis synthesis gate (issue #30): yosys full + strip builds vs the committed H07 report, structural no-logic wrapper check, --from-logs re-check; evidence in evidence/h08-chassis/; parse_stat reads design-hierarchy totals and the vs-H07 gate is guarded NOT_RUN unless both sides are same-RTL hierarchy totals (issue #94); issue #124: the hierarchy-total parsing moved verbatim into the locally authored tools/hierarchy_stat.py (shared with tools/h07_synth.py); parse_stat stays here and passes this tool's CheckFailure and #94 issue tag, HIER_BASIS is re-exported from it for relative_gate, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper; run_yosys keeps its script construction and delegates the subprocess/log/failure tail to the shared helper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "docs/REUSE-RULINGS.md",
@@ -2104,8 +2109,8 @@
   },
   {
    "path": "tools/h10_synth.py",
-   "sha256": "6563190a9f01f057e94c5a5cc85bc8db4b943fe7c5536ecc9712a1109b13af2e",
-   "reason": "locally authored H10 two-policy (DONT_USE) mapped synthesis with hierarchy-aware stat parsing and check -assert (issue #32); no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "3247a3efe63299d301b3ee63666b6b60eec0ad10bd8fb540f2cf64248337880f",
+   "reason": "locally authored H10 two-policy (DONT_USE) mapped synthesis with hierarchy-aware stat parsing and check -assert (issue #32); no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); yosys -V probe moved to the locally authored tools/yosys_run.py (this tool keeps its own CouldNotRun wrapper) (issue #146, catalog-only provenance audited)"
   },
   {
    "path": "tools/verify_gf180_7t_techmaps.py",

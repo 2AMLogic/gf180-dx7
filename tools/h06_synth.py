@@ -44,7 +44,6 @@ import argparse
 import json
 import os
 import re
-import subprocess
 import sys
 
 from single_module_stat import parse_single_module_stat
@@ -78,6 +77,8 @@ _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
+from yosys_run import (  # noqa: E402
+    run_yosys_script, yosys_version as _yosys_version)
 
 
 def declared_state_bits(repo_root):
@@ -118,13 +119,7 @@ def declared_state_bits(repo_root):
 
 
 def yosys_version(yosys):
-    try:
-        out = subprocess.run([yosys, "-V"], capture_output=True, text=True)
-    except OSError:
-        raise CouldNotRun(f"yosys binary not found: {yosys}")
-    if out.returncode != 0 or not out.stdout:
-        raise CouldNotRun(f"yosys -V failed: {out.stderr.strip()[:200]}")
-    return out.stdout.strip()
+    return _yosys_version(yosys, CouldNotRun)
 
 
 def run_yosys(yosys, repo_root, liberty, strip, log_path):
@@ -138,17 +133,7 @@ def run_yosys(yosys, repo_root, liberty, strip, log_path):
         f"abc -liberty {liberty}",
         f"stat -liberty {liberty}",
     ]
-    proc = subprocess.run([yosys, "-p", "; ".join(script)],
-                          capture_output=True, text=True, cwd=repo_root)
-    log = (proc.stdout or "") + (proc.stderr or "")
-    with open(log_path, "w", encoding="utf-8") as f:
-        f.write(f"# yosys script (cwd={repo_root}): {'; '.join(script)}\n"
-                + log)
-    if proc.returncode != 0:
-        raise CheckFailure(
-            f"yosys failed (rc={proc.returncode}); log at {log_path}: "
-            + (log.strip().splitlines()[-1][:300] if log.strip() else ""))
-    return log
+    return run_yosys_script(yosys, script, log_path, repo_root, CheckFailure)
 
 
 def parse_stat(log):

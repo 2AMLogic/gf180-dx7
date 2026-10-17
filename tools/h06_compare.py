@@ -61,8 +61,6 @@ import math
 import os
 import random
 import re
-import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -118,6 +116,7 @@ _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
+from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
 
 
 def i32(x):
@@ -892,57 +891,25 @@ MUTANTS = {
 
 
 def tool_identity(iverilog):
-    try:
-        out = subprocess.run([iverilog, "-V"], capture_output=True,
-                             text=True)
-    except OSError:
-        raise CouldNotRun(f"iverilog binary not found: {iverilog}")
-    first = (out.stdout or out.stderr).strip().splitlines()
-    if not first:
-        raise CouldNotRun("iverilog -V produced no output")
-    return first[0].strip()
+    return iverilog_version(iverilog, CouldNotRun)
 
 
 def run_sim(iverilog, vvp, mutant, vectors, outdir):
     """Compile + run the bench (real build when mutant is None); return
     (actual_rows, sim_meta)."""
-    if shutil.which(iverilog) is None:
-        raise CouldNotRun(f"iverilog not found on PATH: {iverilog}")
-    if shutil.which(vvp) is None:
-        raise CouldNotRun(f"vvp not found on PATH: {vvp}")
     name = "tb.vvp" if mutant is None else ("tb_%s.vvp" % mutant)
     vvp_out = os.path.join(tempfile.mkdtemp(prefix="h06_sim_"), name)
     stem = "actual.txt" if mutant is None else ("actual_%s.txt" % mutant)
     actual_path = os.path.join(outdir, stem)
-    cmd = [iverilog, "-g2012", "-o", vvp_out]
-    if mutant is not None:
-        cmd.append(MUTANTS[mutant][0])
-    cmd += [os.path.join(REPO_ROOT, RTL_REL), os.path.join(REPO_ROOT, TB_REL)]
-    proc = subprocess.run(cmd, capture_output=True, text=True, cwd=REPO_ROOT)
-    if proc.returncode != 0:
-        raise CheckFailure("iverilog compile failed (%s): " % (mutant,) +
-                           (proc.stderr or proc.stdout)[-500:])
-    try:
-        run = subprocess.run([vvp, vvp_out, f"+vectors={vectors}",
-                              f"+actual={actual_path}"],
-                             capture_output=True, text=True, cwd=REPO_ROOT,
-                             timeout=1800)
-        out = run.stdout + run.stderr
-        if run.returncode != 0 or "FAIL" in out:
-            raise CheckFailure(
-                "bench failed (%s): %s" % (mutant, out.strip()[-500:]))
-        m = re.search(r"PASS tb_pitch_mod \(frames=(\d+) writes=(\d+) "
-                      r"captured=(\d+) maxcycles=(\d+)\)", out)
-        if not m:
-            raise CheckFailure(
-                "bench produced no PASS summary (%s): %s"
-                % (mutant, out[-300:]))
-        rows = parse_result_text(actual_path)
-    finally:
-        try:
-            os.remove(vvp_out)
-        except OSError:
-            pass
+    m, out = compile_and_run(
+        iverilog, vvp, vvp_out,
+        [os.path.join(REPO_ROOT, RTL_REL), os.path.join(REPO_ROOT, TB_REL)],
+        [MUTANTS[mutant][0]] if mutant is not None else [],
+        [f"+vectors={vectors}", f"+actual={actual_path}"],
+        r"PASS tb_pitch_mod \(frames=(\d+) writes=(\d+) "
+        r"captured=(\d+) maxcycles=(\d+)\)",
+        REPO_ROOT, 1800, CouldNotRun, CheckFailure, label=" (%s)" % (mutant,))
+    rows = parse_result_text(actual_path)
     return rows, {
         "bench_frames": int(m.group(1)),
         "bench_writes": int(m.group(2)),

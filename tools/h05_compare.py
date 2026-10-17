@@ -42,9 +42,7 @@ import argparse
 import hashlib
 import json
 import os
-import re
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -96,6 +94,7 @@ _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
+from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -415,54 +414,24 @@ MUTANTS = {
 
 
 def tool_identity(iverilog):
-    try:
-        out = subprocess.run([iverilog, "-V"], capture_output=True,
-                             text=True)
-    except OSError:
-        raise CouldNotRun(f"iverilog binary not found: {iverilog}")
-    first = (out.stdout or out.stderr).strip().splitlines()
-    if not first:
-        raise CouldNotRun("iverilog -V produced no output")
-    return first[0].strip()
+    return iverilog_version(iverilog, CouldNotRun)
 
 
 def run_sim(iverilog, vvp, mutate, program_path, workdir):
     """Compile + run the bench; return path of the emitted stream file."""
-    if shutil.which(iverilog) is None:
-        raise CouldNotRun(f"iverilog not found on PATH: {iverilog}")
-    if shutil.which(vvp) is None:
-        raise CouldNotRun(f"vvp not found on PATH: {vvp}")
     vvp_out = os.path.join(workdir, "tb%s.vvp" % (("_" + mutate) if mutate
                                                   else ""))
     actual = os.path.join(workdir, "actual%s.txt" % (("_" + mutate) if
                                                      mutate else ""))
-    cmd = [iverilog, "-g2012", "-o", vvp_out]
-    if mutate:
-        define = MUTANTS[mutate][0]
-        cmd.append("-D" + define)
-    cmd += [os.path.join(REPO_ROOT, RTL_REL), os.path.join(REPO_ROOT, TB_REL)]
-    proc = subprocess.run(cmd, capture_output=True, text=True,
-                          cwd=REPO_ROOT)
-    if proc.returncode != 0:
-        raise CheckFailure("iverilog compile failed: "
-                           + (proc.stderr or proc.stdout)[-800:])
-    try:
-        run = subprocess.run([vvp, vvp_out, f"+program={program_path}",
-                              f"+actual={actual}"],
-                             capture_output=True, text=True, cwd=REPO_ROOT,
-                             timeout=1800)
-        out = run.stdout + run.stderr
-        if run.returncode != 0 or "FAIL" in out:
-            raise CheckFailure(f"bench failed: {out.strip()[-800:]}")
-        m = re.search(r"PASS tb_alg_router \(runs=(\d+) frames=(\d+) "
-                      r"evals=(\d+)\)", out)
-        if not m:
-            raise CheckFailure(f"bench produced no PASS summary: {out[-400:]}")
-    finally:
-        try:
-            os.remove(vvp_out)
-        except OSError:
-            pass
+    m, _out = compile_and_run(
+        iverilog, vvp, vvp_out,
+        [os.path.join(REPO_ROOT, RTL_REL), os.path.join(REPO_ROOT, TB_REL)],
+        ["-D" + MUTANTS[mutate][0]] if mutate else [],
+        [f"+program={program_path}", f"+actual={actual}"],
+        r"PASS tb_alg_router \(runs=(\d+) frames=(\d+) "
+        r"evals=(\d+)\)",
+        REPO_ROOT, 1800, CouldNotRun, CheckFailure,
+        compile_tail=800, bench_tail=800, summary_tail=400)
     return actual, {
         "bench_runs": int(m.group(1)),
         "bench_frames": int(m.group(2)),

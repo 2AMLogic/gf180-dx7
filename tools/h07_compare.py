@@ -772,6 +772,72 @@ def measure_latencies(events: list[tuple[int, str]], commits: list[int],
 # main
 # ---------------------------------------------------------------------------
 
+def run_dev_case(case: dict, tool: str, binary: Path, tag: str,
+                 cap: int, cache: dict | None) -> dict:
+    """Play one dev case through the built simulator and compare it
+    bit-exactly (factored out of main() so tools/fv_cocotb_dx7_core.py
+    reuses the identical check)."""
+    cid = case["id"]
+    try:
+        vb = case_voice_bytes(case, cache)
+        from gf180_dx7.model.algorithm import voice_patch
+        body = voice_patch(sysex.decode_voice(vb))
+        n = case["_n"]
+        if cap:
+            n = min(n, cap * N)
+        vtext, nsamp = build_dev_vector(case, body, frames=cap)
+        ints = golden_ints_from_f32(case["_f32"], case["_sha"],
+                                    case["_n"])[:n]
+        afile, mfile, meta = play_sim(tool, binary, vtext,
+                                      f"{tag}-dev-{cid}")
+        res = compare_case([{"ints": ints}], afile, meta)
+        res["id"] = cid
+        res["actual_sha256"] = sha256_file(afile)
+        res["overrun"] = int(meta.get("overrun", ["1"])[0])
+        res["overflow"] = int(meta.get("overflow", ["1"])[0])
+        res["commits"] = meta.get("commits", [])
+        res["latency"] = measure_latencies(
+            [(t["block"], t["event"]) for t in case["event_trace"]],
+            res["commits"], None)
+        res["pass"] = res["pass"] and res["overrun"] == 0 \
+            and res["overflow"] == 0 \
+            and all(l["in_window"] for l in res["latency"])
+        return res
+    except (CheckFailure, CouldNotRun) as exc:
+        return {"id": cid, "pass": False, "error": str(exc)}
+
+
+def run_stress_case(spec: dict, tool: str, binary: Path, tag: str,
+                    cap: int) -> dict:
+    """Stress-set counterpart of run_dev_case."""
+    sid = spec["id"]
+    try:
+        golden = stress_golden(spec)
+        if cap:
+            spec = dict(spec)
+            if spec.get("blocks"):
+                spec["blocks"] = min(spec["blocks"], cap)
+            if spec.get("blocks_b"):
+                spec["blocks_b"] = min(spec["blocks_b"], cap)
+        vtext, _ = build_stress_vector(spec, golden["bodies"],
+                                       golden["segments"])
+        segs = [{"ints": s[:cap * N] if cap else s}
+                for s in golden["segments"]]
+        afile, mfile, meta = play_sim(tool, binary, vtext, f"{tag}-{sid}")
+        res = compare_case(segs, afile, meta)
+        res["id"] = sid
+        res["actual_sha256"] = sha256_file(afile)
+        res["overrun"] = int(meta.get("overrun", ["1"])[0])
+        res["overflow"] = int(meta.get("overflow", ["1"])[0])
+        res["commits"] = meta.get("commits", [])
+        res["pass"] = res["pass"] and res["overrun"] == 0 \
+            and res["overflow"] == 0
+        return res
+    except (CheckFailure, CouldNotRun) as exc:
+        return {"id": sid, "pass": False, "error": str(exc)}
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--set", choices=("dev", "stress", "both"),
@@ -838,35 +904,7 @@ def main() -> int:
             binary = build_sim(tool, work, [])
 
             def run_dev(case):
-                cid = case["id"]
-                try:
-                    vb = case_voice_bytes(case, cache)
-                    from gf180_dx7.model.algorithm import voice_patch
-                    body = voice_patch(sysex.decode_voice(vb))
-                    n = case["_n"]
-                    if cap:
-                        n = min(n, cap * N)
-                    vtext, nsamp = build_dev_vector(case, body,
-                                                    frames=cap)
-                    ints = golden_ints_from_f32(case["_f32"], case["_sha"],
-                                                case["_n"])[:n]
-                    afile, mfile, meta = play_sim(tool, binary, vtext,
-                                                  f"{tag}-dev-{cid}")
-                    res = compare_case([{"ints": ints}], afile, meta)
-                    res["id"] = cid
-                    res["actual_sha256"] = sha256_file(afile)
-                    res["overrun"] = int(meta.get("overrun", ["1"])[0])
-                    res["overflow"] = int(meta.get("overflow", ["1"])[0])
-                    res["commits"] = meta.get("commits", [])
-                    res["latency"] = measure_latencies(
-                        [(t["block"], t["event"]) for t in
-                         case["event_trace"]], res["commits"], None)
-                    res["pass"] = res["pass"] and res["overrun"] == 0 \
-                        and res["overflow"] == 0 \
-                        and all(l["in_window"] for l in res["latency"])
-                    return res
-                except (CheckFailure, CouldNotRun) as exc:
-                    return {"id": cid, "pass": False, "error": str(exc)}
+                return run_dev_case(case, tool, binary, tag, cap, cache)
 
             todo = [c for c in load_dev_cases()
                     if not only or c["id"] in only]
@@ -893,32 +931,7 @@ def main() -> int:
             binary = build_sim(tool, work, [])
 
             def run_stress(spec):
-                sid = spec["id"]
-                try:
-                    golden = stress_golden(spec)
-                    if cap:
-                        spec = dict(spec)
-                        if spec.get("blocks"):
-                            spec["blocks"] = min(spec["blocks"], cap)
-                        if spec.get("blocks_b"):
-                            spec["blocks_b"] = min(spec["blocks_b"], cap)
-                    vtext, _ = build_stress_vector(spec, golden["bodies"],
-                                                   golden["segments"])
-                    segs = [{"ints": s[:cap * N] if cap else s}
-                            for s in golden["segments"]]
-                    afile, mfile, meta = play_sim(tool, binary, vtext,
-                                                  f"{tag}-{sid}")
-                    res = compare_case(segs, afile, meta)
-                    res["id"] = sid
-                    res["actual_sha256"] = sha256_file(afile)
-                    res["overrun"] = int(meta.get("overrun", ["1"])[0])
-                    res["overflow"] = int(meta.get("overflow", ["1"])[0])
-                    res["commits"] = meta.get("commits", [])
-                    res["pass"] = res["pass"] and res["overrun"] == 0 \
-                        and res["overflow"] == 0
-                    return res
-                except (CheckFailure, CouldNotRun) as exc:
-                    return {"id": sid, "pass": False, "error": str(exc)}
+                return run_stress_case(spec, tool, binary, tag, cap)
 
             todo = [s for s in STRESS_SET[1]
                     if not only or s["id"] in only]

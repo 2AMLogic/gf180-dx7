@@ -1,0 +1,308 @@
+{
+ "coverage": null,
+ "engine": "icarus",
+ "environment": {
+  "cocotb_version": "2.1.0",
+  "engine": "icarus",
+  "engine_version": "13.0",
+  "random_seed": 1,
+  "sdf": null
+ },
+ "failed_count": 0,
+ "hdl_toplevel": "dx7_core",
+ "passed_count": 23,
+ "provenance": {
+  "cases": {
+   "alg4-fb0": {
+    "actual_sha256": "a47b23520abc6fc6f2de581c427e3c2d0f7579eb0b6f3dd08c08c8299e46b0e3",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "alg4-fb3": {
+    "actual_sha256": "e108a4215d6e16e0ebdc12f0d26a5954deeb19b9b4155351293bcf84ce2b02a1",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "alg4-fb7": {
+    "actual_sha256": "1903ad2c2de46f351847c0b20183bc9e4f53510fad99c3cbf7b896c23e2957fc",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "alg6-fb0": {
+    "actual_sha256": "5420a4302d5c6712d0306d10567d284f811ec713231ca1708be2ccfe7d3dd13b",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "alg6-fb3": {
+    "actual_sha256": "dcb23575bcf6aa284c9da10c27a1453b0876e391f6e722023898d911072c75bc",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "alg6-fb7": {
+    "actual_sha256": "b13071009bd66de5ec6202fb4d534ba4e86a677baf10d33cbd2d40e0301860c2",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "bd-coarse0": {
+    "actual_sha256": "cf681a8b9cef53a004e6ded9a963d343da0ac95650822dd5331a50c7490978a6",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "bd-coarse31": {
+    "actual_sha256": "9352d497d79ab65b0ee8c9489f9377765ff18a83a7792f9399c3e3665df0b519",
+    "audible_samples": 1207,
+    "checked_samples": 3392
+   },
+   "bd-detune0": {
+    "actual_sha256": "8b26fa0114bb260a50363a662e9864ea2c21f00ff6120d673a12df0bbed0d390",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "bd-detune14": {
+    "actual_sha256": "a108f3109fecce68e81f10a8cc4ccee953826e8bdd1d95c3d7876da05a78c8df",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "codec-name-a": {
+    "actual_sha256": "31f3cb4122e46c249ca41e5bb70c9f841bec43d1af158f2205b5c32bc81ed292",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "codec-name-b": {
+    "actual_sha256": "31f3cb4122e46c249ca41e5bb70c9f841bec43d1af158f2205b5c32bc81ed292",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "dir-base": {
+    "actual_sha256": "31f3cb4122e46c249ca41e5bb70c9f841bec43d1af158f2205b5c32bc81ed292",
+    "audible_samples": 1199,
+    "checked_samples": 3392
+   },
+   "ev-modwheel-0": {
+    "actual_sha256": "8fe4ef62d681f638e78fc4d0eb7d31d7c6ec92dc5644eafa0778c14cc8e6580c",
+    "audible_samples": 3630,
+    "checked_samples": 5824
+   },
+   "ev-modwheel-127": {
+    "actual_sha256": "8fe4ef62d681f638e78fc4d0eb7d31d7c6ec92dc5644eafa0778c14cc8e6580c",
+    "audible_samples": 3630,
+    "checked_samples": 5824
+   },
+   "ev-pitch-bend-center": {
+    "actual_sha256": "8fe4ef62d681f638e78fc4d0eb7d31d7c6ec92dc5644eafa0778c14cc8e6580c",
+    "audible_samples": 3630,
+    "checked_samples": 5824
+   },
+   "ev-pitch-bend-down": {
+    "actual_sha256": "8432cbbec7b875236c9b730eb06fa4830be6a6b8467d9ae98b3a69095f41afdd",
+    "audible_samples": 3630,
+    "checked_samples": 5824
+   },
+   "ev-pitch-bend-up": {
+    "actual_sha256": "903cdc75449558179773de8a9c891609e0a8701d87d9e925090de16dfe3351a8",
+    "audible_samples": 3630,
+    "checked_samples": 5824
+   },
+   "osc-fixed-carrier": {
+    "actual_sha256": "db6d901d65e6a5da7f672323f5f39cbda2f8634bf1aaadec636a184d497c3e48",
+    "audible_samples": 1198,
+    "checked_samples": 3392
+   },
+   "stress-burst": {
+    "actual_sha256": "6e705b584712528fbd486f1e39e76c5965b7e4c7788daf356d3ab00312e3a7ca",
+    "audible_samples": 0,
+    "checked_samples": 1536
+   },
+   "stress-patchcommit": {
+    "actual_sha256": "11fb70861cfb3b66f4e9613a62a49f88dcd499eebce26bebecf9c9a0e247a4ec",
+    "audible_samples": 2606,
+    "checked_samples": 2560
+   },
+   "stress-reset": {
+    "actual_sha256": "47d39479942431576845fef588061b99544c6532653b8b9986e45a11effac348",
+    "audible_samples": 1440,
+    "checked_samples": 1664
+   },
+   "stress-sum16": {
+    "actual_sha256": "6b307fbfb8f951ffcfb6547561686e3313e056e5d44f8cdb266741ec58e8139b",
+    "audible_samples": 3505,
+    "checked_samples": 3584
+   }
+  },
+  "claim": "RTL == frozen integer model (claim 1) on the DR-0012 trio under Icarus; not model-vs-reference, synthesis, STA, or sound",
+  "defines": [],
+  "dr0012_pin_matches": true,
+  "frame_rule": "dev: last event block + 16; stress: preregistered length",
+  "klt_version": "klt 0.7.0",
+  "not_graded": {
+   "cases": [
+    "dev32-03",
+    "dev32-06",
+    "dev32-30",
+    "ev-all-notes-off",
+    "ev-all-sound-off",
+    "ev-repeated-note",
+    "ev-retrigger",
+    "ev-steal-16",
+    "ev-sum-15",
+    "ev-sustain-no-pedal",
+    "ev-sustain-pedal"
+   ],
+   "reason": "events past block 75: Icarus playback is ~2.4 s per frame, too long for this lane; see evidence/h07-core/ for the Verilator/remote runs",
+   "status": "NOT_RUN"
+  },
+  "request_sha256": "b28d8573b79a3b2a233da979001cde14bc379f79261f4058fde2c8ae7c646720",
+  "rtl_sha256": {
+   "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+   "rtl/dx7_core.v": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+   "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
+   "rtl/tb_dx7_core.v": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea"
+  }
+ },
+ "schema_version": 1,
+ "skipped_count": 0,
+ "status": "pass",
+ "test_count": 23,
+ "testbench": "fv_cocotb_dx7_core",
+ "tests": [
+  {
+   "name": "case_dir_base",
+   "real_time_s": 2016.363,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_osc_fixed_carrier",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_bd_coarse0",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_bd_coarse31",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_bd_detune0",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_bd_detune14",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg4_fb0",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg4_fb3",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg4_fb7",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg6_fb0",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg6_fb3",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_alg6_fb7",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_codec_name_a",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_codec_name_b",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_ev_pitch_bend_up",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_ev_pitch_bend_down",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_ev_pitch_bend_center",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_ev_modwheel_127",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_ev_modwheel_0",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_stress_sum16",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_stress_burst",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_stress_reset",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  },
+  {
+   "name": "case_stress_patchcommit",
+   "real_time_s": 0.0,
+   "sim_time_ns": 1.0,
+   "status": "passed"
+  }
+ ],
+ "trace": null
+}

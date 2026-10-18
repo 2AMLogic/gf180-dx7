@@ -1,0 +1,64 @@
+{
+ "coverage": null,
+ "engine": "icarus",
+ "environment": {
+  "cocotb_version": "2.1.0",
+  "engine": "icarus",
+  "engine_version": "13.0",
+  "random_seed": 1,
+  "sdf": null
+ },
+ "failed_count": 1,
+ "hdl_toplevel": "dx7_core",
+ "passed_count": 0,
+ "provenance": {
+  "cases": {},
+  "claim": "RTL == frozen integer model (claim 1) on the DR-0012 trio under Icarus; not model-vs-reference, synthesis, STA, or sound",
+  "defines": [
+   "H07_MUTATE_SUM_ORDER"
+  ],
+  "dr0012_pin_matches": true,
+  "frame_rule": "dev: last event block + 16; stress: preregistered length",
+  "klt_version": "klt 0.7.0",
+  "not_graded": {
+   "cases": [
+    "dev32-03",
+    "dev32-06",
+    "dev32-30",
+    "ev-all-notes-off",
+    "ev-all-sound-off",
+    "ev-repeated-note",
+    "ev-retrigger",
+    "ev-steal-16",
+    "ev-sum-15",
+    "ev-sustain-no-pedal",
+    "ev-sustain-pedal"
+   ],
+   "reason": "events past block 75: Icarus playback is ~2.4 s per frame, too long for this lane; see evidence/h07-core/ for the Verilator/remote runs",
+   "status": "NOT_RUN"
+  },
+  "request_sha256": "b28d8573b79a3b2a233da979001cde14bc379f79261f4058fde2c8ae7c646720",
+  "rtl_sha256": {
+   "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+   "rtl/dx7_core.v": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+   "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
+   "rtl/tb_dx7_core.v": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea"
+  }
+ },
+ "schema_version": 1,
+ "skipped_count": 0,
+ "status": "fail",
+ "test_count": 1,
+ "testbench": "fv_cocotb_dx7_core",
+ "tests": [
+  {
+   "error_message": "stress-sum16: RTL != frozen model; first mismatches [{'index': 397, 'golden': 2, 'actual': 1024, 'block': 4, 'sample': 13}, {'index': 398, 'golden': 4, 'actual': 2048, 'block': 4, 'sample': 14}, {'index': 399, 'golden': 8, 'actual': 4096, 'block': 4, 'sample': 15}] overrun=0 overflow=0\nassert False",
+   "error_type": "AssertionError",
+   "name": "case_stress_sum16",
+   "real_time_s": 186.817,
+   "sim_time_ns": 1.0,
+   "status": "failed"
+  }
+ ],
+ "trace": null
+}

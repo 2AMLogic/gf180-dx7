@@ -1,0 +1,16 @@
+{
+  "sources": [
+    "../../rtl/dx7_core.v",
+    "../../rtl/env_unit.v",
+    "../../rtl/alg_router.v"
+  ],
+  "hdl_toplevel": "dx7_core",
+  "engine": "icarus",
+  "testbench": {
+    "module": "fv_cocotb_dx7_core",
+    "search_path": "../../tools"
+  },
+  "options": {
+    "random_seed": 1
+  }
+}

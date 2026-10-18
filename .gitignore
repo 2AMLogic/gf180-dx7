@@ -132,3 +132,7 @@ corpus/u02-candidates/renders/
 .loom-local/
 # <<< loom-managed <<<
 evidence/h07-core/sim/
+
+# klt functional-verification scratch
+.klt/
+.venv-fv/

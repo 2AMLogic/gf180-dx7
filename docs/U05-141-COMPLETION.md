@@ -7,8 +7,10 @@ RTL, synthesis, reference-agreement, hardware, original-DX7-fidelity or
 musical-quality claim, and it changes no source.
 
 **Overall: #141 is NOT closable from this record.** Acceptance criterion 2
-(named maintainer review) is BLOCKED, and the full suite and the dev32
-variant are NOT_RUN. #141 stays open on those conditions.
+(named maintainer review) is BLOCKED and the real-dev32 variant is NOT_RUN.
+The full suite (`make test`) now has a result, with 79 skips reported as
+NOT_RUN (see "Residual round" below). #141 stays open on the two remaining
+conditions.
 
 ## Pinned identities
 
@@ -119,3 +121,65 @@ The 14 files that still define a private `sha256_file` are `ams_xprobe`, `captur
 - The full suite (`make test`) and the real-dev32-patch demo run (NOT_RUN).
 - The builder-reported 2047-file digest comparison and the full evidence-dependency search (not re-derived).
 - Everything outside link-contract conformance of the mock core: no audio, RTL, hardware or fidelity claim.
+
+## Residual round (issue #156 revision, source `e3fa221199a2638d47d1c7b3a137018583523e8f`)
+
+Run 2026-10-20 on `loom-worker-2` (not the host named above), no source edits.
+
+| ID | Status | Basis |
+|---|---|---|
+| Stale-receipt check | PASS (no receipt STALE) | `git diff --name-only 984d4c9 e3fa221 -- tools/demo tools/sha256_helpers.py tests/test_u05_demo.py tests/test_u05_full_demo.py tests/test_sha256_helpers.py` is empty. The AC 1/3/4/6 receipts above apply to the same bytes. |
+| R-A maintainer review | **BLOCKED: maintainer review** | Re-checked: `gh api .../pulls/157/reviews` returns 0; `.../issues/157/comments` has only the fleet bot; `.../pulls/157/comments` is empty. Nothing from `turian`. `docs/reuse/catalog.json` untouched. |
+| R-B real-dev32 variant | **NOT_RUN** | `DX7_ALLTHEWEB_ZIP` unset; pinned archive absent. |
+| R-C `make test` | PASS with 79 skips (NOT_RUN) | Below. |
+| R-D digest comparison and dependency search | PASS (scoped as stated) | Below. |
+
+### R-C: full suite
+
+Command: `nice make test` (= `python3 -m unittest discover -s tests -v`),
+single process, run once from the worktree at `e3fa221`. Started
+2026-10-20T01:38:23Z, load average about 4. Result: `Ran 929 tests in 224.996s`,
+`OK (skipped=79)`. This is the full suite, not the fast lane (`make test-fast`
+was 463 tests, 12 skipped). Measured wall time was about 4 min here, not the
+~15 min DR-0009 estimates.
+
+The 79 skips are NOT_RUN, not passes. Reasons, by count: pinned/external oracle
+binary absent or hash-drifted (about 50, all the live-oracle sweeps, directed
+envelope/algorithm cases, and `test_integrated.TestLiveOracle`); Dexed clone or
+tree unavailable (11); ciel 7t liberty or SRAM LEF absent, so the live
+synthesis gates did not run (6); pinned AllTheWeb archive absent (3); heavy host
+`repo-remote-gf180-dx7` unreachable (1); live ams probe not enabled (1);
+local renders absent (1). This run therefore says nothing about oracle
+agreement, synthesis or the real dev32 patches.
+
+### R-D: independent digest comparison and dependency search
+
+Both scripts are `python3 -I`, plain `hashlib` and `git show`, no
+`check_reuse.py`, kept outside the repo.
+
+- Digest comparison: SHA-256 of every tracked blob at `b7fd0f4^` (2045 files)
+  and `c360d8c` (2047 files). Added 2 (`tools/sha256_helpers.py`,
+  `tests/test_sha256_helpers.py`), removed 0, changed 27. The changed set is
+  exactly `git diff --name-only b7fd0f4^ c360d8c` minus the 2 added: 19 tool
+  files, 7 test files, `docs/reuse/catalog.json` and `WORK_LOG.md`. The other
+  2018 files are byte-identical, including all 953 files under
+  `evidence/`, `corpus/`, `reference/` and `renders`-style trees.
+- Dependency search over all 2047 tracked blobs at `c360d8c`: for each of the
+  19 changed tool files, the full SHA-256 and git blob SHA-1 at both `b7fd0f4^`
+  and `c360d8c` were searched as text. The only file containing any of them is
+  `docs/reuse/catalog.json`, and only the new (`c360d8c`) digests. No tracked
+  file anywhere records a pre-cleanup digest of a migrated tool, so no committed
+  evidence pins the old bytes.
+- Basename search of non-`.py` files: 57 files mention a changed tool by name
+  (docs, decision records, evidence and `reference/` READMEs/JSON, `rtl/*.v`
+  comments, `spec/*.json`, `tools/*.sh`). These are prose or path references;
+  none carries a digest of the tool (the digest search above is negative).
+- Runtime-hashing and `tool_sha256` keys: 7 files. Six are excluded files or
+  corpus outputs that hash `select_dev32`, `catalog_archive` and
+  `u02_candidates` (not migrated). `tools/validate_bank128.py` is migrated and
+  records `tool_sha256: sha256_file(Path(__file__))` at run time. Its output
+  changes only if the file bytes change, as before; its `sha256_file` is now
+  imported with identical semantics (guarded by `tests.test_sha256_helpers`).
+  No committed file stores that value.
+- Not searched: untracked files, ignored renders, other machines, and external
+  consumers that might hold an old tool digest.

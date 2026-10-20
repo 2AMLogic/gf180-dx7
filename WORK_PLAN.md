@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state by the Loom Guide 
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#153**: feat: add klt signoff manifest and attest T1 items 9 and 10
+_None._
 
 ## Very Important
 
@@ -37,7 +37,7 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-- **#149**: Commit a klt signoff block manifest (kind: digital) and attest T1 items 9 and 10
+_None._
 
 ## PRs Awaiting Review
 
@@ -49,7 +49,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#153**: feat: add klt signoff manifest and attest T1 items 9 and 10
+_None._
 
 ## Proposed
 
@@ -64,7 +64,6 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#141**: Consolidate 39 copies of sha256_file into one shared tools helper *(curated)*
-- **#149**: Commit a klt signoff block manifest (kind: digital) and attest T1 items 9 and 10 *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
 
 ## Proposed (Architect / Hermit)
@@ -80,14 +79,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 1 |
+| Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 1 |
+| In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 11 |
+| Approved PRs awaiting merge | 0 |
+| Curated | 10 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

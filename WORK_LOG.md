@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-20
 
+- **PR #153**: feat: add klt signoff manifest and attest T1 items 9 and 10
+- **Issue #149** (closed): Commit a klt signoff block manifest (kind: digital) and attest T1 items 9 and 10
 - **PR #160**: refactor: share host-side frozen-integer helpers between h06 and h07 compare tools
 - **Issue #158** (closed): Consolidate duplicated host-side float helpers in h06/h07 compare tools
 - **PR #159**: docs: record full-suite run and independent digest re-derivation for #141

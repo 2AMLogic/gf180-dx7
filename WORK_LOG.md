@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-20
 
+- **PR #160**: refactor: share host-side frozen-integer helpers between h06 and h07 compare tools
+- **Issue #158** (closed): Consolidate duplicated host-side float helpers in h06/h07 compare tools
 - **PR #159**: docs: record full-suite run and independent digest re-derivation for #141
 - **PR #157**: docs: record #141 completion review, maintainer review BLOCKED
 

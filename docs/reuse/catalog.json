@@ -1804,8 +1804,8 @@
   },
   {
    "path": "tools/h06_compare.py",
-   "sha256": "fbe3730df8c57aec0cfacb82dad47c129f457ce7c3d8853054555449a4b591d6",
-   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited)"
+   "sha256": "4651bb9fd86605011a0aa521a31e1354edf298e86e3ff39795431bfc4612f8b1",
+   "reason": "locally authored H06 conformance harness (issue #28): golden = frozen pitch.py via the pinned integrated order (F-3, DR-0006); host-side frozen-integer frontend (NUM-008 event-time spots); 4,332-frame directed suite + 4 mutant controls (1-LSB increment, fixed-tracks-keyboard, LFO-sync-ignored, per-sample host); bit-exact with localization; stdlib only; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); host_fine_term / host_detune_delta / host_bend_pb / i32 moved verbatim to the locally authored tools/host_frozen_int.py (issue #158, catalog-only provenance audited)"
   },
   {
    "path": "tools/h06_synth.py",
@@ -1831,6 +1831,11 @@
    "path": "tools/yosys_run.py",
    "sha256": "1cb8451571b55c4d7204d9d30704281512d4086a4a520779ce6c2df6c636d518",
    "reason": "locally authored shared yosys invocation helper (issue #146): the byte-identical yosys -V probe (eight copies) and the yosys -p run / log-header / CheckFailure tail (six copies in the H01/H04/H05/H06/H07/H08 synth tools) moved verbatim, with the CouldNotRun/CheckFailure classes passed in by each caller; no upstream source, no upstream bytes, stdlib only"
+  },
+  {
+   "path": "tools/host_frozen_int.py",
+   "sha256": "710950e153f2c04dac7b7693e008d72548918e3f002222a0f36fdbceb714e326",
+   "reason": "locally authored shared host-side frozen-integer helper (issue #158): i32, host_fine_term, host_detune_delta and host_bend_pb (the NUM-008 float-gated dx7note.cc event-time spots) moved verbatim out of the locally authored tools/h06_compare.py and tools/h07_compare.py, which carried byte-identical copies; h07's type annotations and defaults kept; no upstream source, no upstream bytes, stdlib only"
   },
   {
    "path": "tools/iverilog_run.py",
@@ -1899,8 +1904,8 @@
   },
   {
    "path": "tools/h07_compare.py",
-   "reason": "locally authored H07 conformance harness (issue #29): N08 case resolution via n08_build_release CaseSource with a committed voice-byte cache, host-side frozen-integer frontend (dx7note.cc:46-53 detune/fine/bend), section-5 register encoding, vector emission, bit-exact comparator with first-mismatch localization, latency recording, --audit-exp sweep, exit 0/1/2; no upstream bytes; per-case dev/stress check factored out of main() into run_dev_case/run_stress_case so tools/fv_cocotb_dx7_core.py reuses the identical comparator, no behavior change (issue #150, catalog-only provenance audited)",
-   "sha256": "61658256207bf35b0cd8350a6a267c495c8e5a724f7f6e4e231c821ac291f4fc"
+   "reason": "locally authored H07 conformance harness (issue #29): N08 case resolution via n08_build_release CaseSource with a committed voice-byte cache, host-side frozen-integer frontend (dx7note.cc:46-53 detune/fine/bend), section-5 register encoding, vector emission, bit-exact comparator with first-mismatch localization, latency recording, --audit-exp sweep, exit 0/1/2; no upstream bytes; per-case dev/stress check factored out of main() into run_dev_case/run_stress_case so tools/fv_cocotb_dx7_core.py reuses the identical comparator, no behavior change (issue #150, catalog-only provenance audited); host_fine_term / host_detune_delta / host_bend_pb moved verbatim to the locally authored tools/host_frozen_int.py and the local i32 dropped (issue #158, catalog-only provenance audited)",
+   "sha256": "984ab66fce11d1382558f37d8b01b8a6ef9ff871e7979115694eece45a043826"
   },
   {
    "path": "tools/h07_synth.py",

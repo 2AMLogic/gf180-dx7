@@ -63,6 +63,7 @@ from gf180_dx7 import sysex  # noqa: E402
 from gf180_dx7.model import pitch as P  # noqa: E402
 from gf180_dx7.model.poly import PolyManager, parse_events as poly_parse_events  # noqa: E402
 from n08_build_release import CaseSource, DEFAULT_ARCHIVE  # noqa: E402
+from host_frozen_int import host_bend_pb, host_detune_delta, host_fine_term  # noqa: E402
 
 MANIFEST = REPO / "reference" / "release" / "manifest.json"
 VECTORS = REPO / "reference" / "release" / "vectors"
@@ -116,38 +117,6 @@ def rtl_fingerprint() -> str:
     for rel in ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]:
         h.update((REPO / rel).read_bytes())
     return h.hexdigest()
-
-
-def i32(x: int) -> int:
-    x &= U32
-    return x - (1 << 32) if x >= (1 << 31) else x
-
-
-# ---------------------------------------------------------------------------
-# host-side frozen-integer derivations (dx7note.cc float-gated spots;
-# identical functions to h06_compare.py -- the frozen integers cross the
-# SPI boundary, the float math never does)
-# ---------------------------------------------------------------------------
-
-def host_fine_term(fine: int) -> int:
-    """dx7note.cc:50-53."""
-    if fine == 0:
-        return 0
-    return int(math.floor(24204406.323123 * math.log(1 + 0.01 * fine) + 0.5))
-
-
-def host_detune_delta(logfreq: int, detune: int) -> int:
-    """dx7note.cc:46-47."""
-    ratio = 0.0209 * math.exp(-0.396 * (float(logfreq) / (1 << 24))) / 7
-    detuned = i32(int(logfreq + ratio * logfreq * (detune - 7)))
-    return detuned - logfreq
-
-
-def host_bend_pb(bend_value: int, range_up: int = 3, range_dn: int = 3,
-                 range_step: int = 0) -> int:
-    """NUM-008 float-gated bend scaling (dx7note.cc:219-233)."""
-    return P.NotePitch._pitch_base(bend_value, range_up, range_dn,
-                                   range_step, 0)[0]
 
 
 # ---------------------------------------------------------------------------

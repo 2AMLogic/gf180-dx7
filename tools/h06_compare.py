@@ -57,7 +57,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
 import os
 import random
 import re
@@ -117,10 +116,8 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
-
-
-def i32(x):
-    return P.i32(x)
+from host_frozen_int import (  # noqa: E402,F401
+    host_bend_pb, host_detune_delta, host_fine_term, i32)
 
 
 # ---------------------------------------------------------------------------
@@ -183,31 +180,10 @@ def write_sin_hex():
 
 # ---------------------------------------------------------------------------
 # Host frontend: frozen-integer event-time computation (the DEC-010
-# patch-to-core conversion + the NUM-008 float-gated event-time spots)
+# patch-to-core conversion + the NUM-008 float-gated event-time spots);
+# host_fine_term / host_detune_delta / host_bend_pb live in
+# tools/host_frozen_int.py, shared with h07_compare.py
 # ---------------------------------------------------------------------------
-
-def host_fine_term(fine):
-    """dx7note.cc:50-53: host-side float math, frozen integer result."""
-    if fine == 0:
-        return 0
-    return int(math.floor(24204406.323123 * math.log(1 + 0.01 * fine) + 0.5))
-
-
-def host_detune_delta(logfreq, detune):
-    """dx7note.cc:46-47: host-side float64 math, frozen integer result.
-    detuned = int(logfreq + ratio*logfreq*(detune-7)); delta = detuned -
-    logfreq. The RTL adds delta to its own identically-derived logfreq."""
-    ratio = 0.0209 * math.exp(-0.396 * (float(logfreq) / (1 << 24))) / 7
-    detuned = i32(int(logfreq + ratio * logfreq * (detune - 7)))
-    return detuned - logfreq
-
-
-def host_bend_pb(bend_value, range_up, range_dn, range_step):
-    """NUM-008 float-gated bend scaling (dx7note.cc:219-233), frozen
-    integer result; master tune is added core-side."""
-    return P.NotePitch._pitch_base(bend_value, range_up, range_dn,
-                                   range_step, 0)[0]
-
 
 # ---------------------------------------------------------------------------
 # Golden per-frame state (mirrors the RTL's register/FSM semantics using

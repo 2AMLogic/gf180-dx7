@@ -64,6 +64,7 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#149**: Commit a klt signoff block manifest (kind: digital) and attest T1 items 9 and 10 *(curated)*
+- **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -85,7 +86,7 @@ _None._
 | In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 9 |
+| Curated | 10 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

@@ -106,3 +106,65 @@ jobs:
           python-version: "3.12"
       - name: Capability views are fresh (compile_capabilities --check)
         run: python3 tools/compile_capabilities.py --check
+
+  signoff-fresh:
+    # T1 items 9 and 10 (issue #149): the committed klt signoff record and the
+    # two attestation envelopes must reproduce. `--attest --check` re-runs the
+    # inventories' commands (so this job installs the simulators the benches
+    # need) and fails on any drift in an inventory, an inventoried file, a
+    # check outcome or the committed envelope. See signoff/README.md.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # The benches need the pinned simulators: Ubuntu 24.04's apt iverilog 12.0
+      # cannot parse rtl/tb_operator_probe.v, and its Verilator 5.020 is not
+      # the attested 5.050. Build the pins from their release tags (cached).
+      - name: Cache the pinned simulators
+        id: simcache
+        uses: actions/cache@v4
+        with:
+          path: ~/sim
+          key: sim-iverilog-v13_0-verilator-v5.050-ubuntu-24.04
+      - name: Build tools for the pinned simulators
+        if: steps.simcache.outputs.cache-hit != 'true'
+        run: >
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends
+          autoconf gperf flex bison help2man perl g++ make libfl2 libfl-dev zlib1g-dev
+      - name: Build iverilog 13.0
+        if: steps.simcache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch v13_0 https://github.com/steveicarus/iverilog "$RUNNER_TEMP/iverilog"
+          cd "$RUNNER_TEMP/iverilog"
+          sh autoconf.sh
+          ./configure --prefix="$HOME/sim"
+          make -j"$(nproc)"
+          make install
+      - name: Build Verilator 5.050
+        if: steps.simcache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch v5.050 https://github.com/verilator/verilator "$RUNNER_TEMP/verilator"
+          cd "$RUNNER_TEMP/verilator"
+          autoconf
+          ./configure --prefix="$HOME/sim"
+          make -j"$(nproc)"
+          make install
+      - name: Put the pinned simulators on PATH
+        run: |
+          echo "$HOME/sim/bin" >> "$GITHUB_PATH"
+          "$HOME/sim/bin/iverilog" -V | head -1
+          "$HOME/sim/bin/verilator" --version
+      - name: Install the pinned klt grading build
+        run: pip install "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@7ee09483b74867a47a05eb353015c2cf5ca33ef3"
+      - name: Item 9 attestation reproduces
+        run: klt signoff --attest 9 --inventory signoff/inventory-item9.json --check signoff/evidence/item9.json
+      - name: Item 10 attestation reproduces
+        run: klt signoff --attest 10 --inventory signoff/inventory-item10.json --check signoff/evidence/item10.json
+      - name: Committed signoff report reproduces
+        # Exit 3 here means drift. The report's own T1 verdict is not a CI
+        # failure: the block is honestly not T1 (items 1-8, 11 uncited).
+        run: klt signoff --manifest signoff/manifest.json --tiers-doc signoff/design-evidence-tiers.md --check signoff/signoff.json

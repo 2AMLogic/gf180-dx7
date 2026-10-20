@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 10,
+  "description": "README, LICENSE and the CI workflow exist, and the two repo-level checks the CI 'test' job runs (byte-compile lint and tools/check_all.sh) exit 0 on this checkout. This does not attest that any remote CI run succeeded.",
+  "hygiene": ["README.md", "LICENSE", ".github/workflows/ci.yml"],
+  "checks": [
+    {"name": "byte-compile", "argv": ["python3", "-m", "compileall", "-q", "src", "tools"]},
+    {"name": "repo-checks", "argv": ["bash", "tools/check_all.sh"]}
+  ]
+}

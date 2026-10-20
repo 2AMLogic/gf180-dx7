@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 9,
+  "summary": "T1 item 9 (Testbenches shipped): 9/9 attestation checks passed (klt signoff --attest)",
+  "source": "signoff/inventory-item9.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 9,
+    "passed_count": 9,
+    "checks": [
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_alg_router.v",
+        "passed": true,
+        "content_hash": "sha256:755fe45c69efae64ad69f05b0916f9574445b8b90d417b573ea073d1b3c5de32"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_dx7_core.v",
+        "passed": true,
+        "content_hash": "sha256:e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_env_unit.v",
+        "passed": true,
+        "content_hash": "sha256:11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_operator_probe.v",
+        "passed": true,
+        "content_hash": "sha256:480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_pitch_mod.v",
+        "passed": true,
+        "content_hash": "sha256:33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/tb_synth_top.v",
+        "passed": true,
+        "content_hash": "sha256:33f77b02dc2ed693456250eb74cfdc12ac71db3439554ebe73b971cdbca0e0a5"
+      },
+      {
+        "check": "command",
+        "role": "cold_start",
+        "argv": [
+          "bash",
+          "signoff/cold-start-benches.sh"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "pin",
+        "role": "pdk",
+        "passed": true,
+        "value": {
+          "name": "gf180mcuD",
+          "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+        }
+      },
+      {
+        "check": "pin",
+        "role": "tools",
+        "passed": true,
+        "value": {
+          "iverilog": "13.0",
+          "klt": "7ee09483b74867a47a05eb353015c2cf5ca33ef3",
+          "orfs_image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2",
+          "verilator": "5.050",
+          "yosys": "0.67+post b8e7da6f40ae8f552c116bf6c359b07c6533e159"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.7.1.dev1743+g7ee09483b748",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "signoff/inventory-item9.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:b32705ebedfdac341505cf9946c2ad6a6c2de04024771f79352db6839c2c8832"
+    }
+  }
+}

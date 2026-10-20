@@ -2,8 +2,22 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-20
+
+- **PR #159**: docs: record full-suite run and independent digest re-derivation for #141
+- **PR #157**: docs: record #141 completion review, maintainer review BLOCKED
+
+### 2026-10-18
+
+- **PR #155**: feat: add klt functional-verification report for the dx7_core bit-exact suite
+- **Issue #150** (closed): T1 item 5 (functional half): emit a klt functional-verification report for the bit-exact RTL-vs-model suite
+
 ### 2026-10-17
 
+- **PR #154**: refactor: share iverilog probe and compile/run skeleton across h01/h04/h05/h06
+- **PR #148**: refactor: share yosys version probe and run tail across synth tools
+- **Issue #152** (closed): Consolidate duplicated iverilog tool_identity/run_sim across h01/h04/h05/h06 compare tools
+- **Issue #146** (closed): Share byte-identical yosys_version and run_yosys subprocess tail across the H01–H10/storage-probe synth tools
 - **PR #145**: refactor: share sha256 helpers in demo fixtures_dx7 and re-pin adapt record
 - **PR #144**: refactor: use shared sha256_file in 19 catalog-only tool and test scripts
 - **PR #142**: refactor: share sha256_file helper across five unpinned test suites

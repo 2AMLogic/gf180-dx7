@@ -2,7 +2,7 @@
 
 Mirrors the pinned Dexed Mark I operator envelope as numeric facts, with zero
 GPL bytes: semantics only, cited in docs/N03-ENVELOPE-MODEL.md against the
-R01-pinned tree (/Users/joseph/dev/dexed @ b6cf2e9190e216387ad96f977284ebbef765b447).
+R01-pinned Dexed tree (commit b6cf2e9190e216387ad96f977284ebbef765b447).
 
 State members are named after the pinned reference members and classified as
 per-note runtime state exactly as N01 section 6 (spec/numeric-profile-v1.json

@@ -23,7 +23,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_MANIFEST = REPO_ROOT / "reference" / "manifest.json"
-DEFAULT_DEXED_ROOT = "/Users/joseph/dev/dexed"
+DEFAULT_DEXED_ROOT = str(REPO_ROOT / ".oracle" / "dexed")
 
 EXIT_OK = 0
 EXIT_DRIFT = 1

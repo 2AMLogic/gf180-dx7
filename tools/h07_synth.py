@@ -53,15 +53,13 @@ import os
 import re
 import sys
 
+import pdk_resolve
 from hierarchy_stat import parse_hierarchy_stat
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEFAULT_CIEL = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
-                "gf180mcu/versions/"
-                "54435919abffb937387ec956209f9cf5fd2dfbee")
-SC_LIB_REL = ("gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-              "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
+DEFAULT_CIEL = None  # resolved by pdk_resolve (liberty sha256 pin)
+SC_LIB_REL = pdk_resolve.SC_LIB_REL
 
 RTL_RELS = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]
 OUTDIR_REL = "evidence/h07-core"
@@ -225,10 +223,11 @@ def main(argv=None):
                     default=os.path.join(REPO_ROOT, OUTDIR_REL))
     args = ap.parse_args(argv)
 
-    liberty = args.liberty or os.path.join(args.ciel_root, SC_LIB_REL)
-    if not os.path.isfile(liberty):
-        print(f"COULD-NOT-RUN: 7t liberty not found at {liberty} "
-              f"(ciel root {args.ciel_root})", file=sys.stderr)
+    try:
+        liberty, args.ciel_root = pdk_resolve.resolve_liberty(
+            args.liberty, args.ciel_root)
+    except pdk_resolve.PdkNotFound as e:
+        print(f"COULD-NOT-RUN: {e}", file=sys.stderr)
         return 2
     ver = yosys_version(args.yosys)
     declared, declared_detail, rom_declared, attrib = declared_state_bits()

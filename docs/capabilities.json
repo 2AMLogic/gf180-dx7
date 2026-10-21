@@ -47,12 +47,12 @@
         "Environment-bound: requires the local clone; CI evaluates recorded evidence only"
       ],
       "id": "reference-pin",
-      "local_state": "PASS",
+      "local_state": "STALE",
       "prereqs": [
         "contract"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "covered bytes changed: tools/verify_reference.py"
       ],
       "required_negative_controls": [
         {
@@ -60,7 +60,7 @@
           "id": "pin-drift-refused"
         }
       ],
-      "state": "PASS"
+      "state": "STALE"
     },
     {
       "check": "render-selfcheck-v1",
@@ -85,7 +85,8 @@
         "reference-pin"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected",
+        "prerequisite not demonstrated: reference-pin=STALE"
       ],
       "required_negative_controls": [
         {
@@ -93,7 +94,7 @@
           "id": "silent-substitution-refused"
         }
       ],
-      "state": "PASS"
+      "state": "BLOCKED"
     },
     {
       "check": "compare-evidence-v1",
@@ -120,7 +121,8 @@
         "oracle-identity"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected",
+        "prerequisite not demonstrated: oracle-identity=BLOCKED"
       ],
       "required_negative_controls": [
         {
@@ -128,7 +130,7 @@
           "id": "silent-substitution-refused"
         }
       ],
-      "state": "PASS"
+      "state": "BLOCKED"
     },
     {
       "check": "comparator-qualification-v1",
@@ -155,7 +157,8 @@
         "renderer"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected",
+        "prerequisite not demonstrated: renderer=BLOCKED"
       ],
       "required_negative_controls": [
         {
@@ -163,7 +166,7 @@
           "id": "mutation-battery-caught"
         }
       ],
-      "state": "PASS"
+      "state": "BLOCKED"
     },
     {
       "check": "dev32-validation-v1",
@@ -186,12 +189,13 @@
         "Full-32 render gate is recorded NOT_RUN in the proof (sampled proof only)"
       ],
       "id": "corpus-dev32",
-      "local_state": "PASS",
+      "local_state": "STALE",
       "prereqs": [
         "comparator"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "covered bytes changed: tools/validate_dev32.py",
+        "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [
         {
@@ -199,7 +203,7 @@
           "id": "mutated-manifest-rejected"
         }
       ],
-      "state": "PASS"
+      "state": "BLOCKED"
     },
     {
       "check": null,
@@ -218,10 +222,11 @@
         "contract"
       ],
       "reasons": [
-        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: numeric-profile qualification check; no registered check may stamp this node yet)"
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: numeric-profile qualification check; no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [],
-      "state": "NO_VERDICT"
+      "state": "BLOCKED"
     },
     {
       "check": "trace-capture-v1",
@@ -250,7 +255,8 @@
         "renderer"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected",
+        "prerequisite not demonstrated: renderer=BLOCKED"
       ],
       "required_negative_controls": [
         {
@@ -258,7 +264,7 @@
           "id": "perturbing-stub-rejected"
         }
       ],
-      "state": "PASS"
+      "state": "BLOCKED"
     },
     {
       "check": null,
@@ -279,7 +285,7 @@
       ],
       "reasons": [
         "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: fixed-model qualification check; no registered check may stamp this node yet)",
-        "prerequisite not demonstrated: numeric-profile=NO_VERDICT"
+        "prerequisite not demonstrated: comparator=BLOCKED, numeric-profile=BLOCKED, traces=BLOCKED"
       ],
       "required_negative_controls": [],
       "state": "BLOCKED"
@@ -388,10 +394,11 @@
         "traces"
       ],
       "reasons": [
-        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: registry qualification check (R06); no registered check may stamp this node yet)"
+        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: registry qualification check (R06); no registered check may stamp this node yet)",
+        "prerequisite not demonstrated: traces=BLOCKED"
       ],
       "required_negative_controls": [],
-      "state": "NO_VERDICT"
+      "state": "BLOCKED"
     },
     {
       "check": null,
@@ -411,7 +418,7 @@
       ],
       "reasons": [
         "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: listening-protocol check; no registered check may stamp this node yet)",
-        "prerequisite not demonstrated: registry=NO_VERDICT"
+        "prerequisite not demonstrated: corpus-dev32=BLOCKED, registry=BLOCKED"
       ],
       "required_negative_controls": [],
       "state": "BLOCKED"
@@ -421,11 +428,11 @@
   "schema": "gf180-dx7.capabilities-view/1",
   "source": "spec/capabilities-v1.json",
   "summary": {
-    "BLOCKED": 6,
+    "BLOCKED": 13,
     "FAIL": 0,
     "NOT_RUN": 0,
-    "NO_VERDICT": 2,
-    "PASS": 7,
-    "STALE": 0
+    "NO_VERDICT": 0,
+    "PASS": 1,
+    "STALE": 1
   }
 }

@@ -136,3 +136,8 @@ evidence/h07-core/sim/
 # klt functional-verification scratch
 .klt/
 .venv-fv/
+
+# Machine-local external oracles / archives (tools/fetch_dexed.sh,
+# tools/fetch_alltheweb.sh); never committed.
+.oracle/
+.cache/

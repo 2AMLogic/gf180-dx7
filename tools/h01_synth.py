@@ -46,15 +46,13 @@ import os
 import re
 import sys
 
+import pdk_resolve
 from single_module_stat import parse_single_module_stat
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEFAULT_CIEL = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
-                "gf180mcu/versions/"
-                "54435919abffb937387ec956209f9cf5fd2dfbee")
-SC_LIB_REL = ("gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-              "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
+DEFAULT_CIEL = None  # resolved by pdk_resolve (liberty sha256 pin)
+SC_LIB_REL = pdk_resolve.SC_LIB_REL
 
 RTL_REL = "rtl/operator_probe.v"
 TB_REL = "rtl/tb_operator_probe.v"
@@ -219,10 +217,11 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     repo_root = REPO_ROOT
-    liberty = args.liberty or os.path.join(args.ciel_root, SC_LIB_REL)
-    if not os.path.isfile(liberty):
-        print(f"COULD-NOT-RUN: 7t liberty not found at {liberty} "
-              f"(ciel root {args.ciel_root})", file=sys.stderr)
+    try:
+        liberty, args.ciel_root = pdk_resolve.resolve_liberty(
+            args.liberty, args.ciel_root)
+    except pdk_resolve.PdkNotFound as e:
+        print(f"COULD-NOT-RUN: {e}", file=sys.stderr)
         return 2
     ver = yosys_version(args.yosys)
     declared, declared_detail = declared_state_bits(repo_root)

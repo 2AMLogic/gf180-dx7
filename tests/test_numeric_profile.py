@@ -28,9 +28,9 @@ CHECKER = REPO / "tools" / "check_numeric_profile.py"
 DOC = REPO / "docs" / "DECISIONS-NUMERIC-v1.md"
 DR = REPO / "docs" / "decision-records" / "0003-numeric-profile-v1.md"
 
-DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", "/Users/joseph/dev/dexed"))
+DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", REPO / ".oracle" / "dexed"))
 ORACLE_ROOT = Path(os.environ.get("DX7_ORACLE_ROOT",
-                                  "/Users/joseph/dx7-oracle-marki"))
+                                  REPO / ".oracle" / "dx7-oracle-marki"))
 
 
 def load_checker():
@@ -321,7 +321,9 @@ class TestDecisionIndex(unittest.TestCase):
 
 
 class TestCitations(unittest.TestCase):
-    @unittest.skipUnless(DEXED_ROOT.is_dir(), "pinned dexed clone unavailable")
+    @unittest.skipUnless(DEXED_ROOT.is_dir(),
+                         "NOT_RUN: pinned dexed clone unavailable; run "
+                         "tools/fetch_dexed.sh")
     def test_dexed_citations_hash_and_line_match(self):
         hashes = {entry["path"]: entry["sha256"] for entry in MANIFEST["files"]}
         failures, not_run = CHK.check_citations(PROFILE, str(DEXED_ROOT),
@@ -336,7 +338,10 @@ class TestCitations(unittest.TestCase):
             self.assertEqual(not_run, 0)
         self.assertEqual(failures, [])
 
-    @unittest.skipUnless(ORACLE_ROOT.is_dir(), "oracle tree unavailable")
+    @unittest.skipUnless(ORACLE_ROOT.is_dir(),
+                         "NOT_RUN: oracle tree unavailable at "
+                         f"{ORACLE_ROOT} (harness source is not published; "
+                         "set DX7_ORACLE_ROOT)")
     def test_oracle_citations_match(self):
         hashes = {entry["path"]: entry["sha256"] for entry in MANIFEST["files"]}
         failures, _ = CHK.check_citations(PROFILE, str(DEXED_ROOT),
@@ -413,7 +418,8 @@ class TestNegativeControls(unittest.TestCase):
                         failures)
 
     @unittest.skipUnless(DEXED_ROOT.is_dir(),
-                         "pinned dexed clone unavailable")
+                         "NOT_RUN: pinned dexed clone unavailable; run "
+                         "tools/fetch_dexed.sh")
     def test_citation_line_rot_fails(self):
         profile = copy.deepcopy(PROFILE)
         for dec in profile["decision_index"]:

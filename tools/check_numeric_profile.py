@@ -38,8 +38,8 @@ PROFILE_PATH = os.path.join(REPO_ROOT, "spec", "numeric-profile-v1.json")
 CONTRACT_PATH = os.path.join(REPO_ROOT, "spec", "contract-v1.json")
 MANIFEST_PATH = os.path.join(REPO_ROOT, "reference", "manifest.json")
 
-DEXED_ROOT_DEFAULT = "/Users/joseph/dev/dexed"
-ORACLE_ROOT_DEFAULT = "/Users/joseph/dx7-oracle-marki"
+DEXED_ROOT_DEFAULT = os.path.join(REPO_ROOT, ".oracle", "dexed")
+ORACLE_ROOT_DEFAULT = os.path.join(REPO_ROOT, ".oracle", "dx7-oracle-marki")
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 

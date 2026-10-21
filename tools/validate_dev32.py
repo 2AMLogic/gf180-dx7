@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -43,7 +44,9 @@ from gf180_dx7 import sysex  # noqa: E402
 DEFAULT_CATALOG = REPO_ROOT / "corpus" / "archive-catalogs" / "alltheweb-catalog.json"
 DEFAULT_MANIFEST = REPO_ROOT / "corpus" / "dev32.json"
 DEFAULT_PROOF = REPO_ROOT / "corpus" / "dev32-renderproof.json"
-DEFAULT_ZIP = Path("/Users/joseph/Downloads/DX7_AllTheWeb.zip")
+# fetched by tools/fetch_alltheweb.sh; override with DX7_ALLTHEWEB_ZIP
+DEFAULT_ZIP = Path(os.environ.get(
+    "DX7_ALLTHEWEB_ZIP", REPO_ROOT / ".cache" / "DX7_AllTheWeb.zip"))
 DEFAULT_IDENTITY = REPO_ROOT / "reference" / "oracle-identity.json"
 
 SCHEMA = "gf180-dx7.dev32-renderproof/1"

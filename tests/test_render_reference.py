@@ -11,6 +11,7 @@ from __future__ import annotations
 import array
 import importlib.util
 import json
+import os
 import stat
 import subprocess
 import sys
@@ -33,7 +34,7 @@ from gf180_dx7 import sysex  # noqa: E402
 TOOL = REPO / "tools" / "render_reference.py"
 IDENTITY = REPO / "reference" / "oracle-identity.json"
 FIXTURE_DIR = REPO / "reference" / "fixtures" / "smoke"
-DEXED_ROOT = Path("/Users/joseph/dev/dexed")
+DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", REPO / ".oracle" / "dexed"))
 
 # The oracle lives outside the repo; its path and pin come from the identity.
 with open(IDENTITY, "r", encoding="utf-8") as fh:
@@ -44,7 +45,8 @@ ORACLE_PIN = _IDENTITY["binary"]["sha256"]
 ORACLE_ABSENT_MSG = (
     f"external oracle binary absent at {ORACLE} (pinned in "
     "reference/oracle-identity.json)")
-CLONE_ABSENT_MSG = f"R01 dexed clone unavailable at {DEXED_ROOT}"
+CLONE_ABSENT_MSG = (f"NOT_RUN: R01 dexed clone unavailable at {DEXED_ROOT}; "
+                  "run tools/fetch_dexed.sh")
 
 RENDER_SAMPLES = 192000
 RENDER_RATE = 48000

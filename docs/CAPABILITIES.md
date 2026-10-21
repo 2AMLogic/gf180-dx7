@@ -9,38 +9,38 @@ Regenerate with `python3 tools/compile_capabilities.py`; `--check` verifies thes
 | Node | Claim | State | Reason |
 | --- | --- | --- | --- |
 | contract | Frozen v1 product contract: spec/contract-v1.json and docs/DECISIONS-v1.md are in bidirectional lockstep (every DEC id present in both, claim language and omissions guarded) with recorded change control (D00, issue #4). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| reference-pin | The pinned Dexed Mark I reference is exactly at the pinned commit with every pinned file hash and the toolchain matching, and drift is refused (R01, issue #6). Dexed agreement is never original-DX7 fidelity. | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| oracle-identity | The smoke fixture decodes via the P01 codec with the expected non-silent parameter set, and the external oracle binary matches its identity pin; an absent binary is a guarded NOT_RUN, never a pass (R02, issue #7). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| renderer | The R01-gated harness re-renders the smoke fixture deterministically and the committed dry render cross-checks field-by-field (fixture, rates, counts, hashes, oracle pin) with the exact paired comparator verdict PASS (R02+R04, issues #7 and #11). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| comparator | The exact paired comparator and its apparatus are qualified: analytic fixtures pass, every known-bad mutation class is caught with the right exit code, and invalid inputs (NaN, length, odd bytes) are never a match (R04, issue #11; committed qualification evidence). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| corpus-dev32 | The 32-patch development manifest validates against the archive catalog (identity features, unique canonical hashes, render settings) and the committed render proof pins this manifest and catalog with non-silent sampled renders (R03, issue #10). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| numeric-profile | Frozen numeric profile: integer formats, rounding, LUT and phase choices fixed in a machine-readable contract with content hashes (plan section 7, N-nodes). | NO_VERDICT | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: numeric-profile qualification check; no registered check may stamp this node yet) |
-| traces | Non-invasive trace capture from the pinned external oracle: traced and untraced renders are byte-identical, the versioned tap registry validates, and the trace gate holds per 64-sample block (R05, issue #12). | PASS | registered check ran clean, coverage is current, and every required negative control was recorded as detected |
-| fixed-model | Frozen integer model reproduces the pinned software reference within declared error budgets, case coverage reported separately from agreement (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: fixed-model qualification check; no registered check may stamp this node yet); prerequisite not demonstrated: numeric-profile=NO_VERDICT |
+| reference-pin | The pinned Dexed Mark I reference is exactly at the pinned commit with every pinned file hash and the toolchain matching, and drift is refused (R01, issue #6). Dexed agreement is never original-DX7 fidelity. | STALE | covered bytes changed: tools/verify_reference.py |
+| oracle-identity | The smoke fixture decodes via the P01 codec with the expected non-silent parameter set, and the external oracle binary matches its identity pin; an absent binary is a guarded NOT_RUN, never a pass (R02, issue #7). | BLOCKED | registered check ran clean, coverage is current, and every required negative control was recorded as detected; prerequisite not demonstrated: reference-pin=STALE |
+| renderer | The R01-gated harness re-renders the smoke fixture deterministically and the committed dry render cross-checks field-by-field (fixture, rates, counts, hashes, oracle pin) with the exact paired comparator verdict PASS (R02+R04, issues #7 and #11). | BLOCKED | registered check ran clean, coverage is current, and every required negative control was recorded as detected; prerequisite not demonstrated: oracle-identity=BLOCKED |
+| comparator | The exact paired comparator and its apparatus are qualified: analytic fixtures pass, every known-bad mutation class is caught with the right exit code, and invalid inputs (NaN, length, odd bytes) are never a match (R04, issue #11; committed qualification evidence). | BLOCKED | registered check ran clean, coverage is current, and every required negative control was recorded as detected; prerequisite not demonstrated: renderer=BLOCKED |
+| corpus-dev32 | The 32-patch development manifest validates against the archive catalog (identity features, unique canonical hashes, render settings) and the committed render proof pins this manifest and catalog with non-silent sampled renders (R03, issue #10). | BLOCKED | covered bytes changed: tools/validate_dev32.py; prerequisite not demonstrated: comparator=BLOCKED |
+| numeric-profile | Frozen numeric profile: integer formats, rounding, LUT and phase choices fixed in a machine-readable contract with content hashes (plan section 7, N-nodes). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: numeric-profile qualification check; no registered check may stamp this node yet); prerequisite not demonstrated: comparator=BLOCKED |
+| traces | Non-invasive trace capture from the pinned external oracle: traced and untraced renders are byte-identical, the versioned tap registry validates, and the trace gate holds per 64-sample block (R05, issue #12). | BLOCKED | registered check ran clean, coverage is current, and every required negative control was recorded as detected; prerequisite not demonstrated: renderer=BLOCKED |
+| fixed-model | Frozen integer model reproduces the pinned software reference within declared error budgets, case coverage reported separately from agreement (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: fixed-model qualification check; no registered check may stamp this node yet); prerequisite not demonstrated: comparator=BLOCKED, numeric-profile=BLOCKED, traces=BLOCKED |
 | rtl-core | Per-module RTL is sample-exact with the frozen integer model in simulation (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: RTL module bench check; no registered check may stamp this node yet); prerequisite not demonstrated: fixed-model=BLOCKED |
 | rtl-exact | Integrated RTL is sample-exact (bit-exact) with the frozen integer model end to end at 48 kHz (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: integrated RTL exactness check; no registered check may stamp this node yet); prerequisite not demonstrated: rtl-core=BLOCKED |
 | fpga | FPGA digital captures match the integrated model on the chosen board with alignment/calibration evidence (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: FPGA capture check; no registered check may stamp this node yet); prerequisite not demonstrated: rtl-exact=BLOCKED |
 | gf180 | gf180mcu synthesis/place-and-route with committed stage evidence from the pinned flow (plan section 7). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: gf180 flow stage-evidence check; no registered check may stamp this node yet); prerequisite not demonstrated: rtl-exact=BLOCKED |
-| registry | Complete directed compatibility registry over the corpus with per-patch codec/render outcomes (R06, issue #13). | NO_VERDICT | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: registry qualification check (R06); no registered check may stamp this node yet) |
-| instrument | The instrument is musically useful: audition/recall protocol over the curated bank with listening records (plan section 7; E3). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: listening-protocol check; no registered check may stamp this node yet); prerequisite not demonstrated: registry=NO_VERDICT |
+| registry | Complete directed compatibility registry over the corpus with per-patch codec/render outcomes (R06, issue #13). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: registry qualification check (R06); no registered check may stamp this node yet); prerequisite not demonstrated: traces=BLOCKED |
+| instrument | The instrument is musically useful: audition/recall protocol over the curated bank with listening records (plan section 7; E3). | BLOCKED | declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: listening-protocol check; no registered check may stamp this node yet); prerequisite not demonstrated: corpus-dev32=BLOCKED, registry=BLOCKED |
 
 ```mermaid
 graph TD
-  n0["comparator: PASS"]
+  n0["comparator: BLOCKED"]
   n1["contract: PASS"]
-  n2["corpus-dev32: PASS"]
+  n2["corpus-dev32: BLOCKED"]
   n3["fixed-model: BLOCKED"]
   n4["fpga: BLOCKED"]
   n5["gf180: BLOCKED"]
   n6["instrument: BLOCKED"]
-  n7["numeric-profile: NO_VERDICT"]
-  n8["oracle-identity: PASS"]
-  n9["reference-pin: PASS"]
-  n10["registry: NO_VERDICT"]
-  n11["renderer: PASS"]
+  n7["numeric-profile: BLOCKED"]
+  n8["oracle-identity: BLOCKED"]
+  n9["reference-pin: STALE"]
+  n10["registry: BLOCKED"]
+  n11["renderer: BLOCKED"]
   n12["rtl-core: BLOCKED"]
   n13["rtl-exact: BLOCKED"]
-  n14["traces: PASS"]
+  n14["traces: BLOCKED"]
   n11 --> n0
   n0 --> n2
   n0 --> n3
@@ -72,7 +72,7 @@ Frozen v1 product contract: spec/contract-v1.json and docs/DECISIONS-v1.md are i
 - Exclusions: No fidelity or hardware claim; contract text is not evidence of behavior; Drift guards (claim-language, omissions, bidirectional DEC ids) are embedded in the registered check itself; any covered-byte change is STALE.
 - Evidence: `evidence/capabilities/contract.json`.
 
-## reference-pin — PASS
+## reference-pin — STALE
 
 The pinned Dexed Mark I reference is exactly at the pinned commit with every pinned file hash and the toolchain matching, and drift is refused (R01, issue #6). Dexed agreement is never original-DX7 fidelity.
 
@@ -83,7 +83,7 @@ The pinned Dexed Mark I reference is exactly at the pinned commit with every pin
 - Exclusions: No claim that Dexed equals an original DX7; No engine execution or audio claim; this is the pin, not a render; Environment-bound: requires the local clone; CI evaluates recorded evidence only.
 - Evidence: `evidence/capabilities/reference-pin.json`.
 
-## oracle-identity — PASS
+## oracle-identity — BLOCKED
 
 The smoke fixture decodes via the P01 codec with the expected non-silent parameter set, and the external oracle binary matches its identity pin; an absent binary is a guarded NOT_RUN, never a pass (R02, issue #7).
 
@@ -94,7 +94,7 @@ The smoke fixture decodes via the P01 codec with the expected non-silent paramet
 - Exclusions: No render reproducibility claim (renderer node owns that); No fidelity, listening, or hardware claim.
 - Evidence: `evidence/capabilities/oracle-identity.json`.
 
-## renderer — PASS
+## renderer — BLOCKED
 
 The R01-gated harness re-renders the smoke fixture deterministically and the committed dry render cross-checks field-by-field (fixture, rates, counts, hashes, oracle pin) with the exact paired comparator verdict PASS (R02+R04, issues #7 and #11).
 
@@ -105,7 +105,7 @@ The R01-gated harness re-renders the smoke fixture deterministically and the com
 - Exclusions: Reference-vs-reference repeatability only; never model-vs-reference fidelity; Dry renders; no normalization or time-warping anywhere in the chain; No listening or musical-usefulness claim.
 - Evidence: `evidence/capabilities/renderer.json`.
 
-## comparator — PASS
+## comparator — BLOCKED
 
 The exact paired comparator and its apparatus are qualified: analytic fixtures pass, every known-bad mutation class is caught with the right exit code, and invalid inputs (NaN, length, odd bytes) are never a match (R04, issue #11; committed qualification evidence).
 
@@ -116,7 +116,7 @@ The exact paired comparator and its apparatus are qualified: analytic fixtures p
 - Exclusions: Measurement discipline only; no fidelity verdict about any engine; No averaging of unlike units into a quality score; coverage stays separate from agreement.
 - Evidence: `evidence/capabilities/comparator.json`.
 
-## corpus-dev32 — PASS
+## corpus-dev32 — BLOCKED
 
 The 32-patch development manifest validates against the archive catalog (identity features, unique canonical hashes, render settings) and the committed render proof pins this manifest and catalog with non-silent sampled renders (R03, issue #10).
 
@@ -127,7 +127,7 @@ The 32-patch development manifest validates against the archive catalog (identit
 - Exclusions: Catalog rights: archive bytes are never redistributed; selection only; No preset-quality or musical-usefulness claim; Full-32 render gate is recorded NOT_RUN in the proof (sampled proof only).
 - Evidence: `evidence/capabilities/corpus-dev32.json`.
 
-## numeric-profile — NO_VERDICT
+## numeric-profile — BLOCKED
 
 Frozen numeric profile: integer formats, rounding, LUT and phase choices fixed in a machine-readable contract with content hashes (plan section 7, N-nodes).
 
@@ -138,7 +138,7 @@ Frozen numeric profile: integer formats, rounding, LUT and phase choices fixed i
 - Exclusions: Declared, not evidenced: stays NO_VERDICT until the profile exists, is registered, and is stamped; No float-vs-fixed agreement claim exists today.
 - Evidence: none; a planned node must not carry an evidence record
 
-## traces — PASS
+## traces — BLOCKED
 
 Non-invasive trace capture from the pinned external oracle: traced and untraced renders are byte-identical, the versioned tap registry validates, and the trace gate holds per 64-sample block (R05, issue #12).
 
@@ -204,7 +204,7 @@ gf180mcu synthesis/place-and-route with committed stage evidence from the pinned
 - Exclusions: Declared, not evidenced: stays NO_VERDICT until ASIC work starts; No synthesis, P&amp;R, signoff, or silicon claim exists today.
 - Evidence: none; a planned node must not carry an evidence record
 
-## registry — NO_VERDICT
+## registry — BLOCKED
 
 Complete directed compatibility registry over the corpus with per-patch codec/render outcomes (R06, issue #13).
 

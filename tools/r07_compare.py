@@ -53,6 +53,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import struct
 import subprocess
 import sys
@@ -68,7 +69,9 @@ from gf180_dx7 import compare, sysex  # noqa: E402
 REFERENCE_IDENTITY = REPO / "reference" / "oracle-identity.json"
 SECOND_IDENTITY = REPO / "reference" / "second-oracle-identity.json"
 DEV32 = REPO / "corpus" / "dev32.json"
-DEFAULT_ARCHIVE = Path("/Users/joseph/Downloads/DX7_AllTheWeb.zip")
+# fetched by tools/fetch_alltheweb.sh; override with DX7_ALLTHEWEB_ZIP
+DEFAULT_ARCHIVE = Path(os.environ.get(
+    "DX7_ALLTHEWEB_ZIP", REPO / ".cache" / "DX7_AllTheWeb.zip"))
 DEFAULT_EVIDENCE = REPO / "reference" / "evidence" / "r07"
 
 RATE = 48000

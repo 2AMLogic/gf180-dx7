@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -22,7 +23,7 @@ REPO = Path(__file__).resolve().parents[1]
 MANIFEST = REPO / "reference" / "manifest.json"
 TOOL = REPO / "tools" / "verify_reference.py"
 PROTOCOL = REPO / "reference" / "oracle-protocol.md"
-DEXED_ROOT = Path("/Users/joseph/dev/dexed")
+DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", REPO / ".oracle" / "dexed"))
 
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -140,7 +141,7 @@ class TestManifestSchema(unittest.TestCase):
         self.assertTrue(PROTOCOL.is_file())
 
 
-@unittest.skipUnless(DEXED_ROOT.is_dir(), "dexed clone unavailable")
+@unittest.skipUnless(DEXED_ROOT.is_dir(), "NOT_RUN: dexed clone unavailable; run tools/fetch_dexed.sh")
 class TestPinnedTree(unittest.TestCase):
     """Hash/commit checks against the real clone; negative controls."""
 

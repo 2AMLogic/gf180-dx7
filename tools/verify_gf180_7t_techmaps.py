@@ -28,6 +28,8 @@ import os
 import re
 import sys
 
+import pdk_resolve
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TECHMAP_DIR = os.path.join(REPO_ROOT, "asic", "orfs", "gf180_7t")
 TECHMAPS = ("cells_adders.v", "cells_latch.v")
@@ -36,16 +38,16 @@ SUBSTITUTION = ("mcu9t5v0", "mcu7t5v0")
 CELL_RE = re.compile(r"gf180mcu_fd_sc_mcu7t5v0__[A-Za-z0-9_]+")
 LIB_CELLS_RE = re.compile(r"cell\s*\(\s*([A-Za-z0-9_]+)\s*\)")
 
-DEFAULT_LIB_LOCATIONS = (
-    os.environ.get("GF180MCU_7T_TT_LIB", ""),
-    "/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/gf180mcu/versions/"
-    "54435919abffb937387ec956209f9cf5fd2dfbee/gf180mcuD/libs.ref/"
-    "gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
-    # ciel's default PDK root (the H10 host-synth machine; same tt liberty
-    # sha256 330aa943... as the H07 pin)
-    os.path.expanduser("~/.ciel/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/"
-                       "lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib"),
-)
+
+def default_lib():
+    """$GF180MCU_7T_TT_LIB if set and present, else the pdk_resolve liberty
+    (sha256-pinned search of PDK_ROOT, /usr/share/pdk, ~/.ciel, ...);
+    None when neither exists (the lib check is then SKIPPED, as before)."""
+    env = os.environ.get("GF180MCU_7T_TT_LIB", "")
+    if env and os.path.isfile(env):
+        return env
+    root = pdk_resolve.find_pdk_root()
+    return os.path.join(root, pdk_resolve.SC_LIB_REL) if root else None
 
 
 def split_header(path):
@@ -113,8 +115,7 @@ def main(argv=None):
             print(f"FAIL: techmap missing: {args.techmap_dir}/{name}")
             return 3
 
-    lib_path = args.lib or next((p for p in DEFAULT_LIB_LOCATIONS if p
-                                 and os.path.isfile(p)), None)
+    lib_path = args.lib or default_lib()
     violations = []
     if lib_path:
         check_lib(args.techmap_dir, lib_path, violations)

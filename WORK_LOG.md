@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-21
 
+- **PR #171**: fix: resolve PDK, Dexed, oracle and archive defaults without operator-specific paths
+- **Issue #170** (closed): Remove hard-coded /Users/joseph paths: build or resolve the PDK, dexed, dx7-oracle-marki and the DX7_AllTheWeb archive in-repo
 - **PR #167**: Bump Repo Skills 0.24.3 -> 0.24.7
 
 ### 2026-10-20

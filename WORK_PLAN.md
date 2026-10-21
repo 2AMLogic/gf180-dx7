@@ -49,7 +49,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#167**: Bump Repo Skills 0.24.3 -> 0.24.7
 
 ## Proposed
 
@@ -85,7 +85,7 @@ Issues carrying `loom:curated`.
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
+| Approved PRs awaiting merge | 1 |
 | Curated | 10 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 2 |

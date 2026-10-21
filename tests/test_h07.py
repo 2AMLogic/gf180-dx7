@@ -57,11 +57,6 @@ RTL = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v",
 REPORT_PATH = os.path.join(REPO, "docs", "H07-CORE.md")
 EVIDENCE = os.path.join(REPO, "evidence", "h07-core")
 MANIFEST = os.path.join(REPO, "reference", "release", "manifest.json")
-CIEL_LIB = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
-            "gf180mcu/versions/"
-            "54435919abffb937387ec956209f9cf5fd2dfbee/"
-            "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-            "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
 REMOTE_ALIAS = "repo-remote-gf180-dx7"
 
 

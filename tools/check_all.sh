@@ -20,12 +20,12 @@ fi
 # R01 (issue #6): verify the pinned Dexed reference when the local clone is
 # present. Where the clone is absent the check is NOT_RUN (guarded skip),
 # never reported as a pass, so CI without the clone still passes.
-DEXED_ROOT="${DEXED_ROOT:-/Users/joseph/dev/dexed}"
+DEXED_ROOT="${DEXED_ROOT:-$(dirname "$0")/../.oracle/dexed}"
 if [ -d "$DEXED_ROOT" ]; then
     echo "== python3 tools/verify_reference.py --dexed-root $DEXED_ROOT"
     python3 tools/verify_reference.py --dexed-root "$DEXED_ROOT"
 else
-    echo "== tools/verify_reference.py NOT_RUN (dexed clone unavailable at $DEXED_ROOT; guarded skip)"
+    echo "== tools/verify_reference.py NOT_RUN (dexed clone unavailable at $DEXED_ROOT; run tools/fetch_dexed.sh; guarded skip)"
 fi
 
 # R02 (issue #7): fast oracle self-check — smoke-fixture decode via the P01

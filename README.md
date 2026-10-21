@@ -229,25 +229,25 @@ Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by `tools/
 
 | PASS | FAIL | NOT_RUN | BLOCKED | NO_VERDICT | STALE |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 7 | 0 | 0 | 6 | 2 | 0 |
+| 1 | 0 | 0 | 13 | 0 | 1 |
 
 ```mermaid
 graph TD
-  n0["comparator: PASS"]
+  n0["comparator: BLOCKED"]
   n1["contract: PASS"]
-  n2["corpus-dev32: PASS"]
+  n2["corpus-dev32: BLOCKED"]
   n3["fixed-model: BLOCKED"]
   n4["fpga: BLOCKED"]
   n5["gf180: BLOCKED"]
   n6["instrument: BLOCKED"]
-  n7["numeric-profile: NO_VERDICT"]
-  n8["oracle-identity: PASS"]
-  n9["reference-pin: PASS"]
-  n10["registry: NO_VERDICT"]
-  n11["renderer: PASS"]
+  n7["numeric-profile: BLOCKED"]
+  n8["oracle-identity: BLOCKED"]
+  n9["reference-pin: STALE"]
+  n10["registry: BLOCKED"]
+  n11["renderer: BLOCKED"]
   n12["rtl-core: BLOCKED"]
   n13["rtl-exact: BLOCKED"]
-  n14["traces: PASS"]
+  n14["traces: BLOCKED"]
   n11 --> n0
   n0 --> n2
   n0 --> n3

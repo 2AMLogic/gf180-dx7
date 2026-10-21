@@ -63,12 +63,13 @@ REPORT_PATH = os.path.join(REPO, "docs", "H06-PITCH-RTL.md")
 EVIDENCE = os.path.join(REPO, "evidence", "h06-pitch-rtl")
 TABLES_DIR = os.path.join(REPO, "reference", "tables")
 
-# D01-recorded local ciel install (explicit path; no PDK_ROOT / CLI)
-CIEL_ROOT = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
-             "gf180mcu/versions/"
-             "54435919abffb937387ec956209f9cf5fd2dfbee")
-SC_LIB_REL = ("gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-              "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
+# gf180mcuD PDK root: sha256-pinned search (tools/pdk_resolve.py)
+if os.path.join(REPO, "tools") not in sys.path:
+    sys.path.insert(0, os.path.join(REPO, "tools"))
+import pdk_resolve  # noqa: E402
+
+CIEL_ROOT = pdk_resolve.find_pdk_root() or pdk_resolve.NO_PDK_PLACEHOLDER
+SC_LIB_REL = pdk_resolve.SC_LIB_REL
 
 MIN_FRAMES = 4000
 FLOP_FLOOR = 192
@@ -396,7 +397,8 @@ class TestSynthesis(unittest.TestCase):
         if cls.yosys is None:
             missing.append("yosys binary not on PATH")
         if not os.path.isfile(cls.lib):
-            missing.append(f"ciel 7t liberty not found at {cls.lib}")
+            missing.append(f"ciel 7t liberty not found: "
+                           f"{pdk_resolve.missing_reason() or cls.lib}")
         cls.reason = ("NOT_RUN (guarded skip): "
                       + "; ".join(missing) if missing else "")
         cls.can_run = not missing

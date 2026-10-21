@@ -50,9 +50,9 @@ for _p in ("src", "tools"):
 from gf180_dx7 import sysex  # noqa: E402
 from gf180_dx7.model import pitch as P  # noqa: E402
 
-DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", "/Users/joseph/dev/dexed"))
+DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", _REPO / ".oracle" / "dexed"))
 ORACLE_ROOT = Path(os.environ.get("DX7_ORACLE_ROOT",
-                                  "/Users/joseph/dx7-oracle-marki"))
+                                  _REPO / ".oracle" / "dx7-oracle-marki"))
 ORACLE_IDENTITY = json.loads(
     (_REPO / "reference" / "oracle-identity.json").read_text())
 REGISTRY_EVIDENCE = _REPO / "reference" / "evidence" / "registry-smoke.json"
@@ -787,7 +787,8 @@ class TestPinnedTreeConstants(unittest.TestCase):
     def setUp(self):
         if not DEXED_ROOT.is_dir():
             self.skipTest(
-                f"NOT_RUN: pinned dexed tree unavailable at {DEXED_ROOT}")
+                f"NOT_RUN: pinned dexed tree unavailable at {DEXED_ROOT}; "
+                "run tools/fetch_dexed.sh")
 
     def _read(self, rel: str) -> str:
         return (DEXED_ROOT / rel).read_text()

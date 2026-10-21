@@ -95,8 +95,8 @@ class TestTechmapVerifier(unittest.TestCase):
 
     def test_real_pdk_lib_check(self):
         sys.path.insert(0, os.path.join(REPO_ROOT, "tools"))
-        from verify_gf180_7t_techmaps import DEFAULT_LIB_LOCATIONS as default
-        libp = next((p for p in default if p and os.path.isfile(p)), None)
+        from verify_gf180_7t_techmaps import default_lib
+        libp = default_lib()
         if libp is None:
             self.skipTest("no local 7t tt liberty on this machine "
                           "(lib check skipped; ran hermetically on the fake "

@@ -35,13 +35,12 @@ import subprocess
 import sys
 import tempfile
 
+import pdk_resolve
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEFAULT_CIEL = ("/Users/joseph/dev/2amlogic/prep/tinytapeout/pdk/ciel/"
-                "gf180mcu/versions/"
-                "54435919abffb937387ec956209f9cf5fd2dfbee")
-SC_LIB_REL = ("gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-              "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
+DEFAULT_CIEL = None  # resolved by pdk_resolve (liberty sha256 pin)
+SC_LIB_REL = pdk_resolve.SC_LIB_REL
 SRAM_LIB_REL = "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib"
 SRAM_LEF_REL = "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef"
 
@@ -369,6 +368,9 @@ def parse_liberty_area(path, cell_name):
 
 def macro_inventory(ciel_root):
     """Measured macro attributes from the local ciel tree (D01 section 5)."""
+    if ciel_root is None:
+        raise CouldNotRun("no PDK root resolved for the SRAM macro "
+                          "inventory (set PDK_ROOT or pass --ciel-root)")
     lib_dir = os.path.join(ciel_root, SRAM_LIB_REL)
     lef_dir = os.path.join(ciel_root, SRAM_LEF_REL)
     if not os.path.isdir(lef_dir):
@@ -532,10 +534,11 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     repo_root = REPO_ROOT
-    liberty = args.liberty or os.path.join(args.ciel_root, SC_LIB_REL)
-    if not os.path.isfile(liberty):
-        print(f"COULD-NOT-RUN: 7t liberty not found at {liberty} "
-              f"(ciel root {args.ciel_root})", file=sys.stderr)
+    try:
+        liberty, args.ciel_root = pdk_resolve.resolve_liberty(
+            args.liberty, args.ciel_root)
+    except pdk_resolve.PdkNotFound as e:
+        print(f"COULD-NOT-RUN: {e}", file=sys.stderr)
         return 2
     ver = yosys_version(args.yosys)
 

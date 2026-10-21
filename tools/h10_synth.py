@@ -48,11 +48,12 @@ import subprocess
 import sys
 import time
 
+import pdk_resolve
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RTL_RELS = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]
-DEFAULT_PDK_ROOT = os.path.expanduser("~/.ciel")
-SC_LIB_REL = ("gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/"
-              "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib")
+DEFAULT_PDK_ROOT = None  # resolved by pdk_resolve (liberty sha256 pin)
+SC_LIB_REL = pdk_resolve.SC_LIB_REL
 OUTDIR_REL = "evidence/h10-gf180/policy-synth"
 NETLIST_DIR_REL = "asic/orfs/work/h10-policy-synth"
 POLICIES = {
@@ -250,10 +251,12 @@ def main(argv=None):
     ap.add_argument("--netlist-dir",
                     default=os.path.join(REPO_ROOT, NETLIST_DIR_REL))
     args = ap.parse_args(argv)
-    liberty = args.liberty or os.path.join(args.pdk_root, SC_LIB_REL)
     try:
-        if not os.path.isfile(liberty):
-            raise CouldNotRun(f"liberty not found: {liberty}")
+        try:
+            liberty, _ = pdk_resolve.resolve_liberty(args.liberty,
+                                                     args.pdk_root)
+        except pdk_resolve.PdkNotFound as e:
+            raise CouldNotRun(str(e))
         ver = yosys_version(args.yosys)
     except CouldNotRun as e:
         print(f"COULD-NOT-RUN: {e}", file=sys.stderr)

@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -65,7 +66,9 @@ REGISTRY_PATH = REPO / "spec" / "compatibility-registry-v1.json"
 PROFILE_PATH = REPO / "spec" / "numeric-profile-v1.json"
 DEV32_PATH = REPO / "corpus" / "dev32.json"
 DEFAULT_OUT = REPO / "reference" / "release"
-DEFAULT_ARCHIVE = Path("/Users/joseph/Downloads/DX7_AllTheWeb.zip")
+# fetched by tools/fetch_alltheweb.sh; override with DX7_ALLTHEWEB_ZIP
+DEFAULT_ARCHIVE = Path(os.environ.get(
+    "DX7_ALLTHEWEB_ZIP", REPO / ".cache" / "DX7_AllTheWeb.zip"))
 
 SCHEMA = "gf180-dx7.release-vectors-manifest/1"
 RELEASE_ID = "release-vectors-v1"

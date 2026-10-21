@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-21
+
+- **PR #167**: Bump Repo Skills 0.24.3 -> 0.24.7
+
 ### 2026-10-20
 
 - **PR #153**: feat: add klt signoff manifest and attest T1 items 9 and 10

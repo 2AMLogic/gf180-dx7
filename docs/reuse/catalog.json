@@ -2201,6 +2201,16 @@
    "path": "tools/fetch_alltheweb.sh",
    "sha256": "026b5e0bd1596a1cb9891c02dcfd2edaead32ef6a8a430e0924fa41841e1b19f",
    "reason": "locally authored script to fetch the archive corpus (issue #170); not a reuse import"
+  },
+  {
+   "path": "tools/check_artifact_manifests.py",
+   "sha256": "88e77a6898a3782193364a5fe0cdc9003c5d16b6ad3c4185efa1c7411c4d46b1",
+   "reason": "locally authored artifact-manifest schema gate (issue #178); stdlib only, no upstream bytes; check is schema-only and verify is NOT_RUN without a broker"
+  },
+  {
+   "path": "tools/store_evidence.py",
+   "sha256": "d9f1047c9788962b53a241890813447553c95adcbe0ff62fa19e0b5cf0f2c3af",
+   "reason": "locally authored wrapper over `klt artifact put` that writes a manifest + summary and fails closed without a broker (issue #178); stdlib only, no upstream bytes"
   }
  ]
 }

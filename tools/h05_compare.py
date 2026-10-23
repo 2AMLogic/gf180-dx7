@@ -77,14 +77,6 @@ FRAMES = 3
 FB_SETTINGS = (0, 3, 7)
 
 
-class CheckFailure(Exception):
-    pass
-
-
-class CouldNotRun(Exception):
-    pass
-
-
 def w32(v: int) -> int:
     v &= U32
     return v - (1 << 32) if v >= (1 << 31) else v
@@ -93,6 +85,7 @@ def w32(v: int) -> int:
 _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
+from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
 

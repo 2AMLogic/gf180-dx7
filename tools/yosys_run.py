@@ -7,6 +7,7 @@ synth tool. Each caller keeps its own script construction and passes its own
 Stdlib only.
 """
 
+import re
 import subprocess
 
 
@@ -36,3 +37,31 @@ def run_yosys_script(yosys, script, log_path, cwd, failure):
             f"yosys failed (rc={proc.returncode}); log at {log_path}: "
             + (log.strip().splitlines()[-1][:300] if log.strip() else ""))
     return log
+
+
+def rom_representation(log, detail, readmem=False):
+    """How table memories landed, classified from a yosys transcript.
+
+    `detail` is the tool's own sentence naming its ROMs, used only when the
+    MEMORY_MAP pass ran and no `$mem` cell survives in the final stat.
+    `readmem=True` adds `readmem_seen` to the fallback evidence (H01/H05).
+    """
+    memory_map = "MEMORY_MAP pass (converting memories to logic" in log
+    mem_cells = re.search(r"^\s+\d+\s+\S*\$mem\S*\s*$", log, re.M)
+    if memory_map and not mem_cells:
+        return {
+            "representation": "logic",
+            "detail": detail,
+            "evidence": {"memory_map_pass_ran": True,
+                         "memory_cells_in_final_stat": 0},
+        }
+    evidence = {"memory_map_pass_ran": memory_map}
+    if readmem:
+        evidence["readmem_seen"] = "readmem" in log.lower()
+    evidence["memory_cells_in_final_stat"] = bool(mem_cells)
+    return {
+        "representation": "memory cells" if mem_cells else
+                          ("logic (inferred)" if memory_map else "unknown"),
+        "detail": "inspect the committed yosys log",
+        "evidence": evidence,
+    }

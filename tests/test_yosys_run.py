@@ -121,5 +121,65 @@ class ToolWiringTest(unittest.TestCase):
                         mod.run_yosys(*args, os.path.join(td, "l.log"))
 
 
+class RomRepresentationTest(unittest.TestCase):
+    MAP = "MEMORY_MAP pass (converting memories to logic\n"
+    MEM = "     2   $mem_v2\n"
+
+    def test_logic_when_mapped_and_no_mem_cells(self):
+        r = yosys_run.rom_representation(self.MAP, "my detail")
+        self.assertEqual(r, {
+            "representation": "logic", "detail": "my detail",
+            "evidence": {"memory_map_pass_ran": True,
+                         "memory_cells_in_final_stat": 0}})
+
+    def test_mem_cells_never_classify_as_logic(self):
+        # Control: a surviving $mem cell must defeat the logic verdict.
+        r = yosys_run.rom_representation(self.MAP + self.MEM, "my detail")
+        self.assertEqual(r["representation"], "memory cells")
+        self.assertEqual(r["detail"], "inspect the committed yosys log")
+        self.assertIs(r["evidence"]["memory_cells_in_final_stat"], True)
+
+    def test_unknown_when_nothing_ran(self):
+        r = yosys_run.rom_representation("nothing\n", "d")
+        self.assertEqual(r["representation"], "unknown")
+        self.assertEqual(r["evidence"], {"memory_map_pass_ran": False,
+                                         "memory_cells_in_final_stat": False})
+
+    def test_inferred_logic_branch_is_unreachable_by_design(self):
+        # memory_map and not mem_cells is always "logic"; "logic (inferred)"
+        # is kept verbatim from the old copies and cannot be produced.
+        self.assertNotEqual(
+            yosys_run.rom_representation(self.MAP, "d")["representation"],
+            "logic (inferred)")
+
+    def test_readmem_opt_in_only_in_fallback_evidence(self):
+        log = "$readmemh x\n"
+        off = yosys_run.rom_representation(log, "d")
+        on = yosys_run.rom_representation(log, "d", readmem=True)
+        self.assertNotIn("readmem_seen", off["evidence"])
+        self.assertIs(on["evidence"]["readmem_seen"], True)
+        self.assertEqual(list(on["evidence"]), [
+            "memory_map_pass_ran", "readmem_seen",
+            "memory_cells_in_final_stat"])
+        # the logic branch never carries it, matching the old copies
+        self.assertNotIn("readmem_seen", yosys_run.rom_representation(
+            self.MAP, "d", readmem=True)["evidence"])
+
+    def test_tool_blocks_match_committed_evidence(self):
+        # The refactor must reproduce the committed rom_representation
+        # dicts exactly (no yosys re-run; this replays the logic branch).
+        import json
+        for name, ev in (("h01", "h01-operator-probe"),
+                         ("h05", "h05-routing-rtl"),
+                         ("h06", "h06-pitch-rtl"),
+                         ("h07", "h07-core")):
+            with self.subTest(tool=name):
+                mod = __import__(f"{name}_synth")
+                path = REPO / "evidence" / ev / "synth_report.json"
+                want = json.loads(path.read_text(encoding="utf-8"))[
+                    "runs"]["full"]["rom_representation"]
+                self.assertEqual(mod.rom_representation(self.MAP), want)
+
+
 if __name__ == "__main__":
     unittest.main()

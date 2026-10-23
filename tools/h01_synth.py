@@ -105,7 +105,8 @@ if _TOOLS_DIR not in sys.path:
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import (  # noqa: E402
-    run_yosys_script, yosys_version as _yosys_version)
+    rom_representation as shared_rom_representation, run_yosys_script,
+    yosys_version as _yosys_version)
 
 
 def declared_state_bits(repo_root):
@@ -175,28 +176,15 @@ def parse_ltp(log):
             "loop_warnings": loops}
 
 
+ROM_DETAIL = (
+    "both 1024x16 ROMs dissolve to combinational gates (yosys"
+    " MEMORY_MAP; no BRAM in this flow); final stat shows no "
+    "memory cells")
+
+
 def rom_representation(log):
     """How the table memories landed, from the transcript (measured)."""
-    memory_map = "MEMORY_MAP pass (converting memories to logic" in log
-    mem_cells = re.search(r"^\s+\d+\s+\S*\$mem\S*\s*$", log, re.M)
-    readmem = "$readmemh" in log or "readmem" in log.lower()
-    if memory_map and not mem_cells:
-        return {
-            "representation": "logic",
-            "detail": "both 1024x16 ROMs dissolve to combinational gates "
-                      "(yosys MEMORY_MAP; no BRAM in this flow); final stat "
-                      "shows no memory cells",
-            "evidence": {"memory_map_pass_ran": True,
-                         "memory_cells_in_final_stat": 0},
-        }
-    return {
-        "representation": "memory cells" if mem_cells else
-                          ("logic (inferred)" if memory_map else "unknown"),
-        "detail": "inspect the committed yosys log",
-        "evidence": {"memory_map_pass_ran": memory_map,
-                     "readmem_seen": readmem,
-                     "memory_cells_in_final_stat": bool(mem_cells)},
-    }
+    return shared_rom_representation(log, ROM_DETAIL, readmem=True)
 
 
 def main(argv=None):

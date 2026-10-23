@@ -2,6 +2,11 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-23
+
+- **PR #174**: ci: pin Node to 22.23.4 (Node 20 is end-of-life)
+- **Issue #173** (closed): security: pin CI Node to 22.23.4 (node-version 20 is end-of-life)
+
 ### 2026-10-21
 
 - **PR #171**: fix: resolve PDK, Dexed, oracle and archive defaults without operator-specific paths

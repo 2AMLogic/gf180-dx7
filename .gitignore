@@ -133,6 +133,9 @@ corpus/u02-candidates/renders/
 # <<< loom-managed <<<
 evidence/h07-core/sim/
 
+# Scratch staging for tools/store_evidence.py (bytes go to the artifact store)
+evidence-staging/
+
 # klt functional-verification scratch
 .klt/
 .venv-fv/

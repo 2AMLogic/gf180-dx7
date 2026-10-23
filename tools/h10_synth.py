@@ -68,13 +68,10 @@ class RunFailure(Exception):
     pass
 
 
-class CouldNotRun(Exception):
-    pass
-
-
 _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
+from verdict_errors import CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import yosys_version as _yosys_version  # noqa: E402
 

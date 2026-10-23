@@ -64,6 +64,7 @@ from gf180_dx7.model import pitch as P  # noqa: E402
 from gf180_dx7.model.poly import PolyManager, parse_events as poly_parse_events  # noqa: E402
 from n08_build_release import CaseSource, DEFAULT_ARCHIVE  # noqa: E402
 from host_frozen_int import host_bend_pb, host_detune_delta, host_fine_term  # noqa: E402
+from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 
 MANIFEST = REPO / "reference" / "release" / "manifest.json"
 VECTORS = REPO / "reference" / "release" / "vectors"
@@ -98,14 +99,6 @@ EA_PB = 0x03
 EA_DD0 = 0x04
 EA_MTUNE = 0x0B
 EA_SOFT = 0x0F
-
-
-class CheckFailure(Exception):
-    pass
-
-
-class CouldNotRun(Exception):
-    pass
 
 
 def sha256_bytes(data: bytes) -> str:

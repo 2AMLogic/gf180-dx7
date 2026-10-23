@@ -98,17 +98,10 @@ H07_REPORT_REL = "evidence/h07-core/synth_report.json"
 H02_MAPPED_FLOPS = 38781
 
 
-class CheckFailure(Exception):
-    pass
-
-
-class CouldNotRun(Exception):
-    pass
-
-
 _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
+from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import (  # noqa: E402
     run_yosys_script, yosys_version as _yosys_version)

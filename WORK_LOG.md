@@ -4,6 +4,12 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-23
 
+- **PR #181**: refactor: share rom_representation across the H01/H05/H06/H07 synth tools
+- **Issue #179** (closed): Share rom_representation across h01/h05/h06/h07 synth tools (4 near-identical copies)
+- **PR #180**: feat: store bulky run evidence in the artifact store behind public manifests
+- **Issue #178** (closed): Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact)
+- **PR #177**: refactor: share CheckFailure/CouldNotRun across tool scripts
+- **Issue #176** (closed): Share CheckFailure/CouldNotRun across 12 tool scripts (byte-identical copies)
 - **PR #174**: ci: pin Node to 22.23.4 (Node 20 is end-of-life)
 - **Issue #173** (closed): security: pin CI Node to 22.23.4 (node-version 20 is end-of-life)
 

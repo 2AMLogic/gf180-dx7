@@ -159,7 +159,8 @@ jobs:
           "$HOME/sim/bin/iverilog" -V | head -1
           "$HOME/sim/bin/verilator" --version
       - name: Install the pinned klt grading build
-        run: pip install "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@7ee09483b74867a47a05eb353015c2cf5ca33ef3"
+        run: pip install "klayout-tools==0.8.0"
+          klt --version
       - name: Item 9 attestation reproduces
         run: klt signoff --attest 9 --inventory signoff/inventory-item9.json --check signoff/evidence/item9.json
       - name: Item 10 attestation reproduces

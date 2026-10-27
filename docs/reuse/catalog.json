@@ -2179,7 +2179,7 @@
   },
   {
    "path": "tools/functional_verification.py",
-   "sha256": "9969ac6a45f87cc4431a3a5dcedbd8c81be0d5911813f01e2023e002ba408c1e",
+   "sha256": "f0ed3a06afd664dcf173a2bc12be71698deccdf672620e6d958bfd629790252f",
    "reason": "locally authored runner/checker for the committed klt functional-verification report (issue #150): normalized report-vs-rerun comparison with PASS/FAIL/STALE/NOT_RUN statuses, mutant negative controls; no upstream source, no upstream bytes, stdlib only"
   },
   {

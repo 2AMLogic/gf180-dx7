@@ -26,7 +26,7 @@
       "iverilog": "13.0",
       "verilator": "5.050",
       "yosys": "0.67+post b8e7da6f40ae8f552c116bf6c359b07c6533e159",
-      "klt": "7ee09483b74867a47a05eb353015c2cf5ca33ef3",
+      "klt": "0.8.0",
       "orfs_image": "openroad/orfs:26Q3-296-gda37dce1c@sha256:ebc8142da6d65d1a1e9a528aa2cedcde356243465dd859af8d3ade51075f8cb2"
     }
   }

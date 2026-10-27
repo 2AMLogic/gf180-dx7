@@ -14,7 +14,7 @@ check:
 # (2 parallel playbacks).  Creates a throwaway .venv-fv in this checkout; no
 # host tool is installed.  See docs/FUNCTIONAL-VERIFICATION.md.
 FV_VENV ?= .venv-fv
-FV_PINS = "klayout-tools==0.7.0" "cocotb==2.1.0"
+FV_PINS = "klayout-tools==0.8.0" "cocotb==2.1.0"
 
 $(FV_VENV)/bin/klt:
 	uv venv $(FV_VENV)

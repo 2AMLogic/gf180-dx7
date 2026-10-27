@@ -37,7 +37,7 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#185**: Bump klayout-tools pin 0.7.0, 7ee09483b748 → 0.8.0
 
 ## PRs Awaiting Review
 
@@ -65,6 +65,7 @@ Issues carrying `loom:curated`.
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#141**: Consolidate 39 copies of sha256_file into one shared tools helper *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
+- **#185**: Bump klayout-tools pin 0.7.0, 7ee09483b748 → 0.8.0 *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -83,10 +84,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 0 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 10 |
+| Curated | 11 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

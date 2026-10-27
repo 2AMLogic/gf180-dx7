@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-26
+
+- **PR #183**: chore(deps): bump the github-actions group across 1 directory with 2 updates
+
 ### 2026-10-23
 
 - **PR #181**: refactor: share rom_representation across the H01/H05/H06/H07 synth tools

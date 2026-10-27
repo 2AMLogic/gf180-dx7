@@ -129,7 +129,7 @@ Run 2026-10-20 on `loom-worker-2` (not the host named above), no source edits.
 | ID | Status | Basis |
 |---|---|---|
 | Stale-receipt check | PASS (no receipt STALE) | `git diff --name-only 984d4c9 e3fa221 -- tools/demo tools/sha256_helpers.py tests/test_u05_demo.py tests/test_u05_full_demo.py tests/test_sha256_helpers.py` is empty. The AC 1/3/4/6 receipts above apply to the same bytes. |
-| R-A maintainer review | **BLOCKED: maintainer review** | Re-checked: `gh api .../pulls/157/reviews` returns 0; `.../issues/157/comments` has only the fleet bot; `.../pulls/157/comments` is empty. Nothing from `turian`. `docs/reuse/catalog.json` untouched. |
+| R-A maintainer review | **BLOCKED: maintainer review** | Re-checked: `gh api .../pulls/157/reviews` returns 0; `.../issues/157/comments` has only the fleet bot; `.../pulls/157/comments` is empty. Nothing from `turian`, who left 2026-10-21. Per operator ruling 2026-10-27 (issue #189), the operator (rjwalters) is U05's maintainer of record and reviews R-A; the catalog `maintainer` field now says so. The review itself is still NOT_RUN. |
 | R-B real-dev32 variant | **NOT_RUN** | `DX7_ALLTHEWEB_ZIP` unset; pinned archive absent. |
 | R-C `make test` | PASS with 79 skips (NOT_RUN) | Below. |
 | R-D digest comparison and dependency search | PASS (scoped as stated) | Below. |

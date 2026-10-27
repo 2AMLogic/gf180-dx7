@@ -2,6 +2,11 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-27
+
+- **PR #186**: chore(deps): pin klayout-tools 0.8.0 and regenerate signoff records
+- **Issue #185** (closed): Bump klayout-tools pin 0.7.0, 7ee09483b748 → 0.8.0
+
 ### 2026-10-26
 
 - **PR #183**: chore(deps): bump the github-actions group across 1 directory with 2 updates

@@ -59,11 +59,11 @@ allows. That is a follow-up and is not made here, so item 6 is uncited.
 
 ## Pinned grader
 
-`klt` is pinned at `2AMLogic/klayout-tools`
-`7ee09483b74867a47a05eb353015c2cf5ca33ef3` (`klt 0.7.1.dev1743+g7ee09483b748`).
-PyPI 0.7.0 does not have `--attest`. `design-evidence-tiers.md` is
-`docs/design-evidence-tiers.md` from that commit, byte for byte
-(sha256 `a26b9026…efdc7`).
+`klt` is pinned at PyPI `klayout-tools==0.8.0` (tag `v0.8.0`, commit
+`c572046be644`; `klt --version` prints `klt 0.8.0`). `--attest` is available
+in this release. `design-evidence-tiers.md` is `docs/design-evidence-tiers.md`
+from tag `v0.8.0`, byte for byte (sha256 `a26b9026…efdc7`, unchanged from the
+previous pin).
 
 ## Regenerating
 

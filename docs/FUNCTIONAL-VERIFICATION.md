@@ -18,7 +18,7 @@ make functional-verification-controls   # live negative controls
 ```
 
 Needs `uv`, `iverilog`/`vvp` on `PATH`, and network access once, to build a
-throwaway `.venv-fv` in the checkout (`klayout-tools==0.7.0`,
+throwaway `.venv-fv` in the checkout (`klayout-tools==0.8.0`,
 `cocotb==2.1.0`). No host tool is installed or changed. Both targets are
 full/wave-gate lane only, not part of `make test-fast` (DR-0009).
 **Runtime, measured on an 8-vCPU shared worker with 2 parallel playbacks:

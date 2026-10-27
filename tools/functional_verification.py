@@ -23,7 +23,7 @@ Statuses and exit codes
   NOT_RUN / BLOCKED 2   klt, cocotb or iverilog is missing (never a pass)
   STALE 3  the committed report names different RTL hashes than the tree
 
-The pinned toolchain is `klayout-tools==0.7.0` + `cocotb==2.1.0` in a venv
+The pinned toolchain is `klayout-tools==0.8.0` + `cocotb==2.1.0` in a venv
 (`make functional-verification` creates .venv-fv inside the checkout); no
 host tool is installed or changed.
 """

@@ -4,6 +4,9 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-10-27
 
+- **PR #190**: docs: name operator as U05 maintainer of record in reuse catalog
+- **Issue #189** (closed): catalog: U05 maintainer of record is the operator (turian departed)
+- **Issue #156** (closed): Complete #141 acceptance: maintainer review and missing demo/wave qualification
 - **PR #186**: chore(deps): pin klayout-tools 0.8.0 and regenerate signoff records
 - **Issue #185** (closed): Bump klayout-tools pin 0.7.0, 7ee09483b748 → 0.8.0
 

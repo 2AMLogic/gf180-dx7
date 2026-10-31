@@ -144,3 +144,6 @@ evidence-staging/
 # tools/fetch_alltheweb.sh); never committed.
 .oracle/
 .cache/
+
+# Repo Skills Codex-side machine-local install metadata (never committed)
+.agents/skills/repo/.install-local.json

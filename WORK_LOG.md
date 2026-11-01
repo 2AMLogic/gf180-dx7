@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-10-31
+
+- **PR #193**: Bump Repo Skills 0.24.7 -> 0.25.1
+
 ### 2026-10-27
 
 - **PR #190**: docs: name operator as U05 maintainer of record in reuse catalog

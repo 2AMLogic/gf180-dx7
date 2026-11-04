@@ -128,7 +128,7 @@ corpus/u02-candidates/renders/
 .loom/gh-config-by-owner/
 .loom/gh-config-by-owner.*/
 .loom/gh-config-by-owner-*/
-.loom-local/
+/.loom-local/
 # <<< loom-managed <<<
 evidence/h07-core/sim/
 

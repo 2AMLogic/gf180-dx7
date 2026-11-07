@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-11-07
+
+- **PR #195**: Bump Repo Skills 0.25.1 -> 0.25.10
+
 ### 2026-10-31
 
 - **PR #193**: Bump Repo Skills 0.24.7 -> 0.25.1

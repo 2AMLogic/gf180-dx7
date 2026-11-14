@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-14
 
+- **PR #205**: feat: register numeric-profile-v1 check and stamp the N01 node
+- **Issue #201** (closed): Register a capability check for the numeric-profile node
 - **PR #199**: docs: roadmap as of 2026-11-13
 
 ### 2026-11-12

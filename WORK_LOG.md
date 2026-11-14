@@ -4,6 +4,10 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-14
 
+- **PR #214**: chore: drop the false-pass npm script stubs from root package.json
+- **Issue #213** (closed): Remove the false-pass npm script stubs from root package.json (npm test exits 0 having run nothing)
+- **PR #210**: signoff: cite the committed functional-verification report under item 5
+- **Issue #202** (closed): Signoff record: correct the stale item 5 row and cite the committed functional-verification report
 - **PR #205**: feat: register numeric-profile-v1 check and stamp the N01 node
 - **Issue #201** (closed): Register a capability check for the numeric-profile node
 - **PR #199**: docs: roadmap as of 2026-11-13

@@ -13,7 +13,7 @@ _None._
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-- **#201**: Register a capability check for the numeric-profile node
+_None._
 
 ## Important
 
@@ -21,34 +21,32 @@ _None._
 
 - **#2**: Epic: E2 — Verified core and physical feasibility
 - **#3**: Epic: E3 — Curated instrument
-- **#31**: H09: FPGA digital capture
-- **#35**: U02: Reviewed 32-patch listening bank
 - **#200**: Re-stamp the reference-pin capability node (STALE since tools/verify_reference.py changed)
-- **#202**: Signoff record: correct the stale item 5 row and cite the committed functional-verification report
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#201**: Register a capability check for the numeric-profile node
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#207**: README Status section is stale against the generated issue-DAG block (needs item 10 re-attestation in the same change)
+- **#211**: Consolidate the third hierarchy-total stat parser: tools/h10_synth.py duplicates tools/hierarchy_stat.py (and already diverges on what counts as a flop)
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#217**: tools: fold h10_synth's hierarchy parser into hierarchy_stat.py, decide one flop predicate
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#215**: docs: correct stale README task count and re-attest T1 item 10
 
 ## Proposed
 
@@ -63,11 +61,14 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
-- **#201**: Register a capability check for the numeric-profile node *(curated)*
+- **#207**: README Status section is stale against the generated issue-DAG block (needs item 10 re-attestation in the same change) *(curated)*
+- **#209**: FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance *(curated)*
+- **#212**: numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)*
+- **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)*
 
 ## Epics
 
@@ -79,13 +80,13 @@ Issues carrying `loom:curated`.
 | Bucket | Count |
 |------|-------|
 | Operator merge-risk holds | 0 |
-| Very important | 1 |
-| Important | 6 |
-| Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 0 |
-| PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
-| Curated | 10 |
-| Architect / Hermit proposals | 1 |
+| Very important | 0 |
+| Important | 3 |
+| Ready (`loom:issue`) | 0 |
+| In Progress (`loom:building`) | 2 |
+| PRs awaiting review | 1 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 12 |
+| Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

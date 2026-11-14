@@ -14,7 +14,7 @@ be exact; model-vs-reference comparisons use declared error budgets.
 
 ## Status
 
-Planning. The executable backlog (35 dependency-linked tasks in three epics)
+Planning. The executable backlog (36 dependency-linked tasks in three epics)
 is tracked in GitHub issues. Architecture, reference stack, sound-library
 strategy, verification contract, and starter briefs are defined in
 [docs/dx7-chip-plan-v0.1-2026-09-20.md](docs/dx7-chip-plan-v0.1-2026-09-20.md).

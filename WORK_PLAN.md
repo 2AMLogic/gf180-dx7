@@ -13,7 +13,7 @@ _None._
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-_None._
+- **#201**: Register a capability check for the numeric-profile node
 
 ## Important
 
@@ -22,16 +22,15 @@ _None._
 - **#2**: Epic: E2 — Verified core and physical feasibility
 - **#3**: Epic: E3 — Curated instrument
 - **#31**: H09: FPGA digital capture
-- **#32**: H10: gf180 mapped feasibility report
-- **#33**: H11: Physical integration evidence
 - **#35**: U02: Reviewed 32-patch listening bank
-- **#36**: U03: Curated 128-patch bank manifest
+- **#200**: Re-stamp the reference-pin capability node (STALE since tools/verify_reference.py changed)
+- **#202**: Signoff record: correct the stale item 5 row and cite the committed functional-verification report
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-_None._
+- **#201**: Register a capability check for the numeric-profile node
 
 ## In Progress
 
@@ -64,6 +63,7 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
+- **#201**: Register a capability check for the numeric-profile node *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -79,13 +79,13 @@ Issues carrying `loom:curated`.
 | Bucket | Count |
 |------|-------|
 | Operator merge-risk holds | 0 |
-| Very important | 0 |
-| Important | 7 |
-| Ready (`loom:issue`) | 0 |
+| Very important | 1 |
+| Important | 6 |
+| Ready (`loom:issue`) | 1 |
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 9 |
+| Curated | 10 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

@@ -117,6 +117,10 @@ CHECKS = {
         ),
         ("tools/validate_dev32.py",),
     ),
+    "numeric-profile-v1": Check(
+        ("python3", "tools/check_numeric_profile.py"),
+        ("tools/check_numeric_profile.py",),
+    ),
 }
 
 # The judge's own bytes participate in every node's coverage: changing the

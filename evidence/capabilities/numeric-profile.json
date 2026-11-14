@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "python3",
+    "tools/check_numeric_profile.py"
+  ],
+  "check": "numeric-profile-v1",
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_numeric_profile.TestNegativeControls"
+      ],
+      "detected": true,
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "docs/DECISIONS-NUMERIC-v1.md": "d64a47de9f5f2944c5bfe2f0a89850d390e5d1f8fd9919fbfeb456ed5b29b0cc",
+    "reference/manifest.json": "d5471aea82e677c77fa94a23a03e74df246ccb63b92ef4973555804ac41d3ef5",
+    "spec/capabilities-v1.json": "790d3e76552cd8eecf91a5231a6d765d406f62b766db80a6565196f5aec1e6d4",
+    "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
+    "spec/numeric-profile-v1.json": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
+    "src/gf180_dx7/capabilities.py": "03b87d6a9ed2c07483e0d63356104ab7aae7acbc4a4522a60402cf078db17f31",
+    "tools/check_numeric_profile.py": "00fa1dacee23f65803683918bef768ed122df7be521e34ab9150ab884be50088",
+    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
+  },
+  "exit_code": 0,
+  "node_id": "numeric-profile",
+  "recorded_at": "2026-11-14T04:06:23Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "PASS",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

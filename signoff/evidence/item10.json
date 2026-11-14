@@ -31,7 +31,7 @@
         "role": "hygiene",
         "path": "README.md",
         "passed": true,
-        "content_hash": "sha256:666bc8414c95829cc8f9c350ad3a0af4efdca65587836d8e0baafbc758933a96"
+        "content_hash": "sha256:466e13503ea196f60470a6a3734f13a4f02d92a9b51a870d6268a6aa2fa7c470"
       },
       {
         "check": "command",

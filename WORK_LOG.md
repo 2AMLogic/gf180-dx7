@@ -2,6 +2,10 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-11-14
+
+- **PR #199**: docs: roadmap as of 2026-11-13
+
 ### 2026-11-12
 
 - **PR #197**: Bump Repo Skills 0.25.10 -> 0.26.1

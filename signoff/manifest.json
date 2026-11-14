@@ -2,6 +2,9 @@
   "block": "gf180-dx7",
   "kind": "digital",
   "evidence": {
+    "5": {
+      "file": "evidence/t1-functional/report.json"
+    },
     "9": {
       "file": "signoff/evidence/item9.json",
       "content_hash": "sha256:4dedf81ca402ecb070b033b61dcbffc06933779e8278ef46ea3027352a6c6a02"

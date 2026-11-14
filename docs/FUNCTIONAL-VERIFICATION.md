@@ -7,8 +7,12 @@ evidence for **claim (1) only**: `rtl/dx7_core.v` + `rtl/env_unit.v` +
 Icarus, over the declared window per case. It is **not** model-vs-reference
 agreement, synthesis, STA, place-and-route, hardware playback, or sound.
 
-Item 5 stays `unmet` until the STA half (#103, #32) lands; the signoff
-manifest that will cite this report is #149.
+Item 5 stays `unmet` until the STA half (#103, #32) lands. #149 landed
+`signoff/manifest.json` citing items 9 and 10 only — it never cited this
+report; #202 added the item 5 citation. With it, klt grades the citation
+`met` and item 5 `unmet` / `partial_coverage` with
+`detail.missing_kinds: ["sta"]`, and `t1_met_count` stays `2`. See
+[`signoff/README.md`](../signoff/README.md) § "Item 5".
 
 ## Re-run it (cold checkout)
 

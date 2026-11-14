@@ -23,7 +23,7 @@ sounds good; those are separate claims with their own evidence.
 | 2 Layout | uncited | no layout exists yet: #33 |
 | 3 DRC clean | uncited | no layout exists yet: #33 |
 | 4 LVS clean | uncited | no layout exists yet: #33 |
-| 5 Full corner verification vs a ratified spec | uncited | envelope not produced yet: #150 (T1 gap tracker #151); also gated on #103 |
+| 5 Full corner verification vs a ratified spec | `unmet` / `partial_coverage` | functional half cited: `evidence/t1-functional/report.json`, graded `met` as a citation; klt reports `missing_kinds: ["sta"]`, so the STA half still waits on #103 and #32 (T1 gap tracker #151). Not full functional coverage — see "Item 5" below |
 | 6 Statistical claims carry Monte Carlo evidence | uncited | see "Item 6" below |
 | 7 Post-layout verification | uncited | needs layout and mapped netlist: #33, #103 |
 | 8 Characterization report | uncited | needs a characterization record (waits on #32/#33) |
@@ -31,6 +31,33 @@ sounds good; those are separate claims with their own evidence.
 
 Item 1 stays uncited until #103 produces the mapped netlist; no
 native-envelope or placeholder citation is made for it.
+
+The statuses and reasons above are klt's own tokens where a row has been
+brought up to date; the remaining `uncited` rows predate that convention and
+are corrected separately (#203 and a follow-up). `klt signoff` itself emits
+`no_evidence`, not `uncited`.
+
+## Item 5
+
+The manifest cites the committed `klt functional-verification` report
+(`evidence/t1-functional/report.json`, described in
+[`docs/FUNCTIONAL-VERIFICATION.md`](../docs/FUNCTIONAL-VERIFICATION.md)).
+klt grades that citation `met` and the item `unmet` with
+`reason: "partial_coverage"` and `detail.missing_kinds: ["sta"]`: item 5 wants
+multi-corner STA **and** a bit-exact functional suite, and only the functional
+half exists. **Item 5 is not met, and this citation is not a timing claim** —
+no STA has been run; that half waits on #103 (mapped netlist) and #32
+(place-and-route). `tier` stays `null` and `t1_met_count` stays `2`.
+
+The citation is also **not full functional coverage**. The cited report records
+`status: "pass"` over 23 graded cases (`passed_count: 23`, `failed_count: 0`),
+and its `provenance.not_graded` block records a further 11 cases as
+`NOT_RUN` (`dev32-03`, `dev32-06`, `dev32-30` and the eight `ev-*` cases),
+because Icarus plays ~2.4 s per 64-sample frame and their events run past
+block 75. A `NOT_RUN` case is never a pass. Coverage is reported separately
+from agreement, and the report establishes claim (1) only — RTL versus the
+frozen integer model — not model-vs-reference agreement, synthesis, STA,
+place-and-route, gf180mcu signoff, hardware playback, or sound.
 
 ## Item 6
 
@@ -72,10 +99,19 @@ From the repo root, with the pinned klt and iverilog and Verilator on PATH:
 ```bash
 klt signoff --attest 9  --inventory signoff/inventory-item9.json  -o signoff/evidence/item9.json
 klt signoff --attest 10 --inventory signoff/inventory-item10.json -o signoff/evidence/item10.json
-# set each manifest content_hash to the envelope's provenance.input.content_hash
+# set each ATTESTED envelope's manifest content_hash (items 9 and 10 only) to
+# that envelope's provenance.input.content_hash
 klt signoff --manifest signoff/manifest.json \
   --tiers-doc signoff/design-evidence-tiers.md --format json > signoff/signoff.json
 ```
+
+The `content_hash` pin applies **only** to the `--attest` envelopes above. A
+native `klt functional-verification` report carries no `provenance.input`
+block, so pinning a `content_hash` on item 5's entry makes klt grade the
+citation `unmet` / `unverifiable_provenance`
+(`content_hash_pin: "unverifiable"`) instead of `met`. Item 5's manifest entry
+is therefore `{"file": "evidence/t1-functional/report.json"}` with no
+`content_hash` key; do not add one back.
 
 ## CI
 

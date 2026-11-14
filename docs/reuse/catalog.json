@@ -1434,8 +1434,8 @@
   },
   {
    "path": "spec/capabilities-v1.json",
-   "sha256": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
-   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data"
+   "sha256": "790d3e76552cd8eecf91a5231a6d765d406f62b766db80a6565196f5aec1e6d4",
+   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data. Re-pinned after the issue #201 revision (numeric-profile-v1 check registered, N01 node stamped)"
   },
   {
    "path": "src/gf180_dx7/model/__init__.py",
@@ -1454,8 +1454,8 @@
   },
   {
    "path": "src/gf180_dx7/capabilities.py",
-   "sha256": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md"
+   "sha256": "03b87d6a9ed2c07483e0d63356104ab7aae7acbc4a4522a60402cf078db17f31",
+   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md. Re-pinned after the issue #201 revision (numeric-profile-v1 check registration)"
   },
   {
    "path": "tools/compile_capabilities.py",

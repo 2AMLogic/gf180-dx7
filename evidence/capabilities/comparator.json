@@ -8,8 +8,8 @@
   ],
   "check": "comparator-qualification-v1",
   "check_output": {
-    "sha256": "acb6b63ce770ff0a8d8dced1b2b60fd9a9e40832f530ed46ec8ddc4941210004",
-    "tail": "ompare.TestFailureClasses.test_not_runnable_invalid_sample_rate) ... ok\ntest_not_runnable_odd_byte_count (tests.test_compare.TestFailureClasses.test_not_runnable_odd_byte_count) ... ok\ntest_gain_offset_exit_one (tests.test_compare.TestMutationBatteryCli.test_gain_offset_exit_one) ... ok\ntest_identical_exit_zero (tests.test_compare.TestMutationBatteryCli.test_identical_exit_zero) ... ok\ntest_json_report_written_and_parseable (tests.test_compare.TestMutationBatteryCli.test_json_report_written_and_parseable) ... ok\ntest_nan_file_is_failure_class (tests.test_compare.TestMutationBatteryCli.test_nan_file_is_failure_class) ... ok\ntest_one_byte_flip_exit_one_localized (tests.test_compare.TestMutationBatteryCli.test_one_byte_flip_exit_one_localized) ... ok\ntest_sample_shift_exit_one (tests.test_compare.TestMutationBatteryCli.test_sample_shift_exit_one) ... ok\ntest_silent_tail_append_is_length_class (tests.test_compare.TestMutationBatteryCli.test_silent_tail_append_is_length_class) ... ok\ntest_truncate_is_length_class (tests.test_compare.TestMutationBatteryCli.test_truncate_is_length_class) ... ok\ntest_dc_offset_detected_via_mean_bias (tests.test_compare.TestMutationLocalization.test_dc_offset_detected_via_mean_bias) ... ok\ntest_gain_offset_max_abs_error_matches_expected (tests.test_compare.TestMutationLocalization.test_gain_offset_max_abs_error_matches_expected) ... ok\ntest_one_byte_flip_localized_exactly (tests.test_compare.TestMutationLocalization.test_one_byte_flip_localized_exactly) ... ok\ntest_one_sample_shift_diverges_immediately (tests.test_compare.TestMutationLocalization.test_one_sample_shift_diverges_immediately) ... ok\ntest_matching_secondary_cannot_rescue_gain_fail (tests.test_compare.TestSecondaryNeverPasses.test_matching_secondary_cannot_rescue_gain_fail) ... ok\ntest_secondary_structure (tests.test_compare.TestSecondaryNeverPasses.test_secondary_structure) ... ok\n\n----------------------------------------------------------------------\nRan 29 tests in 0.745s\n\nOK\n"
+    "sha256": "a27c9acb2a5208ebbd5cd3b1b3780122c2a3b5ddadf6a79bee086390628327ec",
+    "tail": "ompare.TestFailureClasses.test_not_runnable_invalid_sample_rate) ... ok\ntest_not_runnable_odd_byte_count (tests.test_compare.TestFailureClasses.test_not_runnable_odd_byte_count) ... ok\ntest_gain_offset_exit_one (tests.test_compare.TestMutationBatteryCli.test_gain_offset_exit_one) ... ok\ntest_identical_exit_zero (tests.test_compare.TestMutationBatteryCli.test_identical_exit_zero) ... ok\ntest_json_report_written_and_parseable (tests.test_compare.TestMutationBatteryCli.test_json_report_written_and_parseable) ... ok\ntest_nan_file_is_failure_class (tests.test_compare.TestMutationBatteryCli.test_nan_file_is_failure_class) ... ok\ntest_one_byte_flip_exit_one_localized (tests.test_compare.TestMutationBatteryCli.test_one_byte_flip_exit_one_localized) ... ok\ntest_sample_shift_exit_one (tests.test_compare.TestMutationBatteryCli.test_sample_shift_exit_one) ... ok\ntest_silent_tail_append_is_length_class (tests.test_compare.TestMutationBatteryCli.test_silent_tail_append_is_length_class) ... ok\ntest_truncate_is_length_class (tests.test_compare.TestMutationBatteryCli.test_truncate_is_length_class) ... ok\ntest_dc_offset_detected_via_mean_bias (tests.test_compare.TestMutationLocalization.test_dc_offset_detected_via_mean_bias) ... ok\ntest_gain_offset_max_abs_error_matches_expected (tests.test_compare.TestMutationLocalization.test_gain_offset_max_abs_error_matches_expected) ... ok\ntest_one_byte_flip_localized_exactly (tests.test_compare.TestMutationLocalization.test_one_byte_flip_localized_exactly) ... ok\ntest_one_sample_shift_diverges_immediately (tests.test_compare.TestMutationLocalization.test_one_sample_shift_diverges_immediately) ... ok\ntest_matching_secondary_cannot_rescue_gain_fail (tests.test_compare.TestSecondaryNeverPasses.test_matching_secondary_cannot_rescue_gain_fail) ... ok\ntest_secondary_structure (tests.test_compare.TestSecondaryNeverPasses.test_secondary_structure) ... ok\n\n----------------------------------------------------------------------\nRan 29 tests in 0.720s\n\nOK\n"
   },
   "check_skip_reported": false,
   "controls": [
@@ -23,8 +23,8 @@
       "detected": true,
       "exit_code": 0,
       "output": {
-        "sha256": "3d137e39d8f196b343b70ffd2e71dc0594f0e9df1baac9207fb4beb8afe0367a",
-        "tail": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.450s\n\nOK\n"
+        "sha256": "f77afb1e70cea5fc7818a12946df5fbe2a0bdc0ae699107490e5d93960f64f5d",
+        "tail": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.442s\n\nOK\n"
       },
       "skipped": 0,
       "tests_run": 8
@@ -33,14 +33,14 @@
   "coverage": {
     "reference/evidence/compare/qualification-r04.json": "3d962faf54bee757ed75493e2dfd1cc7eeeb7ee9e3f2c1bc49762b4273150c7c",
     "reference/evidence/compare/reproducibility-r04.json": "1428bbc5f5405289a829c168be201c464811cf143053584beb70d3ef1fe5fb51",
-    "spec/capabilities-v1.json": "099c8b94a042069d4077c23a63e8d356b33c2cf5d3fdf5fd286dd80fd904470d",
-    "src/gf180_dx7/capabilities.py": "07fe513271ebec5da4955627504308a7786be3a7cc6e289fed1e166c5f9e737b",
+    "spec/capabilities-v1.json": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
+    "src/gf180_dx7/capabilities.py": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
     "tests/test_compare.py": "3d62fb28a78021eadef79a41239fd8f568bae92799d85ba3337790f6ac3e3ee1",
-    "tools/compile_capabilities.py": "404e0f7b26a7f37fe69f22c8f2e2777e001beccb6dc40401663e53ff8692d294"
+    "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4"
   },
   "exit_code": 0,
   "node_id": "comparator",
-  "recorded_at": "2026-11-15T07:13:12Z",
+  "recorded_at": "2026-11-15T12:56:03Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

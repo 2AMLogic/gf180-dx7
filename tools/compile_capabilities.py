@@ -26,6 +26,9 @@ Modes:
                      control that reported a skip, or a check-level skip
                      under the node's "not_run" skip policy, records
                      NOT_RUN even at exit 0 — never a skip-shaped PASS.
+                     A check reports a skip only when its
+                     registry-declared skip_token appears in its
+                     captured output (issue #232).
 
 Evaluation never executes evidence commands; --stamp is the only mode that
 runs anything. Exit codes: 0 ok, 1 check/refusal failure, 2 usage error.
@@ -52,7 +55,11 @@ RESULT_BY_EXIT = {0: cap.PASS, 2: cap.NOT_RUN}
 OUTPUT_TAIL_CHARS = 2000
 
 _RAN_RE = re.compile(r"^Ran (\d+) tests? in", re.MULTILINE)
-_SKIPPED_RE = re.compile(r"skipped=(\d+)")
+# unittest reports skips only on its summary line ("OK (skipped=2)" /
+# "FAILED (failures=1, skipped=2)"). Anchoring matches _RAN_RE's discipline:
+# an unanchored search let a competing "skipped=<n>" anywhere in a control's
+# output masquerade as the run's skip count and force NOT_RUN (issue #232).
+_SKIPPED_RE = re.compile(r"^(?:OK|FAILED) \(.*?skipped=(\d+)", re.MULTILINE)
 
 
 def _result_for_exit(exit_code: int) -> str:
@@ -140,7 +147,12 @@ def _write_evidence(node: dict, root: Path, recorded_by: str) -> cap.Result:
                 file=sys.stderr,
             )
     exit_code, check_text = _run(list(check.command), root)
-    check_skip_reported = "NOT_RUN" in check_text
+    # Guarded-skip detection consults the registry declaration, not a bare
+    # substring over the output (issue #232): only a check that declares a
+    # skip token can report a skip, and only when its captured output
+    # carries that token. Truthiness guards an empty declared token (which
+    # would match every output); registration already refuses one.
+    check_skip_reported = bool(check.skip_token) and check.skip_token in check_text
     coverage = cap.coverage_hashes(node, root)
     # A guarded skip keeps the command's honest exit code but must not read
     # PASS: a skipped control never fully ran its detection, and a

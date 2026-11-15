@@ -18,7 +18,11 @@ committed records under the widened (required-plus-optional) control guard,
 refusal of unknown control keys and of detected=true with skipped>0, the
 NOT_RUN-with-exit-0 guarded-skip encoding (requires a recorded skip
 observation), per-node skip_policy enforcement, and stamp-side capture of
-bounded output plus unittest run/skip counts.
+bounded output plus unittest run/skip counts. Issue #232 adds: the
+registry-declared skip_token guarded-skip contract (a check reports a
+skip only for its declared token; a None declaration cannot fabricate
+one), refusal of fabricated skip flags on token-less checks, and the
+anchored unittest skipped= summary regex.
 
 State-machine tests never execute evidence commands. Only --stamp cases run
 commands, and those run only `python3 -c ...` against a temp root with a
@@ -103,14 +107,22 @@ class FixtureCase(unittest.TestCase):
         self.addCleanup(setattr, target, name, original)
         setattr(target, name, value)
 
-    def install_registry(self, *nodes: dict, register: bool = True) -> None:
-        """Register the fixture nodes' checks and evaluator inputs locally."""
+    def install_registry(self, *nodes: dict, register: bool = True,
+                         skip_tokens: dict | None = None) -> None:
+        """Register the fixture nodes' checks and evaluator inputs locally.
+
+        ``skip_tokens`` maps a check name to its declared guarded-skip
+        token (issue #232); checks absent from the mapping declare no
+        skip path (skip_token=None).
+        """
         checks = {}
         if register:
             for node in nodes:
                 if node["check"]:
                     checks[node["check"]] = cap.Check(
-                        tuple(node["engine"]), tuple(node["covered_inputs"])
+                        tuple(node["engine"]),
+                        tuple(node["covered_inputs"]),
+                        skip_token=(skip_tokens or {}).get(node["check"]),
                     )
         self.patch(cap, "CHECKS", checks)
         _write(self.root / "src/gf180_dx7/capabilities.py", b"fixture judge bytes\n")
@@ -492,7 +504,7 @@ class OptionalRecordFieldsTests(FixtureCase):
         # Negative control: a PASS carrying a check-level skip under a
         # not_run policy must be refused by record validation itself.
         node = _node(skip_policy="not_run")
-        self.install_registry(node)
+        self.install_registry(node, skip_tokens={"fixture-check": "NOT_RUN"})
         self.write_input("inputs/a.txt", b"payload\n")
         self._add_check_skip(self.write_record(node))
         results = self.evaluate(node)
@@ -501,7 +513,7 @@ class OptionalRecordFieldsTests(FixtureCase):
 
     def test_pass_with_check_skip_under_pass_policy_surfaces_reason(self):
         node = _node(skip_policy="pass")
-        self.install_registry(node)
+        self.install_registry(node, skip_tokens={"fixture-check": "NOT_RUN"})
         self.write_input("inputs/a.txt", b"payload\n")
         self._add_check_skip(self.write_record(node))
         results = self.evaluate(node)
@@ -554,6 +566,178 @@ class SkipPolicyTests(FixtureCase):
         self.write_record(node, controls=self._skipped_control())
         results = self.evaluate(node)
         self.assertEqual(results["alpha"].state, cap.NOT_RUN)
+
+
+class SkipTokenDeclarationTests(FixtureCase):
+    """Issue #232: guarded-skip detection is declared in the registry.
+
+    The two negative controls here demonstrably bite against unmodified
+    main logic (origin/main @ 222c0ec, run via the PR harness): there, a
+    skip wording other than NOT_RUN stamped a skip-shaped PASS (false
+    negative) and an incidental NOT_RUN token fabricated a
+    check_skip_reported=true record (false positive).
+    """
+
+    def test_no_skip_path_ignores_incidental_not_run_token(self):
+        # FP control: a check that declares no skip path and incidentally
+        # prints "NOT_RUN" (the tests/test_compare.py method-docstring
+        # scenario) must not record a skip it never performed.
+        loud = ["python3", "-c", "print('docstring mentions NOT_RUN; no skip')"]
+        node = _node(engine=loud, skip_policy="pass")
+        self.install_registry(node)  # skip_token=None declared
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertFalse(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.PASS)
+
+    def test_declared_skip_wording_other_than_not_run_is_recorded(self):
+        # FN control: a guard-skip whose wording is not the bare "NOT_RUN"
+        # token is recorded because the registry declares the wording the
+        # check actually emits. Under the replaced bare-substring test the
+        # same output stamped a skip-shaped PASS (shown failing against
+        # origin/main in the PR).
+        skipping = [
+            "python3", "-c",
+            "print('oracle absent SKIPPED (guarded skip): deferred')",
+        ]
+        node = _node(engine=skipping, skip_policy="not_run")
+        self.install_registry(node, skip_tokens={"fixture-check": "SKIPPED"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.NOT_RUN)
+        self.assertEqual(record["exit_code"], 0)
+
+    def test_declared_token_emitted_on_stderr_only_still_records(self):
+        # The compiler captures combined stdout+stderr; verify_reference,
+        # capture_trace and validate_dev32 print their skip notes to stderr.
+        skipping = [
+            "python3", "-c",
+            "import sys; print('oracle absent SKIPPED (guarded skip)',"
+            " file=sys.stderr)",
+        ]
+        node = _node(engine=skipping, skip_policy="not_run")
+        self.install_registry(node, skip_tokens={"fixture-check": "SKIPPED"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.NOT_RUN)
+
+    def test_non_utf8_output_still_matches_declared_token(self):
+        skipping = [
+            "python3", "-c",
+            "import sys;"
+            " sys.stdout.buffer.write(b'\\xff\\xfe SKIPPED (guarded skip)');",
+        ]
+        node = _node(engine=skipping, skip_policy="not_run")
+        self.install_registry(node, skip_tokens={"fixture-check": "SKIPPED"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.NOT_RUN)
+
+    def test_pass_policy_declared_skip_stays_pass(self):
+        skipping = ["python3", "-c", "print('partial: SKIPPED (guarded)')"]
+        node = _node(engine=skipping, skip_policy="pass")
+        self.install_registry(node, skip_tokens={"fixture-check": "SKIPPED"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.PASS)
+
+    def test_record_with_fabricated_skip_flag_and_no_declared_token_refused(self):
+        # Validation-side guard: a record claiming a skip for a check that
+        # declares no skip path is refused, not silently believed.
+        node = _node()
+        self.install_registry(node)  # skip_token=None declared
+        self.write_input("inputs/a.txt", b"payload\n")
+        record_path = self.write_record(node)
+        record = json.loads(record_path.read_bytes())
+        record["check_skip_reported"] = True
+        record["check_output"] = {"sha256": "c" * 64, "tail": "NOT_RUN: no skip"}
+        _write(
+            record_path,
+            (json.dumps(record, indent=2, sort_keys=True) + "\n").encode(),
+        )
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+        self.assertIn(
+            "declares no skip token", " ".join(results["alpha"].reasons)
+        )
+
+    def test_unittest_counts_ignores_competing_skipped_outside_summary(self):
+        # A control that prints "skipped=3" somewhere other than
+        # unittest's summary line must not have that mistaken for the
+        # run's skip count. Fails against the replaced unanchored regex.
+        text = (
+            "listing note: skipped=3 stale fixtures\n"
+            "Ran 5 tests in 0.001s\n"
+            "OK\n"
+        )
+        self.assertEqual(self.tool._unittest_counts(text), (5, 0))
+
+    def test_unittest_counts_reads_summary_lines_only(self):
+        self.assertEqual(
+            self.tool._unittest_counts("Ran 9 tests in 0.1s\nOK (skipped=2)\n"),
+            (9, 2),
+        )
+        self.assertEqual(
+            self.tool._unittest_counts(
+                "Ran 9 tests in 0.1s\nFAILED (failures=1, skipped=3)\n"
+            ),
+            (9, 3),
+        )
+        self.assertEqual(
+            self.tool._unittest_counts("Ran 4 tests in 0.1s\nOK\n"), (4, 0)
+        )
+
+    def test_unittest_counts_not_a_unittest_run_stays_null(self):
+        self.assertEqual(self.tool._unittest_counts("hello world\n"), (None, None))
+
+    def test_control_competing_skipped_text_does_not_force_not_run(self):
+        # Stamp-path form of the anchoring control: the control stays
+        # detected and the node PASSes even though its output contains a
+        # competing "skipped=3". Fails against the unanchored regex, which
+        # forced NOT_RUN and detected=false from the identical output.
+        noisy_control = [
+            "python3", "-c",
+            "print('Ran 4 tests in 0.001s'); print('OK');"
+            " print('listing note: skipped=3 stale fixtures')",
+        ]
+        node = _node(controls=[{
+            "id": "noisy", "detects": "any mutation",
+            "command": noisy_control,
+        }])
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertEqual(record["controls"][0]["detected"], True)
+        self.assertEqual(record["controls"][0]["skipped"], 0)
+        self.assertEqual(record["result"], cap.PASS)
 
 
 class StampTests(FixtureCase):
@@ -702,7 +886,7 @@ class StampCaptureTests(FixtureCase):
     def test_stamp_not_run_policy_check_skip_records_not_run(self):
         skipping = ["python3", "-c", "print('citation checks NOT_RUN for 71')"]
         node = _node(engine=skipping, skip_policy="not_run")
-        self.install_registry(node)
+        self.install_registry(node, skip_tokens={"fixture-check": "NOT_RUN"})
         self.write_input("inputs/a.txt", b"payload\n")
         self.prime_readme()
         self.run_tool("--stamp", "alpha")
@@ -716,7 +900,7 @@ class StampCaptureTests(FixtureCase):
     def test_stamp_pass_policy_check_skip_stays_pass(self):
         skipping = ["python3", "-c", "print('citation checks NOT_RUN for 3')"]
         node = _node(engine=skipping, skip_policy="pass")
-        self.install_registry(node)
+        self.install_registry(node, skip_tokens={"fixture-check": "NOT_RUN"})
         self.write_input("inputs/a.txt", b"payload\n")
         self.prime_readme()
         self.run_tool("--stamp", "alpha")
@@ -802,6 +986,37 @@ class RegistryBoundaryTests(unittest.TestCase):
                 (REPO / program).is_file(),
                 f"registered command references missing file: {program}",
             )
+
+    def test_registered_checks_declare_skip_token_explicitly(self):
+        # Issue #232: skip_token is a required Check field (omitting it is
+        # a TypeError at registration — there is no silent default), and
+        # every registered check pins its guarded-skip contract: the
+        # exact token it emits when it guard-skips, or None when it has
+        # no guarded-skip path. Changing a declaration is a reviewed
+        # registry edit that must update this pin deliberately.
+        import dataclasses
+
+        fields = {f.name: f for f in dataclasses.fields(cap.Check)}
+        self.assertEqual(fields["skip_token"].default, dataclasses.MISSING)
+        with self.assertRaises(TypeError):
+            cap.Check(("python3", "-c", "pass"), ("inputs/a.txt",))
+        with self.assertRaises(cap.CapabilityError):
+            cap.Check(
+                ("python3", "-c", "pass"), ("inputs/a.txt",), skip_token=""
+            )
+        self.assertEqual(
+            {name: check.skip_token for name, check in cap.CHECKS.items()},
+            {
+                "contract-tests-v1": None,
+                "reference-pin-v1": "NOT_RUN",
+                "render-selfcheck-v1": "NOT_RUN",
+                "compare-evidence-v1": None,
+                "trace-capture-v1": "NOT_RUN",
+                "comparator-qualification-v1": None,
+                "dev32-validation-v1": "NOT_RUN",
+                "numeric-profile-v1": "NOT_RUN",
+            },
+        )
 
 
 if __name__ == "__main__":

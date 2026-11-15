@@ -41,6 +41,24 @@ about 3.5 min.
 Wall-clock fields and absolute paths are excluded from the comparison.
 `--write` regenerates `evidence/t1-functional/report.json`.
 
+## Bumping the pinned toolchain
+
+`Makefile`'s `FV_PINS` and the committed evidence must move together: the
+re-run compares `provenance` (including `klt_version`, the stripped stdout
+of `klt --version`) and the recorded environment (including
+`cocotb_version`) verbatim, so a bump without a regeneration render would
+turn this lane FAIL-on-provenance at the next wave gate. The recurrence
+guard `tools/check_fv_pins.py` (issue #226) makes that visible at bump
+time, in the fast lane: it fails `make check` / `bash tools/check_all.sh`
+and `make test-fast` (`tests/test_check_fv_pins.py`) naming the file, the
+pinned version and the recorded version. When it fails:
+
+1. bump `FV_PINS` in the `Makefile`;
+2. regenerate the evidence: `make functional-verification --write`, and
+   `make functional-verification-controls --write` for the two controls;
+3. update `docs/reuse/catalog.json` if any byte-pinned `tools/` file
+   changed.
+
 ## What is committed (`evidence/t1-functional/`)
 
 - `request.json` — the klt request (top `dx7_core`, Icarus, pinned seed).

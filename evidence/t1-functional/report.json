@@ -5,8 +5,10 @@
   "cocotb_version": "2.1.0",
   "engine": "icarus",
   "engine_version": "13.0",
+  "initial_state": null,
   "random_seed": 1,
-  "sdf": null
+  "sdf": null,
+  "source_defines": {}
  },
  "failed_count": 0,
  "hdl_toplevel": "dx7_core",
@@ -133,7 +135,7 @@
   "defines": [],
   "dr0012_pin_matches": true,
   "frame_rule": "dev: last event block + 16; stress: preregistered length",
-  "klt_version": "klt 0.7.0",
+  "klt_version": "klt 0.8.0",
   "not_graded": {
    "cases": [
     "dev32-03",
@@ -167,7 +169,7 @@
  "tests": [
   {
    "name": "case_dir_base",
-   "real_time_s": 2016.363,
+   "real_time_s": 2679.2,
    "sim_time_ns": 1.0,
    "status": "passed"
   },

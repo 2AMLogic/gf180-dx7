@@ -5,8 +5,10 @@
   "cocotb_version": "2.1.0",
   "engine": "icarus",
   "engine_version": "13.0",
+  "initial_state": null,
   "random_seed": 1,
-  "sdf": null
+  "sdf": null,
+  "source_defines": {}
  },
  "failed_count": 1,
  "hdl_toplevel": "dx7_core",
@@ -19,7 +21,7 @@
   ],
   "dr0012_pin_matches": true,
   "frame_rule": "dev: last event block + 16; stress: preregistered length",
-  "klt_version": "klt 0.7.0",
+  "klt_version": "klt 0.8.0",
   "not_graded": {
    "cases": [
     "dev32-03",
@@ -55,7 +57,7 @@
    "error_message": "stress-sum16: RTL != frozen model; first mismatches [{'index': 849, 'golden': 23300, 'actual': 23316, 'block': 11, 'sample': 17}] overrun=0 overflow=0\nassert False",
    "error_type": "AssertionError",
    "name": "case_stress_sum16",
-   "real_time_s": 203.709,
+   "real_time_s": 235.44,
    "sim_time_ns": 1.0,
    "status": "failed"
   }

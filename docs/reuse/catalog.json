@@ -1428,6 +1428,11 @@
    "reason": "locally authored R06 check_all.sh gate (issue #13); thin wrapper around tools/registry_coverage.py --check, no upstream bytes"
   },
   {
+   "path": "tools/check_fv_pins.py",
+   "sha256": "7ca7f34d1c3469dec8bc8dbbf1253cabd0e12afb6da826a82b972704ce9bbba5",
+   "reason": "locally authored FV pin/provenance gate (issue #226); asserts Makefile FV_PINS against the toolchain recorded in evidence/t1-functional reports so a pin bump fails the fast lane instead of silently invalidating the FV lane; no upstream bytes"
+  },
+  {
    "path": "tests/test_capabilities.py",
    "sha256": "764ee4c087314de44be0507c113501b7b35b09fbbcdddddcb93f4b69a6b05aaa",
    "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage)"
@@ -1879,8 +1884,8 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "e1570522a566253feeb275d7d12cc76f61086101304e5af1e2ba07e412254419",
-   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases; re-pinned after issue #96 added the ams_audit fast-lane token; re-pinned for issue #211: fast token hierarchy added (tests/test_hierarchy_stat.py flop-predicate regression suite)"
+   "sha256": "abe26df544347341694cdf91fef0728586966b02f064bfa4516dffa88305c874",
+   "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases; re-pinned after issue #96 added the ams_audit fast-lane token; re-pinned for issue #211: fast token hierarchy added (tests/test_hierarchy_stat.py flop-predicate regression suite); re-pinned for issue #226: fast token fv_pins added (tests/test_check_fv_pins.py, the FV pin/provenance gate suite)"
   },
   {
    "path": "tools/u02_candidates.py",

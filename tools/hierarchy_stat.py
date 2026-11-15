@@ -11,7 +11,8 @@ THE FLOP PREDICATE (decided, issue #211 -- not merged by accident):
 family, including the sdff scan variants, by substring against gf180mcu
 cell names. Latches ("latq") and integrated clock gates ("icgt") are NOT
 flops; they are reported as separate labelled counts (`latch_total`,
-`clockgate_total`), never folded into the flop total. The pre-#211
+`clockgate_total`) on BOTH success paths -- zero and empty for an empty
+design (issue #220) -- never folded into the flop total. The pre-#211
 h10_synth.py copy instead counted r"__(dff|sdff|latq|icgt)", so the same
 mapped design carried two flop definitions depending on which tool parsed
 it -- every committed transcript happens to map to dffq_* cells only, so
@@ -43,7 +44,12 @@ def _parse_empty_stat(log, failure, issue):
     mapped to NOTHING (the H07_STRIP_OBSERVABILITY control -- yosys
     deletes every cell, so no `Chip area` line is printed at all).
     Accepted only when the transcript really is cell-free; anything else
-    raises rather than reporting a per-module number as the total."""
+    raises rather than reporting a per-module number as the total.
+    The labelled counts (latch_cells/latch_total/clockgate_cells/
+    clockgate_total) come back here too, as empty/zero: an empty design
+    genuinely has none of each (issue #220), so both success paths agree
+    on every key whose value is knowable. top_module stays absent -- an
+    empty design has no top module, and no placeholder is invented."""
     if re.search(r"Chip area for module", log):
         raise failure(
             "stat transcript has per-module 'Chip area for module' blocks "
@@ -62,6 +68,10 @@ def _parse_empty_stat(log, failure, issue):
         "cell_total": 0,
         "dff_cells": {},
         "flop_total": 0,
+        "latch_cells": {},
+        "latch_total": 0,
+        "clockgate_cells": {},
+        "clockgate_total": 0,
         "chip_area_um2": None,
         "seq_area_um2": None,
         "totals_basis": EMPTY_BASIS,

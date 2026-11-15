@@ -17,6 +17,10 @@ nand2_1:
   - the pre-#211 h10 rule yields 9 on the same transcript -- asserted
     here so a regression back to that predicate fails this test.
 
+Issue #220 additionally pins the SHAPE contract between the parser's two
+success paths: their key sets differ exactly by `top_module` (an empty
+design has none), with the labelled counts present -- zero -- on both.
+
 No yosys needed; stdlib only.
 """
 
@@ -88,6 +92,12 @@ def old_h10_flop_total(st):
                if re.search(r"__(dff|sdff|latq|icgt)", k))
 
 
+# Issue #220: the only key whose value is genuinely unknowable for an
+# empty design -- an empty design has no top module, so no placeholder
+# may be invented for it.
+UNKNOWABLE_ON_EMPTY = {"top_module"}
+
+
 class TestFlopPredicate(unittest.TestCase):
     def test_flop_total_is_dff_family_only(self):
         st = hierarchy_stat.parse_hierarchy_stat(MIXED_TRANSCRIPT, ValueError,
@@ -155,6 +165,72 @@ class TestAttribution(unittest.TestCase):
         # the same transcript still parses without attribution: the
         # refusal is scoped to the requested extras, not the totals.
         st = hierarchy_stat.parse_hierarchy_stat(broken, ValueError, "#211")
+        self.assertEqual(st["flop_total"], 4)
+
+
+class TestPathShapeSymmetry(unittest.TestCase):
+    """Issue #220: the parser's two success paths (hierarchical and
+    empty-design) must agree on every key whose value is knowable for
+    an empty design, so a consumer written as `st["latch_total"]`
+    cannot pass on a full transcript and KeyError on the strip
+    control."""
+
+    # Issue #220 edge case: the same mapped design with the latch and
+    # clock-gate rows removed (counts adjusted to stay consistent:
+    # 4 dffq + 1 nand2 = 5 cells, 250.150 um2) -- zero state cells, so
+    # "key present, value zero" must hold on the hierarchical path too.
+    ZERO_STATE_TRANSCRIPT = MIXED_TRANSCRIPT.replace(
+        "        3   150.200   gf180mcu_fd_sc_mcu7t5v0__latq_1\n", ""
+    ).replace(
+        "        2   100.050   gf180mcu_fd_sc_mcu7t5v0__icgtp_1\n", ""
+    ).replace(
+        "       10  500.400 top\n", "        5  250.150 top\n"
+    ).replace(
+        "       10  500.400 cells\n", "        5  250.150 cells\n"
+    ).replace(
+        "Chip area for top module '\\top': 500.400000",
+        "Chip area for top module '\\top': 250.150000",
+    )
+
+    def test_empty_and_hierarchical_paths_agree_on_knowable_keys(self):
+        """The key-set difference between the two success paths is
+        exactly `top_module`; a future key added to one path and not
+        the other fails here instead of silently re-opening #220."""
+        hier = hierarchy_stat.parse_hierarchy_stat(MIXED_TRANSCRIPT,
+                                                   ValueError, "#220")
+        # Guard against the silent fall-through: if the transcript's
+        # `Chip area for top module` line ever stopped matching,
+        # parse_hierarchy_stat would return the EMPTY path's dict and
+        # the comparison below would become vacuous (empty vs empty).
+        self.assertEqual(hier["totals_basis"], hierarchy_stat.HIER_BASIS)
+        empty = hierarchy_stat._parse_empty_stat("", ValueError, "#220")
+        self.assertEqual(set(hier) - set(empty), UNKNOWABLE_ON_EMPTY)
+        self.assertEqual(set(empty) - set(hier), set())
+        for k in ("latch_total", "clockgate_total"):
+            self.assertEqual(empty[k], 0)
+        self.assertEqual(empty["latch_cells"], {})
+        self.assertEqual(empty["clockgate_cells"], {})
+
+    def test_empty_transcript_reaches_empty_path_via_public_api(self):
+        """The empty transcript must still fall through to
+        _parse_empty_stat through parse_hierarchy_stat itself, and the
+        labelled counts must be readable on the result."""
+        st = hierarchy_stat.parse_hierarchy_stat("", ValueError, "#220")
+        self.assertEqual(st["totals_basis"], hierarchy_stat.EMPTY_BASIS)
+        self.assertEqual(st["latch_total"], 0)
+        self.assertEqual(st["clockgate_total"], 0)
+
+    def test_hierarchical_path_with_zero_state_cells_reports_zero_too(self):
+        """A mapped design with NO latches and NO clock gates reports
+        the labelled counts as 0/{} -- "key present, value zero" is not
+        special to the empty path."""
+        st = hierarchy_stat.parse_hierarchy_stat(self.ZERO_STATE_TRANSCRIPT,
+                                                 ValueError, "#220")
+        self.assertEqual(st["totals_basis"], hierarchy_stat.HIER_BASIS)
+        self.assertEqual(st["latch_total"], 0)
+        self.assertEqual(st["latch_cells"], {})
+        self.assertEqual(st["clockgate_total"], 0)
+        self.assertEqual(st["clockgate_cells"], {})
         self.assertEqual(st["flop_total"], 4)
 
 

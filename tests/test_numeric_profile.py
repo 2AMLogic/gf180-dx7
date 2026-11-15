@@ -388,6 +388,33 @@ class TestNegativeControls(unittest.TestCase):
         failures = run_checker_on(profile)
         self.assertTrue(any("sr_multiplier" in f for f in failures), failures)
 
+    def test_derivation_product_token_mutation_fails(self):
+        # Issue #212: mutating only the product token (15414067.2 -> 15414068.2)
+        # while the floor token stays intact must fail the derivation check.
+        profile = copy.deepcopy(PROFILE)
+        profile["envelope"]["sr_multiplier_derivation"] = \
+            "(44100.0 / 48000.0) * 2^24 = 15414068.2 -> floor = 15414067"
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("sr_multiplier_derivation" in f for f in failures), failures)
+
+    def test_derivation_floor_token_mutation_fails(self):
+        # Issue #212: mutating only the floor token must fail too.
+        profile = copy.deepcopy(PROFILE)
+        profile["envelope"]["sr_multiplier_derivation"] = \
+            "(44100.0 / 48000.0) * 2^24 = 15414067.2 -> floor = 15414068"
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("sr_multiplier_derivation" in f for f in failures), failures)
+
+    def test_derivation_field_deleted_fails(self):
+        # Issue #212: a missing derivation must FAIL, never silently skip.
+        profile = copy.deepcopy(PROFILE)
+        del profile["envelope"]["sr_multiplier_derivation"]
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("sr_multiplier_derivation" in f for f in failures), failures)
+
     def test_missing_full_state_storage_fails(self):
         profile = copy.deepcopy(PROFILE)
         del profile["storage"]["totals"]

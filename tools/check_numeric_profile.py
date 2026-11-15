@@ -164,12 +164,21 @@ def check_derived_constants(profile):
     failures = []
     rate = profile["premises"]["sample_rate_hz"]
     n = profile["block"]["n"]
-    want = math.floor((44100.0 / rate) * (1 << 24))
+    exact = (44100.0 / rate) * (1 << 24)
+    want = math.floor(exact)
     got = profile.get("envelope", {}).get("sr_multiplier_48k")
     if got != want:
         failures.append(
             f"envelope.sr_multiplier_48k = {got!r} but floor((44100.0/{rate}) "
             f"* 2^24) = {want} (env.cc:47-49 uint32_t truncation)")
+    want_prose = (f"(44100.0 / {float(rate)}) * 2^24 = {exact} -> "
+                  f"floor = {want}")
+    got_prose = profile.get("envelope", {}).get("sr_multiplier_derivation")
+    if got_prose != want_prose:
+        failures.append(
+            f"envelope.sr_multiplier_derivation = {got_prose!r} but the "
+            f"derivation regenerated from premises.sample_rate_hz = {rate} "
+            f"is {want_prose!r} (env.cc:47-49 uint32_t truncation)")
     want = math.floor(n * 25190424 / rate + 0.5)
     got = profile.get("lfo", {}).get("unit_48k")
     if got != want:

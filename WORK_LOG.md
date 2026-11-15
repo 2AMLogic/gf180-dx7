@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-15
 
+- **PR #233**: fix: declare guarded-skip tokens in the CHECKS registry; anchor skipped= regex; fix dev32 HarnessNotRun leak
+- **Issue #232** (closed): Guarded-skip detection depends on an undeclared stdout contract (bare "NOT_RUN" substring)
 - **PR #230**: check: gate FV_PINS bumps against committed FV evidence provenance
 - **Issue #226** (closed): FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump
 - **PR #229**: fix: N01 checker pins prose restatements of recomputed values; guard closes the class

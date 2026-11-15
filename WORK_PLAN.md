@@ -33,17 +33,13 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-- **#206**: Capability evidence records cannot distinguish a full check run from a guarded skip
-- **#222**: N01 checker: five prose strings restate checked numbers the checker never re-derives (#212's class, fully enumerated)
-- **#226**: FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump
+- **#234**: Consolidate duplicated detune_delta/fine_term: host.py vs tools/host_frozen_int.py
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#228**: feat: capture guarded-skip output and skip counts in capability evidence
-- **#229**: fix: N01 checker pins prose restatements of recomputed values; guard closes the class
-- **#230**: check: gate FV_PINS bumps against committed FV evidence provenance
+_None._
 
 ## Approved (Awaiting Merge)
 
@@ -64,9 +60,7 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
-- **#206**: Capability evidence records cannot distinguish a full check run from a guarded skip *(curated)*
-- **#222**: N01 checker: five prose strings restate checked numbers the checker never re-derives (#212's class, fully enumerated) *(curated)*
-- **#226**: FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump *(curated)*
+- **#234**: Consolidate duplicated detune_delta/fine_term: host.py vs tools/host_frozen_int.py *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -87,10 +81,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 3 |
-| PRs awaiting review | 3 |
+| In Progress (`loom:building`) | 1 |
+| PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 12 |
+| Curated | 10 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

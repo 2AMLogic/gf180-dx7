@@ -15,10 +15,20 @@ register an evaluator) and fixes the flaws found in the sibling audit
      STALE;
   3. a node cannot PASS while a required negative control has not been
      recorded as executed AND detected — missing or undetected controls
-     yield NO_VERDICT, never PASS;
+     yield NO_VERDICT, never PASS; a control that reported a guarded skip
+     (some of its tests did not run) records NOT_RUN, never PASS, because
+     an only-partially-run control has not demonstrated its detects clause;
   4. an unregistered or hand-declared check is refused (NO_VERDICT), and a
      fabricated PASS is rejected because stamping requires the record to
-     name the registered command exactly.
+     name the registered command exactly;
+  5. a record may carry bounded captured output (sha256 + tail) for the
+     check and each control plus unittest run/skip counts, so a guarded
+     skip — a check or control that exits 0 without doing all of its work
+     — is readable from the record instead of byte-indistinguishable from
+     a complete run. Each node declares a skip_policy: "pass" lets a
+     check-level guarded skip stay within PASS (the gap must be named in
+     the node's exclusions); "not_run" forces NOT_RUN. Either way, a
+     required control that reported a skip forces NOT_RUN.
 
 Status vocabulary (AGENTS.md): PASS, FAIL, NOT_RUN, BLOCKED, NO_VERDICT,
 STALE. Coverage is reported separately from agreement. This module never
@@ -50,6 +60,18 @@ STALE = "STALE"
 RECORD_TIMESTAMP = "%Y-%m-%dT%H:%M:%SZ"
 _PATH_RE = re.compile(r"[A-Za-z0-9_./-]+")
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
+
+# Per-node policy for check-level guarded skips (issue #206): a check that
+# exits 0 while reporting a skip may stay within PASS ("pass", gap named in
+# the node's exclusions) or force NOT_RUN ("not_run"). A required CONTROL
+# that reported a skip always forces NOT_RUN under either policy.
+SKIP_POLICIES = ("pass", "not_run")
+
+# Optional per-control record fields (additive; SCHEMA stays /1 so committed
+# records keep validating). "output" is the bounded captured text
+# ({"sha256", "tail"}); "tests_run"/"skipped" are integers or null.
+CONTROL_OPTIONAL_KEYS = frozenset({"output", "tests_run", "skipped"})
+CONTROL_REQUIRED_KEYS = frozenset({"command", "detected", "exit_code"})
 
 
 class CapabilityError(ValueError):
@@ -142,6 +164,7 @@ _NODE_KEYS = {
     "covered_inputs",
     "required_negative_controls",
     "exclusions",
+    "skip_policy",
 }
 
 
@@ -220,6 +243,10 @@ def validate_graph(graph: dict) -> list[dict]:
         _require(
             isinstance(node_id, str) and re.fullmatch(r"[a-z0-9-]+", node_id),
             f"bad node id: {node_id!r}",
+        )
+        _require(
+            node["skip_policy"] in SKIP_POLICIES,
+            f"{node_id}: skip_policy must be one of {list(SKIP_POLICIES)}",
         )
         _require(node_id not in indexed, f"duplicate node id: {node_id}")
         indexed[node_id] = node
@@ -330,6 +357,38 @@ def coverage_hashes(node: dict, root: Path) -> dict[str, str]:
     return result
 
 
+def _validate_bounded_output(value: object, label: str) -> None:
+    """A bounded captured-output blob: full sha256 digest plus a text tail."""
+    _require(
+        isinstance(value, dict) and set(value) == {"sha256", "tail"},
+        f"{label} must be an object with exactly sha256/tail keys",
+    )
+    _require(
+        isinstance(value["sha256"], str)
+        and _SHA256_RE.fullmatch(value["sha256"]) is not None,
+        f"{label} sha256 must be a lowercase hex sha256 digest",
+    )
+    _require(isinstance(value["tail"], str), f"{label} tail must be a string")
+
+
+def _is_skip_count(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+
+
+def _skip_observed(record: dict) -> bool:
+    """A recorded observation that the check or a control skipped work."""
+    if record.get("check_skip_reported") is True:
+        return True
+    controls = record.get("controls")
+    if isinstance(controls, list):
+        for control in controls:
+            if not isinstance(control, dict):
+                continue
+            if _is_skip_count(control.get("skipped")):
+                return True
+    return False
+
+
 def _validate_record(record: object, node: dict, check: Check) -> None:
     _require(isinstance(record, dict), "evidence record must be an object")
     _require(
@@ -352,11 +411,42 @@ def _validate_record(record: object, node: dict, check: Check) -> None:
     )
     if result == PASS:
         _require(exit_code == 0, "PASS with nonzero exit_code")
+        if record.get("check_skip_reported") is True:
+            _require(
+                node["skip_policy"] == "pass",
+                "PASS with a reported check-level guarded skip requires the"
+                " node to declare skip_policy: pass",
+            )
+            _require(
+                "check_output" in record,
+                "check_skip_reported requires a recorded check_output",
+            )
     elif result == NOT_RUN:
-        _require(exit_code == 2, "NOT_RUN requires exit code 2")
+        if exit_code == 0:
+            # A guarded skip: the command succeeded but reported (via the
+            # captured output or a control skip count) that it did not do
+            # all of its work. Exit 0 alone is never NOT_RUN.
+            _require(
+                _skip_observed(record),
+                "NOT_RUN with exit_code 0 requires a recorded skip"
+                " observation (check_skip_reported or a control skip count)",
+            )
+        else:
+            _require(
+                exit_code == 2,
+                "NOT_RUN requires exit code 2, or exit 0 with a recorded"
+                " skip observation",
+            )
     else:
         _require(
             exit_code not in (0, 2), "FAIL requires a failing, non-NOT_RUN exit"
+        )
+    if "check_output" in record:
+        _validate_bounded_output(record["check_output"], "check_output")
+    if "check_skip_reported" in record:
+        _require(
+            isinstance(record["check_skip_reported"], bool),
+            "check_skip_reported must be a boolean",
         )
     recorded_at = record.get("recorded_at")
     _require(isinstance(recorded_at, str), "recorded_at required")
@@ -379,10 +469,13 @@ def _validate_record(record: object, node: dict, check: Check) -> None:
     controls = record.get("controls")
     _require(isinstance(controls, list), "controls list required")
     for control in controls:
+        _require(isinstance(control, dict), "control record must be an object")
         _require(
-            isinstance(control, dict)
-            and set(control) == {"command", "detected", "exit_code"},
-            "control records need command/detected/exit_code",
+            CONTROL_REQUIRED_KEYS
+            <= set(control)
+            <= CONTROL_REQUIRED_KEYS | CONTROL_OPTIONAL_KEYS,
+            "control records need command/detected/exit_code, plus only the"
+            " optional output/tests_run/skipped fields",
         )
         _require(
             isinstance(control["command"], list)
@@ -397,6 +490,31 @@ def _validate_record(record: object, node: dict, check: Check) -> None:
             control["exit_code"] is None
             or (isinstance(control["exit_code"], int)),
             "control exit_code must be an integer or null",
+        )
+        if "tests_run" in control:
+            _require(
+                control["tests_run"] is None
+                or (
+                    isinstance(control["tests_run"], int)
+                    and not isinstance(control["tests_run"], bool)
+                ),
+                "control tests_run must be an integer or null",
+            )
+        if "skipped" in control:
+            _require(
+                control["skipped"] is None
+                or (
+                    isinstance(control["skipped"], int)
+                    and not isinstance(control["skipped"], bool)
+                ),
+                "control skipped must be an integer or null",
+            )
+        if "output" in control:
+            _validate_bounded_output(control["output"], "control output")
+        _require(
+            not (control["detected"] and _is_skip_count(control.get("skipped"))),
+            "control recorded detected=true with skipped>0: a control that"
+            " skipped part of its run did not fully execute its detection",
         )
 
 
@@ -484,13 +602,13 @@ def _local(node: dict, root: Path) -> Result:
             False,
         )
     if record["result"] == NOT_RUN:
-        return Result(
-            NOT_RUN,
-            NOT_RUN,
-            (f"recorded check did not run (exit_code=2)",),
-            evidence_relative,
-            False,
+        skip_note = (
+            "recorded check reported a guarded skip and did not do all of"
+            " its work (exit_code=0)"
+            if record["exit_code"] == 0
+            else "recorded check did not run (exit_code=2)"
         )
+        return Result(NOT_RUN, NOT_RUN, (skip_note,), evidence_relative, False)
     recorded_controls = {
         tuple(control["command"]): control for control in record["controls"]
     }
@@ -510,22 +628,37 @@ def _local(node: dict, root: Path) -> Result:
                 node["id"],
                 "required negative control not recorded: " + control["id"],
             )
+        skipped = record_control.get("skipped")
+        if _is_skip_count(skipped):
+            tests_run = record_control.get("tests_run")
+            ran = (
+                f"skipped {skipped} of {tests_run} tests"
+                if isinstance(tests_run, int) and not isinstance(tests_run, bool)
+                else f"skipped {skipped} tests"
+            )
+            skip_note = (
+                "required negative control reported a guarded skip"
+                f" ({ran}): {control['id']}"
+            )
+            return Result(
+                NOT_RUN, NOT_RUN, (skip_note,), evidence_relative, False
+            )
         if not record_control["detected"]:
             return _refuse(
                 node["id"],
                 "required negative control did not detect its fault: "
                 + control["id"],
             )
-    return Result(
-        PASS,
-        PASS,
-        (
-            "registered check ran clean, coverage is current, and every "
-            "required negative control was recorded as detected",
-        ),
-        evidence_relative,
-        True,
+    reasons = (
+        "registered check ran clean, coverage is current, and every "
+        "required negative control was recorded as detected",
     )
+    if record.get("check_skip_reported") is True:
+        reasons = reasons + (
+            "recorded check reported a guarded skip (check_skip_reported;"
+            " see check_output in the evidence record)",
+        )
+    return Result(PASS, PASS, reasons, evidence_relative, True)
 
 
 def evaluate(nodes: list[dict], root: Path) -> dict[str, Result]:
@@ -603,6 +736,7 @@ def render_json(nodes: list[dict], results: dict[str, Result]) -> str:
                 "prereqs": sorted(node["prereqs"]),
                 "check": node["check"],
                 "engine": node["engine"],
+                "skip_policy": node["skip_policy"],
                 "evidence": results[node["id"]].evidence,
                 "covered_inputs": list(node["covered_inputs"]),
                 "required_negative_controls": [
@@ -632,6 +766,8 @@ def render_markdown(nodes: list[dict], results: dict[str, Result]) -> str:
         " (including dirty and untracked files), and every required negative"
         " control recorded as executed AND detected. Any covered byte change is"
         " STALE; missing or undetected controls are NO_VERDICT, never PASS;"
+        " a required control that reported a guarded skip, or a check-level"
+        " guarded skip under a `not_run` skip policy, is NOT_RUN, never PASS;"
         " unmet prerequisites are BLOCKED.",
         "",
         "Regenerate with `python3 tools/compile_capabilities.py`; `--check`"
@@ -639,7 +775,11 @@ def render_markdown(nodes: list[dict], results: dict[str, Result]) -> str:
         " `--strict` additionally requires every node PASS and is the future"
         " release gate (honestly red while nodes are NO_VERDICT). Evidence is"
         " produced only via `--stamp <node>`, which runs the registered command"
-        " and the node's required controls.",
+        " and the node's required controls, capturing bounded output"
+        " (sha256 + tail) and unittest run/skip counts into the record. Each"
+        " node declares a skip policy: `pass` keeps a check-level guarded skip"
+        " inside PASS (the gap must be named in its exclusions); `not_run`"
+        " forces NOT_RUN on any reported skip.",
         "",
         "| Node | Claim | State | Reason |",
         "| --- | --- | --- | --- |",
@@ -691,6 +831,15 @@ def render_markdown(nodes: list[dict], results: dict[str, Result]) -> str:
                 or "none declared"
             )
             + ".",
+            "- Skip policy: `"
+            + node["skip_policy"]
+            + "`"
+            + (
+                " — a check-level guarded skip stays within PASS (named in"
+                " exclusions)."
+                if node["skip_policy"] == "pass"
+                else " — any reported check or control skip forces NOT_RUN."
+            ),
             "- Exclusions: " + "; ".join(_cell(item) for item in node["exclusions"]) + ".",
             "- Evidence: "
             + (
@@ -717,7 +866,10 @@ def render_readme_block(nodes: list[dict], results: dict[str, Result]) -> str:
         "Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by"
         " `tools/compile_capabilities.py` — do not hand-edit. Evidence-derived"
         " node states; issue closure, file existence, and prose never establish"
-        " a capability claim. Per-node claims, coverage, and controls:"
+        " a capability claim. Per-node `skip_policy` decides whether a"
+        " check-level guarded skip stays within PASS (`pass`) or forces"
+        " NOT_RUN (`not_run`); a required control that reported a skip always"
+        " forces NOT_RUN. Per-node claims, coverage, and controls:"
         " [docs/CAPABILITIES.md](docs/CAPABILITIES.md).",
         "",
         "| " + " | ".join(states) + " |",

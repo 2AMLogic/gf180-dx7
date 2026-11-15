@@ -27,6 +27,7 @@
         "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "PASS"
     },
     {
@@ -52,7 +53,7 @@
         "contract"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/verify_reference.py"
+        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py, tools/verify_reference.py"
       ],
       "required_negative_controls": [
         {
@@ -60,6 +61,7 @@
           "id": "pin-drift-refused"
         }
       ],
+      "skip_policy": "pass",
       "state": "STALE"
     },
     {
@@ -80,12 +82,12 @@
         "No fidelity, listening, or hardware claim"
       ],
       "id": "oracle-identity",
-      "local_state": "STALE",
+      "local_state": "NOT_RUN",
       "prereqs": [
         "reference-pin"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py",
+        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)",
         "prerequisite not demonstrated: reference-pin=STALE"
       ],
       "required_negative_controls": [
@@ -94,6 +96,7 @@
           "id": "silent-substitution-refused"
         }
       ],
+      "skip_policy": "not_run",
       "state": "BLOCKED"
     },
     {
@@ -121,7 +124,7 @@
         "oracle-identity"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py",
+        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py",
         "prerequisite not demonstrated: oracle-identity=BLOCKED"
       ],
       "required_negative_controls": [
@@ -130,6 +133,7 @@
           "id": "silent-substitution-refused"
         }
       ],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -166,6 +170,7 @@
           "id": "mutation-battery-caught"
         }
       ],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -194,7 +199,7 @@
         "comparator"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/validate_dev32.py",
+        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py, tools/validate_dev32.py",
         "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [
@@ -203,6 +208,7 @@
           "id": "mutated-manifest-rejected"
         }
       ],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -223,16 +229,16 @@
         "Contract and recomputation discipline only: the profile's own arithmetic, derived constants, tables and citations are re-derived from their sources; no float-vs-fixed agreement, model, RTL, hardware or fidelity claim follows from this node",
         "No float-vs-fixed agreement claim exists today",
         "Citation coverage is partial by construction: of 71 cited lines, the 68 in the pinned dexed tree are verified when that tree is present (tools/fetch_dexed.sh), while the 3 in the dx7-oracle-marki tree stay NOT_RUN because that harness source is unpublished; the checker reports the skip explicitly and still exits 0, so a stamped PASS never covers those three",
-        "The evidence record stores only the check's exit code, not its stdout, so the citation NOT_RUN count above is reported out of band (this exclusion and the stamping PR) and cannot be read back from evidence/capabilities/numeric-profile.json"
+        "A treeless stamp (pinned dexed tree unavailable) never reads PASS: the checker's guarded citation skip sets check_skip_reported, and the required control reports skipped=1 of 11 (the citation-line-rot clause never ran), so the record lands NOT_RUN with the captured output digest+tail and skip counts readable from evidence/capabilities/numeric-profile.json (issue #206). With the tree present the control runs whole and the record stays PASS while the 3 unpublished dx7-oracle-marki citations remain a declared, exclusion-named check-level gap under skip_policy: pass"
       ],
       "id": "numeric-profile",
-      "local_state": "PASS",
+      "local_state": "NOT_RUN",
       "prereqs": [
         "comparator",
         "contract"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected",
+        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)",
         "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [
@@ -241,6 +247,7 @@
           "id": "mutated-profile-refused"
         }
       ],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -270,7 +277,7 @@
         "renderer"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py",
+        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py",
         "prerequisite not demonstrated: renderer=BLOCKED"
       ],
       "required_negative_controls": [
@@ -279,6 +286,7 @@
           "id": "perturbing-stub-rejected"
         }
       ],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -303,6 +311,7 @@
         "prerequisite not demonstrated: comparator=BLOCKED, numeric-profile=BLOCKED, traces=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -325,6 +334,7 @@
         "prerequisite not demonstrated: fixed-model=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -347,6 +357,7 @@
         "prerequisite not demonstrated: rtl-core=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -369,6 +380,7 @@
         "prerequisite not demonstrated: rtl-exact=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -391,6 +403,7 @@
         "prerequisite not demonstrated: rtl-exact=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -413,6 +426,7 @@
         "prerequisite not demonstrated: traces=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     },
     {
@@ -436,6 +450,7 @@
         "prerequisite not demonstrated: corpus-dev32=BLOCKED, registry=BLOCKED"
       ],
       "required_negative_controls": [],
+      "skip_policy": "pass",
       "state": "BLOCKED"
     }
   ],

@@ -16,6 +16,7 @@ import importlib.util
 import json
 import math
 import os
+import re
 import struct
 import unittest
 from pathlib import Path
@@ -415,6 +416,152 @@ class TestNegativeControls(unittest.TestCase):
         self.assertTrue(
             any("sr_multiplier_derivation" in f for f in failures), failures)
 
+    # --- issue #222: prose strings restating values the checker recomputes.
+    # Each control mutates only the prose copy; the numeric sibling stays
+    # correct, so any failure must come from the new regenerate-and-compare
+    # assertions. Dict-mutation only, not gated on DEXED_ROOT. ---
+
+    def test_num007_title_lfo_unit_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        for dec in profile["decision_index"]:
+            if dec["id"] == "NUM-007":
+                dec["title"] = dec["title"].replace("33587", "33588")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-007" in f and "unit_48k" in f for f in failures),
+            failures)
+
+    def test_num008_title_pitch_unit_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        for dec in profile["decision_index"]:
+            if dec["id"] == "NUM-008":
+                dec["title"] = dec["title"].replace("1050", "1051")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-008" in f and "unit_48k" in f for f in failures),
+            failures)
+
+    def test_storage_claim_total_bits_mutation_fails(self):
+        # containment only: the claim also carries the frozen historical
+        # 'exact 32416 bits', which must stay wrong and is never matched
+        profile = copy.deepcopy(PROFILE)
+        profile["storage"]["claim"] = \
+            PROFILE["storage"]["claim"].replace("38336 bits", "38337 bits")
+        failures = run_checker_on(profile)
+        self.assertTrue(any("storage.claim" in f for f in failures), failures)
+
+    def test_storage_claim_area_mm2_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["storage"]["claim"] = \
+            PROFILE["storage"]["claim"].replace("4.5236 mm2", "4.9236 mm2")
+        failures = run_checker_on(profile)
+        self.assertTrue(any("storage.claim" in f for f in failures), failures)
+
+    def test_correction_note_frame_rate_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["schedule"]["correction_note"] = \
+            PROFILE["schedule"]["correction_note"].replace("750/s", "751/s")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("correction_note" in f for f in failures), failures)
+
+    def test_correction_note_clock_per_frame_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["schedule"]["correction_note"] = PROFILE["schedule"][
+            "correction_note"].replace("16384 clk/frame", "16385 clk/frame")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("correction_note" in f for f in failures), failures)
+
+    def test_correction_note_per_sample_views_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["schedule"]["correction_note"] = PROFILE["schedule"][
+            "correction_note"].replace("256/512 clk", "257/512 clk")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("correction_note" in f for f in failures), failures)
+
+    def test_num002_cost_estimate_clock_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        for dec in profile["decision_index"]:
+            if dec["id"] == "NUM-002":
+                dec["cost_estimate"] = dec["cost_estimate"].replace(
+                    "16384 clk/frame", "16385 clk/frame")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-002" in f and "cost_estimate" in f for f in failures),
+            failures)
+
+    def test_num003_cost_estimate_evals_mutation_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        for dec in profile["decision_index"]:
+            if dec["id"] == "NUM-003":
+                dec["cost_estimate"] = dec["cost_estimate"].replace(
+                    "96 x", "97 x")
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-003" in f and "cost_estimate" in f for f in failures),
+            failures)
+
+    def test_num005_cost_estimate_evals_and_clock_mutations_fail(self):
+        for token, replacement in (("96 x", "97 x"),
+                                   ("96 steps/frame", "97 steps/frame"),
+                                   ("16384 clk/frame", "16385 clk/frame")):
+            profile = copy.deepcopy(PROFILE)
+            for dec in profile["decision_index"]:
+                if dec["id"] == "NUM-005":
+                    dec["cost_estimate"] = dec["cost_estimate"].replace(
+                        token, replacement)
+            failures = run_checker_on(profile)
+            self.assertTrue(
+                any("NUM-005" in f and "cost_estimate" in f
+                    for f in failures),
+                f"mutating {token!r} in NUM-005 cost_estimate: {failures}")
+
+    def test_missing_num007_decision_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["decision_index"] = [
+            d for d in profile["decision_index"] if d["id"] != "NUM-007"]
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-007" in f and "missing" in f for f in failures),
+            failures)
+
+    def test_missing_num008_decision_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["decision_index"] = [
+            d for d in profile["decision_index"] if d["id"] != "NUM-008"]
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("NUM-008" in f and "missing" in f for f in failures),
+            failures)
+
+    def test_missing_cost_restatement_decisions_fail(self):
+        for did in ("NUM-002", "NUM-003", "NUM-005"):
+            profile = copy.deepcopy(PROFILE)
+            profile["decision_index"] = [
+                d for d in profile["decision_index"] if d["id"] != did]
+            failures = run_checker_on(profile)
+            self.assertTrue(
+                any(did in f and "missing" in f for f in failures),
+                f"deleted {did}: {failures}")
+
+    def test_missing_storage_claim_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        del profile["storage"]["claim"]
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("storage.claim" in f and "missing" in f for f in failures),
+            failures)
+
+    def test_missing_correction_note_fails(self):
+        profile = copy.deepcopy(PROFILE)
+        del profile["schedule"]["correction_note"]
+        failures = run_checker_on(profile)
+        self.assertTrue(
+            any("correction_note" in f and "missing" in f for f in failures),
+            failures)
+
     def test_missing_full_state_storage_fails(self):
         profile = copy.deepcopy(PROFILE)
         del profile["storage"]["totals"]
@@ -457,6 +604,250 @@ class TestNegativeControls(unittest.TestCase):
         failures = run_checker_on(profile)
         self.assertTrue(any("not found in cited lines" in f for f in failures),
                         failures)
+
+
+# --- issue #222 enumeration guard -----------------------------------------
+#
+# The class this closes: a prose string that restates a value the checker
+# recomputes, where mutating the prose copy is invisible to the checker.
+# The guard recomputes the full derived set (recomputed_schedule(), the three
+# check_derived_constants() formulas, recomputed_storage_totals(), reg_area,
+# plus the patch_shared sum check_storage() recomputes from the per-field
+# widths), token-matches each value -- in the exact form the checker asserts it
+# (int(...) casts, the :.4f area, str() of the exact product) -- against every
+# non-structural string value in the profile, and requires every hit to be
+# classified in RESTATEMENT_TABLE as "covered" (a checker assertion pins it)
+# or ("exempt", one-line reason). A hit in neither bucket, a table entry that
+# no longer hits, a covered entry whose mutation the checker misses, or an
+# exempt entry whose mutation the checker catches, all fail.
+#
+# Class boundary, by construction: integer-token form only. Unit-converted
+# mentions (e.g. '12.288 MHz' for clock_12m288.hz) and derived-of-derived
+# figures (e.g. 3072 bits = 96 x 32) are outside the class; structural fields
+# (sha256 digests, pinned commits, citation line ranges) are not prose and are
+# excluded from the scan.
+#
+# This is a test, not a checker feature: the checker's exit-code contract and
+# its PASS summary line are untouched.
+
+STRUCTURAL_SUFFIXES = ("sha256", "sha256_uint16le", "pinned_commit", "lines")
+
+# Tokens the recomputed-value scan would never produce hits for, but which
+# are seeded into the table (with reasons) because they look like
+# restatements and must stay wrong: the deliberate historical records and
+# the Mark I source constants quoted in prose.
+_WATCHED_TOKENS = ("32416", "213", "16284", "16368")
+
+# Known boundary limitation: intermediate counts whose integer form is not
+# distinctive (the SRAM macro count = 10, hits '10-bit', '>> 10', 'H10',
+# '10%') are outside token-match class; a coincidental equality on such a
+# token cannot be told apart from a restatement mechanically.
+
+_COVERED = {
+    ("envelope.sr_multiplier_derivation", "15414067"):
+        "covered",  # #212/#221: full regeneration equality
+    ("envelope.sr_multiplier_derivation", "15414067.2"):
+        "covered",  # same assertion pins the exact product too
+    ("decision_index[6].title", "33587"):
+        "covered",  # NUM-007 title vs lfo.unit_48k
+    ("decision_index[7].title", "1050"):
+        "covered",  # NUM-008 title vs pitch_env.unit_48k
+    ("storage.claim", "38336"):
+        "covered",  # storage.claim vs recomputed total_bits
+    ("storage.claim", "4.5236"):
+        "covered",  # storage.claim vs reg_area formatted :.4f
+    ("schedule.correction_note", "750"):
+        "covered",  # correction_note vs frames_per_second
+    ("schedule.correction_note", "16384"):
+        "covered",  # correction_note vs clock_12m288.clks_per_frame
+    ("schedule.correction_note", "256"):
+        "covered",  # per-sample views vs clock_12m288.clks_per_sample
+    ("schedule.correction_note", "512"):
+        "covered",  # per-sample views vs clock_24m576.clks_per_sample
+    ("decision_index[1].cost_estimate", "16384"):
+        "covered",  # NUM-002 vs clock_12m288.clks_per_frame
+    ("decision_index[2].cost_estimate", "96"):
+        "covered",  # NUM-003 vs operator_evals_per_sample
+    ("decision_index[4].cost_estimate", "96"):
+        "covered",  # NUM-005 vs operator_evals_per_sample
+    ("decision_index[4].cost_estimate", "16384"):
+        "covered",  # NUM-005 vs clock_12m288.clks_per_frame
+    ("storage.cost_lines[0].verdict", "444"):
+        "covered",  # 'all registers' verdict vs recomputed patch_shared
+}
+
+_EXEMPT = {
+    ("storage.claim", "32416"):
+        ("exempt", "superseded v1 total quoted as a deliberate historical "
+                   "record ('exact 32416 bits'); must stay wrong"),
+    ("schedule.correction_note", "213"):
+        ("exempt", "superseded wrong clk/frame figure quoted as the "
+                   "corrected-away record; must stay wrong"),
+    ("routing_gating.gate", "16284"):
+        ("exempt", "Mark I k_level_thresh quoted from the cited source; not "
+                   "recomputed by this checker"),
+    ("note_tail.output_neutrality", "16284"):
+        ("exempt", "Mark I k_level_thresh quoted from the cited source; not "
+                   "recomputed by this checker"),
+    ("note_tail.output_neutrality", "16368"):
+        ("exempt", "Mark I gain2 constant quoted from the cited source; not "
+                   "recomputed by this checker"),
+    ("decision_index[8].title", "16284"):
+        ("exempt", "Mark I k_level_thresh quoted from the cited source; not "
+                   "recomputed by this checker"),
+    ("storage.cost_lines[0].verdict", "32416"):
+        ("exempt", "superseded v1 subset total quoted as a deliberate "
+                   "historical record; must stay wrong"),
+    ("output.quirk_negative_overflow_maps_positive", "32768"):
+        ("exempt", "Mark I clip constant 0x8000; coincidental equality with "
+                   "clock_24m576.clks_per_frame and the recomputed Mark I "
+                   "table bits"),
+    ("storage.cost_lines[1].anchor", "512"):
+        ("exempt", "SRAM macro byte ceiling (SRAM_MACRO_BYTES); coincidental "
+                   "equality with clock_24m576.clks_per_sample"),
+}
+
+RESTATEMENT_TABLE = {**_COVERED, **_EXEMPT}
+
+_IDX_RE = re.compile(r"^([^\[]+)((?:\[\d+\])*)$")
+
+
+def _derived_tokens():
+    """Recompute the derived value set, in the token form the checker asserts."""
+    rate = PROFILE["premises"]["sample_rate_hz"]
+    n = PROFILE["block"]["n"]
+    facts = CHK.recomputed_schedule(PROFILE["premises"], PROFILE["block"])
+    totals = CHK.recomputed_storage_totals(PROFILE["storage"])
+    patch_shared = sum(PROFILE["storage"]["patch_shared_state_bits"].values())
+    reg_area = totals["total_bits"] * CHK.AREA_PER_BIT_REGISTER / 1e6
+    exact = (44100.0 / rate) * (1 << 24)
+    return {
+        "envelope.sr_multiplier_48k": str(math.floor(exact)),
+        "envelope.sr_multiplier_derivation product": str(exact),
+        "lfo.unit_48k": str(math.floor(n * 25190424 / rate + 0.5)),
+        "pitch_env.unit_48k":
+            str(math.floor(n * (1 << 24) / (21.3 * rate) + 0.5)),
+        "storage.bits_per_operator": str(totals["bits_per_operator"]),
+        "storage.bits_per_note": str(totals["bits_per_note"]),
+        "storage.total_bits": str(totals["total_bits"]),
+        "storage.total_bytes": str(int(totals["total_bytes"])),
+        "storage.patch_shared_bits": str(patch_shared),
+        "storage.reg_area (:.4f)": f"{reg_area:.4f}",
+        "schedule.frames_per_second": str(int(facts["frames_per_second"])),
+        "schedule.operator_evals_per_sample":
+            str(facts["operator_evals_per_sample"]),
+        "schedule.operator_evals_per_frame":
+            str(facts["operator_evals_per_frame"]),
+        "schedule.operator_evals_per_second":
+            str(facts["operator_evals_per_second"]),
+        "schedule.op_loop_only_minimum_clock_hz":
+            str(facts["op_loop_only_minimum_clock_hz"]),
+        "schedule.clock_12m288.hz": str(int(facts["clock_12m288"]["hz"])),
+        "schedule.clock_12m288.clks_per_sample":
+            str(int(facts["clock_12m288"]["clks_per_sample"])),
+        "schedule.clock_12m288.clks_per_frame":
+            str(int(facts["clock_12m288"]["clks_per_frame"])),
+        "schedule.clock_24m576.hz": str(int(facts["clock_24m576"]["hz"])),
+        "schedule.clock_24m576.clks_per_sample":
+            str(int(facts["clock_24m576"]["clks_per_sample"])),
+        "schedule.clock_24m576.clks_per_frame":
+            str(int(facts["clock_24m576"]["clks_per_frame"])),
+    }
+
+
+def _prose_strings(profile):
+    """(dotted path, string) for every non-structural string value."""
+    def walk(node, path):
+        if isinstance(node, str):
+            leaf = path.rsplit(".", 1)[-1]
+            if not leaf.endswith(STRUCTURAL_SUFFIXES):
+                yield path, node
+        elif isinstance(node, dict):
+            for key, value in node.items():
+                yield from walk(value, f"{path}.{key}" if path else key)
+        elif isinstance(node, list):
+            for i, value in enumerate(node):
+                yield from walk(value, f"{path}[{i}]")
+    yield from walk(profile, "")
+
+
+def _bump_token(token):
+    """Bump the last digit of every digit-run: 33587 -> 33588, 4.5236 -> 5.5237, 15414067.2 -> 15414068.3."""
+    return re.sub(r"(\d)(?!\d)",
+                  lambda m: str((int(m.group(1)) + 1) % 10), token)
+
+
+def _mutate_string_at(profile, path, token, replacement):
+    """Replace token in the string at dotted path ([i] = list index).
+    Returns False when the string no longer contains the token."""
+    parts = path.split(".")
+    parent = profile
+    for part in parts[:-1]:
+        match = _IDX_RE.match(part)
+        parent = parent[match.group(1)]
+        for idx in re.findall(r"\[(\d+)\]", match.group(2)):
+            parent = parent[int(idx)]
+    match = _IDX_RE.match(parts[-1])
+    name = match.group(1)
+    idxs = [int(i) for i in re.findall(r"\[(\d+)\]", match.group(2))]
+    container, key = (parent[name], idxs[-1]) if idxs else (parent, name)
+    if token not in container[key]:
+        return False
+    container[key] = container[key].replace(token, replacement)
+    return True
+
+
+class TestProseRestatementEnumerationGuard(unittest.TestCase):
+    """Mechanically closes the prose-restatement class (issue #222)."""
+
+    def test_every_derived_token_hit_is_classified(self):
+        tokens = _derived_tokens()
+        for i, tok in enumerate(_WATCHED_TOKENS):
+            tokens[f"watched {i}"] = tok
+        hits = set()
+        for path, text in _prose_strings(PROFILE):
+            for tok in tokens.values():
+                if re.search(rf"(?<!\d){re.escape(tok)}(?!\d)", text):
+                    hits.add((path, tok))
+        unclassified = sorted(hits - set(RESTATEMENT_TABLE))
+        self.assertEqual(
+            unclassified, [],
+            "new prose restatement(s) of a recomputed value; add a checker "
+            "assertion + negative control and mark the entry covered, or "
+            "exempt it with a one-line reason")
+        stale = sorted(set(RESTATEMENT_TABLE) - hits)
+        self.assertEqual(
+            stale, [],
+            "RESTATEMENT_TABLE entries that no longer hit any prose string; "
+            "the table must mirror the committed prose")
+
+    def test_covered_entries_are_live_assertions(self):
+        for (path, tok), state in sorted(RESTATEMENT_TABLE.items()):
+            if state != "covered":
+                continue
+            profile = copy.deepcopy(PROFILE)
+            self.assertTrue(
+                _mutate_string_at(profile, path, tok, _bump_token(tok)),
+                f"{path} no longer contains {tok}")
+            failures = run_checker_on(profile)
+            self.assertTrue(
+                failures,
+                f"covered entry ({path}, {tok}) mutated but the checker "
+                "stayed silent: its assertion was lost")
+
+    def test_exempt_entries_stay_invisible(self):
+        for (path, tok), state in sorted(RESTATEMENT_TABLE.items()):
+            if not (isinstance(state, tuple) and state[0] == "exempt"):
+                continue
+            profile = copy.deepcopy(PROFILE)
+            self.assertTrue(
+                _mutate_string_at(profile, path, tok, _bump_token(tok)),
+                f"{path} no longer contains {tok}")
+            failures = run_checker_on(profile)
+            self.assertEqual(
+                failures, [],
+                f"exempt entry ({path}, {tok}) [{state[1]}] mutated but the "
+                f"checker failed: {failures[:2]}")
 
 
 class TestCheckerCli(unittest.TestCase):

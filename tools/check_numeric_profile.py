@@ -10,6 +10,11 @@ Fails when:
     cited formulas evaluated at the premise sample rate (env.cc:47-49,
     lfo.cc:26-29, pitchenv.cc:22-24) — the frozen values are derived, never
     restated literals;
+  - a prose string restates one of those recomputed values and no longer
+    carries the regenerated form (decision-index titles and cost estimates,
+    schedule.correction_note, storage.claim, the 'all registers' verdict) —
+    issue #222: each prose copy must regenerate-and-compare, never drift
+    silently;
   - the classified storage totals disagree with the per-field bit widths
     (runtime vs patch-shared), or the cost lines disagree with the family
     anchors they cite;
@@ -67,6 +72,16 @@ def load_json(path):
 
 def norm(text):
     return " ".join(str(text).split())
+
+
+def find_decision(profile, did):
+    """Locate a decision_index entry by id (check_decisions() keys off the
+    same field). Returns None, never raises, so callers can FAIL on absence
+    instead of silently skipping."""
+    for dec in profile.get("decision_index") or []:
+        if isinstance(dec, dict) and dec.get("id") == did:
+            return dec
+    return None
 
 
 def recomputed_schedule(premises, block):
@@ -140,6 +155,49 @@ def check_schedule(profile):
                 f"schedule.{key}.all_in_clks_per_op_eval = "
                 f"{got['all_in_clks_per_op_eval']} != "
                 f"{want['all_in_clks_per_op_eval']}")
+    # issue #222: prose copies of recomputed schedule figures must carry the
+    # regenerated form (int(...) casts — the recomputed values are floats).
+    fps = int(facts["frames_per_second"])
+    cpf = int(facts["clock_12m288"]["clks_per_frame"])
+    cps = (int(facts["clock_12m288"]["clks_per_sample"]),
+           int(facts["clock_24m576"]["clks_per_sample"]))
+    eps = facts["operator_evals_per_sample"]
+    note = sched.get("correction_note")
+    if note is None:
+        failures.append(
+            "schedule.correction_note missing: it must restate the corrected "
+            f"frame rate ({fps}/s), the 12.288 MHz clock cost ({cpf} "
+            f"clk/frame) and the per-sample views ({cps[0]}/{cps[1]} clk)")
+    else:
+        for token, what in (
+                (f"{fps}/s", "recomputed frame rate"),
+                (f"{cpf} clk/frame", "recomputed 12.288 MHz clock cost"),
+                (f"{cps[0]}/{cps[1]} clk", "recomputed per-sample clock views")):
+            if token not in note:
+                failures.append(
+                    f"schedule.correction_note = {note!r} does not restate "
+                    f"the {what} ({token})")
+    for did, tokens, source in (
+            ("NUM-002", (f"{cpf} clk/frame",),
+             "schedule.clock_12m288.clks_per_frame"),
+            ("NUM-003", (f"{eps} x",),
+             "schedule.operator_evals_per_sample"),
+            ("NUM-005", (f"{eps} x", f"{eps} steps/frame",
+                         f"{cpf} clk/frame"),
+             "schedule.operator_evals_per_sample / "
+             "schedule.clock_12m288.clks_per_frame")):
+        dec = find_decision(profile, did)
+        if dec is None:
+            failures.append(
+                f"decision_index {did} missing: its cost_estimate must "
+                f"restate {source}")
+            continue
+        text = dec.get("cost_estimate") or ""
+        for token in tokens:
+            if token not in text:
+                failures.append(
+                    f"decision {did} cost_estimate = {text!r} does not "
+                    f"restate {source} ({token})")
     return failures
 
 
@@ -185,12 +243,30 @@ def check_derived_constants(profile):
         failures.append(
             f"lfo.unit_48k = {got!r} but floor(N * 25190424 / {rate} + 0.5) "
             f"= {want} (lfo.cc:26-29)")
+    dec = find_decision(profile, "NUM-007")
+    if dec is None:
+        failures.append(
+            "decision_index NUM-007 missing: its title must restate "
+            f"lfo.unit_48k as 'unit_48k = {want}' (lfo.cc:26-29)")
+    elif f"unit_48k = {want}" not in (dec.get("title") or ""):
+        failures.append(
+            f"decision_index NUM-007 title = {dec.get('title')!r} does not "
+            f"restate lfo.unit_48k = {want} (lfo.cc:26-29)")
     want = math.floor(n * (1 << 24) / (21.3 * rate) + 0.5)
     got = profile.get("pitch_env", {}).get("unit_48k")
     if got != want:
         failures.append(
             f"pitch_env.unit_48k = {got!r} but floor(N * 2^24 / "
             f"(21.3 * {rate}) + 0.5) = {want} (pitchenv.cc:22-24)")
+    dec = find_decision(profile, "NUM-008")
+    if dec is None:
+        failures.append(
+            "decision_index NUM-008 missing: its title must restate "
+            f"pitch_env.unit_48k as 'unit_48k = {want}' (pitchenv.cc:22-24)")
+    elif f"unit_48k = {want}" not in (dec.get("title") or ""):
+        failures.append(
+            f"decision_index NUM-008 title = {dec.get('title')!r} does not "
+            f"restate pitch_env.unit_48k = {want} (pitchenv.cc:22-24)")
     return failures
 
 
@@ -232,7 +308,26 @@ def check_storage(profile):
         failures.append("storage.totals.replicated_total_with_patch_shared_bits"
                         f" = {totals.get('replicated_total_with_patch_shared_bits')}"
                         f" but total_bits + patch_shared = {with_shared}")
+    # issue #222: the claim prose restates the recomputed total and register
+    # area; the 'all registers' verdict restates the recomputed patch_shared.
+    # Containment only — the claim also carries the frozen historical
+    # 'exact 32416 bits', which must stay wrong and is never matched.
     reg_area = want["total_bits"] * AREA_PER_BIT_REGISTER / 1e6
+    claim = storage.get("claim")
+    if claim is None:
+        failures.append(
+            "storage.claim missing: it must restate the recomputed "
+            f"classified total ({want['total_bits']} bits) and the "
+            f"register-area estimate ({reg_area:.4f} mm2)")
+    else:
+        if f"{want['total_bits']} bits" not in claim:
+            failures.append(
+                f"storage.claim = {claim!r} does not restate the recomputed "
+                f"total ({want['total_bits']} bits)")
+        if f"{reg_area:.4f} mm2" not in claim:
+            failures.append(
+                f"storage.claim = {claim!r} does not restate the recomputed "
+                f"register area ({reg_area:.4f} mm2)")
     by_option = {line.get("option"): line for line in storage["cost_lines"]}
     line = by_option.get("all registers")
     if line is None:
@@ -247,6 +342,17 @@ def check_storage(profile):
             failures.append("'all registers' line must cite the family-measured anchor")
         if line.get("label") != "derived total from family-measured per-bit anchor":
             failures.append("'all registers' line must be labelled derived vs family-measured")
+        verdict = line.get("verdict")
+        if verdict is None:
+            failures.append(
+                "'all registers' cost line missing verdict: it must restate "
+                f"the recomputed shared patch bits "
+                f"({patch_shared} shared patch bits)")
+        elif f"{patch_shared} shared patch bits" not in verdict:
+            failures.append(
+                f"'all registers' verdict = {verdict!r} does not restate "
+                f"the recomputed shared patch bits "
+                f"({patch_shared} shared patch bits)")
     line = by_option.get("SRAM tiling")
     if line is None:
         failures.append("storage cost line 'SRAM tiling' missing")

@@ -4,6 +4,12 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-15
 
+- **PR #230**: check: gate FV_PINS bumps against committed FV evidence provenance
+- **Issue #226** (closed): FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump
+- **PR #229**: fix: N01 checker pins prose restatements of recomputed values; guard closes the class
+- **Issue #222** (closed): N01 checker: five prose strings restate checked numbers the checker never re-derives (#212's class, fully enumerated)
+- **PR #228**: feat: capture guarded-skip output and skip counts in capability evidence
+- **Issue #206** (closed): Capability evidence records cannot distinguish a full check run from a guarded skip
 - **PR #224**: fix: regenerate T1 functional-verification report under the klt 0.8.0 pin
 - **Issue #209** (closed): FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance
 - **PR #225**: fix: empty-design stat path reports the labelled latch/clock-gate counts

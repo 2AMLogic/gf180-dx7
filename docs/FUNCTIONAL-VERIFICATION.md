@@ -94,4 +94,6 @@ inside one window), so its PASS says nothing about audio.
   its control uses `stress-sum16`.
 - No `klayout-tools` gap was hit for the cocotb path (item 5 of the issue).
   `klt 0.7.0` has no `-o/--outdir`; the tool runs klt on a scratch copy of
-  the request instead.
+  the request instead. (Observed on `klt 0.7.0`, the version the original
+  report was produced with; not re-checked on the `0.8.0` pin as of
+  2026-11-15 — the scratch-copy workaround stands either way.)

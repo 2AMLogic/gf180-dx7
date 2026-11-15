@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Capability claim DAG (C01, issue #45; plan section 7). Nodes are stamped ONLY by checks registered in src/gf180_dx7/capabilities.py CHECKS; evidence lives in evidence/capabilities/<node>.json and is produced exclusively by tools/compile_capabilities.py --stamp. Declared-but-unregistered nodes (engine 'planned: ...') can never pass. This file is data for the compiler; never hand-edit the generated views (docs/CAPABILITIES.md, docs/capabilities.json, README block).",
+  "note": "Capability claim DAG (C01, issue #45; plan section 7). Nodes are stamped ONLY by checks registered in src/gf180_dx7/capabilities.py CHECKS; evidence lives in evidence/capabilities/<node>.json and is produced exclusively by tools/compile_capabilities.py --stamp, which captures bounded output (sha256 + tail) and unittest run/skip counts into the record (issue #206). skip_policy governs a check-level guarded skip: \"pass\" keeps it within PASS when the gap is named in exclusions; \"not_run\" forces NOT_RUN. A required control that reported a skip always forces NOT_RUN. Declared-but-unregistered nodes (engine 'planned: ...') can never pass. This file is data for the compiler; never hand-edit the generated views (docs/CAPABILITIES.md, docs/capabilities.json, README block).",
   "nodes": [
     {
       "id": "contract",
@@ -16,7 +16,8 @@
       "exclusions": [
         "No fidelity or hardware claim; contract text is not evidence of behavior",
         "Drift guards (claim-language, omissions, bidirectional DEC ids) are embedded in the registered check itself; any covered-byte change is STALE"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "reference-pin",
@@ -39,7 +40,8 @@
         "No claim that Dexed equals an original DX7",
         "No engine execution or audio claim; this is the pin, not a render",
         "Environment-bound: requires the local clone; CI evaluates recorded evidence only"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "oracle-identity",
@@ -62,7 +64,8 @@
       "exclusions": [
         "No render reproducibility claim (renderer node owns that)",
         "No fidelity, listening, or hardware claim"
-      ]
+      ],
+      "skip_policy": "not_run"
     },
     {
       "id": "renderer",
@@ -87,7 +90,8 @@
         "Reference-vs-reference repeatability only; never model-vs-reference fidelity",
         "Dry renders; no normalization or time-warping anywhere in the chain",
         "No listening or musical-usefulness claim"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "traces",
@@ -112,7 +116,8 @@
         "Proves non-perturbation of the oracle, not correctness of captured values",
         "No model equivalence or RTL claim",
         "Fresh traces are written to build/ (untracked); committed inputs are what coverage pins"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "comparator",
@@ -134,7 +139,8 @@
       "exclusions": [
         "Measurement discipline only; no fidelity verdict about any engine",
         "No averaging of unlike units into a quality score; coverage stays separate from agreement"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "corpus-dev32",
@@ -158,7 +164,8 @@
         "Catalog rights: archive bytes are never redistributed; selection only",
         "No preset-quality or musical-usefulness claim",
         "Full-32 render gate is recorded NOT_RUN in the proof (sampled proof only)"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "registry",
@@ -171,7 +178,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until R06 registers and stamps a check",
         "No per-patch verdict exists today"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "numeric-profile",
@@ -196,8 +204,9 @@
         "Contract and recomputation discipline only: the profile's own arithmetic, derived constants, tables and citations are re-derived from their sources; no float-vs-fixed agreement, model, RTL, hardware or fidelity claim follows from this node",
         "No float-vs-fixed agreement claim exists today",
         "Citation coverage is partial by construction: of 71 cited lines, the 68 in the pinned dexed tree are verified when that tree is present (tools/fetch_dexed.sh), while the 3 in the dx7-oracle-marki tree stay NOT_RUN because that harness source is unpublished; the checker reports the skip explicitly and still exits 0, so a stamped PASS never covers those three",
-        "The evidence record stores only the check's exit code, not its stdout, so the citation NOT_RUN count above is reported out of band (this exclusion and the stamping PR) and cannot be read back from evidence/capabilities/numeric-profile.json"
-      ]
+        "A treeless stamp (pinned dexed tree unavailable) never reads PASS: the checker's guarded citation skip sets check_skip_reported, and the required control reports skipped=1 of 11 (the citation-line-rot clause never ran), so the record lands NOT_RUN with the captured output digest+tail and skip counts readable from evidence/capabilities/numeric-profile.json (issue #206). With the tree present the control runs whole and the record stays PASS while the 3 unpublished dx7-oracle-marki citations remain a declared, exclusion-named check-level gap under skip_policy: pass"
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "fixed-model",
@@ -210,7 +219,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until the model lands and is stamped",
         "Budgets are never inferred from RTL or reference self-agreement"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "rtl-core",
@@ -223,7 +233,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until RTL exists and is stamped",
         "No physical timing claim"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "rtl-exact",
@@ -236,7 +247,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until integration lands and is stamped",
         "No FPGA or silicon execution claim"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "fpga",
@@ -249,7 +261,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until board capture evidence is stamped",
         "No board decision yet; analog audio out of scope for this node"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "gf180",
@@ -262,7 +275,8 @@
       "exclusions": [
         "Declared, not evidenced: stays NO_VERDICT until ASIC work starts",
         "No synthesis, P&R, signoff, or silicon claim exists today"
-      ]
+      ],
+      "skip_policy": "pass"
     },
     {
       "id": "instrument",
@@ -275,7 +289,8 @@
       "exclusions": [
         "Declared, not evidenced: numeric agreement never establishes musical usefulness; listening records do",
         "Stays NO_VERDICT until a listening protocol is registered and stamped"
-      ]
+      ],
+      "skip_policy": "pass"
     }
   ]
 }

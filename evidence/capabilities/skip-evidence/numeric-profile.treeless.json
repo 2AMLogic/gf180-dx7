@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "python3",
+    "tools/check_numeric_profile.py"
+  ],
+  "check": "numeric-profile-v1",
+  "check_output": {
+    "sha256": "2badba43079aff297bed0ae10b5a656619943a025c419c105e3ac94d929fa22d",
+    "tail": "numeric profile check PASS: schedule + storage recomputed, 12 decisions carry error/cost estimates, citation checks NOT_RUN for 71 citation(s) (pinned tree unavailable; guarded skip)\n"
+  },
+  "check_skip_reported": true,
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests.test_numeric_profile.TestNegativeControls"
+      ],
+      "detected": false,
+      "exit_code": 0,
+      "output": {
+        "sha256": "2e89ab67c9916cf662e887f1796063f18b48931f34518f4e225ac03feda7c9c3",
+        "tail": "s..........\n----------------------------------------------------------------------\nRan 11 tests in 0.014s\n\nOK (skipped=1)\n"
+      },
+      "skipped": 1,
+      "tests_run": 11
+    }
+  ],
+  "coverage": {
+    "docs/DECISIONS-NUMERIC-v1.md": "d64a47de9f5f2944c5bfe2f0a89850d390e5d1f8fd9919fbfeb456ed5b29b0cc",
+    "reference/manifest.json": "d5471aea82e677c77fa94a23a03e74df246ccb63b92ef4973555804ac41d3ef5",
+    "spec/capabilities-v1.json": "099c8b94a042069d4077c23a63e8d356b33c2cf5d3fdf5fd286dd80fd904470d",
+    "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
+    "spec/numeric-profile-v1.json": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
+    "src/gf180_dx7/capabilities.py": "07fe513271ebec5da4955627504308a7786be3a7cc6e289fed1e166c5f9e737b",
+    "tools/check_numeric_profile.py": "8ae99f285c0cb83cc0ccf38da28a680d0cd0f17eb059c1e9f8c6887d2e0910f1",
+    "tools/compile_capabilities.py": "404e0f7b26a7f37fe69f22c8f2e2777e001beccb6dc40401663e53ff8692d294"
+  },
+  "exit_code": 0,
+  "node_id": "numeric-profile",
+  "recorded_at": "2026-11-15T07:13:17Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "NOT_RUN",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

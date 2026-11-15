@@ -13,7 +13,12 @@ Negative controls required by the issue acceptance:
 Plus the positive path (registered check + current coverage + detected
 controls -> PASS), BLOCKED propagation, argv mismatch refusal, the --stamp
 producer path, --check staleness detection, and --strict being red while
-nodes are unproven.
+nodes are unproven. Issue #206 adds: backward compatibility of the eight
+committed records under the widened (required-plus-optional) control guard,
+refusal of unknown control keys and of detected=true with skipped>0, the
+NOT_RUN-with-exit-0 guarded-skip encoding (requires a recorded skip
+observation), per-node skip_policy enforcement, and stamp-side capture of
+bounded output plus unittest run/skip counts.
 
 State-machine tests never execute evidence commands. Only --stamp cases run
 commands, and those run only `python3 -c ...` against a temp root with a
@@ -24,6 +29,7 @@ mutated).
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
@@ -60,18 +66,22 @@ def _write(path: Path, data: bytes) -> None:
 
 
 def _node(node_id: str = "alpha", *, check="fixture-check", prereqs=(),
-          controls=None, covered=("inputs/a.txt",), claim="fixture claim") -> dict:
+          controls=None, covered=("inputs/a.txt",), claim="fixture claim",
+          skip_policy="pass", engine=None) -> dict:
     return {
         "id": node_id,
         "claim": claim,
         "check": check,
-        "engine": list(NOOP) if check else "planned: nothing registered",
+        "engine": list(engine)
+        if engine is not None
+        else (list(NOOP) if check else "planned: nothing registered"),
         "prereqs": list(prereqs),
         "covered_inputs": list(covered),
         "required_negative_controls": controls
         if controls is not None
         else [{"id": "ctrl", "detects": "any mutation", "command": list(NOOP)}],
         "exclusions": ["test fixture only"],
+        "skip_policy": skip_policy,
     }
 
 
@@ -376,6 +386,176 @@ class StateMachineTests(FixtureCase):
             cap.validate_graph(_graph(node))
 
 
+class OptionalRecordFieldsTests(FixtureCase):
+    """Issue #206: additive optional record fields (SCHEMA stays /1)."""
+
+    def _control(self, **extra):
+        control = {"command": list(NOOP), "detected": True, "exit_code": 0}
+        control.update(extra)
+        return control
+
+    def _add_check_skip(self, record_path: Path) -> None:
+        record = json.loads(record_path.read_bytes())
+        record["check_skip_reported"] = True
+        record["check_output"] = {"sha256": "c" * 64, "tail": "NOT_RUN: guarded"}
+        _write(
+            record_path,
+            (json.dumps(record, indent=2, sort_keys=True) + "\n").encode(),
+        )
+
+    def test_committed_records_still_validate_unchanged(self):
+        # Backward compatibility (the #200 guard): every committed evidence
+        # record must keep validating against its real node, untouched.
+        nodes = cap.load_graph(REPO / GRAPH_PATH)
+        indexed = {node["id"]: node for node in nodes}
+        checked = 0
+        for node_id in sorted(indexed):
+            node = indexed[node_id]
+            check = cap.CHECKS.get(node["check"]) if node["check"] else None
+            if check is None:
+                continue
+            record = json.loads(
+                (REPO / cap.node_evidence_path(node_id)).read_bytes()
+            )
+            cap._validate_record(record, node, check)
+            checked += 1
+        self.assertGreaterEqual(checked, 8)
+
+    def test_control_with_optional_fields_validates(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(
+            node,
+            controls=[
+                self._control(
+                    output={"sha256": "a" * 64, "tail": "OK (skipped=0)"},
+                    tests_run=11,
+                    skipped=0,
+                )
+            ],
+        )
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.PASS)
+
+    def test_control_with_unknown_key_is_refused(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(node, controls=[self._control(stdout="surprise")])
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+        self.assertIn("refused", " ".join(results["alpha"].reasons))
+
+    def test_detected_true_with_skipped_tests_is_refused(self):
+        # Negative control: detected=true alongside skipped>0 is a
+        # contradiction and must be refused, never passed through.
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(node, controls=[self._control(tests_run=2, skipped=2)])
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+        self.assertIn("skipped>0", " ".join(results["alpha"].reasons))
+
+    def test_not_run_zero_exit_requires_skip_observation(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(node, result="NOT_RUN", exit_code=0)
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+        self.assertIn("skip observation", " ".join(results["alpha"].reasons))
+
+    def test_not_run_zero_exit_with_skip_observation_validates(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(
+            node,
+            result="NOT_RUN",
+            exit_code=0,
+            controls=[
+                self._control(
+                    detected=False,
+                    output={"sha256": "b" * 64, "tail": "OK (skipped=1)"},
+                    tests_run=11,
+                    skipped=1,
+                )
+            ],
+        )
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NOT_RUN)
+        self.assertIn("guarded skip", " ".join(results["alpha"].reasons))
+
+    def test_pass_with_check_skip_requires_pass_policy(self):
+        # Negative control: a PASS carrying a check-level skip under a
+        # not_run policy must be refused by record validation itself.
+        node = _node(skip_policy="not_run")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self._add_check_skip(self.write_record(node))
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+        self.assertIn("skip_policy", " ".join(results["alpha"].reasons))
+
+    def test_pass_with_check_skip_under_pass_policy_surfaces_reason(self):
+        node = _node(skip_policy="pass")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self._add_check_skip(self.write_record(node))
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.PASS)
+        self.assertIn("guarded skip", " ".join(results["alpha"].reasons))
+
+    def test_output_blob_shape_is_enforced(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(
+            node, controls=[self._control(output={"sha256": "nothex", "tail": "x"})]
+        )
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NO_VERDICT)
+
+    def test_graph_refuses_unknown_skip_policy(self):
+        node = _node(skip_policy="maybe")
+        with self.assertRaises(cap.CapabilityError):
+            cap.validate_graph(_graph(node))
+
+
+class SkipPolicyTests(FixtureCase):
+    """Issue #206: a reported control skip never reads PASS, in any policy."""
+
+    def _skipped_control(self, command=None):
+        return [
+            {
+                "command": list(command or NOOP),
+                "detected": False,
+                "exit_code": 0,
+                "tests_run": 2,
+                "skipped": 2,
+            }
+        ]
+
+    def test_not_run_policy_with_skipped_control_does_not_pass(self):
+        node = _node(skip_policy="not_run")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(node, controls=self._skipped_control())
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NOT_RUN)
+        self.assertIn("skipped 2 of 2 tests", " ".join(results["alpha"].reasons))
+
+    def test_skipped_control_forces_not_run_under_pass_policy_too(self):
+        node = _node(skip_policy="pass")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.write_record(node, controls=self._skipped_control())
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NOT_RUN)
+
+
 class StampTests(FixtureCase):
     def test_stamp_runs_registered_check_and_controls_then_passes(self):
         node = _node()
@@ -449,6 +629,105 @@ class StampTests(FixtureCase):
         code, _, err = self.run_tool("--strict")
         self.assertEqual(code, 1)
         self.assertIn("requires every node PASS", err)
+
+
+class StampCaptureTests(FixtureCase):
+    """Issue #206: --stamp captures bounded output and unittest skip counts."""
+
+    def test_stamp_records_output_counts_and_skip_result(self):
+        control = [
+            "python3",
+            "-c",
+            "import sys; sys.stderr.write"
+            "('Ran 2 tests in 0.001s\\n\\nOK (skipped=2)\\n')",
+        ]
+        node = _node(
+            controls=[{"id": "ctrl", "detects": "any mutation", "command": control}]
+        )
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        code, _, _ = self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertEqual(record["result"], cap.NOT_RUN)
+        self.assertEqual(record["exit_code"], 0)
+        self.assertFalse(record["controls"][0]["detected"])
+        self.assertEqual(record["controls"][0]["tests_run"], 2)
+        self.assertEqual(record["controls"][0]["skipped"], 2)
+        captured = "Ran 2 tests in 0.001s\n\nOK (skipped=2)\n"
+        self.assertEqual(
+            record["controls"][0]["output"]["sha256"],
+            hashlib.sha256(captured.encode()).hexdigest(),
+        )
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.NOT_RUN)
+
+    def test_stamp_non_unittest_control_records_null_counts(self):
+        node = _node()
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertIsNone(record["controls"][0]["tests_run"])
+        self.assertIsNone(record["controls"][0]["skipped"])
+        self.assertTrue(record["controls"][0]["detected"])
+        self.assertEqual(record["result"], cap.PASS)
+
+    def test_stamp_check_output_digest_covers_full_text(self):
+        loud = ["python3", "-c", "print('z' * 5000)"]
+        node = _node(engine=loud)
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        full_text = "z" * 5000 + "\n"
+        self.assertEqual(
+            record["check_output"]["sha256"],
+            hashlib.sha256(full_text.encode()).hexdigest(),
+        )
+        self.assertLessEqual(len(record["check_output"]["tail"]), 2000)
+        self.assertTrue(
+            record["check_output"]["tail"].endswith(full_text[-2000:])
+        )
+        self.assertFalse(record["check_skip_reported"])
+
+    def test_stamp_not_run_policy_check_skip_records_not_run(self):
+        skipping = ["python3", "-c", "print('citation checks NOT_RUN for 71')"]
+        node = _node(engine=skipping, skip_policy="not_run")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.NOT_RUN)
+        self.assertEqual(record["exit_code"], 0)
+
+    def test_stamp_pass_policy_check_skip_stays_pass(self):
+        skipping = ["python3", "-c", "print('citation checks NOT_RUN for 3')"]
+        node = _node(engine=skipping, skip_policy="pass")
+        self.install_registry(node)
+        self.write_input("inputs/a.txt", b"payload\n")
+        self.prime_readme()
+        self.run_tool("--stamp", "alpha")
+        record = json.loads(
+            (self.root / cap.node_evidence_path("alpha")).read_bytes()
+        )
+        self.assertTrue(record["check_skip_reported"])
+        self.assertEqual(record["result"], cap.PASS)
+        results = self.evaluate(node)
+        self.assertEqual(results["alpha"].state, cap.PASS)
+        self.assertIn("guarded skip", " ".join(results["alpha"].reasons))
 
 
 class RealRepositoryTests(unittest.TestCase):

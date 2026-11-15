@@ -19,8 +19,13 @@ Modes:
   --stamp NODE       producer path: run NODE's REGISTERED check command and
                      its required negative controls for real, then write
                      evidence/capabilities/NODE.json with fresh coverage
-                     hashes and regenerate the views. Refuses anything not
-                     registered in src/gf180_dx7/capabilities.py CHECKS.
+                     hashes, bounded captured output (sha256 + tail) and
+                     unittest run/skip counts, and regenerate the views.
+                     Refuses anything not registered in
+                     src/gf180_dx7/capabilities.py CHECKS. A required
+                     control that reported a skip, or a check-level skip
+                     under the node's "not_run" skip policy, records
+                     NOT_RUN even at exit 0 — never a skip-shaped PASS.
 
 Evaluation never executes evidence commands; --stamp is the only mode that
 runs anything. Exit codes: 0 ok, 1 check/refusal failure, 2 usage error.
@@ -29,7 +34,9 @@ runs anything. Exit codes: 0 ok, 1 check/refusal failure, 2 usage error.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -42,10 +49,54 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from gf180_dx7 import capabilities as cap  # noqa: E402
 
 RESULT_BY_EXIT = {0: cap.PASS, 2: cap.NOT_RUN}
+OUTPUT_TAIL_CHARS = 2000
+
+_RAN_RE = re.compile(r"^Ran (\d+) tests? in", re.MULTILINE)
+_SKIPPED_RE = re.compile(r"skipped=(\d+)")
 
 
 def _result_for_exit(exit_code: int) -> str:
     return RESULT_BY_EXIT.get(exit_code, cap.FAIL)
+
+
+def _run(argv: list[str], cwd: Path) -> tuple[int, str]:
+    """Run a registered command, echoing its captured output live.
+
+    Returns (exit_code, combined stdout+stderr) so the stamp can record a
+    bounded digest+tail and read the guarded-skip notes the command emitted
+    (issue #206). Non-UTF-8 output is replaced, never fatal.
+    """
+    print(f"[stamp] $ {' '.join(argv)}", flush=True)
+    completed = subprocess.run(
+        argv, cwd=str(cwd), capture_output=True, text=True, errors="replace"
+    )
+    text = completed.stdout + completed.stderr
+    sys.stdout.write(text)
+    sys.stdout.flush()
+    return completed.returncode, text
+
+
+def _bounded_output(text: str) -> dict:
+    """Full-output digest plus a bounded tail; diff-stable and reviewable."""
+    return {
+        "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "tail": text[-OUTPUT_TAIL_CHARS:],
+    }
+
+
+def _unittest_counts(text: str) -> tuple[int | None, int | None]:
+    """(tests_run, skipped) from unittest's summary lines, else (None, None).
+
+    A completed unittest run that reports no skip marker observed zero
+    skipped tests; skipped stays null only when the command was not a
+    unittest run at all (no "Ran N tests" line).
+    """
+    ran = _RAN_RE.search(text)
+    skipped = _SKIPPED_RE.search(text)
+    tests_run = int(ran.group(1)) if ran else None
+    if skipped:
+        return tests_run, int(skipped.group(1))
+    return tests_run, (0 if tests_run is not None else None)
 
 
 def _paths(root: Path) -> dict[str, Path]:
@@ -57,12 +108,6 @@ def _paths(root: Path) -> dict[str, Path]:
     }
 
 
-def _run(argv: list[str], cwd: Path) -> int:
-    print(f"[stamp] $ {' '.join(argv)}", flush=True)
-    completed = subprocess.run(argv, cwd=str(cwd))
-    return completed.returncode
-
-
 def _write_evidence(node: dict, root: Path, recorded_by: str) -> cap.Result:
     """Run the registered check + required controls; write the record."""
     check = cap.CHECKS.get(node["check"]) if node["check"] else None
@@ -72,13 +117,20 @@ def _write_evidence(node: dict, root: Path, recorded_by: str) -> cap.Result:
             " is refused (registry is a code-review boundary)"
         )
     controls = []
+    control_skipped = 0
     for control in node["required_negative_controls"]:
-        exit_code = _run(list(control["command"]), root)
+        exit_code, text = _run(list(control["command"]), root)
+        tests_run, skipped = _unittest_counts(text)
+        if skipped is not None and skipped > 0:
+            control_skipped += skipped
         controls.append(
             {
                 "command": list(control["command"]),
-                "detected": exit_code == 0,
+                "detected": exit_code == 0 and not (skipped is not None and skipped > 0),
                 "exit_code": exit_code if exit_code >= 0 else None,
+                "output": _bounded_output(text),
+                "tests_run": tests_run,
+                "skipped": skipped,
             }
         )
         if exit_code != 0:
@@ -87,18 +139,32 @@ def _write_evidence(node: dict, root: Path, recorded_by: str) -> cap.Result:
                 f" {exit_code}: recorded as not detected",
                 file=sys.stderr,
             )
-    exit_code = _run(list(check.command), root)
+    exit_code, check_text = _run(list(check.command), root)
+    check_skip_reported = "NOT_RUN" in check_text
     coverage = cap.coverage_hashes(node, root)
+    # A guarded skip keeps the command's honest exit code but must not read
+    # PASS: a skipped control never fully ran its detection, and a
+    # check-level skip forces NOT_RUN when the node declares skip_policy
+    # "not_run" (a "pass" node keeps its declared, exclusion-named gap).
+    if exit_code == 0 and (
+        control_skipped
+        or (check_skip_reported and node["skip_policy"] == "not_run")
+    ):
+        result = cap.NOT_RUN
+    else:
+        result = _result_for_exit(exit_code)
     record = {
         "schema": cap.SCHEMA,
         "node_id": node["id"],
         "check": node["check"],
         "argv": list(check.command),
-        "result": _result_for_exit(exit_code),
+        "result": result,
         "exit_code": exit_code,
         "recorded_at": datetime.now(timezone.utc).strftime(cap.RECORD_TIMESTAMP),
         "recorded_by": recorded_by,
         "coverage": coverage,
+        "check_output": _bounded_output(check_text),
+        "check_skip_reported": check_skip_reported,
         "controls": controls,
     }
     target = cap._path(root, cap.node_evidence_path(node["id"]))

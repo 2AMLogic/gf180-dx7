@@ -4,6 +4,11 @@
     "tools/render_selfcheck.py"
   ],
   "check": "render-selfcheck-v1",
+  "check_output": {
+    "sha256": "1f069ec304c28b35839401c2a1e283017f6e6ae424327fa4a4b56a9330d95c55",
+    "tail": "oracle binary NOT_RUN (absent at /Users/joseph/dx7-oracle-marki/dx7-oracle; guarded skip \u2014 this environment has no external oracle)\nrender_selfcheck: PASS \u2014 fixture decodes, identity schema OK (binary hash check NOT_RUN: oracle absent)\n"
+  },
+  "check_skip_reported": true,
   "controls": [
     {
       "command": [
@@ -12,24 +17,30 @@
         "unittest",
         "tests.test_render_reference.TestNegativeControls"
       ],
-      "detected": true,
-      "exit_code": 0
+      "detected": false,
+      "exit_code": 0,
+      "output": {
+        "sha256": "0e8da8463dfd3b0f2001839d6b878a29f4c31f2f34607508141b1bfff9f806d0",
+        "tail": "ss\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK (skipped=2)\n"
+      },
+      "skipped": 2,
+      "tests_run": 2
     }
   ],
   "coverage": {
     "reference/fixtures/smoke/events.txt": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb",
     "reference/fixtures/smoke/voice.syx": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d",
     "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
-    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
-    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
+    "spec/capabilities-v1.json": "099c8b94a042069d4077c23a63e8d356b33c2cf5d3fdf5fd286dd80fd904470d",
+    "src/gf180_dx7/capabilities.py": "07fe513271ebec5da4955627504308a7786be3a7cc6e289fed1e166c5f9e737b",
     "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
-    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
+    "tools/compile_capabilities.py": "404e0f7b26a7f37fe69f22c8f2e2777e001beccb6dc40401663e53ff8692d294",
     "tools/render_selfcheck.py": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b"
   },
   "exit_code": 0,
   "node_id": "oracle-identity",
-  "recorded_at": "2026-09-20T11:50:24Z",
+  "recorded_at": "2026-11-15T07:13:29Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
-  "result": "PASS",
+  "result": "NOT_RUN",
   "schema": "gf180-dx7.capability-evidence/1"
 }

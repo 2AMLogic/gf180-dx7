@@ -772,7 +772,7 @@ def _prose_strings(profile):
 
 
 def _bump_token(token):
-    """33587 -> 33588, 4.5236 -> 4.5237, 15414067.2 -> 15414067.3."""
+    """Bump the last digit of every digit-run: 33587 -> 33588, 4.5236 -> 5.5237, 15414067.2 -> 15414068.3."""
     return re.sub(r"(\d)(?!\d)",
                   lambda m: str((int(m.group(1)) + 1) % 10), token)
 

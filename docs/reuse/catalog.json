@@ -1429,7 +1429,7 @@
   },
   {
    "path": "tools/check_fv_pins.py",
-   "sha256": "8b19ea5ceacd2ae07f1df7fb9f1dbf01d0e51030c9c0e5a0f4c983389e67e0c0",
+   "sha256": "7ca7f34d1c3469dec8bc8dbbf1253cabd0e12afb6da826a82b972704ce9bbba5",
    "reason": "locally authored FV pin/provenance gate (issue #226); asserts Makefile FV_PINS against the toolchain recorded in evidence/t1-functional reports so a pin bump fails the fast lane instead of silently invalidating the FV lane; no upstream bytes"
   },
   {

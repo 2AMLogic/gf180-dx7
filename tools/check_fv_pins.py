@@ -18,10 +18,16 @@ committed evidence actually records:
 Files under evidence/t1-functional/ without a `provenance` block (the klt
 request) carry no recorded toolchain and are skipped without a verdict.
 
-A mismatch fails with the remedy: bump and evidence must move together --
-regenerate with `make functional-verification --write` (and
-`make functional-verification-controls --write` for the controls), then
-update docs/reuse/catalog.json if any pinned tool file changed.
+A mismatch fails with the remedy (the REMEDY constant below): bump and
+evidence must move together -- drop `.venv-fv` (the make venv rule does
+not re-run while `.venv-fv/bin/klt` exists, so the old-pin venv would
+silently re-record the old versions), `make functional-verification` to
+recreate it from the new FV_PINS (that run shows the provenance mismatch),
+then regenerate the evidence and both controls with `python3
+tools/functional_verification.py --venv .venv-fv --write` (adding
+`--control H07_MUTATE_GLITCH` / `--control H07_MUTATE_SUM_ORDER` for the
+controls) -- `--write` is a flag of that script, not of the make targets
+-- then update docs/reuse/catalog.json if any pinned tool file changed.
 
 Exit codes: 0 pass, 1 check failure, 2 could-not-run
 (tools/verdict_errors.py). Stdlib only.
@@ -52,6 +58,15 @@ PIN_RULES = {
 
 KLT_VERSION_RE = re.compile(r"klt\s+(\S+)")
 PIN_RE = re.compile(r"([A-Za-z0-9][A-Za-z0-9._-]*)==([0-9][A-Za-z0-9._+-]*)")
+
+REMEDY = (
+    "rm -rf .venv-fv; make functional-verification; "
+    "python3 tools/functional_verification.py --venv .venv-fv --write; "
+    "python3 tools/functional_verification.py --venv .venv-fv "
+    "--control H07_MUTATE_GLITCH --write; "
+    "python3 tools/functional_verification.py --venv .venv-fv "
+    "--control H07_MUTATE_SUM_ORDER --write"
+)
 
 
 def parse_fv_pins(repo_root):
@@ -129,14 +144,14 @@ def check_report(label, report, pins):
                 reasons.append(
                     f"{where}: no provenance block; cannot compare the "
                     f"klayout-tools pin {pinned} "
-                    "(regenerate with make functional-verification --write)")
+                    f"(regenerate: {REMEDY})")
                 continue
             recorded = provenance.get("klt_version")
             if not isinstance(recorded, str) or not recorded.strip():
                 reasons.append(
                     f"{where}: provenance.klt_version is missing or not a "
                     f"string; FV_PINS pins klayout-tools=={pinned} "
-                    "(regenerate with make functional-verification --write)")
+                    f"(regenerate: {REMEDY})")
                 continue
             m = KLT_VERSION_RE.fullmatch(recorded.strip())
             if not m:
@@ -144,7 +159,7 @@ def check_report(label, report, pins):
                     f"{where}: provenance.klt_version {recorded!r} is not "
                     '"klt <version>"; FV_PINS pins klayout-tools=='
                     f"{pinned} "
-                    "(regenerate with make functional-verification --write)")
+                    f"(regenerate: {REMEDY})")
                 continue
             token = m.group(1)
             if token != pinned:
@@ -152,30 +167,27 @@ def check_report(label, report, pins):
                     f"{where}: provenance.klt_version records klt "
                     f"{token}, but FV_PINS pins klayout-tools=={pinned}; "
                     "the committed evidence no longer names the pinned "
-                    "toolchain (regenerate with make functional-verification "
-                    "--write, and the controls with "
-                    "make functional-verification-controls --write)")
+                    f"toolchain (regenerate: {REMEDY})")
         elif field == "cocotb_version":
             environment = report.get("environment")
             if not isinstance(environment, dict):
                 reasons.append(
                     f"{where}: no environment block; cannot compare the "
                     f"cocotb pin {pinned} "
-                    "(regenerate with make functional-verification --write)")
+                    f"(regenerate: {REMEDY})")
                 continue
             recorded = environment.get("cocotb_version")
             if not isinstance(recorded, str) or not recorded.strip():
                 reasons.append(
                     f"{where}: environment.cocotb_version is missing or "
                     f"not a string; FV_PINS pins cocotb=={pinned} "
-                    "(regenerate with make functional-verification --write)")
+                    f"(regenerate: {REMEDY})")
             elif recorded.strip() != pinned:
                 reasons.append(
                     f"{where}: environment.cocotb_version records "
                     f"{recorded.strip()}, but FV_PINS pins "
                     f"cocotb=={pinned}; the committed evidence no longer "
-                    "names the pinned toolchain (regenerate with "
-                    "make functional-verification --write)")
+                    f"names the pinned toolchain (regenerate: {REMEDY})")
         else:
             raise CouldNotRun(
                 f"no comparison rule implemented for FV_PINS pin {dist} "

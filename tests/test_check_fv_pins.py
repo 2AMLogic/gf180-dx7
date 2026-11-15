@@ -95,6 +95,8 @@ class CheckFvPinsTestCase(unittest.TestCase):
         self.assertIn("klt 0.8.0", proc.stderr)
         self.assertIn("report.json", proc.stderr)
         self.assertIn("make functional-verification", proc.stderr)
+        self.assertIn("functional_verification.py --venv .venv-fv --write",
+                      proc.stderr)
 
     # -- negative control (b): bumped cocotb pin -------------------------
 

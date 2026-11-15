@@ -54,8 +54,15 @@ and `make test-fast` (`tests/test_check_fv_pins.py`) naming the file, the
 pinned version and the recorded version. When it fails:
 
 1. bump `FV_PINS` in the `Makefile`;
-2. regenerate the evidence: `make functional-verification --write`, and
-   `make functional-verification-controls --write` for the two controls;
+2. regenerate: `rm -rf .venv-fv` (the make venv rule does not re-run while
+   `.venv-fv/bin/klt` exists, so the old-pin venv would silently re-record
+   the old versions), then `make functional-verification` (recreates the
+   venv from the new `FV_PINS`; that run shows the provenance mismatch),
+   then `python3 tools/functional_verification.py --venv .venv-fv --write`
+   for the evidence, and the same with `--control H07_MUTATE_GLITCH` and
+   with `--control H07_MUTATE_SUM_ORDER` for the two controls (`--write`
+   is a flag of `tools/functional_verification.py`, not of the make
+   targets);
 3. update `docs/reuse/catalog.json` if any byte-pinned `tools/` file
    changed.
 

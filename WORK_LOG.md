@@ -2,6 +2,15 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-11-15
+
+- **PR #225**: fix: empty-design stat path reports the labelled latch/clock-gate counts
+- **Issue #220** (closed): hierarchy_stat: the empty-design dict omits the new latch_/clockgate_ labelled counts, so the two success paths have different shapes
+- **PR #221**: fix: N01 checker validates sr_multiplier_derivation against regeneration
+- **Issue #212** (closed): numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates
+- **PR #217**: tools: fold h10_synth's hierarchy parser into hierarchy_stat.py, decide one flop predicate
+- **Issue #211** (closed): Consolidate the third hierarchy-total stat parser: tools/h10_synth.py duplicates tools/hierarchy_stat.py (and already diverges on what counts as a flop)
+
 ### 2026-11-14
 
 - **PR #215**: docs: correct stale README task count and re-attest T1 item 10

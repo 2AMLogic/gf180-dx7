@@ -27,26 +27,27 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-_None._
+- **#209**: FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-- **#207**: README Status section is stale against the generated issue-DAG block (needs item 10 re-attestation in the same change)
 - **#211**: Consolidate the third hierarchy-total stat parser: tools/h10_synth.py duplicates tools/hierarchy_stat.py (and already diverges on what counts as a flop)
+- **#212**: numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#217**: tools: fold h10_synth's hierarchy parser into hierarchy_stat.py, decide one flop predicate
+_None._
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#215**: docs: correct stale README task count and re-attest T1 item 10
+- **#217**: tools: fold h10_synth's hierarchy parser into hierarchy_stat.py, decide one flop predicate
+- **#221**: fix: N01 checker validates sr_multiplier_derivation against regeneration
 
 ## Proposed
 
@@ -61,12 +62,12 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
-- **#207**: README Status section is stale against the generated issue-DAG block (needs item 10 re-attestation in the same change) *(curated)*
 - **#209**: FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance *(curated)*
 - **#212**: numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates *(curated)*
 
 ## Proposed (Architect / Hermit)
 
+- **#219**: Remove tools/sysex_probe.py: unreferenced P01 probe CLI *(architect)*
 - **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)*
 - **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)*
 
@@ -82,11 +83,11 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 3 |
-| Ready (`loom:issue`) | 0 |
+| Ready (`loom:issue`) | 1 |
 | In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 12 |
-| Architect / Hermit proposals | 2 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 2 |
+| Curated | 11 |
+| Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

@@ -1389,8 +1389,8 @@
   },
   {
    "path": "tools/validate_dev32.py",
-   "sha256": "e200879c64cb8478c9089bf3680e092c29080d5f079a823a9c6940a58ec73c20",
-   "reason": "locally authored R03 tool (issue #10); not a reuse import; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
+   "sha256": "2a8a240ab4d6f873b48f938d0134b071116d1574b1a0f5c5107406ec89200485",
+   "reason": "locally authored R03 tool (issue #10); not a reuse import; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; re-pinned for PR #233 guarded-skip declaration + HarnessNotRun exit-2 fix (issue #232)"
   },
   {
    "path": "tools/audition.py",
@@ -1434,13 +1434,13 @@
   },
   {
    "path": "tests/test_capabilities.py",
-   "sha256": "764ee4c087314de44be0507c113501b7b35b09fbbcdddddcb93f4b69a6b05aaa",
-   "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage)"
+   "sha256": "633d9ebf035cf454b60d891f1d6dcf82cb84ef0c080c11aefe423a6c0750696f",
+   "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage); re-pinned after the issue #232 revision (skip-token declaration controls, anchored skipped= regex, HarnessNotRun regression, fabricated-flag refusal)"
   },
   {
    "path": "spec/capabilities-v1.json",
-   "sha256": "099c8b94a042069d4077c23a63e8d356b33c2cf5d3fdf5fd286dd80fd904470d",
-   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data. Re-pinned after the issue #201 revision (numeric-profile-v1 check registered, N01 node stamped); re-pinned after the issue #206 revision (skip_policy declared on every node)"
+   "sha256": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
+   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data. Re-pinned after the issue #201 revision (numeric-profile-v1 check registered, N01 node stamped); re-pinned after the issue #206 revision (skip_policy declared on every node); re-pinned after the issue #232 revision (note states the guarded-skip declaration contract)"
   },
   {
    "path": "src/gf180_dx7/model/__init__.py",
@@ -1459,13 +1459,13 @@
   },
   {
    "path": "src/gf180_dx7/capabilities.py",
-   "sha256": "07fe513271ebec5da4955627504308a7786be3a7cc6e289fed1e166c5f9e737b",
-   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md. Re-pinned after the issue #201 revision (numeric-profile-v1 check registration); re-pinned after the issue #206 revision (guarded-skip record validation: control skip fields, skip_policy, NOT_RUN-with-exit-0 rule)"
+   "sha256": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
+   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only — no upstream bytes; fixes per docs/REUSE-RULINGS.md. Re-pinned after the issue #201 revision (numeric-profile-v1 check registration); re-pinned after the issue #206 revision (guarded-skip record validation: control skip fields, skip_policy, NOT_RUN-with-exit-0 rule); re-pinned after the issue #232 revision (Check.skip_token required declaration, fabricated-skip-flag refusal)"
   },
   {
    "path": "tools/compile_capabilities.py",
-   "sha256": "404e0f7b26a7f37fe69f22c8f2e2777e001beccb6dc40401663e53ff8692d294",
-   "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes. Re-pinned after the issue #206 guarded-skip evidence revision (_run() captures check output and skip counts; records re-stamped)"
+   "sha256": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
+   "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes. Re-pinned after the issue #206 guarded-skip evidence revision (_run() captures check output and skip counts; records re-stamped); re-pinned after the issue #232 revision (detection consults the declared skip token; _SKIPPED_RE anchored)"
   },
   {
    "path": "src/gf180_dx7/model/__init__.py",

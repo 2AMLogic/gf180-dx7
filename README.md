@@ -225,7 +225,7 @@ graph TD
 <!-- CAPABILITIES:BEGIN -->
 ## Capability status (evidence-derived)
 
-Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by `tools/compile_capabilities.py` — do not hand-edit. Evidence-derived node states; issue closure, file existence, and prose never establish a capability claim. Per-node `skip_policy` decides whether a check-level guarded skip stays within PASS (`pass`) or forces NOT_RUN (`not_run`); a required control that reported a skip always forces NOT_RUN. Per-node claims, coverage, and controls: [docs/CAPABILITIES.md](docs/CAPABILITIES.md).
+Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by `tools/compile_capabilities.py` — do not hand-edit. Evidence-derived node states; issue closure, file existence, and prose never establish a capability claim. Per-node `skip_policy` decides whether a check-level guarded skip stays within PASS (`pass`) or forces NOT_RUN (`not_run`); a required control that reported a skip always forces NOT_RUN, and a check reports a skip only when its registry-declared `skip_token` appears in its captured output (issue #232). Per-node claims, coverage, and controls: [docs/CAPABILITIES.md](docs/CAPABILITIES.md).
 
 | PASS | FAIL | NOT_RUN | BLOCKED | NO_VERDICT | STALE |
 | ---: | ---: | ---: | ---: | ---: | ---: |

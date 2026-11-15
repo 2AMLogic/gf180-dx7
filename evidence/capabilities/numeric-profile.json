@@ -20,8 +20,8 @@
       "detected": false,
       "exit_code": 0,
       "output": {
-        "sha256": "3a61b000839adcf773ead685f0ad215dcfc254c1815530b05807111d83688489",
-        "tail": "s.........................\n----------------------------------------------------------------------\nRan 26 tests in 0.065s\n\nOK (skipped=1)\n"
+        "sha256": "285895ea79bef5ac06c43a50be19d531c72d1905fa482b6b965ee14b849c9601",
+        "tail": "s.........................\n----------------------------------------------------------------------\nRan 26 tests in 0.040s\n\nOK (skipped=1)\n"
       },
       "skipped": 1,
       "tests_run": 26
@@ -30,16 +30,16 @@
   "coverage": {
     "docs/DECISIONS-NUMERIC-v1.md": "d64a47de9f5f2944c5bfe2f0a89850d390e5d1f8fd9919fbfeb456ed5b29b0cc",
     "reference/manifest.json": "d5471aea82e677c77fa94a23a03e74df246ccb63b92ef4973555804ac41d3ef5",
-    "spec/capabilities-v1.json": "099c8b94a042069d4077c23a63e8d356b33c2cf5d3fdf5fd286dd80fd904470d",
+    "spec/capabilities-v1.json": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
     "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
     "spec/numeric-profile-v1.json": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
-    "src/gf180_dx7/capabilities.py": "07fe513271ebec5da4955627504308a7786be3a7cc6e289fed1e166c5f9e737b",
+    "src/gf180_dx7/capabilities.py": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
     "tools/check_numeric_profile.py": "71c5009b730589e1cce94e1846c1eabf97385c7dab3c721a68e7e7fb1ecfd3ec",
-    "tools/compile_capabilities.py": "404e0f7b26a7f37fe69f22c8f2e2777e001beccb6dc40401663e53ff8692d294"
+    "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4"
   },
   "exit_code": 0,
   "node_id": "numeric-profile",
-  "recorded_at": "2026-11-15T11:07:17Z",
+  "recorded_at": "2026-11-15T12:56:06Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "NOT_RUN",
   "schema": "gf180-dx7.capability-evidence/1"

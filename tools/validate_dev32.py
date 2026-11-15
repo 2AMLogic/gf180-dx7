@@ -278,7 +278,11 @@ def main(argv=None) -> int:
     except Fail as exc:
         print(f"dev32-renderproof FAIL: {exc}", file=sys.stderr)
         return 1
-    except NotRun as exc:
+    except (NotRun, RENDER_REF.HarnessNotRun) as exc:
+        # RENDER_REF.HarnessNotRun (render_reference.py) escapes as an
+        # uncaught traceback -> exit 1 -> FAIL without this handler; the
+        # oracle-absent path is an environment problem, exactly what this
+        # tool's docstring promises as NOT_RUN/exit 2 (issue #232, C3).
         print(f"dev32-renderproof NOT_RUN: {exc}", file=sys.stderr)
         return 2
 

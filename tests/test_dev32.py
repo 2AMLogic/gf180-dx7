@@ -29,6 +29,7 @@ CATALOG = REPO / "corpus" / "archive-catalogs" / "alltheweb-catalog.json"
 MANIFEST = REPO / "corpus" / "dev32.json"
 PROOF = REPO / "corpus" / "dev32-renderproof.json"
 SELECT = REPO / "tools" / "select_dev32.py"
+VALIDATE = REPO / "tools" / "validate_dev32.py"
 
 SCHEMA = "gf180-dx7.dev32/1"
 N_ENTRIES = 32
@@ -368,6 +369,27 @@ class TestNegativeControls(unittest.TestCase):
                 capture_output=True, text=True, cwd=REPO)
             self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
             self.assertIn("NOT_RUN", proc.stderr)
+
+    def test_renderproof_oracle_absent_is_not_run_not_traceback(self):
+        # Issue #232 (C3): with the pinned oracle absent, the render-proof
+        # path must exit 2 with a NOT_RUN note — the contract this tool's
+        # own docstring publishes ("2 NOT_RUN (environment: missing
+        # manifest/catalog/zip/oracle)") — not leak an uncaught
+        # dev32_render_reference.HarnessNotRun traceback as exit 1, which
+        # RESULT_BY_EXIT maps to FAIL. A nonexistent --oracle path makes
+        # this deterministic on any host. Not in the fast lane
+        # (tools/test_fast.sh has no -k dev32).
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "proof.json"
+            proc = subprocess.run(
+                [sys.executable, str(VALIDATE), "--out", str(out),
+                 "--oracle", str(Path(tmp) / "absent-oracle")],
+                capture_output=True, text=True, cwd=REPO)
+            self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+            self.assertIn("dev32-renderproof NOT_RUN:", proc.stderr)
+            self.assertIn("oracle binary not found", proc.stderr)
+            self.assertNotIn("Traceback", proc.stderr)
+            self.assertFalse(out.exists())
 
 
 class TestRenderProof(unittest.TestCase):

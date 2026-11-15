@@ -22,13 +22,22 @@ register an evaluator) and fixes the flaws found in the sibling audit
      fabricated PASS is rejected because stamping requires the record to
      name the registered command exactly;
   5. a record may carry bounded captured output (sha256 + tail) for the
-     check and each control plus unittest run/skip counts, so a guarded
-     skip — a check or control that exits 0 without doing all of its work
-     — is readable from the record instead of byte-indistinguishable from
-     a complete run. Each node declares a skip_policy: "pass" lets a
-     check-level guarded skip stay within PASS (the gap must be named in
-     the node's exclusions); "not_run" forces NOT_RUN. Either way, a
-     required control that reported a skip forces NOT_RUN.
+      check and each control plus unittest run/skip counts, so a guarded
+      skip — a check or control that exits 0 without doing all of its work
+      — is readable from the record instead of byte-indistinguishable from
+      a complete run. Each node declares a skip_policy: "pass" lets a
+      check-level guarded skip stay within PASS (the gap must be named in
+      the node's exclusions); "not_run" forces NOT_RUN. Either way, a
+      required control that reported a skip forces NOT_RUN;
+  6. whether a registered check can guard-skip at all — and the exact
+      token its output carries when it does — is declared in the CHECKS
+      registry itself (`skip_token`; issue #232), the code-review boundary
+      a check must already be edited against to be registered at all.
+      check_skip_reported is recorded only for a declared non-empty token
+      present in the captured output, so an undeclared skip wording cannot
+      hide from detection and an incidental token occurrence in a check
+      that declares no skip path cannot fabricate a skip it never
+      performed.
 
 Status vocabulary (AGENTS.md): PASS, FAIL, NOT_RUN, BLOCKED, NO_VERDICT,
 STALE. Coverage is reported separately from agreement. This module never
@@ -88,26 +97,53 @@ class Check:
 
     Registration is the code-review boundary: evidence may only stamp a
     verdict when its check id and exact argv appear here.
+
+    ``skip_token`` declares the guarded-skip output contract (issue #232):
+    the non-empty token the check's combined output carries exactly when it
+    guard-skips part of its work, or None for a check with no guarded-skip
+    path. Declaring it here is mandatory so registration cannot happen
+    without answering "does this check guard-skip, and what does it
+    print?"; the stamp records ``check_skip_reported`` only for a declared
+    token, so a None declaration can never report a skip from an
+    incidental token occurrence in the output.
     """
 
     command: tuple[str, ...]
     inputs: tuple[str, ...]
+    skip_token: str | None
+
+    def __post_init__(self) -> None:
+        if self.skip_token is not None and not (
+            isinstance(self.skip_token, str) and self.skip_token
+        ):
+            raise CapabilityError(
+                "skip_token must be None or a non-empty string; an empty"
+                " token would match every output"
+            )
 
 
 # Registered checks (current-main commands only; registry changes are
-# reviewed code changes, never data edits).
+# reviewed code changes, never data edits). Each entry declares its
+# guarded-skip output contract (issue #232): skip_token is the token the
+# check prints exactly when it guard-skips part of its work (NOT_RUN for
+# every current skip-capable check), or None for a check with no
+# guarded-skip path — None means an incidental token occurrence in the
+# output can never record a skip.
 CHECKS = {
     "contract-tests-v1": Check(
         ("python3", "-m", "unittest", "tests.test_contract_v1", "-v"),
         ("tests/test_contract_v1.py",),
+        skip_token=None,
     ),
     "reference-pin-v1": Check(
         ("python3", "tools/verify_reference.py"),
         ("tools/verify_reference.py", "reference/manifest.json"),
+        skip_token="NOT_RUN",
     ),
     "render-selfcheck-v1": Check(
         ("python3", "tools/render_selfcheck.py"),
         ("tools/render_selfcheck.py", "src/gf180_dx7/sysex.py"),
+        skip_token="NOT_RUN",
     ),
     "compare-evidence-v1": Check(
         ("python3", "tools/compare_evidence.py"),
@@ -116,6 +152,7 @@ CHECKS = {
             "tools/render_reference.py",
             "src/gf180_dx7/compare.py",
         ),
+        skip_token=None,
     ),
     "trace-capture-v1": Check(
         (
@@ -125,10 +162,12 @@ CHECKS = {
             "build/capabilities/traces",
         ),
         ("tools/capture_trace.py", "reference/trace-registry.json"),
+        skip_token="NOT_RUN",
     ),
     "comparator-qualification-v1": Check(
         ("python3", "-m", "unittest", "tests.test_compare", "-v"),
         ("tests/test_compare.py",),
+        skip_token=None,
     ),
     "dev32-validation-v1": Check(
         (
@@ -138,10 +177,12 @@ CHECKS = {
             "build/capabilities/dev32-renderproof.json",
         ),
         ("tools/validate_dev32.py",),
+        skip_token="NOT_RUN",
     ),
     "numeric-profile-v1": Check(
         ("python3", "tools/check_numeric_profile.py"),
         ("tools/check_numeric_profile.py",),
+        skip_token="NOT_RUN",
     ),
 }
 
@@ -409,6 +450,17 @@ def _validate_record(record: object, node: dict, check: Check) -> None:
         isinstance(exit_code, int) and not isinstance(exit_code, bool),
         "exit_code must be an integer",
     )
+    if record.get("check_skip_reported") is True:
+        # Issue #232: a check that declares no skip token can never
+        # report a skip; a record claiming otherwise is a fabricated
+        # provenance field (e.g. from an incidental token occurrence in
+        # the output) and is refused here as well as unproducible at
+        # stamp time.
+        _require(
+            bool(check.skip_token),
+            "record reports check_skip_reported=true but its registered"
+            " check declares no skip token",
+        )
     if result == PASS:
         _require(exit_code == 0, "PASS with nonzero exit_code")
         if record.get("check_skip_reported") is True:
@@ -779,7 +831,12 @@ def render_markdown(nodes: list[dict], results: dict[str, Result]) -> str:
         " (sha256 + tail) and unittest run/skip counts into the record. Each"
         " node declares a skip policy: `pass` keeps a check-level guarded skip"
         " inside PASS (the gap must be named in its exclusions); `not_run`"
-        " forces NOT_RUN on any reported skip.",
+        " forces NOT_RUN on any reported skip. Whether a registered check can"
+        " guard-skip at all — and the exact output token that marks it — is"
+        " declared per check in the `CHECKS` registry (`skip_token`, issue"
+        " #232): `check_skip_reported` is recorded only for a declared token,"
+        " so an incidental token in a check that declares no skip path never"
+        " fabricates a skip.",
         "",
         "| Node | Claim | State | Reason |",
         "| --- | --- | --- | --- |",
@@ -869,7 +926,9 @@ def render_readme_block(nodes: list[dict], results: dict[str, Result]) -> str:
         " a capability claim. Per-node `skip_policy` decides whether a"
         " check-level guarded skip stays within PASS (`pass`) or forces"
         " NOT_RUN (`not_run`); a required control that reported a skip always"
-        " forces NOT_RUN. Per-node claims, coverage, and controls:"
+        " forces NOT_RUN, and a check reports a skip only when its"
+        " registry-declared `skip_token` appears in its captured output"
+        " (issue #232). Per-node claims, coverage, and controls:"
         " [docs/CAPABILITIES.md](docs/CAPABILITIES.md).",
         "",
         "| " + " | ".join(states) + " |",

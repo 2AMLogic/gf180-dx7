@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-14
 
+- **PR #215**: docs: correct stale README task count and re-attest T1 item 10
+- **Issue #207** (closed): README Status section is stale against the generated issue-DAG block (needs item 10 re-attestation in the same change)
 - **PR #214**: chore: drop the false-pass npm script stubs from root package.json
 - **Issue #213** (closed): Remove the false-pass npm script stubs from root package.json (npm test exits 0 having run nothing)
 - **PR #210**: signoff: cite the committed functional-verification report under item 5

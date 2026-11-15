@@ -43,12 +43,12 @@ import argparse
 import concurrent.futures
 import json
 import os
-import re
 import subprocess
 import sys
 import time
 
 import pdk_resolve
+from hierarchy_stat import HIER_BASIS, parse_hierarchy_stat
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RTL_RELS = ["rtl/dx7_core.v", "rtl/env_unit.v", "rtl/alg_router.v"]
@@ -76,72 +76,34 @@ from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import yosys_version as _yosys_version  # noqa: E402
 
 
-def _float(tok):
-    return float(tok)
-
-
 def parse_hier_stat(text):
     """Parse the LAST `stat -liberty` transcript in `text`.
 
     Returns the whole-top totals from the `=== design hierarchy ===`
     section plus per-module local areas and the top's submodule
-    multiplicities. Raises RunFailure if the hierarchy totals are absent
-    (never falls back to a per-module number)."""
-    top_m = list(re.finditer(
-        r"Chip area for top module '\\?([\w$]+)': ([\d.]+)", text))
-    if not top_m:
+    multiplicities, via the shared tools/hierarchy_stat.py parser
+    (issue #211). The flop predicate is the shared module's one decided
+    rule ("dff" substring: latches and clock gates are reported there
+    as separate labelled counts, never inside the flop total -- the
+    pre-#211 local copy counted r"__(dff|sdff|latq|icgt)" instead, which
+    changed no committed number only because every committed transcript
+    maps to dffq_* cells). Raises RunFailure if the hierarchy totals
+    are absent (never falls back to a per-module number)."""
+    st = parse_hierarchy_stat(text, RunFailure, "#32", attribution=True)
+    if st["totals_basis"] != HIER_BASIS:
         raise RunFailure("no 'Chip area for top module' line -- the "
                          "hierarchical total is absent; refusing to "
                          "substitute a per-module number")
-    top = top_m[-1]
-    start = text.rfind("=== design hierarchy ===", 0, top.start())
-    if start < 0:
-        raise RunFailure("no '=== design hierarchy ===' section")
-    sect = text[start:top.end() + 400]
-    seq = re.search(r"of which used for sequential elements: ([\d.]+)",
-                    text[top.end():top.end() + 400])
-    cells_line = re.search(r"^\s+(\d+)\s+(\S+)\s+cells\s*$", sect, re.M)
-    if not cells_line:
-        raise RunFailure("no hierarchical 'cells' total line")
-    by_cell = {}
-    for m in re.finditer(r"^\s+(\d+)\s+(\S+)\s+(gf180mcu_\S+)\s*$", sect,
-                         re.M):
-        by_cell[m.group(3)] = int(m.group(1))
-    # the hierarchy tree at the top of the section: "count area module"
-    tree = {}
-    for m in re.finditer(r"^\s+(\d+)\s+([\d.E+]+)\s+(\w+)\s*$",
-                         sect.split("+----------Count including "
-                                    "submodules.")[1]
-                         .split("+----------Count")[0]
-                         if sect.count("+----------Count") >= 2 else "",
-                         re.M):
-        tree[m.group(3)] = {"count_incl_sub": int(m.group(1)),
-                            "area_incl_sub_um2_3sf": _float(m.group(2))}
-    # submodule multiplicities of the top (the "submodules" block)
-    subs = {}
-    sm = re.search(r"^\s+\d+\s+\S+\s+submodules\s*$(.*?)(?:^\s*$)", sect,
-                   re.M | re.S)
-    if sm:
-        for m in re.finditer(r"^\s+(\d+)\s+\S+\s+(\w+)\s*$", sm.group(1),
-                             re.M):
-            subs[m.group(2)] = int(m.group(1))
-    # per-module local areas (from the per-module blocks preceding it)
-    local = {}
-    for m in re.finditer(r"Chip area for module '\\?([\w$]+)': ([\d.]+)",
-                         text[:start]):
-        local[m.group(1)] = float(m.group(2))
-    flops = sum(v for k, v in by_cell.items()
-                if re.search(r"__(dff|sdff|latq|icgt)", k))
     return {
-        "top": top.group(1),
-        "stdcell_area_um2": float(top.group(2)),
-        "seq_area_um2": float(seq.group(1)) if seq else None,
-        "instance_count": int(cells_line.group(1)),
-        "flop_count": flops,
-        "cells_by_name": dict(sorted(by_cell.items())),
-        "module_local_area_um2": dict(sorted(local.items())),
-        "top_submodule_instances": dict(sorted(subs.items())),
-        "hierarchy_tree": tree,
+        "top": st["top_module"],
+        "stdcell_area_um2": st["chip_area_um2"],
+        "seq_area_um2": st["seq_area_um2"],
+        "instance_count": st["cell_total"],
+        "flop_count": st["flop_total"],
+        "cells_by_name": st["cells_by_name"],
+        "module_local_area_um2": st["module_local_area_um2"],
+        "top_submodule_instances": st["top_submodule_instances"],
+        "hierarchy_tree": st["hierarchy_tree"],
     }
 
 

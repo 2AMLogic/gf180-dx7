@@ -4,6 +4,8 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-15
 
+- **PR #224**: fix: regenerate T1 functional-verification report under the klt 0.8.0 pin
+- **Issue #209** (closed): FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance
 - **PR #225**: fix: empty-design stat path reports the labelled latch/clock-gate counts
 - **Issue #220** (closed): hierarchy_stat: the empty-design dict omits the new latch_/clockgate_ labelled counts, so the two success paths have different shapes
 - **PR #221**: fix: N01 checker validates sr_multiplier_derivation against regeneration

@@ -27,27 +27,29 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#209**: FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-- **#211**: Consolidate the third hierarchy-total stat parser: tools/h10_synth.py duplicates tools/hierarchy_stat.py (and already diverges on what counts as a flop)
-- **#212**: numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates
+- **#206**: Capability evidence records cannot distinguish a full check run from a guarded skip
+- **#222**: N01 checker: five prose strings restate checked numbers the checker never re-derives (#212's class, fully enumerated)
+- **#226**: FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#228**: feat: capture guarded-skip output and skip counts in capability evidence
+- **#229**: fix: N01 checker pins prose restatements of recomputed values; guard closes the class
+- **#230**: check: gate FV_PINS bumps against committed FV evidence provenance
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#217**: tools: fold h10_synth's hierarchy parser into hierarchy_stat.py, decide one flop predicate
-- **#221**: fix: N01 checker validates sr_multiplier_derivation against regeneration
+_None._
 
 ## Proposed
 
@@ -62,14 +64,15 @@ Issues carrying `loom:curated`.
 - **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
 - **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
-- **#209**: FV re-run lane: committed report records klt 0.7.0 while the lane pins 0.8.0, so a fresh run would report FAIL on provenance *(curated)*
-- **#212**: numeric-profile: sr_multiplier_derivation prose is a restated literal the N01 checker never validates *(curated)*
+- **#206**: Capability evidence records cannot distinguish a full check run from a guarded skip *(curated)*
+- **#222**: N01 checker: five prose strings restate checked numbers the checker never re-derives (#212's class, fully enumerated) *(curated)*
+- **#226**: FV lane re-breaks on every klayout-tools pin bump: provenance.klt_version is compared verbatim and nothing gates the bump *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-- **#219**: Remove tools/sysex_probe.py: unreferenced P01 probe CLI *(architect)*
 - **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)*
 - **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)*
+- **#219**: Remove tools/sysex_probe.py: unreferenced P01 probe CLI *(hermit)*
 
 ## Epics
 
@@ -83,11 +86,11 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 3 |
-| Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 2 |
-| Curated | 11 |
+| Ready (`loom:issue`) | 0 |
+| In Progress (`loom:building`) | 3 |
+| PRs awaiting review | 3 |
+| Approved PRs awaiting merge | 0 |
+| Curated | 12 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

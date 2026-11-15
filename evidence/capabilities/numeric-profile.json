@@ -23,12 +23,12 @@
     "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
     "spec/numeric-profile-v1.json": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
     "src/gf180_dx7/capabilities.py": "03b87d6a9ed2c07483e0d63356104ab7aae7acbc4a4522a60402cf078db17f31",
-    "tools/check_numeric_profile.py": "8ae99f285c0cb83cc0ccf38da28a680d0cd0f17eb059c1e9f8c6887d2e0910f1",
+    "tools/check_numeric_profile.py": "71c5009b730589e1cce94e1846c1eabf97385c7dab3c721a68e7e7fb1ecfd3ec",
     "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47"
   },
   "exit_code": 0,
   "node_id": "numeric-profile",
-  "recorded_at": "2026-11-15T01:15:47Z",
+  "recorded_at": "2026-11-15T08:23:08Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

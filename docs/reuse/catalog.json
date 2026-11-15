@@ -1409,8 +1409,8 @@
   },
   {
    "path": "tools/check_numeric_profile.py",
-   "sha256": "8ae99f285c0cb83cc0ccf38da28a680d0cd0f17eb059c1e9f8c6887d2e0910f1",
-   "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1); re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; re-pinned for issue #212 (unconditional sr_multiplier_derivation regeneration check), catalog-only provenance"
+   "sha256": "71c5009b730589e1cce94e1846c1eabf97385c7dab3c721a68e7e7fb1ecfd3ec",
+   "reason": "locally authored N01 checker (issue #15): recomputes schedule/storage arithmetic and derived constants (sr_multiplier, LFO/pitch-EG units), enforces error/cost estimates per decision, validates the classified runtime-vs-patch storage totals, and verifies citations against the pinned trees; not a reuse import. Re-pinned after the PR #52 judge-fix revision (rev 1.1); re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; re-pinned for issue #212 (unconditional sr_multiplier_derivation regeneration check), catalog-only provenance; re-pinned for issue #222 (regenerate-and-compare assertions for prose restatements of recomputed values: decision-index titles NUM-007/NUM-008, cost estimates NUM-002/003/005, schedule.correction_note, storage.claim, 'all registers' verdict), catalog-only provenance"
   },
   {
    "path": "tools/registry_coverage.py",

@@ -1319,7 +1319,7 @@
   },
   {
    "path": "tools/sysex_probe.py",
-   "sha256": "698b2fa580b08f3c19c26b18e9b56d8c5bad4dde493bfce6aa62add23d5b4a7d",
+   "sha256": "5ed762d03f06868e7ab707e315bf529afc030f5a960958bf3149e103fc5e9902",
    "reason": "locally authored P01 probe tool (PR #43); not a reuse import"
   },
   {

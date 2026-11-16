@@ -5,8 +5,9 @@ Usage: sysex_probe.py <path-to-.syx> [...]
 
 Prints per-message classified decode results and aggregate stats.
 Exit codes: 0 = every message decoded (anomalies may be reported);
-1 = at least one message produced a classified codec error; 2 = file could
-not be read or the whole file failed framing (no message boundary found).
+1 = at least one classified codec error, including a whole-file framing
+failure (no message boundary found); 2 = operational failure only: the
+file could not be read, or no argument was given.
 Writes nothing.
 """
 

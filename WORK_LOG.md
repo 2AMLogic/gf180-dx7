@@ -2,6 +2,11 @@
 
 Chronological record of merged pull requests and closed issues. Newest entries appear first.
 
+### 2026-11-16
+
+- **PR #239**: test: add fast-lane smoke test for tools/sysex_probe.py
+- **Issue #219** (closed): Add a fast-lane smoke test for `tools/sysex_probe.py`
+
 ### 2026-11-15
 
 - **PR #237**: consolidate detune/fine frozen-integer math onto src/gf180_dx7/host.py

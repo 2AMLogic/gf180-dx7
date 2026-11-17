@@ -4,6 +4,7 @@ Chronological record of merged pull requests and closed issues. Newest entries a
 
 ### 2026-11-16
 
+- **PR #241**: chore(loom): resync installed Loom to v0.19.1302
 - **PR #239**: test: add fast-lane smoke test for tools/sysex_probe.py
 - **Issue #219** (closed): Add a fast-lane smoke test for `tools/sysex_probe.py`
 

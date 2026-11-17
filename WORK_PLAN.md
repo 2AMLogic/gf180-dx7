@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state by the Loom Guide 
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#245**: chore(loom): resync installed Loom to v0.19.1306
 
 ## Very Important
 
@@ -39,13 +39,13 @@ _None._
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#243**: chore(loom): resync installed Loom to v0.19.1305
+_None._
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#245**: chore(loom): resync installed Loom to v0.19.1306
 
 ## Proposed
 
@@ -76,13 +76,13 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 1 |
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 0 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 0 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 1 |
 | Curated | 9 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |

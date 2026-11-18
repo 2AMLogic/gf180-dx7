@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state by the Loom Guide 
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#245**: chore(loom): resync installed Loom to v0.19.1306
+_None._
 
 ## Very Important
 
@@ -45,7 +45,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#245**: chore(loom): resync installed Loom to v0.19.1306
+_None._
 
 ## Proposed
 
@@ -65,7 +65,6 @@ Issues carrying `loom:curated`.
 
 - **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)*
 - **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)*
-- **#219**: Remove tools/sysex_probe.py: unreferenced P01 probe CLI *(hermit)*
 
 ## Epics
 
@@ -76,14 +75,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 1 |
+| Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
+| Approved PRs awaiting merge | 0 |
 | Curated | 9 |
-| Architect / Hermit proposals | 3 |
+| Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

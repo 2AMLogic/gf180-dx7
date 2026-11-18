@@ -26,7 +26,7 @@ python3 -m unittest discover -s tests \
   -k compare -k registry -k capabilities -k issue_dag -k host_mock \
   -k audition -k reference_manifest -k h08 -k u05_demo -k bank128 -k h10 \
   -k hierarchy -k synthparse -k exp_range -k ams_audit -k fv_pins \
-  -k frozen_int -k merge_group \
+  -k signoff_hashes -k frozen_int -k merge_group \
   >"$log" 2>&1
 rc=$?
 set -e

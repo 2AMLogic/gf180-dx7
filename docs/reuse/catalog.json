@@ -1433,6 +1433,11 @@
    "reason": "locally authored FV pin/provenance gate (issue #226); asserts Makefile FV_PINS against the toolchain recorded in evidence/t1-functional reports so a pin bump fails the fast lane instead of silently invalidating the FV lane; no upstream bytes"
   },
   {
+   "path": "tools/check_work_plan_region.py",
+   "sha256": "c4035500022e03dde766be4cf12594a4f9c6d09ce130f96b60d4c1e09a12f3d3",
+   "reason": "locally authored #249 structural lint for the WORK_PLAN.md guide:plan-body generated region; checks the static, state-independent shape (marker pair, heading order, blurbs, bullet format, Backlog Balance row labels) against render_plan_body()'s emitted shape so hand-edits like PR #248's *(held)* suffixes fail a check instead of merging; no upstream bytes"
+  },
+  {
    "path": "tests/test_capabilities.py",
    "sha256": "633d9ebf035cf454b60d891f1d6dcf82cb84ef0c080c11aefe423a6c0750696f",
    "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage); re-pinned after the issue #232 revision (skip-token declaration controls, anchored skipped= regex, HarnessNotRun regression, fabricated-flag refusal)"

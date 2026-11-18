@@ -16,7 +16,11 @@ Cases:
   (c) a missing start / end marker reported as a failure, never a silent
       pass;
   (d) headings out of renderer order -> exit 1;
-  (e) the real committed WORK_PLAN.md -> exit 0 (acceptance case).
+  (e) the real committed WORK_PLAN.md -> exit 0 (acceptance case);
+  (f) annotation placement (#251): a second trailing annotation before a
+      valid suffix fails in any order (reordered *(held)* *(curated)*,
+      doubled-valid *(curated)* *(hermit)*); a mid-title *(word)* followed
+      by one valid suffix stays allowed.
 
 Shape only: none of this establishes agreement with live forge label state.
 """
@@ -130,6 +134,21 @@ READY_ROW_MUTATED = "| Ready for pickup | 0 |"
 READY_BLURB_MUTATION = (
     "Human-approved issues ready for implementation (`loom:issue`).")
 READY_BLURB_MUTATED = "Issues that are good to go for building."
+# Issue #251: a second trailing annotation before the renderer suffix is
+# unrendered in any order; a mid-title *(word)* before one valid suffix is
+# deliberately still allowed (documented boundary, failure control).
+REORDERED_SUFFIX_MUTATED = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility *(held)* "
+    "*(curated)*\n\n"
+    "## Backlog Balance")
+DOUBLED_VALID_SUFFIX_MUTATED = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility "
+    "*(curated)* *(hermit)*\n\n"
+    "## Backlog Balance")
+MID_TITLE_ANNOTATION_MUTATED = (
+    "- **#2**: Epic: E2 — *(held)* Verified core and physical feasibility "
+    "*(curated)*\n\n"
+    "## Backlog Balance")
 
 
 class CheckWorkPlanRegionTestCase(unittest.TestCase):
@@ -186,6 +205,28 @@ class CheckWorkPlanRegionTestCase(unittest.TestCase):
             self.run_checker(self.mutated(READY_ROW_MUTATION,
                                           READY_ROW_MUTATED)),
             "bucket label")
+
+    def test_reordered_held_before_curated_fails(self):
+        """Issue #251: hand annotation placed before the renderer suffix."""
+        out = self.assert_fail(
+            self.run_checker(self.mutated(HELD_SUFFIX_MUTATION,
+                                          REORDERED_SUFFIX_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(held)*", out)
+
+    def test_doubled_valid_suffixes_fail(self):
+        """Issue #251: two valid suffixes — only one is ever rendered."""
+        out = self.assert_fail(
+            self.run_checker(self.mutated(HELD_SUFFIX_MUTATION,
+                                          DOUBLED_VALID_SUFFIX_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(curated)*", out)
+
+    def test_mid_title_annotation_with_valid_suffix_passes(self):
+        """Issue #251 failure control: mid-title *(word)* is not inspected."""
+        self.assert_ok(
+            self.run_checker(self.mutated(HELD_SUFFIX_MUTATION,
+                                          MID_TITLE_ANNOTATION_MUTATED)))
 
     def test_rewritten_ready_blurb_fails(self):
         """PR #248 deviation 3: hand-rewritten ## Ready section blurb."""

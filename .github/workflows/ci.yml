@@ -43,6 +43,17 @@ jobs:
   mermaid:
     # README mermaid blocks must render: a syntax error here breaks the GitHub
     # rich display of the whole README (regression fixed 2026-09-20).
+    #
+    # The toolchain below is pinned to exact versions, and the matching
+    # chrome-headless-shell is installed explicitly. mermaid-cli declares
+    # puppeteer as a floating peer dependency, so `npx @mermaid-js/mermaid-cli@11`
+    # resolved a new puppeteer (25.18.x, 2026-11-17) that requires a newer
+    # chrome-headless-shell build (157.0.8103.78) missing from the runner's
+    # puppeteer cache — a required check went red with no diff (issue #258).
+    # Bump MERMAID_CLI_VERSION and PUPPETEER_VERSION together, deliberately.
+    env:
+      MERMAID_CLI_VERSION: "11.17.1"
+      PUPPETEER_VERSION: "25.18.1"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -63,12 +74,14 @@ jobs:
               pathlib.Path(f".mermaid-ci/block-{i}.mmd").write_text(block)
           print(f"extracted {len(blocks)} mermaid block(s)")
           PY
-      - name: Render every mermaid block (pinned mermaid-cli)
+      - name: Install chrome-headless-shell (pinned puppeteer)
+        run: npx -y puppeteer@$PUPPETEER_VERSION browsers install chrome-headless-shell
+      - name: Render every mermaid block (pinned mermaid-cli + puppeteer)
         run: |
           printf '{\n  "args": ["--no-sandbox", "--disable-gpu"]\n}\n' > .mermaid-ci/puppeteer.json
           for f in .mermaid-ci/block-*.mmd; do
             echo "== validating $f"
-            npx -y @mermaid-js/mermaid-cli@11 -p .mermaid-ci/puppeteer.json -i "$f" -o "${f%.mmd}.svg"
+            npx -y -p puppeteer@$PUPPETEER_VERSION -p @mermaid-js/mermaid-cli@$MERMAID_CLI_VERSION mmdc -p .mermaid-ci/puppeteer.json -i "$f" -o "${f%.mmd}.svg"
           done
 
   dag-fresh:

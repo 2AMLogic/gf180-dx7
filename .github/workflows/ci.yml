@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  merge_group:
 
 jobs:
   test:
@@ -89,7 +90,7 @@ jobs:
     # (tools/render_issue_dag.py runs its own mermaid lint before comparing).
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     permissions:
       contents: read
       issues: read
@@ -111,7 +112,7 @@ jobs:
     # are honestly NO_VERDICT until their claims are evidenced.)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -128,7 +129,7 @@ jobs:
     # check outcome or the committed envelope. See signoff/README.md.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

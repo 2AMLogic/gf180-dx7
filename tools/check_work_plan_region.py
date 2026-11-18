@@ -18,7 +18,9 @@ It checks the STATIC, state-independent shape only:
     where the renderer emits none);
   - every bullet matches the renderer's format "- **#N**: title" with at
     most one trailing renderer suffix *(curated)* / *(architect)* /
-    *(hermit)* — a hand-added *(held)* or any other annotation fails;
+    *(hermit)*; any other trailing annotation fails, in any order (a
+    hand-added *(held)* last, or a second annotation placed before a valid
+    suffix); a mid-title *(word)* is not inspected;
   - the Backlog Balance table carries exactly the renderer's ten row labels
     in order (count values are state-dependent and NOT checked).
 
@@ -89,7 +91,10 @@ BULLET_RE = re.compile(r"^- \*\*#\d+\*\*: (.+)$")
 # A trailing " *(word)*" annotation on a title, e.g. the hand-added
 # "*(held)*" from PRs #247/#248. Validated against VALID_SUFFIXES because a
 # plain `.+` title regex would greedily swallow any suffix and let the
-# annotation through.
+# annotation through. Applied twice in the bullet check: once to the title
+# (the one renderer suffix), then to the remainder after stripping a valid
+# suffix, so a second trailing annotation before a valid suffix also fails
+# (issue #251). Mid-title *(word)* is never inspected.
 SUFFIX_RE = re.compile(r" \*\(([A-Za-z][A-Za-z ]*)\)\*$")
 VALID_SUFFIXES = {"curated", "architect", "hermit"}
 COUNT_RE = re.compile(r"^\d+$")
@@ -211,6 +216,19 @@ def _check_section_body(errors, body, name, blurb, is_last, heading_lineno,
                 f"section {name!r} (line {lineno}): unrendered annotation "
                 f"*({sm.group(1).strip()})* — render_plan_body() emits only "
                 "*(curated)*, *(architect)* or *(hermit)* bullet suffixes")
+        elif sm:
+            # The trailing suffix is a valid renderer one; strip it and
+            # re-apply SUFFIX_RE to the remainder: a second trailing
+            # annotation (a hand annotation placed before the suffix, or a
+            # doubled suffix) is also unrendered — render_plan_body()
+            # appends exactly one suffix.
+            sm2 = SUFFIX_RE.search(m.group(1)[:sm.start()])
+            if sm2:
+                errors.append(
+                    f"section {name!r} (line {lineno}): unrendered annotation "
+                    f"*({sm2.group(1).strip()})* — render_plan_body() appends "
+                    "at most one bullet suffix; a second trailing annotation "
+                    "never renders")
 
 
 def _check_table(errors, body, offset):

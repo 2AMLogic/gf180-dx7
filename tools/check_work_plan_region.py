@@ -17,10 +17,14 @@ It checks the STATIC, state-independent shape only:
   - each section's blurb equals the renderer's literal text (or is absent
     where the renderer emits none);
   - every bullet matches the renderer's format "- **#N**: title" with at
-    most one trailing renderer suffix *(curated)* / *(architect)* /
-    *(hermit)*; any other trailing annotation fails, in any order (a
-    hand-added *(held)* last, or a second annotation placed before a valid
-    suffix); a mid-title *(word)* is not inspected;
+    most one trailing renderer suffix, and that suffix is section-scoped
+    (see ALLOWED_SUFFIXES): *(curated)* only in Proposed, *(architect)* /
+    *(hermit)* only in Proposed (Architect / Hermit) — the renderer
+    concatenates those two lists — and no suffix in any other bullet
+    section. A renderer suffix in the wrong section, or any other trailing
+    annotation, fails, in any order (a hand-added *(held)* last, or a
+    second annotation placed before a valid suffix); a mid-title *(word)*
+    is not inspected;
   - the Backlog Balance table carries exactly the renderer's ten row labels
     in order (count values are state-dependent and NOT checked).
 
@@ -68,6 +72,20 @@ SECTIONS = [
     ("Backlog Balance", None),
 ]
 
+# Renderer bullet suffixes are section-scoped: render_plan_body() appends
+# *(curated)* only to the Proposed list (.loom/roles/guide.md:2088) and
+# *(architect)* / *(hermit)* only to the concatenated Architect/Hermit
+# proposals list (guide.md:2091/2093, joined at :2094 and emitted as the
+# "Proposed (Architect / Hermit)" section at :2110). Every other bullet
+# section (held, Very Important, Important, Ready, In Progress, PRs
+# Awaiting Review, Approved, Epics) is emitted suffix-less, so a suffix
+# there can never survive a Guide render. Sections absent from this table
+# take no suffix.
+ALLOWED_SUFFIXES = {
+    "Proposed": ("curated",),
+    "Proposed (Architect / Hermit)": ("architect", "hermit"),
+}
+
 # Backlog Balance row labels, in render_plan_body() order (same source).
 BACKLOG_ROWS = [
     "Operator merge-risk holds",
@@ -89,14 +107,13 @@ NONE_BODY = "_None._"
 # "- **#N**: title" — the only bullet shape render_plan_body() emits.
 BULLET_RE = re.compile(r"^- \*\*#\d+\*\*: (.+)$")
 # A trailing " *(word)*" annotation on a title, e.g. the hand-added
-# "*(held)*" from PRs #247/#248. Validated against VALID_SUFFIXES because a
-# plain `.+` title regex would greedily swallow any suffix and let the
-# annotation through. Applied twice in the bullet check: once to the title
-# (the one renderer suffix), then to the remainder after stripping a valid
-# suffix, so a second trailing annotation before a valid suffix also fails
-# (issue #251). Mid-title *(word)* is never inspected.
+# "*(held)*" from PRs #247/#248. Validated against the section's
+# ALLOWED_SUFFIXES entry because a plain `.+` title regex would greedily
+# swallow any suffix and let the annotation through. Applied twice in the
+# bullet check: first to the title for a second trailing annotation (the
+# #251 doubled-suffix rule), then the one remaining suffix is looked up by
+# section name (#253). Mid-title *(word)* is never inspected.
 SUFFIX_RE = re.compile(r" \*\(([A-Za-z][A-Za-z ]*)\)\*$")
-VALID_SUFFIXES = {"curated", "architect", "hermit"}
 COUNT_RE = re.compile(r"^\d+$")
 
 
@@ -211,17 +228,10 @@ def _check_section_body(errors, body, name, blurb, is_last, heading_lineno,
                 f"renderer bullet format '- **#N**: title': {line!r}")
             continue
         sm = SUFFIX_RE.search(m.group(1))
-        if sm and sm.group(1).strip() not in VALID_SUFFIXES:
-            errors.append(
-                f"section {name!r} (line {lineno}): unrendered annotation "
-                f"*({sm.group(1).strip()})* — render_plan_body() emits only "
-                "*(curated)*, *(architect)* or *(hermit)* bullet suffixes")
-        elif sm:
-            # The trailing suffix is a valid renderer one; strip it and
-            # re-apply SUFFIX_RE to the remainder: a second trailing
-            # annotation (a hand annotation placed before the suffix, or a
-            # doubled suffix) is also unrendered — render_plan_body()
-            # appends exactly one suffix.
+        if sm:
+            # A second trailing annotation before the suffix is unrendered
+            # in any order (issue #251) — checked first, so its message is
+            # stable whatever the trailing suffix is.
             sm2 = SUFFIX_RE.search(m.group(1)[:sm.start()])
             if sm2:
                 errors.append(
@@ -229,6 +239,22 @@ def _check_section_body(errors, body, name, blurb, is_last, heading_lineno,
                     f"*({sm2.group(1).strip()})* — render_plan_body() appends "
                     "at most one bullet suffix; a second trailing annotation "
                     "never renders")
+                continue
+            # Issue #253: the renderer's suffixes are section-scoped
+            # (ALLOWED_SUFFIXES); a renderer-valid suffix in the wrong
+            # section can never survive a Guide render either.
+            suffix = sm.group(1).strip()
+            allowed = ALLOWED_SUFFIXES.get(name, ())
+            if suffix not in allowed:
+                if allowed:
+                    emits = ("only " + " or ".join(f"*({s})*" for s in allowed)
+                             + " bullet suffixes")
+                else:
+                    emits = "no bullet suffix"
+                errors.append(
+                    f"section {name!r} (line {lineno}): unrendered annotation "
+                    f"*({suffix})* — render_plan_body() emits {emits} in this "
+                    "section")
 
 
 def _check_table(errors, body, offset):

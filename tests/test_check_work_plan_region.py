@@ -20,7 +20,12 @@ Cases:
   (f) annotation placement (#251): a second trailing annotation before a
       valid suffix fails in any order (reordered *(held)* *(curated)*,
       doubled-valid *(curated)* *(hermit)*); a mid-title *(word)* followed
-      by one valid suffix stays allowed.
+      by one valid suffix stays allowed;
+  (g) per-section suffix scoping (#253): *(curated)* in Important or in
+      Epics, *(architect)* in Proposed and *(curated)* in the combined
+      Proposed (Architect / Hermit) section fail; the fixture's
+      renderer-placed suffixes (*(curated)* in Proposed, *(architect)* /
+      *(hermit)* in the combined section) stay allowed.
 
 Shape only: none of this establishes agreement with live forge label state.
 """
@@ -136,7 +141,9 @@ READY_BLURB_MUTATION = (
 READY_BLURB_MUTATED = "Issues that are good to go for building."
 # Issue #251: a second trailing annotation before the renderer suffix is
 # unrendered in any order; a mid-title *(word)* before one valid suffix is
-# deliberately still allowed (documented boundary, failure control).
+# deliberately still allowed (documented boundary, failure control). The
+# mid-title pin lives in Proposed — #253 made Epics suffix-less, so the
+# original Epics anchor would contradict the per-section rule there.
 REORDERED_SUFFIX_MUTATED = (
     "- **#2**: Epic: E2 — Verified core and physical feasibility *(held)* "
     "*(curated)*\n\n"
@@ -145,10 +152,30 @@ DOUBLED_VALID_SUFFIX_MUTATED = (
     "- **#2**: Epic: E2 — Verified core and physical feasibility "
     "*(curated)* *(hermit)*\n\n"
     "## Backlog Balance")
-MID_TITLE_ANNOTATION_MUTATED = (
+MID_TITLE_IN_PROPOSED_MUTATED = (
     "- **#2**: Epic: E2 — *(held)* Verified core and physical feasibility "
-    "*(curated)*\n\n"
-    "## Backlog Balance")
+    "*(curated)*\n\n## Proposed (Architect / Hermit)")
+# Issue #253: renderer suffixes are section-scoped (ALLOWED_SUFFIXES) —
+# *(curated)* only in Proposed, *(architect)* / *(hermit)* only in the
+# combined Proposed (Architect / Hermit) section; the same suffix elsewhere
+# is unrendered. Anchors target the specific section's bullet.
+IMPORTANT_ANCHOR = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility\n\n## Ready")
+IMPORTANT_CURATED_MUTATED = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility "
+    "*(curated)*\n\n## Ready")
+EPICS_CURATED_MUTATED = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility "
+    "*(curated)*\n\n## Backlog Balance")
+PROPOSED_ANCHOR = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility "
+    "*(curated)*\n\n## Proposed (Architect / Hermit)")
+PROPOSED_ARCHITECT_MUTATED = (
+    "- **#2**: Epic: E2 — Verified core and physical feasibility "
+    "*(architect)*\n\n## Proposed (Architect / Hermit)")
+ARCH_HERMIT_ANCHOR = "- **#161**: Consolidate parse_events *(architect)*"
+ARCH_HERMIT_CURATED_MUTATED = (
+    "- **#161**: Consolidate parse_events *(curated)*")
 
 
 class CheckWorkPlanRegionTestCase(unittest.TestCase):
@@ -225,8 +252,55 @@ class CheckWorkPlanRegionTestCase(unittest.TestCase):
     def test_mid_title_annotation_with_valid_suffix_passes(self):
         """Issue #251 failure control: mid-title *(word)* is not inspected."""
         self.assert_ok(
+            self.run_checker(self.mutated(PROPOSED_ANCHOR,
+                                          MID_TITLE_IN_PROPOSED_MUTATED)))
+
+    def test_curated_suffix_in_important_fails(self):
+        """Issue #253: *(curated)* renders only in Proposed."""
+        out = self.assert_fail(
+            self.run_checker(self.mutated(IMPORTANT_ANCHOR,
+                                          IMPORTANT_CURATED_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(curated)*", out)
+        self.assertIn("'Important'", out)
+        self.assertIn("no bullet suffix", out)
+
+    def test_curated_suffix_in_epics_fails(self):
+        """Issue #253: Epics bullets render without any suffix."""
+        out = self.assert_fail(
             self.run_checker(self.mutated(HELD_SUFFIX_MUTATION,
-                                          MID_TITLE_ANNOTATION_MUTATED)))
+                                          EPICS_CURATED_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(curated)*", out)
+        self.assertIn("'Epics'", out)
+        self.assertIn("no bullet suffix", out)
+
+    def test_architect_suffix_in_proposed_fails(self):
+        """Issue #253: *(architect)* renders only in the combined section."""
+        out = self.assert_fail(
+            self.run_checker(self.mutated(PROPOSED_ANCHOR,
+                                          PROPOSED_ARCHITECT_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(architect)*", out)
+        self.assertIn("'Proposed'", out)
+        self.assertIn("only *(curated)*", out)
+
+    def test_curated_suffix_in_architect_hermit_fails(self):
+        """Issue #253: the combined section takes only architect/hermit."""
+        out = self.assert_fail(
+            self.run_checker(self.mutated(ARCH_HERMIT_ANCHOR,
+                                          ARCH_HERMIT_CURATED_MUTATED)),
+            "unrendered annotation")
+        self.assertIn("*(curated)*", out)
+        self.assertIn("'Proposed (Architect / Hermit)'", out)
+        self.assertIn("only *(architect)* or *(hermit)*", out)
+
+    def test_renderer_suffixes_in_their_sections_pass(self):
+        """Issue #253 positive pins: the fixture places each suffix exactly
+        where render_plan_body() emits it — *(curated)* in Proposed and
+        *(architect)* / *(hermit)* in Proposed (Architect / Hermit) — so the
+        lint cannot be "reject everywhere"."""
+        self.assert_ok(self.run_checker(WORK_PLAN))
 
     def test_rewritten_ready_blurb_fails(self):
         """PR #248 deviation 3: hand-rewritten ## Ready section blurb."""

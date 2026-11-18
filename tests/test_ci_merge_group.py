@@ -8,7 +8,8 @@ with a stdlib-only scanner (this repo's tests use no PyYAML):
 
 - ci.yml declares the bare `merge_group:` trigger (default types, no
   branch/path filter, no sub-keys),
-- no trigger in the `on:` block carries a `paths:` filter,
+- no trigger in the `on:` block carries a `paths:` or `paths-ignore:`
+  filter (issue #261),
 - the bare `pull_request:` trigger stays declared,
 - every job/step `if:` conditioned on `'pull_request'` also admits
   `'merge_group'`.
@@ -71,9 +72,11 @@ def check_merge_group_contract(text, name="workflow"):
             f"{name}: bare `pull_request:` trigger is missing from `on:`")
 
     for ln in body:
-        if re.match(r"^ +paths:", ln):
+        m = re.match(r"^ +paths(-ignore)?:", ln)
+        if m:
             raise MergeGroupContractError(
-                f"{name}: `on:` block adds a `paths:` filter: {ln.strip()!r}")
+                f"{name}: `on:` block adds a `{m.group(0).strip()}` filter: "
+                f"{ln.strip()!r}")
 
     for ln in lines:
         m = re.match(r"^\s*if:\s*(\S.*?)\s*$", ln)
@@ -148,6 +151,23 @@ jobs:
       - run: echo hi
 """
 
+# A path filter in the other direction (`paths-ignore:` filters runs just as
+# effectively as `paths:`), on a non-merge_group trigger (issue #261).
+FIXTURE_PUSH_PATHS_IGNORE = """\
+name: stale
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths-ignore: ["**/*.md"]
+  merge_group:
+
+jobs:
+  test:
+    steps:
+      - run: echo hi
+"""
+
 
 class CiMergeGroupContractTest(unittest.TestCase):
     def test_merge_group_contract_on_committed_ci_yml(self):
@@ -168,8 +188,10 @@ class CiMergeGroupContractTest(unittest.TestCase):
         lines = text.splitlines()
         on_start, on_end = _on_block(lines, ".github/workflows/ci.yml")
         for ln in lines[on_start + 1:on_end]:
-            self.assertIsNone(re.match(r"^ +paths:", ln),
-                              f"unexpected `paths:` filter: {ln.strip()!r}")
+            m = re.match(r"^ +paths(-ignore)?:", ln)
+            if m:
+                self.fail(f"unexpected `{m.group(0).strip()}` filter: "
+                          f"{ln.strip()!r}")
 
     def test_merge_group_pr_only_guards_admit_merge_group(self):
         text = CI_YML.read_text()
@@ -201,6 +223,23 @@ class CiMergeGroupContractTest(unittest.TestCase):
         with self.assertRaises(MergeGroupContractError) as cm:
             check_merge_group_contract(FIXTURE_PUSH_PATHS, name="push-paths")
         self.assertIn("`paths:` filter", str(cm.exception))
+
+    def test_merge_group_negative_control_paths_ignore_filter_fails(self):
+        with self.assertRaises(MergeGroupContractError) as cm:
+            check_merge_group_contract(
+                FIXTURE_PUSH_PATHS_IGNORE, name="pr-paths-ignore")
+        self.assertIn("`paths-ignore:` filter", str(cm.exception))
+        # Same widened check catches `paths-ignore:` under `push:` (issue #261).
+        with self.assertRaises(MergeGroupContractError) as cm_push:
+            check_merge_group_contract(
+                FIXTURE_PUSH_PATHS.replace("paths:", "paths-ignore:"),
+                name="push-paths-ignore")
+        self.assertIn("`paths-ignore:` filter", str(cm_push.exception))
+        # A commented-out line is inert, exactly as for `paths:`: the regex
+        # anchors on the key itself, not a `#`-prefixed mention.
+        commented = FIXTURE_PUSH_PATHS_IGNORE.replace(
+            '    paths-ignore: ["**/*.md"]', '    # paths-ignore: ["**/*.md"]')
+        check_merge_group_contract(commented, name="commented-paths-ignore")
 
 
 if __name__ == "__main__":

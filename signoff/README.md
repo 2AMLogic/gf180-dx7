@@ -113,6 +113,13 @@ citation `unmet` / `unverifiable_provenance`
 is therefore `{"file": "evidence/t1-functional/report.json"}` with no
 `content_hash` key; do not add one back.
 
+Before pushing, `python3 tools/check_signoff_hashes.py` (also run by
+`tools/check_all.sh` and the fast lane) cheaply re-checks only the per-file
+`content_hash` entries of items 9 and 10 against the working tree, so editing
+one of those files without regenerating its envelope fails locally (issue
+#260). It is a hygiene/testbench hash-drift guard only — it is not a
+`signoff-fresh` pass and does not replace that job.
+
 ## CI
 
 The `signoff-fresh` job (pull requests) runs `--attest --check` for items 9

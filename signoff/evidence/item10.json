@@ -17,7 +17,7 @@
         "role": "hygiene",
         "path": ".github/workflows/ci.yml",
         "passed": true,
-        "content_hash": "sha256:8003276f6efaf36d0a93a1d30e3f5ce4d0b6649515b361116e8c595784659932"
+        "content_hash": "sha256:c2012cd495a79baa9e4bdf4012060dd0cf7730ca97208fded435ae4e4530ef43"
       },
       {
         "check": "present",

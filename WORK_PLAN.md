@@ -21,11 +21,11 @@ _None._
 
 - **#2**: Epic: E2 — Verified core and physical feasibility
 - **#3**: Epic: E3 — Curated instrument
-- **#200**: Re-stamp the reference-pin capability node (STALE since tools/verify_reference.py changed)
+- **#200**: Re-stamp the reference-pin capability node (STALE since tools/verify_reference.py changed) *(held)*
 
 ## Ready
 
-Human-approved issues ready for implementation (`loom:issue`).
+Human-approved issues (`loom:issue`) ready for implementation — excluding held (`loom:blocked`/`loom:operator`/`loom:frozen`), `loom:building`, and issues closed by an open `loom:pr` PR (listed under Approved).
 
 _None._
 
@@ -53,18 +53,18 @@ Issues carrying `loom:curated`.
 
 - **#2**: Epic: E2 — Verified core and physical feasibility *(curated)*
 - **#3**: Epic: E3 — Curated instrument *(curated)*
-- **#31**: H09: FPGA digital capture *(curated)*
-- **#33**: H11: Physical integration evidence *(curated)*
-- **#35**: U02: Reviewed 32-patch listening bank *(curated)*
-- **#36**: U03: Curated 128-patch bank manifest *(curated)*
-- **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)*
-- **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)*
+- **#31**: H09: FPGA digital capture *(curated)* *(held)*
+- **#33**: H11: Physical integration evidence *(curated)* *(held)*
+- **#35**: U02: Reviewed 32-patch listening bank *(curated)* *(held)*
+- **#36**: U03: Curated 128-patch bank manifest *(curated)* *(held)*
+- **#101**: H08: re-synthesize the chassis on the DR-0011 refrozen core on the heavy host (gate full_vs_h07 is NOT_RUN) *(curated)* *(held)*
+- **#103**: Pinned ORFS mapped census + H10 re-run on the DR-0012 core pin (blocked on #98 and on a >=12 GB synthesis host) *(curated)* *(held)*
 - **#151**: Track the gap to T1 (klayout-tools design-evidence-tiers.md) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-- **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)*
-- **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)*
+- **#161**: Consolidate triplicated parse_events in model/{algorithm,integrated,poly}.py *(hermit)* *(held)*
+- **#208**: Consolidate the two Freqlut implementations: operator.py vs pitch.py *(hermit)* *(held)*
 
 ## Epics
 
@@ -78,7 +78,7 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 3 |
-| Ready (`loom:issue`) | 0 |
+| Ready (`loom:issue`, net of holds/building/merge-pending) | 0 |
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |

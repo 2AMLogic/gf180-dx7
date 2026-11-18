@@ -1434,8 +1434,8 @@
   },
   {
    "path": "tools/check_work_plan_region.py",
-   "sha256": "5321a9ca4b9ebec40a792aafc93403abde7987ed50c60e6318e0f2f402f31e6a",
-   "reason": "locally authored #249 structural lint for the WORK_PLAN.md guide:plan-body generated region; checks the static, state-independent shape (marker pair, heading order, blurbs, bullet format, Backlog Balance row labels) against render_plan_body()'s emitted shape so hand-edits like PR #248's *(held)* suffixes fail a check instead of merging; no upstream bytes; re-pinned after the issue #251 revision (a second trailing bullet annotation before a valid renderer suffix now fails in any order; a mid-title *(word)* stays uninspected)"
+   "sha256": "c59f468c3bf500724bb20c88bdeb7e40cc9f35d1ed502d86769385d5089b3fcb",
+   "reason": "locally authored #249 structural lint for the WORK_PLAN.md guide:plan-body generated region; checks the static, state-independent shape (marker pair, heading order, blurbs, bullet format, Backlog Balance row labels) against render_plan_body()'s emitted shape so hand-edits like PR #248's *(held)* suffixes fail a check instead of merging; no upstream bytes; re-pinned after the issue #251 revision (a second trailing bullet annotation before a valid renderer suffix now fails in any order; a mid-title *(word)* stays uninspected); re-pinned after the issue #253 revision (bullet suffixes are section-scoped per ALLOWED_SUFFIXES — *(curated)* only in Proposed, *(architect)* / *(hermit)* only in Proposed (Architect / Hermit); a renderer suffix in any other section fails like a hand annotation)"
   },
   {
    "path": "tests/test_capabilities.py",

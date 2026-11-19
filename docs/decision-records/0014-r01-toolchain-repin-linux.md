@@ -81,6 +81,30 @@ and the exact version-line drift rule itself.
   original-DX7 fidelity; this DR changes where the oracle is compiled, not
   what it is.
 
+## Durability
+
+The recorded recipe does not reproduce the pin. `provisioning.install_commands`
+install the unversioned `clang` metapackage, so they resolve to whatever
+clang noble/noble-updates currently ships; the pin is the recorded
+`cxx_compiler.version_line` and `provisioning.packages` values, and nothing in
+the recipe holds the two together.
+
+An archive revision bump of the clang-18 source package (e.g.
+`1:18.1.3-1ubuntu2`, including security updates) changes the
+`clang++ --version` first line, and a freshly provisioned worker following the
+recipe is then expected to fail `tools/verify_reference.py` with
+`toolchain drift: compiler version line is '<installed>', manifest pins
+'<version_line>'` and exit 1. This is the drift rule behaving correctly — no
+wrong result can pass; the cost is availability of the re-stamp path, not
+correctness. Agreement with the pin holds only while the archive ships the
+pinned revision; no long-term reproducibility is claimed.
+
+The remedy is a reviewed re-pin — a manifest change under DEC-001 updating
+`version_line` and `provisioning.packages` together, per the existing drift
+rule — never an edit to `verify_toolchain()`. A durable provisioning fix
+(version-pinned install commands, a snapshot source, or a container digest
+pin) would be a separate decision; none is recorded here.
+
 ## Evidence
 
 Measured 2026-11-19, loom-worker-3 (Ubuntu 24.04.4 LTS, x86_64), retained in

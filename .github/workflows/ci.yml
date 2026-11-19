@@ -177,10 +177,10 @@ jobs:
           pip install "klayout-tools==0.8.0"
           klt --version
       - name: Item 9 attestation reproduces
-        run: klt signoff --attest 9 --inventory signoff/inventory-item9.json --check signoff/evidence/item9.json
+        run: KLT_TIERS_DOC='' klt signoff --attest 9 --inventory signoff/inventory-item9.json --check signoff/evidence/item9.json
       - name: Item 10 attestation reproduces
-        run: klt signoff --attest 10 --inventory signoff/inventory-item10.json --check signoff/evidence/item10.json
+        run: KLT_TIERS_DOC='' klt signoff --attest 10 --inventory signoff/inventory-item10.json --check signoff/evidence/item10.json
       - name: Committed signoff report reproduces
         # Exit 3 here means drift. The report's own T1 verdict is not a CI
         # failure: the block is honestly not T1 (items 1-8, 11 uncited).
-        run: klt signoff --manifest signoff/manifest.json --tiers-doc signoff/design-evidence-tiers.md --check signoff/signoff.json
+        run: KLT_TIERS_DOC='' klt signoff --manifest signoff/manifest.json --check signoff/signoff.json

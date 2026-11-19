@@ -389,17 +389,35 @@
   ],
   "patch_struct_note": "The engine consumes voice state from Dexed's internal uint8_t data[161] (Source/PluginProcessor.h). Verified layout facts: a DX7 single-voice dump is copied verbatim into data[0..154] (memcpy(data, rawdata, 155), Source/PluginData.cpp updateProgramFromSysex), so data[0..154] are the packed DX7 single-voice bytes (data[134] algorithm, data[135] feedback, data[136] osc key sync per the CtrlDX offsets in Source/PluginParam.cpp initCtrl; data[137..] LFO block per lfo.reset(data + 137) in Source/PluginData.cpp); data[136] gates oscSync at keydown (Source/PluginProcessor.cpp keydown: if (data[136]) ... oscSync()); data[155] holds the packed operator-switch byte, which is not part of a sysex cartridge and is rendered by packOpSwitch (Source/PluginParam.cpp setDxValue); data[156..160] are Dexed-internal state. Dx7Note::init(const uint8_t patch[156], ...) consumes the first 156 entries (Source/msfa/dx7note.h). The P01 sysex codec (src/gf180_dx7/sysex.py) owns DX7 sysex framing; the .syx -> data[161] mapping for the oracle is wrapper-defined in R02.",
   "toolchain": {
-    "purpose": "Compiler/runtime used to build and run the external oracle (R02). Recorded at manifest time on the pin machine.",
+    "purpose": "Compiler/runtime used to build and run the external oracle (R02). Re-pinned 2026-11-19 to a fleet-reproducible Linux toolchain after the macOS pin hosts left the fleet (DR-0014, issue #200 decision of 2026-11-18); the exact version-line drift check is unchanged.",
     "cxx_compiler": {
       "command": "clang++",
-      "version_line": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
-      "target": "arm64-apple-darwin25.5.0",
-      "installed_dir": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+      "version_line": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+      "target": "x86_64-pc-linux-gnu",
+      "installed_dir": "/usr/bin",
+      "resolved_binary": "/usr/lib/llvm-18/bin/clang",
+      "full_version_output": "Ubuntu clang version 18.1.3 (1ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin"
+    },
+    "provisioning": {
+      "distro": "Ubuntu 24.04 LTS (noble), amd64",
+      "packages": {
+        "clang-18": "1:18.1.3-1ubuntu1",
+        "clang": "1:18.0-59~exp2 (metapackage; supplies /usr/bin/clang++ pointing at clang-18)"
+      },
+      "source": "Ubuntu archive (archive.ubuntu.com and regional mirrors), noble and noble-updates, universe component",
+      "install_commands": [
+        "sudo apt-get update",
+        "sudo apt-get install -y clang"
+      ],
+      "verify_commands": [
+        "clang++ --version"
+      ],
+      "note": "Version-bearing package is clang-18; the unversioned 'clang' metapackage provides /usr/bin/clang++, the command pinned above. Recipe demonstrated on 2026-11-19 in a clean ubuntu:24.04 amd64 container (issue #200): the installed clang++ first line equals version_line verbatim."
     },
     "python_runtime_of_record": {
       "command": "python3",
-      "version": "3.14.7",
-      "note": "Recorded for reproducibility. tools/verify_reference.py is stdlib-only and does not hard-fail on a newer Python; the R02 oracle build/runtime pin is enforced there."
+      "version": "3.12.3",
+      "note": "Recorded for reproducibility (Ubuntu 24.04 python3). tools/verify_reference.py is stdlib-only and does not hard-fail on a newer Python; the R02 oracle build/runtime pin is enforced there."
     },
     "drift_rule": "A different clang++ version line than toolchain.cxx_compiler.version_line is drift: verify_reference.py reports it and exits 1. Re-pinning the toolchain requires a manifest change and review, never a silent follow."
   },
@@ -409,7 +427,7 @@
   },
   "drift_policy": {
     "verifier": "tools/verify_reference.py",
-    "command": "python3 tools/verify_reference.py --dexed-root /Users/joseph/dev/dexed",
+    "command": "python3 tools/verify_reference.py --dexed-root .oracle/dexed",
     "exit_codes": {
       "0": "PASS: pinned commit, every file hash, and toolchain match",
       "1": "FAIL (drift): commit mismatch, file missing/modified, or toolchain mismatch; first mismatch reported explicitly",

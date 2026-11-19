@@ -48,12 +48,12 @@
         "Environment-bound: requires the local clone; CI evaluates recorded evidence only"
       ],
       "id": "reference-pin",
-      "local_state": "STALE",
+      "local_state": "PASS",
       "prereqs": [
         "contract"
       ],
       "reasons": [
-        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py, tools/verify_reference.py"
+        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
       ],
       "required_negative_controls": [
         {
@@ -62,7 +62,7 @@
         }
       ],
       "skip_policy": "pass",
-      "state": "STALE"
+      "state": "PASS"
     },
     {
       "check": "render-selfcheck-v1",
@@ -87,8 +87,7 @@
         "reference-pin"
       ],
       "reasons": [
-        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)",
-        "prerequisite not demonstrated: reference-pin=STALE"
+        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)"
       ],
       "required_negative_controls": [
         {
@@ -97,7 +96,7 @@
         }
       ],
       "skip_policy": "not_run",
-      "state": "BLOCKED"
+      "state": "NOT_RUN"
     },
     {
       "check": "compare-evidence-v1",
@@ -125,7 +124,7 @@
       ],
       "reasons": [
         "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py",
-        "prerequisite not demonstrated: oracle-identity=BLOCKED"
+        "prerequisite not demonstrated: oracle-identity=NOT_RUN"
       ],
       "required_negative_controls": [
         {
@@ -232,13 +231,13 @@
         "A treeless stamp (pinned dexed tree unavailable) never reads PASS: the checker's guarded citation skip sets check_skip_reported, and the required control reports skipped=1 of 11 (the citation-line-rot clause never ran), so the record lands NOT_RUN with the captured output digest+tail and skip counts readable from evidence/capabilities/numeric-profile.json (issue #206). With the tree present the control runs whole and the record stays PASS while the 3 unpublished dx7-oracle-marki citations remain a declared, exclusion-named check-level gap under skip_policy: pass"
       ],
       "id": "numeric-profile",
-      "local_state": "NOT_RUN",
+      "local_state": "STALE",
       "prereqs": [
         "comparator",
         "contract"
       ],
       "reasons": [
-        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)",
+        "covered bytes changed: reference/manifest.json",
         "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [
@@ -458,11 +457,11 @@
   "schema": "gf180-dx7.capabilities-view/1",
   "source": "spec/capabilities-v1.json",
   "summary": {
-    "BLOCKED": 13,
+    "BLOCKED": 12,
     "FAIL": 0,
-    "NOT_RUN": 0,
+    "NOT_RUN": 1,
     "NO_VERDICT": 0,
-    "PASS": 1,
-    "STALE": 1
+    "PASS": 2,
+    "STALE": 0
   }
 }

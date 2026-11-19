@@ -24,7 +24,7 @@ sounds good; those are separate claims with their own evidence.
 | 3 DRC clean | uncited | no layout exists yet: #33 |
 | 4 LVS clean | uncited | no layout exists yet: #33 |
 | 5 Full corner verification vs a ratified spec | `unmet` / `partial_coverage` | functional half cited: `evidence/t1-functional/report.json`, graded `met` as a citation; klt reports `missing_kinds: ["sta"]`, so the STA half still waits on #103 and #32 (T1 gap tracker #151). Not full functional coverage — see "Item 5" below |
-| 6 Statistical claims carry Monte Carlo evidence | uncited | see "Item 6" below |
+| 6 Statistical claims carry Monte Carlo evidence | `unmet` / `no_evidence` | coverage statement committed, not a grade; manifest step waits on DR-0008 ratification (#264) — see "Item 6" below |
 | 7 Post-layout verification | uncited | needs layout and mapped netlist: #33, #103 |
 | 8 Characterization report | uncited | needs a characterization record (waits on #32/#33) |
 | 11 Power delivery (structural) | uncited | needs place-and-route and layout: #32, #33 |
@@ -34,7 +34,7 @@ native-envelope or placeholder citation is made for it.
 
 The statuses and reasons above are klt's own tokens where a row has been
 brought up to date; the remaining `uncited` rows predate that convention and
-are corrected separately (#203 and a follow-up). `klt signoff` itself emits
+are corrected separately. `klt signoff` itself emits
 `no_evidence`, not `uncited`.
 
 ## Item 5
@@ -61,11 +61,23 @@ place-and-route, gf180mcu signoff, hardware playback, or sound.
 
 ## Item 6
 
-No row of `spec/core-contract-v1.json` (DR-0001, DR-0007) is statistical:
-the contract and both decision records contain no Monte Carlo, distribution
-or tolerance rows, and the core contract is integer and bit-exact. The
-expected next step is the bound `not_applicable` statement the checklist
-allows. That is a follow-up and is not made here, so item 6 is uncited.
+Item 6 is `unmet` with `reason: "no_evidence"`. No row of
+`spec/core-contract-v1.json` `budget_worst_case.rows` is statistical: the
+contract is integer and bit-exact. That is now recorded row by row in
+[`item6-not-applicable-statement.json`](item6-not-applicable-statement.json),
+one entry (`id`, `class`, `reason`) for each of the 16 rows, and
+`tests/test_item6_statement.py` fails if a spec row is missing from it, if it
+names a row the spec does not have, or on a duplicate id or empty field.
+
+This is a **coverage statement, not a `not_applicable` grade**. The pinned
+grader (`klayout-tools==0.8.0`) accepts a `not_applicable` outcome only when
+the cited spec document carries a top-level `"status": "ratified"` and a
+top-level `rows` list; `spec/core-contract-v1.json` has neither, and its
+adoption record is DR-0008 (`Status: Proposed`, owner sign-off requested).
+Nothing here asserts that ratification. The manifest declaration, the
+`signoff.json` regeneration and the byte-drift negative control are a
+follow-up gated on DR-0008 ratification (#264); until then
+`signoff/manifest.json` and `signoff/signoff.json` are unchanged.
 
 ## What items 9 and 10 do and do not establish
 

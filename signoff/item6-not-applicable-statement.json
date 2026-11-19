@@ -1,0 +1,84 @@
+{
+  "rows": [
+    {
+      "id": "op_evals",
+      "class": "measured",
+      "reason": "Operator evaluations are a fixed 3-stage integer pipeline at 1 clk per eval; the count is 16 notes x 6 ops x 64 samples and the cost was measured as a bit-exact sustained throughput, not sampled from a distribution."
+    },
+    {
+      "id": "env_steps",
+      "class": "derived_estimate",
+      "reason": "Envelope steps are integer table lookups and shift/multiply arithmetic; the budget is a deterministic worst-case clock bound for the longest step path, with no random or spread-dependent term."
+    },
+    {
+      "id": "freq_updates",
+      "class": "derived_estimate",
+      "reason": "Interpolated Freqlut lookups are integer index and table-read operations; the budget is a fixed per-lookup clock bound times 96 lookups per frame."
+    },
+    {
+      "id": "pitch_eg_steps",
+      "class": "derived_estimate",
+      "reason": "Pitch-EG steps are additive integer legs; the budget is an upper-bound clock count per step times one step per note per frame."
+    },
+    {
+      "id": "lfo_frame",
+      "class": "derived_estimate",
+      "reason": "The LFO is an integer waveform generator; the budget takes the worst case of a fixed per-frame cost range, once per frame."
+    },
+    {
+      "id": "pitch_mod_application",
+      "class": "derived_estimate",
+      "reason": "Pitch-mod application is one integer shift-add chain per note per frame; the clock bound is deterministic."
+    },
+    {
+      "id": "amp_mod_application",
+      "class": "derived_estimate",
+      "reason": "Amp-mod application is one integer gain modification per operator per frame; the clock bound is deterministic and the path is rendered byte-exact."
+    },
+    {
+      "id": "control_tail_commits",
+      "class": "structural",
+      "reason": "Control-tail commits are register-file writes at one write per clock; the count is the structural 96 + 16, fixed by the port structure."
+    },
+    {
+      "id": "note_on_application",
+      "class": "derived_estimate",
+      "reason": "Note-on application is integer parameter derivation plus a voice-steal scan; the budget is a rounded-up deterministic clock total."
+    },
+    {
+      "id": "note_off_application",
+      "class": "derived_estimate",
+      "reason": "Note-off application is a bounded voice scan and integer predicate test; the budget is the worst admissible burst of a full-chord release in one frame."
+    },
+    {
+      "id": "controller_events",
+      "class": "derived_estimate",
+      "reason": "Controller events store frozen integer scale factors and mark notes dirty; the budget is a deterministic per-note clock bound."
+    },
+    {
+      "id": "patch_commit",
+      "class": "derived_estimate",
+      "reason": "Patch commit is an atomic generation swap plus integer ring bookkeeping; at most one commit occurs per frame, so the bound is deterministic."
+    },
+    {
+      "id": "mix_convert",
+      "class": "derived_estimate",
+      "reason": "Output conversion is integer shift, clip and add, serialized with no assumed overlap; the clock bound is deterministic."
+    },
+    {
+      "id": "i2s_loads",
+      "class": "structural",
+      "reason": "I2S sample loads are one registered load per sample, 64 per frame, fixed by the frame structure."
+    },
+    {
+      "id": "write_queue_drain",
+      "class": "structural",
+      "reason": "The SPI write-queue drain is one shadow-image write per clock; the count is a floor-division worst case from fixed clock ratios and frame lengths."
+    },
+    {
+      "id": "frame_controller_overhead",
+      "class": "structural",
+      "reason": "Frame controller overhead is one tick plus a 3-clock pipeline fill, once per frame; it is fixed by the pipeline depth."
+    }
+  ]
+}

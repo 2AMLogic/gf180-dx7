@@ -5,8 +5,8 @@
   ],
   "check": "reference-pin-v1",
   "check_output": {
-    "sha256": "f1347f3acd27591aaf69e5fc3a7aabb072a04b499d801a3c8649ff588d5d5dd5",
-    "tail": "verify_reference: PASS \u2014 /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-200/.oracle/dexed at pinned commit b6cf2e9190e2, 37 files hash-match, toolchain matches\n"
+    "sha256": "575a163406f365625d3b5502af43390f07ce86820c5db389359cd1a5056c17f4",
+    "tail": "verify_reference: PASS \u2014 /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-269/.oracle/dexed at pinned commit b6cf2e9190e2, 37 files hash-match, toolchain matches\n"
   },
   "check_skip_reported": false,
   "controls": [
@@ -20,15 +20,15 @@
       "detected": true,
       "exit_code": 0,
       "output": {
-        "sha256": "3e14b7437ac6bb9dea83e1182381e29343fd79b4cfc4703ee7c180a781f633a8",
-        "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.210s\n\nOK\n"
+        "sha256": "3f0d71ad36a5aaa3f81c3a547053eeb86ed0fa6d9a20c9771771efd125f473f5",
+        "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.227s\n\nOK\n"
       },
       "skipped": 0,
       "tests_run": 5
     }
   ],
   "coverage": {
-    "reference/manifest.json": "f8da364baaa3abbf3397461d12e2f0ba6f98a01803967cbb912bc219f47fbd07",
+    "reference/manifest.json": "a7c1f7c293c125c5a6ab179c1aaad3d620e9406e92371f3d42488e29ad7b940a",
     "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
     "spec/capabilities-v1.json": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
     "src/gf180_dx7/capabilities.py": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
@@ -37,7 +37,7 @@
   },
   "exit_code": 0,
   "node_id": "reference-pin",
-  "recorded_at": "2026-11-19T02:09:40Z",
+  "recorded_at": "2026-11-19T03:02:21Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

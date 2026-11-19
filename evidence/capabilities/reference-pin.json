@@ -4,6 +4,11 @@
     "tools/verify_reference.py"
   ],
   "check": "reference-pin-v1",
+  "check_output": {
+    "sha256": "f1347f3acd27591aaf69e5fc3a7aabb072a04b499d801a3c8649ff588d5d5dd5",
+    "tail": "verify_reference: PASS \u2014 /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-200/.oracle/dexed at pinned commit b6cf2e9190e2, 37 files hash-match, toolchain matches\n"
+  },
+  "check_skip_reported": false,
   "controls": [
     {
       "command": [
@@ -13,20 +18,26 @@
         "tests.test_reference_manifest.TestPinnedTree"
       ],
       "detected": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "output": {
+        "sha256": "3e14b7437ac6bb9dea83e1182381e29343fd79b4cfc4703ee7c180a781f633a8",
+        "tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.210s\n\nOK\n"
+      },
+      "skipped": 0,
+      "tests_run": 5
     }
   ],
   "coverage": {
-    "reference/manifest.json": "d5471aea82e677c77fa94a23a03e74df246ccb63b92ef4973555804ac41d3ef5",
+    "reference/manifest.json": "f8da364baaa3abbf3397461d12e2f0ba6f98a01803967cbb912bc219f47fbd07",
     "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
-    "spec/capabilities-v1.json": "d9d471406c5aaa69b693d20b9a2dda6099bf7699dfef15ab6e93878eda42e070",
-    "src/gf180_dx7/capabilities.py": "48e09d142836f253854c5c6cc808da30b9bd2582192de8ee6a44cbfbd809315a",
-    "tools/compile_capabilities.py": "760c2be5c809cd179f079a352a891a8e8556c793aa3da4017ed116a5bd2d5a47",
-    "tools/verify_reference.py": "3826a4144f81d241902cd98d5403ee8209791ed1bbcf45bfc22423335ace39aa"
+    "spec/capabilities-v1.json": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
+    "src/gf180_dx7/capabilities.py": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
+    "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
+    "tools/verify_reference.py": "afe25e8f3a2e5cdb4a490c0dc6a088d31d8164e721adea336433942c84db034a"
   },
   "exit_code": 0,
   "node_id": "reference-pin",
-  "recorded_at": "2026-09-20T11:50:23Z",
+  "recorded_at": "2026-11-19T02:09:40Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

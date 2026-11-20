@@ -22,6 +22,10 @@ Exit codes: 0 = bundle intact and every performed check passes (NOT_RUN
 rows reported, never as passes); 1 = tamper / drift / threshold failure —
 the failing case is named; 2 = could not run (bundle or manifest missing).
 
+The output carries the token GUARDED_SKIP exactly when at least one row
+reported NOT_RUN, and never otherwise (guarded-skip contract, issue #274);
+a zero-NOT_RUN summary line ("... 0 NOT_RUN ...") is not a skip.
+
 This tool verifies the frozen model release only. It establishes nothing
 about original-DX7 fidelity, RTL conformance itself, synthesis, fit, or
 audibility. Stdlib-only.
@@ -189,6 +193,33 @@ def verify_release(release_dir: Path, *, only: list[str] | None = None,
     return exit_code, rows
 
 
+def print_report(release_dir: Path, code: int, rows: list[dict]) -> None:
+    """Print per-row results and the summary line for a verification run.
+
+    Emits the GUARDED_SKIP token (the guarded-skip output contract the
+    capability registry declares for checks composed over this tool,
+    issue #274) if and only if at least one row reported NOT_RUN, so a
+    zero-NOT_RUN summary can never fabricate a skip and an actual skip
+    can never hide behind a passing exit code.
+    """
+    n_pass = sum(1 for r in rows if r["status"] == "PASS")
+    n_notrun = sum(1 for r in rows if r["status"] == "NOT_RUN")
+    n_fail = sum(1 for r in rows if r["status"] == "FAIL")
+    for r in rows:
+        if r["status"] == "FAIL":
+            name = f" [{r['case']}]" if r.get("case") else ""
+            print(f"FAIL{name}: {r['check']} — {r['detail']}")
+        elif r["status"] == "NOT_RUN":
+            name = f" [{r['case']}]" if r.get("case") else ""
+            print(f"NOT_RUN{name}: {r.get('detail', '')}")
+    verdict = {0: "PASS", 1: "FAIL", 2: "NOT_RUN"}[code]
+    print(f"n08_verify_release: {verdict} — bundle {release_dir}: "
+          f"{n_pass} check(s) passed, {n_notrun} NOT_RUN, {n_fail} FAILED")
+    if n_notrun:
+        print(f"GUARDED_SKIP: {n_notrun} verification check(s) did not run "
+              "(NOT_RUN rows are never passes)")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--release-dir", type=Path, default=DEFAULT_OUT)
@@ -201,19 +232,7 @@ def main(argv=None) -> int:
     only = [s.strip() for s in args.only.split(",")] if args.only else None
     code, rows = verify_release(args.release_dir, only=only,
                                 rerender=not args.no_rerender)
-    n_pass = sum(1 for r in rows if r["status"] == "PASS")
-    n_notrun = sum(1 for r in rows if r["status"] == "NOT_RUN")
-    n_fail = sum(1 for r in rows if r["status"] == "FAIL")
-    for r in rows:
-        if r["status"] == "FAIL":
-            name = f" [{r['case']}]" if r.get("case") else ""
-            print(f"FAIL{name}: {r['check']} — {r['detail']}")
-        elif r["status"] == "NOT_RUN":
-            name = f" [{r['case']}]" if r.get("case") else ""
-            print(f"NOT_RUN{name}: {r.get('detail', '')}")
-    verdict = {0: "PASS", 1: "FAIL", 2: "NOT_RUN"}[code]
-    print(f"n08_verify_release: {verdict} — bundle {args.release_dir}: "
-          f"{n_pass} check(s) passed, {n_notrun} NOT_RUN, {n_fail} FAILED")
+    print_report(args.release_dir, code, rows)
     return code
 
 

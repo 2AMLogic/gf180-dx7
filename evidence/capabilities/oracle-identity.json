@@ -31,15 +31,15 @@
     "reference/fixtures/smoke/events.txt": "e42e5822f3662cd9b07d1e4c106e171bd7dc91aab382fa47251419cbf08a47fb",
     "reference/fixtures/smoke/voice.syx": "076ef44094de8bfe6933d52b04cc2b232504de8494c5edb629273cbe25d2864d",
     "reference/oracle-identity.json": "e25e30fa895cd1afcf13359adf9d433b2bb3e0f457e1c2f0f1158811623322e1",
-    "spec/capabilities-v1.json": "567ccf1c018ab7d4285e209429784fe48e7ad24bb941e0e3aedf878c74a5acd3",
-    "src/gf180_dx7/capabilities.py": "d025fb2d8e32faa2617f0dd7f41e2b7ee4a7f53a9bac3cd3e476f3eaa04b5824",
+    "spec/capabilities-v1.json": "3f126fa192ec7e54d48fea4dc77b60889c7c6e545a8c3c73343338189ea99e5c",
+    "src/gf180_dx7/capabilities.py": "805cc73665fc457ec0c0bb8b82f76407263270fed8acc21b1caa0756bc6654f0",
     "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
     "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
     "tools/render_selfcheck.py": "1cff0749b470f6f0b5046da7275b5ba33b69bfd27ad3c717d47a1e5adde5e28b"
   },
   "exit_code": 0,
   "node_id": "oracle-identity",
-  "recorded_at": "2026-11-15T12:56:11Z",
+  "recorded_at": "2026-11-20T22:55:03Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "NOT_RUN",
   "schema": "gf180-dx7.capability-evidence/1"

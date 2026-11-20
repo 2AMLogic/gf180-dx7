@@ -24,6 +24,19 @@ MODEL_MISMATCH (the model no longer reproduces the frozen vector — a
 release-consistency failure, not a challenge verdict), NOT_RUN
 (environment; guarded, never a pass).
 
+--verify-release runs the full frozen-release verification
+(tools/n08_verify_release.py, re-render pass included) before the
+challenge and ends the run with that verification's exit code when it
+does not pass, so a composed check never blesses a challenge run over a
+broken bundle. Fresh results go to --results (a scratch path); the
+committed record at <release-dir>/challenge-results.json stays the
+frozen one unless that default is named explicitly.
+
+The combined output carries the token GUARDED_SKIP exactly when at least
+one challenge row (or, under --verify-release, verification row) reported
+NOT_RUN, and never otherwise (guarded-skip contract, issue #274); the
+zero-count summary wording ("..., 0 NOT_RUN; ...") is not a skip.
+
 Exit codes: 0 = every oracle-comparable row AGREE_EXACT; 1 = any FAIL or
 MODEL_MISMATCH (findings recorded); 2 = could not run (bundle missing or
 oracle unavailable). Stdlib-only.
@@ -47,6 +60,7 @@ from gf180_dx7 import compare, sysex  # noqa: E402
 from n08_build_release import (  # noqa: E402
     BuildFail, DEFAULT_OUT, SPEC_PATH, CaseSource, render_case, sha256_file,
 )
+from n08_verify_release import print_report, verify_release  # noqa: E402
 from render_reference import (  # noqa: E402
     HarnessFail, HarnessNotRun, check_oracle_binary, load_identity,
 )
@@ -237,6 +251,19 @@ class _Oracle:
         return data
 
 
+def emit_guarded_skip(count: int) -> None:
+    """Emit the GUARDED_SKIP token exactly when rows did not run (issue #274).
+
+    The capability registry declares GUARDED_SKIP as this tool's
+    guarded-skip token: it is printed if and only if at least one
+    challenge row reported NOT_RUN, so a zero-NOT_RUN summary can never
+    fabricate a skip.
+    """
+    if count > 0:
+        print(f"GUARDED_SKIP: {count} challenge row(s) did not run "
+              "(NOT_RUN rows are never passes)")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--release-dir", type=Path, default=DEFAULT_OUT)
@@ -244,12 +271,22 @@ def main(argv=None) -> int:
     parser.add_argument("--results", type=Path, default=None,
                         help="results path (default <release-dir>/"
                              "challenge-results.json)")
+    parser.add_argument("--verify-release", action="store_true",
+                        help="run the full frozen-release verification "
+                             "(re-render pass included) before the "
+                             "challenge; a failing verification ends the "
+                             "run with its exit code")
     args = parser.parse_args(argv)
     release_dir = Path(args.release_dir)
     if not (release_dir / "manifest.json").is_file():
         print(f"n08_challenge: NOT_RUN — no bundle at {release_dir}",
               file=sys.stderr)
         return 2
+    if args.verify_release:
+        v_code, v_rows = verify_release(release_dir)
+        print_report(release_dir, v_code, v_rows)
+        if v_code != 0:
+            return v_code
     oracle_path = args.oracle
     try:
         if oracle_path is None:
@@ -264,6 +301,7 @@ def main(argv=None) -> int:
         print(f"n08_challenge: FAIL — {exc}", file=sys.stderr)
         return 1
     out_path = args.results or (release_dir / "challenge-results.json")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(results, indent=2) + "\n",
                         encoding="utf-8")
     s = results["summary"]
@@ -277,6 +315,7 @@ def main(argv=None) -> int:
         if row["verdict"] in ("FAIL", "MODEL_MISMATCH"):
             print(f"  {row['verdict']} [{row['id']}]: "
                   f"{row.get('detail', '')}")
+    emit_guarded_skip(s["not_run"])
     return code
 
 

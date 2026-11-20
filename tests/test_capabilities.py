@@ -22,7 +22,10 @@ bounded output plus unittest run/skip counts. Issue #232 adds: the
 registry-declared skip_token guarded-skip contract (a check reports a
 skip only for its declared token; a None declaration cannot fabricate
 one), refusal of fabricated skip flags on token-less checks, and the
-anchored unittest skipped= summary regex.
+anchored unittest skipped= summary regex. Issue #274 adds: the
+fixed-model registration (n08 verify+challenge composition, GUARDED_SKIP
+token, one-sample-mutation control) and its absent-oracle and
+zero-skip-summary paths.
 
 State-machine tests never execute evidence commands. Only --stamp cases run
 commands, and those run only `python3 -c ...` against a temp root with a
@@ -47,6 +50,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from gf180_dx7 import capabilities as cap  # noqa: E402
+from gf180_dx7 import compare  # noqa: E402
 
 TOOL = REPO / "tools" / "compile_capabilities.py"
 NOOP = ["python3", "-c", "pass"]
@@ -59,6 +63,15 @@ MIN_README = "# fixture\n\n<!-- ISSUEDAG:BEGIN -->\nblock\n" + ISSUEDAG_END + "\
 
 def _tool_module():
     spec = importlib.util.spec_from_file_location("compile_capabilities", TOOL)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _n08_module(name: str):
+    spec = importlib.util.spec_from_file_location(
+        name, REPO / "tools" / f"{name}.py"
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -1015,8 +1028,140 @@ class RegistryBoundaryTests(unittest.TestCase):
                 "comparator-qualification-v1": None,
                 "dev32-validation-v1": "NOT_RUN",
                 "numeric-profile-v1": "NOT_RUN",
+                "fixed-model-challenge-v1": "GUARDED_SKIP",
             },
         )
+
+
+class TestFixedModelControl(unittest.TestCase):
+    """Required negative control for the fixed-model node (issue #274).
+
+    A temporary copy of a committed challenge vector with exactly one
+    sample byte flipped must FAIL the exact comparison path the challenge
+    itself uses (gf180_dx7.compare.compare_streams at the frozen
+    byte-identical f32le threshold), with the divergent sample named; the
+    unmutated pair must pass it. Runs without the external oracle: it
+    exercises the comparison apparatus over committed vectors, not a
+    reference render.
+    """
+
+    VECTOR = "reference/release/vectors/alg-05.f32"
+    SAMPLE = 1000
+
+    def test_one_flipped_sample_fails_exact_comparison(self):
+        pcm = (REPO / self.VECTOR).read_bytes()
+        clean = compare.compare_streams(pcm, pcm)
+        self.assertTrue(clean.passed)
+        self.assertTrue(clean.byte_identical)
+        mutated = bytearray(pcm)
+        mutated[self.SAMPLE * 4] ^= 0x01
+        report = compare.compare_streams(pcm, bytes(mutated))
+        self.assertFalse(report.passed)
+        self.assertFalse(report.byte_identical)
+        primary = report.primary or {}
+        self.assertFalse(primary["exact_equal"])
+        self.assertGreaterEqual(primary["mismatch_count"], 1)
+        self.assertEqual(primary["first_divergent_sample"], self.SAMPLE)
+        self.assertIsNotNone(primary["max_abs_error"])
+
+
+class FixedModelCheckTests(unittest.TestCase):
+    """Issue #274: the fixed-model registration and its skip-token contract.
+
+    The check composes the frozen-release verification with the dry
+    oracle challenge; its guarded-skip token GUARDED_SKIP must occur in
+    the composed output exactly when a row actually did not run, so the
+    absent-oracle path (exit 2) and the zero-NOT_RUN summary path can
+    never fabricate or hide a skip.
+    """
+
+    def test_registration_matches_registry(self):
+        nodes = {n["id"]: n for n in cap.load_graph(REPO / GRAPH_PATH)}
+        node = nodes["fixed-model"]
+        self.assertEqual(node["check"], "fixed-model-challenge-v1")
+        check = cap.CHECKS[node["check"]]
+        self.assertEqual(node["engine"], list(check.command))
+        self.assertEqual(node["skip_policy"], "not_run")
+        self.assertEqual(check.skip_token, "GUARDED_SKIP")
+        for tool in ("tools/n08_challenge.py", "tools/n08_verify_release.py"):
+            self.assertIn(tool, check.inputs)
+        covered = set(node["covered_inputs"])
+        for pin in (
+            "reference/manifest.json",
+            "reference/oracle-identity.json",
+            "spec/release-vectors-v1.json",
+            "reference/release/manifest.json",
+        ):
+            self.assertIn(pin, covered)
+        self.assertIn("src/gf180_dx7/compare.py", covered)
+        self.assertIn("src/gf180_dx7/sysex.py", covered)
+        self.assertTrue(
+            any(p.startswith("src/gf180_dx7/model/") for p in covered)
+        )
+        vectors = [p for p in covered
+                   if p.startswith("reference/release/vectors/")]
+        self.assertEqual(len(vectors), 51)
+        control = node["required_negative_controls"][0]
+        self.assertEqual(
+            control["command"],
+            ["python3", "-m", "unittest",
+             "tests.test_capabilities.TestFixedModelControl"],
+        )
+
+    def test_absent_oracle_exits_two_without_skip_token(self):
+        with tempfile.TemporaryDirectory() as td:
+            absent = Path(td) / "absent-oracle"
+            results = Path(td) / "challenge.json"
+            proc = subprocess.run(
+                [sys.executable, "tools/n08_challenge.py",
+                 "--oracle", str(absent), "--results", str(results)],
+                cwd=REPO, capture_output=True, text=True,
+            )
+            combined = proc.stdout + proc.stderr
+            self.assertEqual(proc.returncode, 2, combined)
+            self.assertIn("NOT_RUN", combined)
+            self.assertNotIn("GUARDED_SKIP", combined)
+            self.assertFalse(results.exists())
+
+    def test_zero_not_run_summary_emits_no_skip_token(self):
+        proc = subprocess.run(
+            [sys.executable, "tools/n08_verify_release.py", "--no-rerender"],
+            cwd=REPO, capture_output=True, text=True,
+        )
+        combined = proc.stdout + proc.stderr
+        self.assertEqual(proc.returncode, 0, combined)
+        self.assertIn("0 NOT_RUN", proc.stdout)
+        self.assertNotIn("GUARDED_SKIP", combined)
+
+    def test_verify_report_emits_token_only_for_actual_skip(self):
+        verify = _n08_module("n08_verify_release")
+        rows = [
+            {"check": "vector_file", "case": "alg-05",
+             "status": "PASS", "detail": "vectors/alg-05.f32"},
+        ]
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            verify.print_report(Path("reference/release"), 0, rows)
+        self.assertNotIn("GUARDED_SKIP", out.getvalue())
+        rows.append({"check": "rerender", "case": "dev32-03",
+                     "status": "NOT_RUN", "detail": "archive unavailable"})
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            verify.print_report(Path("reference/release"), 0, rows)
+        text = out.getvalue()
+        self.assertIn("GUARDED_SKIP", text)
+        self.assertIn("1 NOT_RUN", text)
+
+    def test_challenge_skip_token_emitted_only_for_actual_skip(self):
+        challenge = _n08_module("n08_challenge")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            challenge.emit_guarded_skip(0)
+        self.assertNotIn("GUARDED_SKIP", out.getvalue())
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            challenge.emit_guarded_skip(2)
+        self.assertIn("GUARDED_SKIP", out.getvalue())
 
 
 if __name__ == "__main__":

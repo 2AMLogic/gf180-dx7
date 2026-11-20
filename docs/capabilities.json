@@ -48,12 +48,12 @@
         "Environment-bound: requires the local clone; CI evaluates recorded evidence only"
       ],
       "id": "reference-pin",
-      "local_state": "PASS",
+      "local_state": "STALE",
       "prereqs": [
         "contract"
       ],
       "reasons": [
-        "registered check ran clean, coverage is current, and every required negative control was recorded as detected"
+        "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py"
       ],
       "required_negative_controls": [
         {
@@ -62,7 +62,7 @@
         }
       ],
       "skip_policy": "pass",
-      "state": "PASS"
+      "state": "STALE"
     },
     {
       "check": "render-selfcheck-v1",
@@ -87,7 +87,8 @@
         "reference-pin"
       ],
       "reasons": [
-        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)"
+        "recorded check reported a guarded skip and did not do all of its work (exit_code=0)",
+        "prerequisite not demonstrated: reference-pin=STALE"
       ],
       "required_negative_controls": [
         {
@@ -96,7 +97,7 @@
         }
       ],
       "skip_policy": "not_run",
-      "state": "NOT_RUN"
+      "state": "BLOCKED"
     },
     {
       "check": "compare-evidence-v1",
@@ -124,7 +125,7 @@
       ],
       "reasons": [
         "covered bytes changed: spec/capabilities-v1.json, src/gf180_dx7/capabilities.py, tools/compile_capabilities.py",
-        "prerequisite not demonstrated: oracle-identity=NOT_RUN"
+        "prerequisite not demonstrated: oracle-identity=BLOCKED"
       ],
       "required_negative_controls": [
         {
@@ -237,7 +238,7 @@
         "contract"
       ],
       "reasons": [
-        "covered bytes changed: reference/manifest.json",
+        "covered bytes changed: reference/manifest.json, spec/capabilities-v1.json, src/gf180_dx7/capabilities.py",
         "prerequisite not demonstrated: comparator=BLOCKED"
       ],
       "required_negative_controls": [
@@ -289,28 +290,113 @@
       "state": "BLOCKED"
     },
     {
-      "check": null,
+      "check": "fixed-model-challenge-v1",
       "claim": "Frozen integer model reproduces the pinned software reference within declared error budgets, case coverage reported separately from agreement (plan section 7).",
-      "covered_inputs": [],
-      "engine": "planned: fixed-model qualification check; no registered check may stamp this node yet",
+      "covered_inputs": [
+        "corpus/dev32.json",
+        "reference/manifest.json",
+        "reference/oracle-identity.json",
+        "reference/release/challenge-results.json",
+        "reference/release/manifest.json",
+        "reference/release/mutation-results.json",
+        "reference/release/vectors/alg-05.f32",
+        "reference/release/vectors/alg-16.f32",
+        "reference/release/vectors/alg-31.f32",
+        "reference/release/vectors/alg4-fb0.f32",
+        "reference/release/vectors/alg4-fb3.f32",
+        "reference/release/vectors/alg4-fb7.f32",
+        "reference/release/vectors/alg6-fb0.f32",
+        "reference/release/vectors/alg6-fb3.f32",
+        "reference/release/vectors/alg6-fb7.f32",
+        "reference/release/vectors/ampmod-ams3.f32",
+        "reference/release/vectors/bd-coarse0.f32",
+        "reference/release/vectors/bd-coarse31.f32",
+        "reference/release/vectors/bd-delayed-attack.f32",
+        "reference/release/vectors/bd-detune0.f32",
+        "reference/release/vectors/bd-detune14.f32",
+        "reference/release/vectors/bd-fast-release.f32",
+        "reference/release/vectors/bd-fine99.f32",
+        "reference/release/vectors/bd-nonzero-final.f32",
+        "reference/release/vectors/bd-rising-env.f32",
+        "reference/release/vectors/bd-rs3.f32",
+        "reference/release/vectors/bd-slow-rate3.f32",
+        "reference/release/vectors/codec-name-a.f32",
+        "reference/release/vectors/codec-name-b.f32",
+        "reference/release/vectors/dev32-03.f32",
+        "reference/release/vectors/dev32-06.f32",
+        "reference/release/vectors/dev32-30.f32",
+        "reference/release/vectors/dir-base.f32",
+        "reference/release/vectors/ev-all-notes-off.f32",
+        "reference/release/vectors/ev-all-sound-off.f32",
+        "reference/release/vectors/ev-modwheel-0.f32",
+        "reference/release/vectors/ev-modwheel-127.f32",
+        "reference/release/vectors/ev-pitch-bend-center.f32",
+        "reference/release/vectors/ev-pitch-bend-down.f32",
+        "reference/release/vectors/ev-pitch-bend-up.f32",
+        "reference/release/vectors/ev-repeated-note.f32",
+        "reference/release/vectors/ev-retrigger.f32",
+        "reference/release/vectors/ev-steal-16.f32",
+        "reference/release/vectors/ev-sum-15.f32",
+        "reference/release/vectors/ev-sustain-no-pedal.f32",
+        "reference/release/vectors/ev-sustain-pedal.f32",
+        "reference/release/vectors/kbd-right-c3.f32",
+        "reference/release/vectors/lfo-delay99.f32",
+        "reference/release/vectors/lfo-pm-sens7.f32",
+        "reference/release/vectors/lfo-wave1.f32",
+        "reference/release/vectors/lfo-wave5.f32",
+        "reference/release/vectors/osc-fixed-carrier.f32",
+        "reference/release/vectors/osc-keysync0.f32",
+        "reference/release/vectors/peg-up.f32",
+        "reference/release/vectors/perf-transpose-12.f32",
+        "reference/release/vectors/vel-kvs0-127.f32",
+        "reference/release/vectors/vel-kvs7-30.f32",
+        "spec/compatibility-registry-v1.json",
+        "spec/numeric-profile-v1.json",
+        "spec/release-vectors-v1.json",
+        "src/gf180_dx7/__init__.py",
+        "src/gf180_dx7/compare.py",
+        "src/gf180_dx7/model/__init__.py",
+        "src/gf180_dx7/model/algorithm.py",
+        "src/gf180_dx7/model/envelope.py",
+        "src/gf180_dx7/model/integrated.py",
+        "src/gf180_dx7/model/operator.py",
+        "src/gf180_dx7/model/pitch.py",
+        "src/gf180_dx7/model/poly.py",
+        "src/gf180_dx7/model/tables.py",
+        "src/gf180_dx7/sysex.py"
+      ],
+      "engine": [
+        "python3",
+        "tools/n08_challenge.py",
+        "--verify-release",
+        "--results",
+        "build/capabilities/fixed-model-challenge.json"
+      ],
       "evidence": "evidence/capabilities/fixed-model.json",
       "exclusions": [
-        "Declared, not evidenced: stays NO_VERDICT until the model lands and is stamped",
+        "Claim 2 only: model-vs-pinned-reference agreement; never RTL exactness (claim 1), original-DX7 fidelity, or a musical claim (DEC-001, plan section 7)",
+        "A missing oracle, an absent archive, or a wrapper-invalid row reads NOT_RUN, never PASS; a measured disagreement stays FAIL at the frozen byte-identical f32le threshold",
+        "Case selection and thresholds are frozen (DR-0007); a failure is a bounded finding, never retuned or swapped here",
         "Budgets are never inferred from RTL or reference self-agreement"
       ],
       "id": "fixed-model",
-      "local_state": "NO_VERDICT",
+      "local_state": "NOT_RUN",
       "prereqs": [
         "comparator",
         "numeric-profile",
         "traces"
       ],
       "reasons": [
-        "declared check is not registered; the node cannot pass until a check is registered, run, and stamped (engine: planned: fixed-model qualification check; no registered check may stamp this node yet)",
+        "recorded check did not run (exit_code=2)",
         "prerequisite not demonstrated: comparator=BLOCKED, numeric-profile=BLOCKED, traces=BLOCKED"
       ],
-      "required_negative_controls": [],
-      "skip_policy": "pass",
+      "required_negative_controls": [
+        {
+          "detects": "a single flipped f32 sample in a copied challenge vector fails the exact byte-identical comparison path (gf180_dx7.compare.compare_streams) with the divergent sample named",
+          "id": "one-sample-mutation-detected"
+        }
+      ],
+      "skip_policy": "not_run",
       "state": "BLOCKED"
     },
     {
@@ -457,11 +543,11 @@
   "schema": "gf180-dx7.capabilities-view/1",
   "source": "spec/capabilities-v1.json",
   "summary": {
-    "BLOCKED": 12,
+    "BLOCKED": 13,
     "FAIL": 0,
-    "NOT_RUN": 1,
+    "NOT_RUN": 0,
     "NO_VERDICT": 0,
-    "PASS": 2,
-    "STALE": 0
+    "PASS": 1,
+    "STALE": 1
   }
 }

@@ -229,7 +229,7 @@ Generated from [spec/capabilities-v1.json](spec/capabilities-v1.json) by `tools/
 
 | PASS | FAIL | NOT_RUN | BLOCKED | NO_VERDICT | STALE |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2 | 0 | 1 | 12 | 0 | 0 |
+| 1 | 0 | 0 | 13 | 0 | 1 |
 
 ```mermaid
 graph TD
@@ -241,8 +241,8 @@ graph TD
   n5["gf180: BLOCKED"]
   n6["instrument: BLOCKED"]
   n7["numeric-profile: BLOCKED"]
-  n8["oracle-identity: NOT_RUN"]
-  n9["reference-pin: PASS"]
+  n8["oracle-identity: BLOCKED"]
+  n9["reference-pin: STALE"]
   n10["registry: BLOCKED"]
   n11["renderer: BLOCKED"]
   n12["rtl-core: BLOCKED"]

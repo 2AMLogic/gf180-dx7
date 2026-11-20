@@ -184,6 +184,26 @@ CHECKS = {
         ("tools/check_numeric_profile.py",),
         skip_token="NOT_RUN",
     ),
+    "fixed-model-challenge-v1": Check(
+        (
+            "python3",
+            "tools/n08_challenge.py",
+            "--verify-release",
+            "--results",
+            "build/capabilities/fixed-model-challenge.json",
+        ),
+        (
+            "tools/n08_challenge.py",
+            "tools/n08_verify_release.py",
+            "tools/n08_build_release.py",
+            "tools/render_reference.py",
+            "tools/n06_compare.py",
+            "tools/registry_coverage.py",
+            "tools/registry_smoke.py",
+            "tests/test_capabilities.py",
+        ),
+        skip_token="GUARDED_SKIP",
+    ),
 }
 
 # The judge's own bytes participate in every node's coverage: changing the

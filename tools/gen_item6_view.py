@@ -20,8 +20,13 @@ def derive_status(dr_text: str) -> str:
     fields = re.findall(r"^- \*\*Status:\*\*(.*(?:\n[ \t]+.*)*)", dr_text, re.MULTILINE)
     if len(fields) != 1 or not fields[0].split():
         raise ValueError("DR-0008 must have exactly one nonempty Status bullet")
-    disposition = fields[0].split()[0].lower()
-    return "ratified" if disposition in {"accepted", "ratified"} else disposition
+    bullet = fields[0]
+    disposition = bullet.split()[0].lower()
+    if disposition not in {"accepted", "ratified"}:
+        return disposition
+    if re.search(r"by[\s-]+default", bullet, re.IGNORECASE):
+        return "accepted-by-default"
+    return "ratified"
 
 
 def render_view(contract_bytes: bytes, dr_text: str) -> bytes:

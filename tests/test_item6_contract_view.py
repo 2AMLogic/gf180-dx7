@@ -82,6 +82,17 @@ class Item6ContractViewTest(unittest.TestCase):
                     derive_status(f"- **Status:** {word} (owner ruling)\n"), "ratified"
                 )
 
+    def test_leading_by_default_qualifier_cannot_ratify(self):
+        for text in (
+            "- **Status:** Accepted by default per D0\n",
+            "- **Status:** ACCEPTED BY DEFAULT per D0\n",
+            "- **Status:** Accepted by-default per D0\n",
+            "- **Status:** Accepted (owner ruling)\n  unless overridden by default per D0\n",
+            "- **Status:** Ratified by default per D0\n",
+        ):
+            with self.subTest(text=text):
+                self.assertNotEqual(derive_status(text), "ratified")
+
     def test_absent_empty_or_ambiguous_status_cannot_ratify(self):
         for text in (
             "Accepted",

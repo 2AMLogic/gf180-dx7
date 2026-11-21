@@ -1494,7 +1494,7 @@
   },
   {
    "path": "tools/gen_item6_view.py",
-   "sha256": "94ff770c9944a66e0316294df95b0fde9bd179922053292b15dc3140ffb42cac",
+   "sha256": "4b6b6b2804cf5ed150d3525369e595b5e8ad8f1336573a3e0eec602de0cec2d9",
    "reason": "Locally authored generator for the item 6 view of the core contract and DR-0008 status (issue #272)."
   },
   {

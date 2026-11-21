@@ -204,6 +204,26 @@ CHECKS = {
         ),
         skip_token="GUARDED_SKIP",
     ),
+    "rtl-core-v1": Check(
+        (
+            "python3",
+            "tools/rtl_core_check.py",
+            "--scratch",
+            "build/capabilities/rtl-core",
+        ),
+        (
+            "tools/rtl_core_check.py",
+            "tools/h01_compare.py",
+            "tools/h04_compare.py",
+            "tools/h05_compare.py",
+            "tools/h06_compare.py",
+            "tools/iverilog_run.py",
+            "tools/verdict_errors.py",
+            "tools/sha256_helpers.py",
+            "tests/test_h05.py",
+        ),
+        skip_token="GUARDED_SKIP",
+    ),
 }
 
 # The judge's own bytes participate in every node's coverage: changing the

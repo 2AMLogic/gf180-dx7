@@ -25,12 +25,18 @@ one), refusal of fabricated skip flags on token-less checks, and the
 anchored unittest skipped= summary regex. Issue #274 adds: the
 fixed-model registration (n08 verify+challenge composition, GUARDED_SKIP
 token, one-sample-mutation control) and its absent-oracle and
-zero-skip-summary paths.
+zero-skip-summary paths. Issue #275 adds: the rtl-core registration (four
+bench drivers composed by tools/rtl_core_check.py, GUARDED_SKIP token,
+H05 operator-order control), its verdict composition (a measured mismatch
+outranks a skip), and the missing-simulator path through the registered
+command.
 
 State-machine tests never execute evidence commands. Only --stamp cases run
 commands, and those run only `python3 -c ...` against a temp root with a
 test-local check registry (the production CHECKS registry is patched, never
-mutated).
+mutated). The rtl-core missing-simulator case runs the real registered
+command with a nonexistent iverilog, which every bench driver guards into
+an exit-2 COULD-NOT-RUN before any simulation starts.
 """
 
 from __future__ import annotations
@@ -1029,6 +1035,7 @@ class RegistryBoundaryTests(unittest.TestCase):
                 "dev32-validation-v1": "NOT_RUN",
                 "numeric-profile-v1": "NOT_RUN",
                 "fixed-model-challenge-v1": "GUARDED_SKIP",
+                "rtl-core-v1": "GUARDED_SKIP",
             },
         )
 
@@ -1162,6 +1169,217 @@ class FixedModelCheckTests(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             challenge.emit_guarded_skip(2)
         self.assertIn("GUARDED_SKIP", out.getvalue())
+
+
+class RtlCoreCheckTests(unittest.TestCase):
+    """Issue #275: the rtl-core registration and its verdict composition.
+
+    The check composes the four per-module bench drivers; a measured
+    mismatch (FAIL) outranks a skip, a missing simulator or skipped
+    required bench is NOT_RUN naming the missing work, and the combined
+    output carries GUARDED_SKIP exactly when a bench did not run.
+    """
+
+    def _rtl_core_module(self):
+        spec = importlib.util.spec_from_file_location(
+            "rtl_core_check", REPO / "tools" / "rtl_core_check.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def _bench(self, bench_id):
+        rtl = self._rtl_core_module()
+        return next(b for b in rtl.BENCHES if b["id"] == bench_id)
+
+    def test_registration_matches_registry(self):
+        nodes = {n["id"]: n for n in cap.load_graph(REPO / GRAPH_PATH)}
+        node = nodes["rtl-core"]
+        self.assertEqual(node["check"], "rtl-core-v1")
+        check = cap.CHECKS[node["check"]]
+        self.assertEqual(node["engine"], list(check.command))
+        self.assertEqual(node["skip_policy"], "not_run")
+        self.assertEqual(check.skip_token, "GUARDED_SKIP")
+        for tool in ("tools/rtl_core_check.py", "tools/h01_compare.py",
+                     "tools/h04_compare.py", "tools/h05_compare.py",
+                     "tools/h06_compare.py", "tools/iverilog_run.py"):
+            self.assertIn(tool, check.inputs)
+        covered = set(node["covered_inputs"])
+        for rtl_input in (
+            "rtl/operator_probe.v", "rtl/tb_operator_probe.v",
+            "rtl/env_unit.v", "rtl/tb_env_unit.v",
+            "rtl/alg_router.v", "rtl/tb_alg_router.v",
+            "rtl/pitch_mod.v", "rtl/tb_pitch_mod.v",
+        ):
+            self.assertIn(rtl_input, covered)
+        self.assertTrue(
+            any(p.startswith("src/gf180_dx7/model/") for p in covered)
+        )
+        for table in ("reference/tables/manifest.json",
+                      "reference/tables/alg_table.hex",
+                      "reference/tables/alg_manifest.json",
+                      "reference/tables/freqlut_table.hex",
+                      "reference/tables/lfo_sin_table.hex"):
+            self.assertIn(table, covered)
+        control = node["required_negative_controls"][0]
+        self.assertEqual(control["id"], "h05-oporder-mutant-detected")
+        self.assertEqual(
+            control["command"],
+            ["python3", "-m", "unittest",
+             "tests.test_h05.TestConformance."
+             "test_negative_control_oporder_fails_widely", "-v"],
+        )
+        for path in cap.coverage_paths(node):
+            self.assertTrue(
+                (REPO / path).is_file(), f"covered input missing: {path}"
+            )
+
+    def test_exact_bench_summary_carries_counts_and_controls(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h01")
+        report = {
+            "status": "PASS",
+            "equivalence": {
+                "expected_rows": 4794, "actual_rows": 4794,
+                "mismatches": 0, "first_mismatch": None, "status": "PASS",
+            },
+            "negative_control": {"status": "MET (mutant fails)"},
+        }
+        summary = rtl.summarize(bench, 0, "", report)
+        self.assertEqual(summary["verdict"], "PASS")
+        self.assertEqual(summary["expected"], 4794)
+        self.assertEqual(summary["mismatches"], 0)
+        self.assertIsNone(summary["first_divergence"])
+        line = rtl.summary_line(summary, report)
+        self.assertIn("expected=4794", line)
+        self.assertIn("actual=4794", line)
+        self.assertIn("mismatches=0", line)
+        self.assertIn("control=MET", line)
+
+    def test_h05_conformance_counts_are_normalized(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h05")
+        report = {
+            "status": "PASS",
+            "conformance": {
+                "expected_records": 159548, "actual_records": 159548,
+                "mismatch_records": 0, "first_mismatch": None,
+                "status": "PASS",
+            },
+            "mutants": {"fbdelay": {"status": "MET (mutant fails)"}},
+        }
+        summary = rtl.summarize(bench, 0, "", report)
+        self.assertEqual(summary["verdict"], "PASS")
+        self.assertEqual(summary["expected"], 159548)
+        self.assertEqual(summary["actual"], 159548)
+        self.assertEqual(summary["mismatches"], 0)
+        self.assertIn("mutants=fbdelay:MET", rtl.summary_line(summary, report))
+
+    def test_measured_mismatch_is_fail_with_first_divergence(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h04")
+        first = {
+            "eval_index": 12, "phase_before": "0000abcd",
+            "expected_out": "00000001", "actual_out": "00000002",
+        }
+        report = {
+            "status": "FAIL",
+            "equivalence": {
+                "expected_rows": 27931, "actual_rows": 27931,
+                "mismatches": 3, "first_mismatch": first, "status": "FAIL",
+            },
+        }
+        summary = rtl.summarize(bench, 1, "", report)
+        self.assertEqual(summary["verdict"], "FAIL")
+        self.assertIn('"eval_index":12', summary["first_divergence"])
+        line = rtl.summary_line(summary, report)
+        self.assertIn("first_divergence=", line)
+        self.assertIn("mismatches=3", line)
+
+    def test_missing_simulator_is_not_run_naming_missing_work(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h05")
+        text = "...\nCOULD-NOT-RUN: iverilog binary not found: /nope\n"
+        summary = rtl.summarize(bench, 2, text, None)
+        self.assertEqual(summary["verdict"], "NOT_RUN")
+        self.assertEqual(
+            summary["reason"],
+            "COULD-NOT-RUN: iverilog binary not found: /nope",
+        )
+        line = rtl.summary_line(summary, None)
+        self.assertIn("h05 routing/feedback: NOT_RUN", line)
+        self.assertIn("reason=COULD-NOT-RUN: iverilog binary not found", line)
+
+    def test_report_without_required_section_is_skipped_bench(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h06")
+        summary = rtl.summarize(bench, 0, "", {"status": "PASS"})
+        self.assertEqual(summary["verdict"], "NOT_RUN")
+        self.assertIn("skipped required bench", summary["reason"])
+        self.assertIn("equivalence", summary["reason"])
+        # Exit 0 without any report at all is equally a skipped bench.
+        summary = rtl.summarize(bench, 0, "", None)
+        self.assertEqual(summary["verdict"], "NOT_RUN")
+        self.assertIn("skipped required bench", summary["reason"])
+
+    def test_crash_without_report_is_fail_not_not_run(self):
+        rtl = self._rtl_core_module()
+        bench = self._bench("h06")
+        summary = rtl.summarize(bench, 1, "Traceback ...", None)
+        self.assertEqual(summary["verdict"], "FAIL")
+        self.assertIn("without writing compare_report.json",
+                      summary["reason"])
+
+    def test_compose_fail_outranks_skip_and_skip_outranks_pass(self):
+        rtl = self._rtl_core_module()
+
+        def verdict_of(statuses):
+            return rtl.compose([{"verdict": s} for s in statuses])
+
+        self.assertEqual(verdict_of(["PASS", "PASS", "PASS", "PASS"]), "PASS")
+        self.assertEqual(
+            verdict_of(["FAIL", "NOT_RUN", "PASS", "PASS"]), "FAIL")
+        self.assertEqual(
+            verdict_of(["NOT_RUN", "PASS", "PASS", "PASS"]), "NOT_RUN")
+
+    def test_guarded_skip_token_emitted_only_for_actual_skip(self):
+        rtl = self._rtl_core_module()
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rtl.emit_guarded_skip(0, [])
+        self.assertNotIn("GUARDED_SKIP", out.getvalue())
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rtl.emit_guarded_skip(2, ["h01", "h05"])
+        text = out.getvalue()
+        self.assertIn("GUARDED_SKIP", text)
+        self.assertIn("h01", text)
+        self.assertIn("h05", text)
+
+    def test_registered_command_missing_simulator_is_not_run(self):
+        """The real registered command, every bench guarded to exit 2.
+
+        Each driver probes iverilog before any simulation, so a
+        nonexistent executable composes to exit 2 with the declared
+        GUARDED_SKIP token and every bench named as missing work --
+        never a FAIL and never a silent pass.
+        """
+        check = cap.CHECKS["rtl-core-v1"]
+        argv = list(check.command) + [
+            "--scratch", tempfile.mkdtemp(prefix="rtl_core_skip_"),
+            "--iverilog", "/nonexistent/iverilog",
+        ]
+        proc = subprocess.run(
+            argv, cwd=REPO, capture_output=True, text=True, timeout=120
+        )
+        combined = proc.stdout + proc.stderr
+        self.assertEqual(proc.returncode, 2, combined)
+        self.assertIn("GUARDED_SKIP: 4 bench(es) did not run", combined)
+        self.assertIn("COULD-NOT-RUN: iverilog binary not found", combined)
+        for bench_id in ("h01", "h04", "h05", "h06"):
+            self.assertIn(f"rtl-core {bench_id} ", combined)
+            self.assertIn("NOT_RUN reason=COULD-NOT-RUN", combined)
+        self.assertIn("rtl-core verdict: NOT_RUN", combined)
 
 
 if __name__ == "__main__":

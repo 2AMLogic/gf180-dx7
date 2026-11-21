@@ -305,16 +305,57 @@
     {
       "id": "rtl-core",
       "claim": "Per-module RTL is sample-exact with the frozen integer model in simulation (plan section 7).",
-      "check": null,
-      "engine": "planned: RTL module bench check; no registered check may stamp this node yet",
-      "prereqs": ["fixed-model"],
-      "covered_inputs": [],
-      "required_negative_controls": [],
-      "exclusions": [
-        "Declared, not evidenced: stays NO_VERDICT until RTL exists and is stamped",
-        "No physical timing claim"
+      "check": "rtl-core-v1",
+      "engine": [
+        "python3",
+        "tools/rtl_core_check.py",
+        "--scratch",
+        "build/capabilities/rtl-core"
       ],
-      "skip_policy": "pass"
+      "prereqs": ["fixed-model"],
+      "covered_inputs": [
+        "reference/tables/alg_manifest.json",
+        "reference/tables/alg_table.hex",
+        "reference/tables/freqlut_table.hex",
+        "reference/tables/lfo_sin_table.hex",
+        "reference/tables/manifest.json",
+        "reference/tables/sinexp_table.hex",
+        "reference/tables/sinlog_table.hex",
+        "rtl/alg_router.v",
+        "rtl/env_unit.v",
+        "rtl/operator_probe.v",
+        "rtl/pitch_mod.v",
+        "rtl/tb_alg_router.v",
+        "rtl/tb_env_unit.v",
+        "rtl/tb_operator_probe.v",
+        "rtl/tb_pitch_mod.v",
+        "src/gf180_dx7/model/__init__.py",
+        "src/gf180_dx7/model/algorithm.py",
+        "src/gf180_dx7/model/envelope.py",
+        "src/gf180_dx7/model/operator.py",
+        "src/gf180_dx7/model/pitch.py",
+        "src/gf180_dx7/model/tables.py"
+      ],
+      "required_negative_controls": [
+        {
+          "id": "h05-oporder-mutant-detected",
+          "detects": "the H05 operator-order table mutant fails conformance on at least 28 of 32 algorithms with a first mismatch reported (tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely)",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely",
+            "-v"
+          ]
+        }
+      ],
+      "exclusions": [
+        "Claim 1 only: RTL-vs-frozen-model exactness in simulation; never model-vs-reference agreement (claim 2), original-DX7 fidelity, or a musical claim",
+        "Simulation only (Icarus Verilog + vvp); no synthesis, timing, FPGA, or silicon claim",
+        "A missing simulator or a skipped required bench reads NOT_RUN, never PASS; a measured mismatch stays FAIL even when another bench skipped",
+        "A bench disagreement or a surviving mutant is a bounded finding against that module; stimulus and thresholds are never retuned here"
+      ],
+      "skip_policy": "not_run"
     },
     {
       "id": "rtl-exact",

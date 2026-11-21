@@ -1493,6 +1493,11 @@
    "reason": "locally authored N02 integer operator model (issue #16); Mark I semantics re-implemented from cited facts (EngineMkI.cpp is external-oracle-only), no GPL/MSFA bytes"
   },
   {
+   "path": "tools/gen_item6_view.py",
+   "sha256": "94ff770c9944a66e0316294df95b0fde9bd179922053292b15dc3140ffb42cac",
+   "reason": "Locally authored generator for the item 6 view of the core contract and DR-0008 status (issue #272)."
+  },
+  {
    "path": "tools/gen_tables.py",
    "sha256": "36caa180ce476e69a83b3947a06779ac5264a38e7cd8dc8ac4ad21ee19775224",
    "reason": "locally authored N02 regenerate-and-hash CLI (issue #16); parasynth --check discipline re-expressed, no upstream bytes"

@@ -1,0 +1,236 @@
+{
+  "status": "proposed",
+  "contract_sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
+  "rows": [
+    {
+      "id": "op_evals",
+      "consumer": "operator evaluations (mkiSin + phase advance + per-eval convert pipeline)",
+      "unit_clks": 1,
+      "unit_class": "measured",
+      "unit_basis": "H01 probe measured sustained throughput 1 clk/eval (3-stage pipeline, 4,794/4,794 bit-exact); evidence/h01-operator-probe",
+      "count": 6144,
+      "count_basis": "16 notes x 6 ops x 64 samples (structural worst case: every voice live every frame; NUM-002)",
+      "clocks": 6144,
+      "dec_ids": [
+        "DEC-002",
+        "DEC-003",
+        "DEC-009"
+      ]
+    },
+    {
+      "id": "env_steps",
+      "consumer": "operator-envelope steps, worst case including a segment advance (levellut target, qrate, statics hold, inc_ x sr_multiplier constant multiply; env.cc:63-151)",
+      "unit_clks": 24,
+      "unit_class": "derived_estimate",
+      "unit_basis": "N01 section 7 budgeted 8-12 clk for the step alone; the worst-case step additionally executes advance() (scaleoutlevel/levellut + qrate + statics + the 15,414,067 constant multiply); 24 clk is the upper-bound estimate H04 must measure",
+      "count": 96,
+      "count_basis": "one step per operator per frame (N03 cadence fact, env.h:39-40; NUM-005)",
+      "clocks": 2304,
+      "dec_ids": [
+        "DEC-007"
+      ]
+    },
+    {
+      "id": "freq_updates",
+      "consumer": "per-operator frequency updates: Freqlut 1025-entry interpolated lookup (freqlut.cc:27-42)",
+      "unit_clks": 8,
+      "unit_class": "derived_estimate",
+      "unit_basis": "index compute + two table reads + interpolate; N01 section 7 counted 96 lookups/frame in the ~1,300-1,600 control estimate",
+      "count": 96,
+      "count_basis": "6 ops x 16 notes; per-op basepitch differs (coarse/fine/detune), pitch EG + LFO enter before the LUT (dx7note.cc:279-281; NUM-003)",
+      "clocks": 768,
+      "dec_ids": [
+        "DEC-007"
+      ]
+    },
+    {
+      "id": "pitch_eg_steps",
+      "consumer": "pitch-EG steps (pitchenv.cc:55-89, additive legs)",
+      "unit_clks": 12,
+      "unit_class": "derived_estimate",
+      "unit_basis": "N01 section 7 grouped 17 LFO/pitch-env steps in the control estimate; upper bound per step",
+      "count": 16,
+      "count_basis": "one per note per frame (NUM-002/NUM-008)",
+      "clocks": 192,
+      "dec_ids": [
+        "DEC-006",
+        "DEC-007"
+      ]
+    },
+    {
+      "id": "lfo_frame",
+      "consumer": "LFO: one getsample + one getdelay per frame, all six waveforms (lfo.cc)",
+      "unit_clks": 100,
+      "unit_class": "derived_estimate",
+      "unit_basis": "N01 NUM-007 cost estimate ~50-100 clk/frame; worst case taken",
+      "count": 1,
+      "count_basis": "shared per timbre, once per frame (NUM-007)",
+      "clocks": 100,
+      "dec_ids": [
+        "DEC-007",
+        "DEC-020"
+      ]
+    },
+    {
+      "id": "pitch_mod_application",
+      "consumer": "pitch-mod application into each note's logfreq (log-domain add of LFO x depth; dx7note.cc:210-217)",
+      "unit_clks": 8,
+      "unit_class": "derived_estimate",
+      "unit_basis": "one shift-add chain per note per frame",
+      "count": 16,
+      "count_basis": "all notes, worst case (NUM-008)",
+      "clocks": 128,
+      "dec_ids": [
+        "DEC-006"
+      ]
+    },
+    {
+      "id": "amp_mod_application",
+      "consumer": "amp-mod application into operator gains (dx7note.cc:259-268)",
+      "unit_clks": 4,
+      "unit_class": "derived_estimate",
+      "unit_basis": "per-op gain modification once per frame",
+      "count": 96,
+      "count_basis": "all operators of all notes, worst case (NUM-008; N08 ampmod-ams3 renders this path byte-exact)",
+      "clocks": 384,
+      "dec_ids": [
+        "DEC-006"
+      ]
+    },
+    {
+      "id": "control_tail_commits",
+      "consumer": "control-tail state writes: 96 envelope commits + 16 pitch-EG commits",
+      "unit_clks": 1,
+      "unit_class": "structural",
+      "unit_basis": "one register-file write per clock (H02 port structure)",
+      "count": 112,
+      "count_basis": "96 + 16 (NUM-002/NUM-005)",
+      "clocks": 112,
+      "dec_ids": [
+        "DEC-007"
+      ]
+    },
+    {
+      "id": "note_on_application",
+      "consumer": "note-on application: steal scan + per-op derived params (scaleoutlevel, ScaleLevel, ScaleVelocity, ScaleRate; dx7note.cc:163-179) + basepitch + phase/gain init",
+      "unit_clks": 224,
+      "unit_class": "derived_estimate",
+      "unit_basis": "16-clk steal scan + 6 ops x ~14 clk derivation + 6 x 8 clk basepitch + 12 clk init, rounded up to 224; host-side float math is off-frame per NUM-008 (DEC-010 boundary)",
+      "count": 16,
+      "count_basis": "worst admissible burst: a 16-note chord change in one frame (polyphony bound, DEC-003)",
+      "clocks": 3584,
+      "dec_ids": [
+        "DEC-003",
+        "DEC-010",
+        "DEC-014",
+        "DEC-015",
+        "DEC-016",
+        "DEC-017",
+        "DEC-023"
+      ]
+    },
+    {
+      "id": "note_off_application",
+      "consumer": "note-off application: voice lookup + keydown/sustain branch (DEC-018) + reclaim predicate check (NUM-012)",
+      "unit_clks": 48,
+      "unit_class": "derived_estimate",
+      "unit_basis": "16-note scan + sustain branch + 6-op predicate test",
+      "count": 16,
+      "count_basis": "worst admissible burst: full chord release in one frame",
+      "clocks": 768,
+      "dec_ids": [
+        "DEC-014",
+        "DEC-018",
+        "DEC-021"
+      ]
+    },
+    {
+      "id": "controller_events",
+      "consumer": "controller event application (sustain, pitch-bend scale commit, mod wheel, volume): store + mark pitch-dirty across notes",
+      "unit_clks": 32,
+      "unit_class": "derived_estimate",
+      "unit_basis": "chip receives frozen integer scale factors (float-gated math stays host-side, NUM-008); per-note dirty marking",
+      "count": 16,
+      "count_basis": "one controller per voice in the worst admissible frame alongside the chord change",
+      "clocks": 512,
+      "dec_ids": [
+        "DEC-006",
+        "DEC-014"
+      ]
+    },
+    {
+      "id": "patch_commit",
+      "consumer": "atomic patch-commit bookkeeping at the frame boundary (generation swap + per-note tag ring)",
+      "unit_clks": 64,
+      "unit_class": "derived_estimate",
+      "unit_basis": "shadow image swap is 1 clk; the budget carries ring bookkeeping + a held-note tag sweep",
+      "count": 1,
+      "count_basis": "at most one commit per frame (events commit at the boundary; DEC-019)",
+      "clocks": 64,
+      "dec_ids": [
+        "DEC-014",
+        "DEC-019",
+        "DEC-022"
+      ]
+    },
+    {
+      "id": "mix_convert",
+      "consumer": "per-note output conversion (>>>4, clip +/-2^24 with the +32768 quirk, >>>9) + unclamped >=20-bit mix add (NUM-010)",
+      "unit_clks": 2,
+      "unit_class": "derived_estimate",
+      "unit_basis": "H01 stage 3 measured convert+clip inside 1 clk; +1 clk for the 20-bit mix add; NUM-010 budgeted 2-4 clk, pipelined, serialized here (no free overlap assumed)",
+      "count": 1024,
+      "count_basis": "16 notes x 64 samples, all live (structural worst case)",
+      "clocks": 2048,
+      "dec_ids": [
+        "DEC-008",
+        "DEC-012"
+      ]
+    },
+    {
+      "id": "i2s_loads",
+      "consumer": "I2S sample loads into the transmitter (BCLK/LRCLK are frame-counter bits; shifting is a dedicated divider, zero core-clock serialization)",
+      "unit_clks": 1,
+      "unit_class": "structural",
+      "unit_basis": "one registered load per sample (parasynth synth_top 'I2S load@255' pattern)",
+      "count": 64,
+      "count_basis": "64 samples per frame",
+      "clocks": 64,
+      "dec_ids": [
+        "DEC-008",
+        "DEC-009"
+      ]
+    },
+    {
+      "id": "write_queue_drain",
+      "consumer": "SPI write-queue drain into the shadow image (1 write/clk, oldest first)",
+      "unit_clks": 1,
+      "unit_class": "structural",
+      "unit_basis": "one shadow-image write per clock; count = worst admissible writes/frame at SCK = f_core/4 with a 48-bit frame + 2-cycle CS gap = 194 core clk per transaction",
+      "count_12m288": 84,
+      "count_24m576": 168,
+      "count_basis": "floor(16384/194) = 84; floor(32768/194) = 168",
+      "clocks_12m288": 84,
+      "clocks_24m576": 168,
+      "dec_ids": [
+        "DEC-006",
+        "DEC-010",
+        "DEC-014"
+      ]
+    },
+    {
+      "id": "frame_controller_overhead",
+      "consumer": "frame controller tick + op-core pipeline fill (3-stage latency, once per frame)",
+      "unit_clks": 4,
+      "unit_class": "structural",
+      "unit_basis": "1 tick + 3 pipeline-fill clocks (H01 latency)",
+      "count": 1,
+      "count_basis": "once per frame",
+      "clocks": 4,
+      "dec_ids": [
+        "DEC-009",
+        "DEC-011"
+      ]
+    }
+  ]
+}

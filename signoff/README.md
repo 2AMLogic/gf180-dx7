@@ -68,15 +68,20 @@ one entry (`id`, `class`, `reason`) for each of the 16 rows, and
 `tests/test_item6_statement.py` fails if a spec row is missing from it, if it
 names a row the spec does not have, or on a duplicate id or empty field.
 
-This is a **coverage statement, not a `not_applicable` grade**. The pinned
-grader (`klayout-tools==0.8.0`) accepts a `not_applicable` outcome only when
-the cited spec document carries a top-level `"status": "ratified"` and a
-top-level `rows` list; `spec/core-contract-v1.json` has neither, and its
-adoption record is DR-0008 (`Status: Proposed`, owner sign-off requested).
-Nothing here asserts that ratification. The manifest declaration, the
-`signoff.json` regeneration and the byte-drift negative control are a
-follow-up gated on DR-0008 ratification (#264); until then
-`signoff/manifest.json` and `signoff/signoff.json` are unchanged.
+The generated spec view for the pinned grader (`klayout-tools==0.8.0`) is
+[`spec/core-contract-v1.signoff.json`](../spec/core-contract-v1.signoff.json).
+Its top-level `rows` contains every contract row in order, and
+`contract_sha256` identifies the exact source bytes. Regenerate it with
+`python3 tools/gen_item6_view.py` and check its bytes with
+`python3 tools/gen_item6_view.py --check`.
+
+The view takes its status from the leading word of the **Status** bullet in
+[DR-0008](../docs/decision-records/0008-core-schedule-contract.md).
+`Accepted` and `Ratified` yield `ratified`. The current bullet begins with
+`Proposed`, so the view reports `proposed` even though a continuation says
+“Accepted-by-default”. After the owner ratifies DR-0008, #264 can bind the
+regenerated view and the coverage statement in the manifest, regenerate the
+grade and exercise the byte-drift controls.
 
 ## What items 9 and 10 do and do not establish
 

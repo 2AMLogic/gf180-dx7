@@ -1328,6 +1328,11 @@
    "reason": "locally authored P01 fixture generator (PR #43); not a reuse import"
   },
   {
+   "path": "tools/catalog_instances.py",
+   "sha256": "6066eb2fe00e1a92dce45e791956cadc66f313d303e431b8facc72bdb8b83dfd",
+   "reason": "locally authored shared clean voice-instance enumeration over the committed P02 catalog (issue #285); extracted from the duplicated enumeration code in tools/select_dev32.py and tools/u02_candidates.py (both locally authored, see their entries), stdlib only, no upstream bytes; not a reuse import"
+  },
+  {
    "path": "tools/catalog_archive.py",
    "sha256": "09d732a1e31f9c859f38709109bfbb425721bbf03ce9c054047f0f0ea343de20",
    "reason": "locally authored P02 archive cataloger (#9); not a reuse import"
@@ -1384,8 +1389,8 @@
   },
   {
    "path": "tools/select_dev32.py",
-   "sha256": "b422a529d6d13ebbd1f6bd2987e07429e3fce9a665eb16d33a4c32dad8182a6c",
-   "reason": "locally authored R03 tool (issue #10); not a reuse import; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
+   "sha256": "3fd28c680cb64987bd92ecd370ede6cf1248fc87b2e7fc288ba524168dc7ac90",
+   "reason": "locally authored R03 tool (issue #10); not a reuse import; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; re-pinned after the clean-instance enumeration moved to tools/catalog_instances.py (issue #285), catalog-only provenance"
   },
   {
    "path": "tools/validate_dev32.py",
@@ -1904,8 +1909,8 @@
   },
   {
    "path": "tools/u02_candidates.py",
-   "sha256": "ba7b0aca2303d5d004cb6bb2c8a0b03634f84f882b0b18ec72f13d338e37c74e",
-   "reason": "locally authored U02 candidate pre-selection + one-sitting listening-kit tool (issue #35): deterministic documented heuristics over decoded catalog parameters, kit emission, render-kit driver around the external GPL oracle via tools/audition.py; no taste judgments, no upstream bytes"
+   "sha256": "744f95db77e9490925f6194fab22ef872da86103e7e4e8fa3ce1373435e1da09",
+   "reason": "locally authored U02 candidate pre-selection + one-sitting listening-kit tool (issue #35): deterministic documented heuristics over decoded catalog parameters, kit emission, render-kit driver around the external GPL oracle via tools/audition.py; no taste judgments, no upstream bytes; re-pinned after the clean-instance enumeration moved to tools/catalog_instances.py (issue #285), catalog-only provenance"
   },
   {
    "path": "tests/test_u02_kit.py",

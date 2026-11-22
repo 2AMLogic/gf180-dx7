@@ -1879,8 +1879,8 @@
   },
   {
    "path": "src/gf180_dx7/mock_core.py",
-   "sha256": "19ca6661f3259f7a493fb10503dd599a89e2ec97876b7c3640a6b89e538a3e57",
-   "reason": "locally authored U04 mock core (issue #37) + U05 drain tap (issue #38): frame-anchored drain-tap records of real FIFO->core drain for the three-way host-prediction = CS_N pin = drain cross-check; stdlib only"
+   "sha256": "c3b02aa10c369edeb8bb797fe367360e527d138461650bcf1b83759a35e4df0a",
+   "reason": "locally authored U04 mock core (issue #37) + U05 drain tap (issue #38): frame-anchored drain-tap records of real FIFO->core drain for the three-way host-prediction = CS_N pin = drain cross-check; stdlib only; re-pinned for issue #287 (4-entry ring keyed by absolute generation with reset image at generation 0; held bindings evicted by ring membership replacing the per-note commits_since counter; committed_image rejects non-retained generations explicitly)"
   },
   {
    "path": "src/gf180_dx7/host.py",
@@ -1889,8 +1889,8 @@
   },
   {
    "path": "tests/test_host_mock.py",
-   "sha256": "8e7dc849c4e5f7b029ec8e2aa90f9f9ce02a6713525b6ffb35d85bab16c627db",
-   "reason": "locally authored U04 acceptance suite (issue #37): burst timing at both clocks, frame-boundary semantics, generation-ring patch-change-while-held, boot/recall with hashed transaction logs, truncated/bad-checksum partial transfers with stale-state detection, malformed SysEx propagation, write-cost accounting, failure-injection matrix, and live negative-control stubs (NaiveLoader, DeafHost, bare-commit refusal)"
+   "sha256": "2ade275c3de9b27b7f897bc69abeb4a2e3c28e68270988f8a4889b0d5a87a21b",
+   "reason": "locally authored U04 acceptance suite (issue #37): burst timing at both clocks, frame-boundary semantics, generation-ring patch-change-while-held, boot/recall with hashed transaction logs, truncated/bad-checksum partial transfers with stale-state detection, malformed SysEx propagation, write-cost accounting, failure-injection matrix, and live negative-control stubs (NaiveLoader, DeafHost, bare-commit refusal); re-pinned for issue #287 (TestGenerationRingRetention: fourth/fifth load retention through eviction, explicit evicted-generation rejection, reset-image-at-generation-0 keying, and the LegacyAbsoluteIndexCore absolute-list-index negative control)"
   },
   {
    "path": "docs/U04-HOST-MOCK.md",

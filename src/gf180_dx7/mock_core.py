@@ -202,7 +202,6 @@ class FailureInjection:
 @dataclass
 class _HeldBinding:
     generation: int
-    commits_since: int = 0
 
 
 class MockCore:
@@ -229,7 +228,8 @@ class MockCore:
         self.direct: dict[int, int] = {}
         self.digest: int | None = None
         self.pending_events: list[tuple[int, Frame48]] = []
-        self.ring: list[dict[int, int]] = [{}]   # generation 0: reset default
+        self.ring: dict[int, dict[int, int]] = {
+            0: {}}   # generation 0: reset default
         self.generation = 0
         self.held: dict[int, _HeldBinding] = {}
         self.fresh = True
@@ -253,7 +253,7 @@ class MockCore:
         self.shadow = {}
         self.digest = None
         self.pending_events = []
-        self.ring = [{}]
+        self.ring = {0: {}}
         self.generation = 0
         self.held = {}
         self._pending_velocity = None
@@ -484,18 +484,18 @@ class MockCore:
                                             "commit_refused", ""))
             return
         image = dict(self.shadow)
-        self.ring.append(image)
-        if len(self.ring) > 4:
-            self.ring.pop(0)
         self.generation += 1
+        self.ring[self.generation] = image
+        if len(self.ring) > 4:
+            del self.ring[min(self.ring)]   # 4-entry ring (H03 4.1)
         self.shadow = {}
         self.digest = None
         for note, binding in list(self.held.items()):
-            binding.commits_since += 1
-            if binding.commits_since > 3:
-                # Declared DEC-019 conformance gap (4-entry ring): a 4th
-                # commit while held evicts the generation. Surfaced here,
-                # never silent (DEC-017).
+            if binding.generation not in self.ring:
+                # Declared DEC-019 conformance gap (4-entry ring): the
+                # binding's generation fell out of the ring - a 4th
+                # commit while held evicts it. Surfaced here, never
+                # silent (DEC-017).
                 self.applied.append(EventRecord(
                     self.frame_count, "generation_evicted",
                     f"note {note} held across >3 commits"))
@@ -520,6 +520,11 @@ class MockCore:
 
     def committed_image(self, generation: int | None = None) -> dict[int, int]:
         gen = self.generation if generation is None else generation
+        if gen not in self.ring:
+            raise MockCoreError(
+                f"generation {gen} is not retained in the 4-entry ring "
+                f"(generations {sorted(self.ring)}): evicted by later "
+                "commits or never committed")
         return dict(self.ring[gen])
 
     def committed_digest(self, generation: int | None = None) -> int:

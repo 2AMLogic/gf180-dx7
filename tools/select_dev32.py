@@ -53,8 +53,12 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
+_TOOLS_DIR = str(Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
 
 from gf180_dx7 import sysex  # noqa: E402
+from catalog_instances import Instance, clean_instances  # noqa: E402
 
 DEFAULT_CATALOG = REPO_ROOT / "corpus" / "archive-catalogs" / "alltheweb-catalog.json"
 DEFAULT_MANIFEST = REPO_ROOT / "corpus" / "dev32.json"
@@ -160,21 +164,6 @@ GOALS: tuple[tuple[str, object], ...] = (
 )
 
 
-@dataclass(frozen=True)
-class Instance:
-    """One voice instance from the catalog (standalone file or bank slot)."""
-
-    path: str
-    slot: int | None  # None for a standalone single-voice file
-    canonical_hash: str
-    name: str
-    order: int
-
-    @property
-    def sort_key(self) -> tuple[str, int, int]:
-        return (self.path, -1 if self.slot is None else self.slot, self.order)
-
-
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as fh:
@@ -191,26 +180,6 @@ def load_catalog(path: Path) -> dict:
             return json.load(fh)
     except (OSError, json.JSONDecodeError) as exc:
         raise Fail(f"catalog unreadable: {exc}")
-
-
-def clean_instances(catalog: dict) -> list[Instance]:
-    """All decoded, anomaly-free voice instances in catalog order."""
-    hashes: list[str] = catalog["hashes"]
-    names: list[str] = catalog["names"]
-    out: list[Instance] = []
-    for order, e in enumerate(catalog["entries"]):
-        if e["c"] == "voice" and e["v"] == "decoded" and e["a"] == 0 \
-                and e["h"] is not None:
-            out.append(Instance(e["p"], None, e["h"], e["n"], order))
-        elif e["c"] == "bank" and e["v"] == "decoded":
-            w = e["w"]
-            for k in range(0, len(w), 4):
-                slot, hidx, nidx, nanom = w[k:k + 4]
-                if nanom == 0 and hidx >= 0:
-                    out.append(Instance(e["p"], slot, hashes[hidx],
-                                        names[nidx], order))
-    out.sort(key=lambda inst: inst.sort_key)
-    return out
 
 
 def compute_features(catalog: dict, zip_path: Path,

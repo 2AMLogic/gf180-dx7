@@ -7,7 +7,8 @@ freqlut.cc:46-55 (Q24 logfreq -> 32-bit phase increment):
 - ``operator.Freqlut`` — instance-based, LUT injected via the public
   constructor / ``from_artifact`` (the pinned, SHA-256-checked bytes),
   explicit out-of-domain ``hibits > 20`` guard. Reachable only from
-  ``tests/test_operator.py`` (the N02 independent-oracle probes).
+  ``tests/test_operator.py`` (the N02 independent-oracle probes) and this
+  module.
 - ``pitch.Freqlut`` — class-global ``_lut`` regenerated in float64 at
   runtime, unguarded shift mirroring the C. This is the LIVE copy:
   ``integrated.py``, ``pitch.py`` and the H06/H07 RTL harnesses consume it.
@@ -18,8 +19,9 @@ divergences) but nothing asserted the agreement, so a drift in either
 would silently break claim (1) — "the RTL matches the frozen integer
 model exactly". The operator ruled option C: keep both (the divergence
 in out-of-domain behaviour — declared guard vs. mirrored unguarded shift
-— is deliberate, see the comments at both class definitions) and pin
-them with this live equivalence test. No ``src/`` logic may depend on
+— is deliberate; the comments at both class definitions are deferred to
+#303, so this docstring is the interim record) and pin them with this
+live equivalence test. No ``src/`` logic may depend on
 this module.
 
 Seeded sample (recorded per the acceptance criteria; smaller than the
@@ -92,9 +94,10 @@ class TestFreqlutEquivalence(unittest.TestCase):
         lfs.extend(EDGES)
         return lfs
 
-    def _assert_equivalent(self, lut, logfreqs) -> None:
-        """The live check: the shared assertion the control must defeat."""
-        of = op.Freqlut(lut)
+    def _assert_equivalent(self, of, logfreqs) -> None:
+        """The live check: the shared assertion the control must defeat.
+        ``of`` is an ``operator.Freqlut`` instance, so the caller decides
+        how it was built (artifact factory vs. perturbed constructor)."""
         for lf in logfreqs:
             self.assertEqual(of.lookup(lf), P.Freqlut.lookup(lf), _fmt(lf))
 
@@ -126,7 +129,8 @@ class TestFreqlutEquivalence(unittest.TestCase):
         wrap on the operator side), and both top-of-domain edges."""
         art = tmod.generate_all(SAMPLE_RATE)["freqlut_table"]
         self.assertEqual(art.sha256, PINNED_FREQLUT_SHA256)
-        self._assert_equivalent(art.values, self._sample())
+        self._assert_equivalent(op.Freqlut.from_artifact(art),
+                                self._sample())
 
     def test_out_of_domain_hibits_21_both_raise(self):
         """Above the pinned contract the two diverge ON PURPOSE:
@@ -151,11 +155,12 @@ class TestFreqlutEquivalence(unittest.TestCase):
         # hibits=20 (no final shift), ix=100, lowbits=0 -> lookup is
         # exactly lut[100], so a +1 perturbation must be visible.
         probes = [20 << 24 | (100 << 14), 20 << 24 | (100 << 14) | 1]
-        self._assert_equivalent(art.values, probes)  # control baseline
+        # control baseline: the unperturbed artifact factory passes
+        self._assert_equivalent(op.Freqlut.from_artifact(art), probes)
         bad = list(art.values)
         bad[100] += 1
         with self.assertRaises(AssertionError) as cm:
-            self._assert_equivalent(bad, probes)
+            self._assert_equivalent(op.Freqlut(bad), probes)
         self.assertIn(_fmt(probes[0]), str(cm.exception),
                       "equivalence failure did not name the failing case")
 

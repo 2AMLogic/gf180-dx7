@@ -174,13 +174,17 @@ units, §2) is recorded; it changes no bytes and no frozen rule.
 
 `python3 -m unittest tests.test_operator -v` — 24 tests:
 
-- **Analytic:** full-domain sinlog/sinexp/freqlut checks (every entry
-  against independently re-coded formulas). Coverage note (#208): the
-  freqlut checks here cover the `operator.py` copy, which no render or
-  RTL-compare path uses — the live model consumes `pitch.Freqlut`, and
-  what ties the two copies together is the live equivalence test
-  `tests/test_frozen_int_freqlut_equivalence.py` (that is agreement,
-  asserted separately from this coverage). Quadrant mirror symmetry;
+- **Analytic:** full-domain sinlog/sinexp checks (every entry against
+  independently re-coded formulas). Coverage note (#208): for freqlut,
+  the full 1,025-entry comparison is of the *generator*
+  (`tests/test_operator.py:277` calls `tables.freqlut_table`); the
+  `operator.Freqlut` *lookup* is covered only by spot checks
+  (`tests/test_operator.py:478`). `operator.py` is not used by any render
+  or RTL-compare path — the live model consumes `pitch.Freqlut`. What
+  ties the two lookup implementations together is the seeded
+  cross-implementation comparison in
+  `tests/test_frozen_int_freqlut_equivalence.py` (104,004 pairs; that is
+  agreement, asserted separately from this coverage). Quadrant mirror symmetry;
   non-increasing first quadrant; monotone amplitude under monotone env
   gain (closed form); known-value spot checks computed from the
   documented formula in the test; phase wraparound equivalence;

@@ -65,6 +65,7 @@ from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import (  # noqa: E402
     run_yosys_script, yosys_version as _yosys_version)
+from probe_synth import fmt_area  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -633,8 +634,8 @@ def main(argv=None):
         per_bit = (st["chip_area_um2"] / acc["state_bits_with_patch"]
                    if st["chip_area_um2"] else 0.0)
         print(f"full mapped: dff {st['dff_total']} "
-              f"({st['dff_area_um2']:.1f} um2), chip "
-              f"{st['chip_area_um2']:.1f} um2, "
+              f"({fmt_area(st['dff_area_um2'])} um2), chip "
+              f"{fmt_area(st['chip_area_um2'])} um2, "
               f"{per_bit:.2f} um2/state-bit all-in")
     print(f"report: {out_json}")
     return 0 if report["status"] == "PASS" else 1

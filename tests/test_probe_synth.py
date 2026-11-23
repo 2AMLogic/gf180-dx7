@@ -31,6 +31,12 @@ Live negative controls (must demonstrably fail the check they target):
   - a full run at/below the flop floor yields gates.full FAIL and exit 1
     while area/cells stay positive (the floor, not the area terms, is
     what fires);
+  - every full-gate conjunct has its own isolating fixture (issue #293):
+    flops exactly AT the tool's floor constant (pinning `>` strict),
+    chip area line absent or 0.0, sequential area 0.0, and cell total 0
+    each FAIL the gate with the other conjuncts positive, while the
+    unmutated gate still PASSes the positive fixture (a fixture that
+    fails everything pins nothing);
   - a hierarchical stat transcript still raises CheckFailure from each
     tool's parse_stat (the #95 guard, replayed through the tools).
 """
@@ -39,7 +45,6 @@ import copy
 import json
 import os
 import stat
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -136,6 +141,38 @@ HIERARCHICAL_TRANSCRIPT = """
 
    Chip area for top module '\\top': 34.500000
 """
+
+# Each probe's flop floor lives on its own tool module; read it from
+# the attribute (never a literal) so a floor bump retracks here.
+FLOOR_ATTRS = {
+    "h01": "PHASE_FLOP_FLOOR",
+    "h04": "ENV_SLOT_FLOOR",
+    "h05": "BUS_FLOP_FLOOR",
+    "h06": "FLOP_FLOOR",
+}
+
+
+def stat_transcript(flops, cells, chip_area, seq_area):
+    """A parseable single-module mapped transcript isolating one full-gate
+    conjunct: `flops` dff cells plus a `cells` summary line, and chip /
+    sequential area lines (None = line absent, 0.0 = zero-valued line).
+    Otherwise the same shape as FULL_TRANSCRIPT (MEMORY_MAP + ltp lines),
+    so every probe's parse_stat / rom_representation / parse_ltp accepts
+    it."""
+    chip = ("" if chip_area is None
+            else f"   Chip area for module '\\top': {chip_area}\n")
+    seq = ("" if seq_area is None else
+           f"     of which used for sequential elements: {seq_area}"
+           " (40.00%)\n")
+    return f"""Mapping memory $auto$proc_rom$001 in module top
+Executing MEMORY_MAP pass (converting memories to logic and gates)
+Longest topological path in top (length={MOCK_LTP_DEPTH}):
+
+   {flops} 5.00E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1
+     200 1.00E+04   gf180mcu_fd_sc_mcu7t5v0__and2_1
+
+   {cells} 6.00E+04 cells
+{chip}{seq}"""
 
 
 def write_fake_yosys(td):
@@ -382,6 +419,94 @@ class ProbeSynthMockTest(unittest.TestCase):
                 self.assertEqual(rep["runs"]["full"]["flop_total"], 0)
                 self.assertEqual(rep["runs"]["full"]["cell_total"], 200)
                 self.assertEqual(rep["status"], "FAIL")
+
+    def test_control_unmutated_gate_passes_positive_fixture(self):
+        # Failure control for the conjunct fixtures below: the same
+        # harness against the unmutated gate must still PASS the positive
+        # fixture -- a fixture that fails everything pins nothing.
+        for name in TOOLS_BY_NAME:
+            with self.subTest(probe=name):
+                self.set_transcripts()
+                rc, _out, _err = self.run_main(
+                    TOOLS_BY_NAME[name], self.base_args() + ["--mode",
+                                                             "full"])
+                self.assertEqual(rc, 0)
+                self.assertEqual(
+                    self.report()["gates"]["full"]["status"], "PASS")
+
+    def test_control_full_run_at_exact_flop_floor_fails(self):
+        # flops == the tool's own floor constant with area/cells
+        # positive: pins `>` strict (the >= mutation must fail here).
+        for name, module in TOOLS_BY_NAME.items():
+            floor = getattr(module, FLOOR_ATTRS[name])
+            with self.subTest(probe=name, floor=floor):
+                self.set_transcripts(full=stat_transcript(
+                    flops=floor, cells=MOCK_CELLS, chip_area=MOCK_AREA,
+                    seq_area=MOCK_SEQ_AREA))
+                rc, _out, _err = self.run_main(
+                    module, self.base_args() + ["--mode", "full"])
+                self.assertEqual(rc, 1)
+                rep = self.report()
+                self.assertEqual(rep["gates"]["full"]["status"], "FAIL")
+                full = rep["runs"]["full"]
+                self.assertEqual(full["flop_total"], floor)
+                self.assertEqual(full["chip_area_um2"], MOCK_AREA)
+                self.assertEqual(full["seq_area_um2"], MOCK_SEQ_AREA)
+                self.assertEqual(full["cell_total"], MOCK_CELLS)
+
+    def test_control_full_run_zero_chip_area_fails(self):
+        # Positive flops/cells/seq-area with the chip area line present
+        # but 0.0 -- and, as the edge case, absent entirely (None): only
+        # the chip-area conjunct can fire.
+        for chip_area in (0.0, None):
+            for name in TOOLS_BY_NAME:
+                with self.subTest(probe=name, chip_area=chip_area):
+                    self.set_transcripts(full=stat_transcript(
+                        flops=MOCK_FLOPS, cells=MOCK_CELLS,
+                        chip_area=chip_area, seq_area=MOCK_SEQ_AREA))
+                    # Both branches exit 1: an absent area line prints
+                    # "n/a" (fmt_area, issue #295) instead of raising.
+                    rc, _out, _err = self.run_main(
+                        TOOLS_BY_NAME[name],
+                        self.base_args() + ["--mode", "full"])
+                    self.assertEqual(rc, 1)
+                    rep = self.report()
+                    self.assertEqual(rep["gates"]["full"]["status"],
+                                     "FAIL")
+                    self.assertEqual(rep["runs"]["full"]["chip_area_um2"],
+                                     chip_area)
+
+    def test_control_full_run_zero_seq_area_fails(self):
+        # Positive flops/cells/chip-area with `of which used for
+        # sequential elements: 0.0`: only the seq-area conjunct can fire.
+        for name in TOOLS_BY_NAME:
+            with self.subTest(probe=name):
+                self.set_transcripts(full=stat_transcript(
+                    flops=MOCK_FLOPS, cells=MOCK_CELLS,
+                    chip_area=MOCK_AREA, seq_area=0.0))
+                rc, _out, _err = self.run_main(
+                    TOOLS_BY_NAME[name], self.base_args() + ["--mode",
+                                                             "full"])
+                self.assertEqual(rc, 1)
+                rep = self.report()
+                self.assertEqual(rep["gates"]["full"]["status"], "FAIL")
+                self.assertEqual(rep["runs"]["full"]["seq_area_um2"], 0.0)
+
+    def test_control_full_run_zero_cells_fails(self):
+        # Positive flops and areas with a zero `<N> <area> cells`
+        # summary line: only the cell-total conjunct can fire.
+        for name in TOOLS_BY_NAME:
+            with self.subTest(probe=name):
+                self.set_transcripts(full=stat_transcript(
+                    flops=MOCK_FLOPS, cells=0, chip_area=MOCK_AREA,
+                    seq_area=MOCK_SEQ_AREA))
+                rc, _out, _err = self.run_main(
+                    TOOLS_BY_NAME[name], self.base_args() + ["--mode",
+                                                             "full"])
+                self.assertEqual(rc, 1)
+                rep = self.report()
+                self.assertEqual(rep["gates"]["full"]["status"], "FAIL")
+                self.assertEqual(rep["runs"]["full"]["cell_total"], 0)
 
     def test_control_hierarchical_transcript_raises_check_failure(self):
         for name in TOOLS_BY_NAME:

@@ -927,10 +927,11 @@ def compare_bit_exact(expected, actual, snaps):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL))
-    ap.add_argument("--skip-mutants", action="store_true",
-                    help="run only the real build")
-    ap.add_argument("--mutant", choices=sorted(MUTANTS), default=None,
-                    help="run only one negative-control mutant build")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--skip-mutants", action="store_true",
+                      help="run only the real build")
+    mode.add_argument("--mutant", choices=sorted(MUTANTS), default=None,
+                      help="run only one negative-control mutant build")
     ap.add_argument("--write-sin-hex", action="store_true",
                     help="(re)generate reference/tables/lfo_sin_table.hex")
     args = ap.parse_args(argv)
@@ -1060,6 +1061,8 @@ def main(argv=None):
                            "NOT MET (mutant passed -- no resolution)",
                 )
             report["negative_controls"] = controls
+        else:
+            report["negative_controls"] = "skipped (--skip-mutants)"
 
         eq_ok = args.mutant is not None or \
             report["equivalence"]["status"] == "PASS"
@@ -1090,9 +1093,12 @@ def main(argv=None):
             print("  first mismatch at frame %d [%s]: diff=%s"
                   % (fm["frame_index"], fm.get("scenario_tag"),
                      json.dumps(fm.get("diff"), sort_keys=True)))
-    for name, c in report.get("negative_controls", {}).items():
-        print("negative control %s: %s (%d mismatches)"
-              % (name, c["status"], c["mismatches"]))
+    if isinstance(report.get("negative_controls"), dict):
+        for name, c in report["negative_controls"].items():
+            print("negative control %s: %s (%d mismatches)"
+                  % (name, c["status"], c["mismatches"]))
+    elif "negative_controls" in report:
+        print("negative controls: %s" % report["negative_controls"])
     print(f"report: {os.path.join(args.outdir, 'compare_report.json')}")
     return 0 if status == "PASS" else 1
 

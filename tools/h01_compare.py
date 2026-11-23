@@ -339,10 +339,11 @@ def compare_bit_exact(expected, actual, records, phases):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL))
-    ap.add_argument("--skip-mutate", action="store_true",
-                    help="skip the MUTATE_ADDRWIDTH negative control")
-    ap.add_argument("--mutate-only", action="store_true",
-                    help="run only the negative-control mutant build")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--skip-mutate", action="store_true",
+                      help="skip the MUTATE_ADDRWIDTH negative control")
+    mode.add_argument("--mutate-only", action="store_true",
+                      help="run only the negative-control mutant build")
     args = ap.parse_args(argv)
 
     try:

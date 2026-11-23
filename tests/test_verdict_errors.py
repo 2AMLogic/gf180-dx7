@@ -8,6 +8,7 @@ shape) is caught by the control below.
 
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -88,6 +89,86 @@ class VerdictErrorsContractTest(unittest.TestCase):
                 raise CheckFailure("x")
             except verdict_errors.CheckFailure:
                 self.fail("local copy must not be caught by the shared class")
+
+
+COMPARE_DRIVERS = (
+    "tools/h01_compare.py", "tools/h04_compare.py",
+    "tools/h05_compare.py", "tools/h06_compare.py",
+)
+
+# Stand-in for a driver whose CouldNotRun escapes unhandled (the pre-#286 h06
+# shape): rc=1 plus a traceback instead of rc=2 plus "COULD-NOT-RUN:".
+_LEAKY_DRIVER = """
+import sys
+sys.path.insert(0, sys.argv[1])
+from verdict_errors import CouldNotRun
+raise CouldNotRun("iverilog binary not found: stub")
+"""
+
+# rc=2 but no "COULD-NOT-RUN:" line (e.g. an argparse-style usage exit): pins
+# the stderr-line assertion independently of the rc assertion.
+_SILENT_RC2_DRIVER = """
+import sys
+sys.exit(2)
+"""
+
+# rc=2 and the "COULD-NOT-RUN:" line, but a traceback leaks too: pins the
+# no-Traceback assertion independently of the other two.
+_TRACEBACK_RC2_DRIVER = """
+import sys
+sys.stderr.write("COULD-NOT-RUN: stub\\n")
+sys.stderr.write("Traceback (most recent call last):\\n")
+sys.exit(2)
+"""
+
+
+class MissingIverilogContractTest(unittest.TestCase):
+    """A missing --iverilog is NOT_RUN (rc=2), never FAIL (rc=1) (issue #311).
+
+    Covers only the did-not-run contract; says nothing about conformance
+    results with iverilog present.
+    """
+
+    def _assert_not_run(self, argv):
+        proc = subprocess.run(argv, capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 2, proc.stderr[-800:])
+        self.assertIn("COULD-NOT-RUN:", proc.stderr)
+        self.assertNotIn("Traceback", proc.stderr)
+
+    def test_contract_each_driver_reports_not_run_without_iverilog(self):
+        for rel in COMPARE_DRIVERS:
+            with self.subTest(script=rel), \
+                    tempfile.TemporaryDirectory() as tmp:
+                self._assert_not_run([
+                    sys.executable, "-I", str(REPO / rel),
+                    "--iverilog", str(Path(tmp) / "no-such-iverilog"),
+                    "--outdir", str(Path(tmp) / "out")])
+
+    def test_contract_control_leaky_driver_fails_the_check(self):
+        # Live negative control: a driver that lets CouldNotRun escape must
+        # fail the very helper the real drivers are held to.
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / "leaky_driver.py"
+            stub.write_text(_LEAKY_DRIVER)
+            with self.assertRaises(AssertionError):
+                self._assert_not_run([
+                    sys.executable, "-I", str(stub), str(REPO / "tools")])
+
+    def _assert_stub_fails_check(self, name, source):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / name
+            stub.write_text(source)
+            with self.assertRaises(AssertionError):
+                self._assert_not_run([sys.executable, "-I", str(stub)])
+
+    def test_contract_control_silent_rc2_driver_fails_the_check(self):
+        # rc==2 alone must not pass: COULD-NOT-RUN: must be on stderr.
+        self._assert_stub_fails_check("silent_rc2.py", _SILENT_RC2_DRIVER)
+
+    def test_contract_control_traceback_rc2_driver_fails_the_check(self):
+        # rc==2 plus COULD-NOT-RUN: must still fail if a Traceback leaks.
+        self._assert_stub_fails_check(
+            "traceback_rc2.py", _TRACEBACK_RC2_DRIVER)
 
 
 if __name__ == "__main__":

@@ -120,6 +120,21 @@ class DeafHost(EmbeddedHost):
         self.log.append(frame)
 
 
+class LegacyAbsoluteIndexCore(MockCore):
+    """NEGATIVE-CONTROL stub (issue #287): the pre-fix lookup - the ring
+    list dropped its first entry while the accessor indexed it by
+    ABSOLUTE generation. Re-derived here over the fixed generation-keyed
+    ring (same retained images, old list semantics), so both defect
+    modes the issue reports demonstrably FAIL the retention checks:
+    the fourth load's digest read raises IndexError through the host,
+    and a historical lookup answers a NEIGHBOR generation's image."""
+
+    def committed_image(self, generation=None):
+        gen = self.generation if generation is None else generation
+        legacy_list = [self.ring[g] for g in sorted(self.ring)]
+        return dict(legacy_list[gen])
+
+
 class U04TestBase(unittest.TestCase):
     BOOT_IN_SETUP = True
 
@@ -428,6 +443,143 @@ class TestPartialTransfers(U04TestBase):
             self.assert_host_claim_matches_core(naive)
         # the naive path left the stale image the check demanded
         self.assertEqual(self.core.generation, self.gen_before)
+
+
+class TestGenerationRingRetention(U04TestBase):
+    """Issue #287: the 4-entry committed-patch ring is keyed by absolute
+    generation (reset image = generation 0), so fourth and later patch
+    loads commit, every retained generation still identifies its own
+    image, held bindings evict exactly when their generation leaves the
+    ring, and evicted generations are rejected explicitly."""
+
+    BOOT_IN_SETUP = False
+
+    def _scenario(self, through):
+        """Boot the generation-1 input, bind note 60 to generation 1,
+        then load one distinct voice per generation up to `through`.
+        Returns (core, host, inputs, reports); inputs[g] is the voice
+        committed at generation g, reports[g] its host load report."""
+        core = MockCore()
+        host = EmbeddedHost(core)
+        inputs = {1: variant_voice(VOICE, 134, 1)}
+        host.boot(inputs[1])
+        held_frame = core.frame_now
+        host.schedule_burst(
+            [dict(kind="note_on", sample=0, note=60, velocity=100)],
+            start_frame=held_frame)
+        core.flush_frame()
+        self.assertEqual(core.held[60].generation, 1)
+        reports = {}
+        for generation in range(2, through + 1):
+            inputs[generation] = variant_voice(VOICE, 134, generation)
+            reports[generation] = host.load_patch(inputs[generation])
+        return core, host, inputs, reports
+
+    def assert_retention(self, core, inputs, generation):
+        """Every generation still in the 4-entry ring identifies its OWN
+        input - full voice bytes and digest - and the default lookup
+        answers the current generation's image."""
+        evicted = generation - 4
+        for g, voice in inputs.items():
+            if g == evicted:
+                continue
+            image = core.committed_image(g)
+            self.assertEqual(
+                bytes(image[i] for i in range(sysex.VOICE_DATA_LEN)),
+                voice.raw_bytes, f"generation {g} image")
+            self.assertEqual(core.committed_digest(g),
+                             sysex.checksum(voice.raw_bytes),
+                             f"generation {g} digest")
+        self.assertEqual(core.generation, generation)
+        default = core.committed_image()
+        self.assertEqual(
+            bytes(default[i] for i in range(sysex.VOICE_DATA_LEN)),
+            inputs[generation].raw_bytes)
+        self.assertEqual(core.committed_digest(),
+                         sysex.checksum(inputs[generation].raw_bytes))
+
+    def test_reset_image_is_retained_generation_zero(self):
+        """The ring starts keyed at generation 0 holding the reset image
+        (the pre-fix list carried it at index 0 - the shift source)."""
+        core = MockCore()
+        self.assertEqual(core.committed_image(0), {})
+        self.assertEqual(core.committed_digest(0), 0)
+        self.assertEqual(core.committed_image(), {})
+
+    def test_fourth_load_commits_and_ring_retains_own_images(self):
+        """The issue's reproduction through generation 4: the fourth load
+        commits (the host digest read no longer raises), every load
+        report carries its committed digest, and each retained
+        generation - 1 through 4 - still identifies its own input."""
+        core, host, inputs, reports = self._scenario(through=4)
+        for generation, report in reports.items():
+            self.assertEqual(report["generation"], generation)
+            self.assertEqual(report["digest"],
+                             sysex.checksum(inputs[generation].raw_bytes))
+        self.assert_retention(core, inputs, 4)
+        # the note is still bound to generation 1: nothing evicted yet
+        self.assertIn(60, core.held)
+        self.assertEqual(core.held[60].generation, 1)
+        self.assertNotIn("generation_evicted",
+                         [e.kind for e in core.applied_events()])
+        self.assert_clean(core)
+
+    def test_fifth_load_evicts_oldest_generation_once(self):
+        """Through generation 5: generation 1 falls out of the ring, the
+        note is evicted with exactly one event, and generations 2-5
+        retain their own images."""
+        core, host, inputs, reports = self._scenario(through=5)
+        self.assertEqual(reports[5]["generation"], 5)
+        self.assertEqual(reports[5]["digest"],
+                         sysex.checksum(inputs[5].raw_bytes))
+        self.assert_retention(core, inputs, 5)
+        self.assertNotIn(60, core.held)
+        evictions = [e for e in core.applied_events()
+                     if e.kind == "generation_evicted"]
+        self.assertEqual(len(evictions), 1)
+        self.assertIn("note 60", evictions[0].detail)
+        self.assert_clean(core)
+
+    def test_evicted_generations_rejected_explicitly(self):
+        """A request for a generation outside the retained ring is an
+        explicit MockCoreError naming the generation - generation 0 once
+        four commits exist, generation 1 after the fifth."""
+        core, host, inputs, reports = self._scenario(through=4)
+        for accessor in (core.committed_image, core.committed_digest):
+            with self.assertRaises(mc.MockCoreError) as ctx:
+                accessor(0)
+            self.assertIn("generation 0", str(ctx.exception))
+        core, host, inputs, reports = self._scenario(through=5)
+        for accessor in (core.committed_image, core.committed_digest):
+            with self.assertRaises(mc.MockCoreError) as ctx:
+                accessor(1)
+            self.assertIn("generation 1", str(ctx.exception))
+
+    def test_negative_control_absolute_index_lookup_fails_both_ways(self):
+        """NEGATIVE CONTROL (issue #287): the pre-fix absolute-list-index
+        lookup FAILS the acceptance in both reported modes, as separate
+        assertions - (a) the generation-4 host exception, (b) the stale
+        historical image on the same core after it."""
+        core = LegacyAbsoluteIndexCore()
+        host = EmbeddedHost(core)
+        boot_input = variant_voice(VOICE, 134, 1)
+        host.boot(boot_input)
+        host.load_patch(variant_voice(VOICE, 134, 2))
+        host.load_patch(variant_voice(VOICE, 134, 3))
+        # (a) the generation-4 host exception
+        with self.assertRaises(IndexError):
+            host.load_patch(variant_voice(VOICE, 134, 4))
+        # the commit itself landed - the same core state the issue probes
+        self.assertEqual(core.generation, 4)
+        # (b) the stale historical image: generation 1 answers the
+        # generation-2 image, not its own input...
+        self.assertEqual(core.committed_image(1)[134], 2)
+        self.assertNotEqual(
+            bytes(core.committed_image(1)[i]
+                  for i in range(sysex.VOICE_DATA_LEN)),
+            boot_input.raw_bytes)
+        # ...and the evicted generation 0 answers the boot input
+        self.assertEqual(core.committed_image(0)[134], 1)
 
 
 class TestMalformedSysex(U04TestBase):

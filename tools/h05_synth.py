@@ -23,8 +23,6 @@ Exit codes: 0 pass, 1 gate failure, 2 could-not-run (missing tool or PDK
 path -- the message names what is missing). Stdlib only.
 """
 
-import argparse
-import json
 import os
 import re
 import sys
@@ -52,8 +50,11 @@ if _TOOLS_DIR not in sys.path:
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
 from yosys_run import (  # noqa: E402
-    rom_representation as shared_rom_representation, run_yosys_script,
+    rom_representation as shared_rom_representation,
     yosys_version as _yosys_version)
+from probe_synth import (  # noqa: E402
+    ProbeSynthSpec, fmt_area, run_probe_synth_cli,
+    run_probe_yosys)
 
 
 def declared_state_bits(repo_root):
@@ -116,17 +117,9 @@ def yosys_version(yosys):
 
 
 def run_yosys(yosys, repo_root, liberty, strip, log_path):
-    rtl = os.path.join(repo_root, RTL_REL)
-    script = [
-        "read_verilog" + (" -DH05_STRIP_OBSERVABILITY" if strip else "")
-        + f" {rtl}",
-        "hierarchy -check -top alg_router",
-        "synth -top alg_router",
-        f"dfflibmap -liberty {liberty}",
-        f"abc -liberty {liberty}",
-        f"stat -liberty {liberty}",
-    ]
-    return run_yosys_script(yosys, script, log_path, repo_root, CheckFailure)
+    return run_probe_yosys(yosys, repo_root, RTL_REL, "alg_router",
+                           "H05_STRIP_OBSERVABILITY", liberty, strip, False,
+                           log_path, CheckFailure)
 
 
 def parse_stat(log):
@@ -151,121 +144,7 @@ def rom_representation(log):
     return shared_rom_representation(log, ROM_DETAIL, readmem=True)
 
 
-def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--mode", choices=("both", "full", "strip"),
-                    default="both")
-    ap.add_argument("--yosys", default="yosys")
-    ap.add_argument("--ciel-root", default=DEFAULT_CIEL)
-    ap.add_argument("--liberty", default=None)
-    ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
-    args = ap.parse_args(argv)
-
-    repo_root = REPO_ROOT
-    try:
-        liberty, args.ciel_root = pdk_resolve.resolve_liberty(
-            args.liberty, args.ciel_root)
-    except pdk_resolve.PdkNotFound as e:
-        print(f"COULD-NOT-RUN: {e}", file=sys.stderr)
-        return 2
-    ver = yosys_version(args.yosys)
-    declared, declared_detail = declared_state_bits(repo_root)
-
-    os.makedirs(args.outdir, exist_ok=True)
-    log_full = os.path.join(args.outdir, "yosys_full.log")
-    log_strip = os.path.join(args.outdir, "yosys_strip.log")
-
-    runs = {}
-    gates = {}
-    if args.mode in ("both", "full"):
-        log = run_yosys(args.yosys, repo_root, liberty, strip=False,
-                        log_path=log_full)
-        st = parse_stat(log)
-        st["rom_representation"] = rom_representation(log)
-        st["mode"] = "full"
-        ok = (st["flop_total"] > BUS_FLOP_FLOOR
-              and (st["chip_area_um2"] or 0.0) > 0.0
-              and (st["seq_area_um2"] or 0.0) > 0.0
-              and st["cell_total"] > 0)
-        gates["full"] = {
-            "requirement": f"mapped flops > {BUS_FLOP_FLOOR} (the two "
-                           "persistent 64x32 interconnect bus buffers are "
-                           "irreducible N04 state) and chip area > 0 and "
-                           "sequential area > 0 and cells > 0",
-            "mapped_flops": st["flop_total"],
-            "chip_area_um2": st["chip_area_um2"],
-            "seq_area_um2": st["seq_area_um2"],
-            "cell_total": st["cell_total"],
-            "status": "PASS" if ok else "FAIL",
-        }
-        runs["full"] = st
-    if args.mode in ("both", "strip"):
-        log = run_yosys(args.yosys, repo_root, liberty, strip=True,
-                        log_path=log_strip)
-        st = parse_stat(log)
-        st["mode"] = "strip"
-        runs["strip"] = st
-
-    if "full" in runs and "strip" in runs:
-        gone = runs["strip"]["flop_total"] < runs["full"]["flop_total"]
-        gates["strip_negative_control"] = {
-            "requirement": "strip-observability must make the flop gate "
-                           "FAIL (all state removed)",
-            "mapped_flops": runs["strip"]["flop_total"],
-            "status": "MET (gate fails as required)" if gone
-                      else "NOT MET (gate still passes -- control failed)",
-        }
-
-    status = "PASS" if gates and all(
-        g["status"] in ("PASS", "MET (gate fails as required)")
-        for g in gates.values()) else "FAIL"
-
-    report = {
-        "schema": "h05-synth-report/1",
-        "issue": 27,
-        "planning_id": "H05",
-        "status": status,
-        "claim_boundary": "mapped cell/flop/area cost of the routing "
-                          "probe only; no place-and-route, no timing "
-                          "closure, no fit claim, no audibility claim; "
-                          "RTL-vs-model agreement is tools/h05_compare.py's "
-                          "result and is not implied by any number here",
-        "tool_identity": {
-            "yosys": ver,
-            "liberty": {"path": liberty,
-                        "sha256": sha256_file(liberty),
-                        "corner": "tt_025C_5v00",
-                        "library": "gf180mcu_fd_sc_mcu7t5v0 (7t, 5 metal)"},
-            "dont_use_policy": "none: *_1 drive cells allowed (declared per "
-                               "D01 section 4/section 10.3)",
-            "constraints": "no SDC: probe flow per issue #27 (read_verilog; "
-                           "synth -top; dfflibmap; abc; stat), no clock "
-                           "defined",
-            "rtl": {p: sha256_file(os.path.join(repo_root, p))
-                    for p in (RTL_REL, TB_REL)},
-            "conformance_harness": "tools/h05_compare.py (golden: "
-                                   "src/gf180_dx7/model/algorithm.py)",
-        },
-        "declared_vs_mapped_state": {
-            "declared_bits": declared,
-            "declared_detail": declared_detail,
-            "mapped_flops_full": runs.get("full", {}).get("flop_total"),
-            "note": "mapped differs from declared by a few bits and that "
-                    "is expected and behavior-preserving (yosys exploits "
-                    "constant/unused-bit structure and dfflibmap may "
-                    "replicate registers). The contract the mapping must "
-                    "preserve is RTL behavior, proven bit-exact to the "
-                    "frozen model by tools/h05_compare.py on the "
-                    "pre-synthesis RTL.",
-        },
-        "gates": gates,
-        "runs": runs,
-    }
-    out_json = os.path.join(args.outdir, "synth_report.json")
-    with open(out_json, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=1, sort_keys=True)
-        f.write("\n")
-
+def _print_summary(gates, runs, declared, declared_extra, out_json):
     for name, g in gates.items():
         print(f"gate {name}: {g['status']}")
     if "full" in runs:
@@ -273,10 +152,59 @@ def main(argv=None):
         rom = st["rom_representation"]["representation"]
         print(f"full mapped: flops {st['flop_total']} (declared state bits "
               f"{declared}), cells {st['cell_total']}, chip "
-              f"{st['chip_area_um2']:.1f} um2 (seq {st['seq_area_um2']:.1f}),"
+              f"{fmt_area(st['chip_area_um2'])} um2 "
+              f"(seq {fmt_area(st['seq_area_um2'])}),"
               f" ROM as {rom}")
     print(f"report: {out_json}")
-    return 0 if status == "PASS" else 1
+
+
+SPEC = ProbeSynthSpec(
+    description=__doc__.splitlines()[0],
+    repo_root=REPO_ROOT,
+    outdir_rel=OUTDIR_REL,
+    schema="h05-synth-report/1",
+    issue=27,
+    planning_id="H05",
+    claim_boundary="mapped cell/flop/area cost of the routing "
+                   "probe only; no place-and-route, no timing "
+                   "closure, no fit claim, no audibility claim; "
+                   "RTL-vs-model agreement is tools/h05_compare.py's "
+                   "result and is not implied by any number here",
+    constraints="no SDC: probe flow per issue #27 (read_verilog; "
+                "synth -top; dfflibmap; abc; stat), no clock "
+                "defined",
+    rtl_rel=RTL_REL,
+    tb_rel=TB_REL,
+    top="alg_router",
+    strip_define="H05_STRIP_OBSERVABILITY",
+    use_ltp=False,
+    flop_floor=BUS_FLOP_FLOOR,
+    flop_requirement=f"mapped flops > {BUS_FLOP_FLOOR} (the two "
+                     "persistent 64x32 interconnect bus buffers are "
+                     "irreducible N04 state) and chip area > 0 and "
+                     "sequential area > 0 and cells > 0",
+    harness_key="conformance_harness",
+    harness_value="tools/h05_compare.py (golden: "
+                  "src/gf180_dx7/model/algorithm.py)",
+    yosys_version=yosys_version,
+    check_failure=CheckFailure,
+    parse_stat=parse_stat,
+    rom_representation=rom_representation,
+    declared_state=lambda root: (*declared_state_bits(root), {}),
+    declared_note="mapped differs from declared by a few bits and that "
+                  "is expected and behavior-preserving (yosys exploits "
+                  "constant/unused-bit structure and dfflibmap may "
+                  "replicate registers). The contract the mapping must "
+                  "preserve is RTL behavior, proven bit-exact to the "
+                  "frozen model by tools/h05_compare.py on the "
+                  "pre-synthesis RTL.",
+    extra_sections={},
+    print_summary=_print_summary,
+)
+
+
+def main(argv=None):
+    return run_probe_synth_cli(SPEC, argv)
 
 
 if __name__ == "__main__":

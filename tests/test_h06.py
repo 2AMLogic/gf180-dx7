@@ -256,6 +256,10 @@ class TestEquivalence(unittest.TestCase):
         self.assertEqual(eq["expected_rows"], eq["actual_rows"])
         self.assertGreaterEqual(eq["expected_rows"], MIN_FRAMES)
         self.assertGreater(eq["bench_max_cycles_per_frame"], 0)
+        self.assertEqual(rep["negative_controls"],
+                         "skipped (--skip-mutants)",
+                         "--skip-mutants must state explicitly that the "
+                         "negative controls did not run")
 
     def test_negative_controls_fail_equivalence(self):
         if not self.can_run:
@@ -282,6 +286,31 @@ class TestEquivalence(unittest.TestCase):
                             f"harness has no resolution")
             self.assertGreater(c["mismatches"], 0)
             self.assertIsNotNone(c["first_mismatch"])
+
+
+class TestFlagContract(unittest.TestCase):
+    """Issue #312: the mode pair that suppresses both the equivalence
+    run and the negative controls must be rejected at parse time -- a
+    run that compared zero frames is never a PASS."""
+
+    def test_mutant_with_skip_mutants_rejected(self):
+        outdir = tempfile.mkdtemp(prefix="h06_flags_")
+        try:
+            proc = run_tool(COMPARE_TOOL,
+                            ["--outdir", outdir, "--mutant", "lsb",
+                             "--skip-mutants"],
+                            timeout=120)
+            wrote_report = os.path.exists(
+                os.path.join(outdir, "compare_report.json"))
+        finally:
+            shutil.rmtree(outdir, ignore_errors=True)
+        self.assertEqual(proc.returncode, 2,
+                         "argparse must reject --mutant together with "
+                         "--skip-mutants (exit 2) before any work runs")
+        self.assertIn("not allowed with argument", proc.stderr)
+        self.assertFalse(wrote_report,
+                         "a rejected invocation must not write "
+                         "compare_report.json")
 
 
 class TestInterfaceContract(unittest.TestCase):

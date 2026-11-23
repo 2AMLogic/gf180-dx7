@@ -189,6 +189,32 @@ class TestEquivalence(unittest.TestCase):
         self.assertIn("expected_out", nc["first_mismatch"])
 
 
+class TestFlagContract(unittest.TestCase):
+    """Issue #312: the mode pair that suppresses both the equivalence
+    run and the negative control must be rejected at parse time -- a
+    run that compared zero frames is never a PASS."""
+
+    def test_mutate_only_with_skip_mutate_rejected(self):
+        outdir = tempfile.mkdtemp(prefix="h01_flags_")
+        try:
+            proc = run_tool(COMPARE_TOOL,
+                            ["--outdir", outdir, "--mutate-only",
+                             "--skip-mutate"],
+                            timeout=120)
+            wrote_report = os.path.exists(
+                os.path.join(outdir, "compare_report.json"))
+        finally:
+            shutil.rmtree(outdir, ignore_errors=True)
+        self.assertEqual(proc.returncode, 2,
+                         "argparse must reject --mutate-only together "
+                         "with --skip-mutate (exit 2) before any work "
+                         "runs")
+        self.assertIn("not allowed with argument", proc.stderr)
+        self.assertFalse(wrote_report,
+                         "a rejected invocation must not write "
+                         "compare_report.json")
+
+
 class TestSynthesis(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

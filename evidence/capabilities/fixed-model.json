@@ -8,8 +8,8 @@
   ],
   "check": "fixed-model-challenge-v1",
   "check_output": {
-    "sha256": "8d4f28bdf15d926028575cea63ca3b01ec193442a75fc6ddbc710ab8e3abd26f",
-    "tail": "NOT_RUN [dev32-03]: dev32-03: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-275/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nNOT_RUN [dev32-06]: dev32-06: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-275/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nNOT_RUN [dev32-30]: dev32-30: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-275/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nn08_verify_release: PASS \u2014 bundle /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-275/reference/release: 99 check(s) passed, 3 NOT_RUN, 0 FAILED\nGUARDED_SKIP: 3 verification check(s) did not run (NOT_RUN rows are never passes)\nn08_challenge: NOT_RUN \u2014 oracle binary not found at /Users/joseph/dx7-oracle-marki/dx7-oracle (pinned sha256 6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42); the oracle lives outside this repository and must be built/verified there first\n"
+    "sha256": "c408d73855f265fb3216f97f93d016f4a48f04151a943ffa8ba2d023dcde3a33",
+    "tail": "NOT_RUN [dev32-03]: dev32-03: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nNOT_RUN [dev32-06]: dev32-06: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nNOT_RUN [dev32-30]: dev32-30: pinned archive unavailable ([Errno 2] No such file or directory: '/home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/.cache/DX7_AllTheWeb.zip'); voice bytes resolve only from the archive\nn08_verify_release: PASS \u2014 bundle /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/reference/release: 99 check(s) passed, 3 NOT_RUN, 0 FAILED\nGUARDED_SKIP: 3 verification check(s) did not run (NOT_RUN rows are never passes)\nn08_challenge: NOT_RUN \u2014 oracle binary not found at /Users/joseph/dx7-oracle-marki/dx7-oracle (pinned sha256 6e17a540fd6be55190824539deeb256a25e80675e2424638d3c1a8718388ed42); the oracle lives outside this repository and must be built/verified there first\n"
   },
   "check_skip_reported": true,
   "controls": [
@@ -23,8 +23,8 @@
       "detected": true,
       "exit_code": 0,
       "output": {
-        "sha256": "d1d57d8773ac1c264229bc97a83e6b5d053c848949f2d0a74ef839954447b00e",
-        "tail": ".\n----------------------------------------------------------------------\nRan 1 test in 0.118s\n\nOK\n"
+        "sha256": "31362b3fba0b5ad5fa246a0489bd61d0bf3fe8e9d2095ee1161485061ff1aa51",
+        "tail": ".\n----------------------------------------------------------------------\nRan 1 test in 0.086s\n\nOK\n"
       },
       "skipped": 0,
       "tests_run": 1
@@ -88,12 +88,12 @@
     "reference/release/vectors/perf-transpose-12.f32": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
     "reference/release/vectors/vel-kvs0-127.f32": "44e01cd35658e66389cccdaefefb8208529099f74d20f9a6adbe72a5f5a256e1",
     "reference/release/vectors/vel-kvs7-30.f32": "1d8c5c9f6ae68f2b343803e58dd1d413dacfe7dc04204dc6f68867e6e835915f",
-    "spec/capabilities-v1.json": "025e87e3523f7e1bd4cc32ec7166948486470583b9e81752a3eb158044a683ae",
+    "spec/capabilities-v1.json": "2c23121cd9212edab17a65c6a75f50b011cbbd52997d4fc32114d9dfcc17ae20",
     "spec/compatibility-registry-v1.json": "39c79f71618cf7ea32f231d990ce5d4671561b8fe6dc87a52673542c407e6693",
     "spec/numeric-profile-v1.json": "020b12e5ab484ee55835994443b1c10183d1a7525b4f80f5881b2ee50b1f2370",
     "spec/release-vectors-v1.json": "5848fbfd031521599ab001dec325d1a1d8b6bdb08102475a53a95ef26474230d",
     "src/gf180_dx7/__init__.py": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
-    "src/gf180_dx7/capabilities.py": "c2abb20c768208a70bc5050068d33b95cdfba9a01502069457edb6810ab50523",
+    "src/gf180_dx7/capabilities.py": "628d2eba0894638ffb6f3b8bbaf1c97be427051ebb683d76a9c8ab3fb81404f6",
     "src/gf180_dx7/compare.py": "adf6c0475a303fd5de68c31955488ed8038f6347551d1273fef625a03ed2b5d6",
     "src/gf180_dx7/model/__init__.py": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
     "src/gf180_dx7/model/algorithm.py": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
@@ -104,7 +104,7 @@
     "src/gf180_dx7/model/poly.py": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12",
     "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
     "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
-    "tests/test_capabilities.py": "865d0c90121925a7486ad35e660d6462312b3ec033a346309f8927161f3ad730",
+    "tests/test_capabilities.py": "9cd5ae5eaaedfc515b362bc7a9b12268f742f4617ee42c8abcfbc6238aba2974",
     "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
     "tools/n06_compare.py": "1312c33ebfd13b7aeb0a600ca33250a0ab947a37772be64a8e73d8ab528a88cc",
     "tools/n08_build_release.py": "2247087bc9c204d62dbafc82c53cbd718fccbc5674d96f6db326c59d728eb0c8",
@@ -116,7 +116,7 @@
   },
   "exit_code": 2,
   "node_id": "fixed-model",
-  "recorded_at": "2026-11-21T06:36:29Z",
+  "recorded_at": "2026-11-23T15:27:17Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "NOT_RUN",
   "schema": "gf180-dx7.capability-evidence/1"

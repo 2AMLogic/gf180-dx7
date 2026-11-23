@@ -7,8 +7,8 @@
   ],
   "check": "rtl-core-v1",
   "check_output": {
-    "sha256": "9b852035b2f290e37bcd265698d8c67954376903442896fc40b0991a4df5183b",
-    "tail": "1e8f/.loom/worktrees/2amlogic-gf180-dx7-15f21e8f/issue-315/build/capabilities/rtl-core/h05 --iverilog iverilog --vvp vvp\nconformance: PASS (116 runs / 132288 evals, 0 mismatching records, 0 failing runs)\nnegative control fbdelay: MET (mutant fails conformance as required)\nnegative control fbsign: MET (mutant fails conformance as required)\nnegative control oporder: MET (mutant fails conformance as required)\nreport: /workspace/work/2amlogic-gf180-dx7-15f21e8f/.loom/worktrees/2amlogic-gf180-dx7-15f21e8f/issue-315/build/capabilities/rtl-core/h05/compare_report.json\n[rtl-core] $ /usr/bin/python3 /workspace/work/2amlogic-gf180-dx7-15f21e8f/.loom/worktrees/2amlogic-gf180-dx7-15f21e8f/issue-315/tools/h06_compare.py --outdir /workspace/work/2amlogic-gf180-dx7-15f21e8f/.loom/worktrees/2amlogic-gf180-dx7-15f21e8f/issue-315/build/capabilities/rtl-core/h06 --iverilog iverilog --vvp vvp\nequivalence: PASS (4332 frames, 0 mismatches, worst-tail 25 clk/frame)\nnegative control fixedkb: MET (mutant fails exact compare as required) (1138 mismatches)\nnegative control lsb: MET (mutant fails exact compare as required) (4332 mismatches)\nnegative control persample: MET (mutant fails exact compare as required) (4332 mismatches)\nnegative control sync: MET (mutant fails exact compare as required) (3939 mismatches)\nreport: /workspace/work/2amlogic-gf180-dx7-15f21e8f/.loom/worktrees/2amlogic-gf180-dx7-15f21e8f/issue-315/build/capabilities/rtl-core/h06/compare_report.json\n\nrtl-core summary (4 benches, scratch build/capabilities/rtl-core):\nrtl-core h01 operator: PASS expected=4794 actual=4794 mismatches=0 control=MET\nrtl-core h04 envelope: PASS expected=27931 actual=27931 mismatches=0 negative_controls=srm:MET,timing:MET\nrtl-core h05 routing/feedback: PASS expected=159548 actual=159548 mismatches=0 mutants=fbdelay:MET,fbsign:MET,oporder:MET\nrtl-core h06 pitch/modulation: PASS expected=4332 actual=4332 mismatches=0 negative_controls=fixedkb:MET,lsb:MET,persample:MET,sync:MET\nrtl-core verdict: PASS\n"
+    "sha256": "3b65251a83970abd79b61ff93ca941d63237114ea447b45f6b3676ea4d65dac5",
+    "tail": "76/build/capabilities/rtl-core/h04/compare_report.json\n[rtl-core] $ /usr/bin/python3 /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/tools/h05_compare.py --outdir /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/build/capabilities/rtl-core/h05 --iverilog iverilog --vvp vvp\nconformance: PASS (116 runs / 132288 evals, 0 mismatching records, 0 failing runs)\nnegative control fbdelay: MET (mutant fails conformance as required)\nnegative control fbsign: MET (mutant fails conformance as required)\nnegative control oporder: MET (mutant fails conformance as required)\nreport: /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/build/capabilities/rtl-core/h05/compare_report.json\n[rtl-core] $ /usr/bin/python3 /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/tools/h06_compare.py --outdir /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/build/capabilities/rtl-core/h06 --iverilog iverilog --vvp vvp\nequivalence: PASS (4332 frames, 0 mismatches, worst-tail 25 clk/frame)\nnegative control fixedkb: MET (mutant fails exact compare as required) (1138 mismatches)\nnegative control lsb: MET (mutant fails exact compare as required) (4332 mismatches)\nnegative control persample: MET (mutant fails exact compare as required) (4332 mismatches)\nnegative control sync: MET (mutant fails exact compare as required) (3939 mismatches)\nreport: /home/ubuntu/GitHub/gf180-dx7/.loom/worktrees/issue-276/build/capabilities/rtl-core/h06/compare_report.json\n\nrtl-core summary (4 benches, scratch build/capabilities/rtl-core):\nrtl-core h01 operator: PASS expected=4794 actual=4794 mismatches=0 control=MET\nrtl-core h04 envelope: PASS expected=27931 actual=27931 mismatches=0 negative_controls=srm:MET,timing:MET\nrtl-core h05 routing/feedback: PASS expected=159548 actual=159548 mismatches=0 mutants=fbdelay:MET,fbsign:MET,oporder:MET\nrtl-core h06 pitch/modulation: PASS expected=4332 actual=4332 mismatches=0 negative_controls=fixedkb:MET,lsb:MET,persample:MET,sync:MET\nrtl-core verdict: PASS\n"
   },
   "check_skip_reported": false,
   "controls": [
@@ -23,8 +23,8 @@
       "detected": true,
       "exit_code": 0,
       "output": {
-        "sha256": "7fcc18116883db42d8ba0030d36f8726ac466b72c76042febb4ebb66a30f0502",
-        "tail": "test_negative_control_oporder_fails_widely (tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 14.393s\n\nOK\n"
+        "sha256": "0dff231e519c1eafaf36a8d4b29c3b79522584052b206cf3510d476c83091d61",
+        "tail": "test_negative_control_oporder_fails_widely (tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 11.274s\n\nOK\n"
       },
       "skipped": 0,
       "tests_run": 1
@@ -46,19 +46,19 @@
     "rtl/tb_env_unit.v": "11e8cd33f3f2e3835953f01462dc15f0fba4909f5b34e6bd37b48555be637a72",
     "rtl/tb_operator_probe.v": "480c85fd9ab2f1da7b11c3e22dae32020b00f3bbc6d23cad687af557563c8842",
     "rtl/tb_pitch_mod.v": "33075b5c0f29131ca9d698e2a46258db82d7e01f057eebdeee39807fb50fdcb2",
-    "spec/capabilities-v1.json": "025e87e3523f7e1bd4cc32ec7166948486470583b9e81752a3eb158044a683ae",
-    "src/gf180_dx7/capabilities.py": "c2abb20c768208a70bc5050068d33b95cdfba9a01502069457edb6810ab50523",
+    "spec/capabilities-v1.json": "2c23121cd9212edab17a65c6a75f50b011cbbd52997d4fc32114d9dfcc17ae20",
+    "src/gf180_dx7/capabilities.py": "628d2eba0894638ffb6f3b8bbaf1c97be427051ebb683d76a9c8ab3fb81404f6",
     "src/gf180_dx7/model/__init__.py": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
     "src/gf180_dx7/model/algorithm.py": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
     "src/gf180_dx7/model/envelope.py": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
     "src/gf180_dx7/model/operator.py": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
     "src/gf180_dx7/model/pitch.py": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
     "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
-    "tests/test_h05.py": "a03dfa7e1bf1589f8502eb5fc969df868f78e0266c8ff502e371a7489a2289ba",
+    "tests/test_h05.py": "bfa89224d0562f178406c99700426c5feeee8107da540320dbd809224097c93f",
     "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
     "tools/h01_compare.py": "cd2e56757c1b34cca3bbe502d0e2863153d62f1959fd748dc5c28a6acc5a6064",
-    "tools/h04_compare.py": "8010bd0143e65626293bb7a424bfaad4431cb77a250230d5d3dc06b4aeb4b297",
-    "tools/h05_compare.py": "ee3768002aa23d5b66dd4bce473baa71b0d662ed1a6d12ccb1fb15c0efff5d2f",
+    "tools/h04_compare.py": "054cd135926cd29227861288a43e01f65ed5c58c1f75b13d10e3217daba8c085",
+    "tools/h05_compare.py": "c716b01d241233aa02bb3c6c10f8e887f6c6495481728211e3ea893782dd00cd",
     "tools/h06_compare.py": "292fc88cfa4c45e1235706a83107293e7b856197d18fc1a74822049649075a32",
     "tools/iverilog_run.py": "de0e2c0d785809b36c1f52936d7c2414c3b3ceb16c25a26b1cf4995e57445133",
     "tools/rtl_core_check.py": "59f40eba206e2405b84d126eb50a0895abf090c4987d0470e163b6ada89b6100",
@@ -67,7 +67,7 @@
   },
   "exit_code": 0,
   "node_id": "rtl-core",
-  "recorded_at": "2026-11-23T17:16:00Z",
+  "recorded_at": "2026-11-23T15:25:23Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

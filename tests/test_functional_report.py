@@ -76,15 +76,30 @@ class CheckerTests(unittest.TestCase):
         self.assertNotEqual(FV.EXIT["NOT_RUN"], FV.EXIT["PASS"])
 
     def test_control_requires_every_selected_case_to_fail(self):
+        # Issue #276: a cocotb `failed` alone is not detection (a setup
+        # failure fails the same way); every selected case must fail AT THE
+        # SAMPLE COMPARATOR with a measured first mismatch.
+        mismatch = ("stress-sum16: RTL != frozen model; first mismatches "
+                    "[{'index': 849, 'golden': 23300, 'actual': 23316, "
+                    "'block': 11, 'sample': 17}] overrun=0 overflow=0\n"
+                    "assert False")
         failed = report(tests=[{"name": "case_stress_sum16",
-                                "status": "failed"}])
-        ok, _ = FV.control_verdict(failed, ["stress-sum16"])
+                                "status": "failed",
+                                "error_message": mismatch}])
+        ok, msg = FV.control_verdict(failed, ["stress-sum16"])
         self.assertTrue(ok)
+        self.assertIn("index=849 golden=23300 actual=23316", msg)
         survived = copy.deepcopy(failed)
         survived["tests"][0]["status"] = "passed"
         ok, msg = FV.control_verdict(survived, ["stress-sum16"])
         self.assertFalse(ok, "a control that does not fail is a defect")
         self.assertIn("did NOT fail", msg)
+        setup = copy.deepcopy(failed)
+        setup["tests"][0]["error_message"] = (
+            "stress-sum16: could not run: simulation failed")
+        ok, msg = FV.control_verdict(setup, ["stress-sum16"])
+        self.assertFalse(ok, "a setup failure is not detection")
+        self.assertIn("did not reach the comparator", msg)
         ok, _ = FV.control_verdict(report(tests=[]), ["stress-sum16"])
         self.assertFalse(ok)
 

@@ -2234,7 +2234,7 @@
   },
   {
    "path": "tools/check_artifact_manifests.py",
-   "sha256": "88e77a6898a3782193364a5fe0cdc9003c5d16b6ad3c4185efa1c7411c4d46b1",
+   "sha256": "5456978b550bf59261498927ea84c3709a2e484a44afb0e339020d6cc73cf3b6",
    "reason": "locally authored artifact-manifest schema gate (issue #178); stdlib only, no upstream bytes; check is schema-only and verify is NOT_RUN without a broker"
   },
   {

@@ -23,8 +23,8 @@
       "detected": true,
       "exit_code": 0,
       "output": {
-        "sha256": "c6e34c08396b1c8fb62f1363f901ca42bbf5513da567db7d5500e9c66cf2154c",
-        "tail": "test_negative_control_oporder_fails_widely (tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 14.698s\n\nOK\n"
+        "sha256": "3ce063d39c533364010c49831b8ad909660ce2aa8d4479b0f799779275f6f3a1",
+        "tail": "test_negative_control_oporder_fails_widely (tests.test_h05.TestConformance.test_negative_control_oporder_fails_widely) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 16.218s\n\nOK\n"
       },
       "skipped": 0,
       "tests_run": 1
@@ -56,10 +56,10 @@
     "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
     "tests/test_h05.py": "bfa89224d0562f178406c99700426c5feeee8107da540320dbd809224097c93f",
     "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
-    "tools/h01_compare.py": "89bb542d4e09f026cdbe546cbb161c167bc328089b7cedd40c6da2c226dd516a",
-    "tools/h04_compare.py": "88611f42f6e7a033c8d5da0c23fb0d6ce378c3c05f92b2759f4c4bb879fa504e",
+    "tools/h01_compare.py": "51c278808fff0304c3c70d33f8ec3fe652af130f28c17075eea498810de1db3c",
+    "tools/h04_compare.py": "222856adf8bcd1b6325d9627c91faa8e0e49aa23b07dd972261dee5c03aa7cd5",
     "tools/h05_compare.py": "fc8311aefcc72a31381f5f9ff50f2ce45fb86419181ff0e7006a24d920b94253",
-    "tools/h06_compare.py": "89040abfc483f46503edf9ecd329730ae8e68611e0a552933098327fed845fa1",
+    "tools/h06_compare.py": "4a8c2deddeabc07a74b5e10be74d23d21a45b541725efbbea82b4edbcdaaade1",
     "tools/iverilog_run.py": "e0011f115bbf2b66fa0be4c9dc9f3700ba0ac6c93effe12adb330e3889125a51",
     "tools/rtl_core_check.py": "59f40eba206e2405b84d126eb50a0895abf090c4987d0470e163b6ada89b6100",
     "tools/sha256_helpers.py": "3dfd68f8a23ebad463e17856999970e9f587d13a2b158c3484558e4f6017deb1",
@@ -67,7 +67,7 @@
   },
   "exit_code": 0,
   "node_id": "rtl-core",
-  "recorded_at": "2026-11-23T18:37:10Z",
+  "recorded_at": "2026-11-23T21:47:52Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

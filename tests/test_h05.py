@@ -177,7 +177,7 @@ class TestTableNegativeControl(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
-class TestFlagConflict(unittest.TestCase):
+class TestFlagContract(unittest.TestCase):
     """Issue #315: --mutate-only and --skip-mutants are contradictory
     single-mode selectors (one skips conformance, the other requires it).
     The pair must be rejected at parse time -- exit 2 with a usage error
@@ -267,6 +267,7 @@ class TestConformance(unittest.TestCase):
         finally:
             shutil.rmtree(outdir, ignore_errors=True)
         cf = rep["conformance"]
+        self.assertEqual(rep["status"], "PASS")
         self.assertEqual(cf["status"], "PASS")
         self.assertEqual(cf["mismatch_records"], 0,
                          "any mismatch means the RTL is wrong -- never a "
@@ -309,6 +310,7 @@ class TestConformance(unittest.TestCase):
         finally:
             shutil.rmtree(outdir, ignore_errors=True)
         nc = rep["mutants"]["oporder"]
+        self.assertEqual(rep["status"], "PASS")
         self.assertTrue(nc["status"].startswith("MET"),
                         "the operator-order mutant must FAIL "
                         "conformance -- a passing mutant proves the "

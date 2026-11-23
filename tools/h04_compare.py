@@ -591,13 +591,10 @@ def main(argv=None):
 
         eq_ok = args.mutants_only or \
             report["equivalence"]["status"] == "PASS"
-        # issue #315: --mutants-only REQUESTS the controls, so they must be
-        # judged -- a surviving (NOT MET) mutant is a FAIL, never bypassed
-        # (the h01/h06 guard). Only an explicit --skip-mutants (controls
-        # not run) keeps its bypass.
-        nc_ok = args.skip_mutants or all(
-            v["status"].startswith("MET")
-            for v in report.get("negative_controls", {}).values())
+        nc_ok = args.skip_mutants or (
+            bool(report.get("negative_controls")) and all(
+                v["status"].startswith("MET")
+                for v in report["negative_controls"].values()))
         status = "PASS" if (eq_ok and nc_ok) else "FAIL"
         report["status"] = status
     except CouldNotRun as exc:

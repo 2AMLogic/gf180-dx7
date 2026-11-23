@@ -1759,7 +1759,7 @@
   },
   {
    "path": "tools/h04_compare.py",
-   "sha256": "8010bd0143e65626293bb7a424bfaad4431cb77a250230d5d3dc06b4aeb4b297",
+   "sha256": "959028716740bfb19a12f98d29744677a82cfedf2762ed495483ee9f9b709503",
    "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited); issue #315: --mutants-only no longer short-circuits the negative-control verdict (the h01/h06 guard) -- a surviving NOT-MET control now yields top-level FAIL and exit 1, keeping the bypass only for explicitly skipped controls and the omitted equivalence run"
   },
   {
@@ -1769,7 +1769,7 @@
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "e5410eb591001d353cf8ffe87aafdecf94dd4897f7b12bf970173e0e96336cbb",
+   "sha256": "eaf895590748548b5dea90de3d566351226f3a585af03cd62db702ef7e262d49",
    "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; issue #315: tests --mutants-only with timing and SRM suppressed individually, checking both control results and the overall verdict for each survivor and for both mutations detected"
   },
   {
@@ -1809,7 +1809,7 @@
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "a03dfa7e1bf1589f8502eb5fc969df868f78e0266c8ff502e371a7489a2289ba",
+   "sha256": "0d26851ed9f27f939349c70f1426575e1a64fae772ad0b3820f4f1dc2ae811cf",
    "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; issue #315: adds the --mutate-only/--skip-mutants parse-conflict regression (both orders exit 2 with a usage error naming both flags, no traceback, no program or report; each flag alone still accepted via --gen-only, no Icarus needed)"
   },
   {

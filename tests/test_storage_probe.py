@@ -19,7 +19,13 @@ Covers, per the issue's acceptance:
     transcript shape its area number depends on (issue #95): the
     committed yosys_full.log replay still yields 4,115,369.9776 um^2, and
     a synthetic multi-module transcript must make the parser FAIL rather
-    than return a per-module block (the #82/#94 bug pattern).
+    than return a per-module block (the #82/#94 bug pattern);
+  - tools/storage_probe_synth.py run_yosys routes through the shared
+    tools/yosys_run.py tail (#146, issue #296): the log header records
+    the script AND the cwd, and a yosys failure with empty output still
+    names rc + the log path (the local copy's precedence bug reduced
+    that message to ""). Fake yosys executables only -- no synthesis, no
+    PDK, nothing re-runs H02.
 
 Stdlib only.
 """
@@ -529,6 +535,74 @@ class TestSynthStatSingleModuleGuard(unittest.TestCase):
         self.assertEqual(st["dff_total"], 0)
         self.assertIsNone(st["chip_area_um2"])
         self.assertIsNone(st["dff_area_um2"])
+
+
+def _fake_yosys(td, body):
+    """A fake yosys executable running `body` under /bin/sh (no real
+    yosys, no synthesis -- the pattern tests/test_yosys_run.py uses)."""
+    p = os.path.join(td, "fake_yosys")
+    with open(p, "w", encoding="utf-8") as f:
+        f.write("#!/bin/sh\n" + body + "\n")
+    os.chmod(p, 0o755)
+    return p
+
+
+class TestRunYosysSharedTail(unittest.TestCase):
+    """run_yosys must run/log/raise via tools/yosys_run.run_yosys_script
+    (#146, issue #296), keeping only its own script construction.
+
+    Two behavioural markers distinguish the shared tail from the removed
+    local copy, and both are asserted: the log's first line records the
+    script AND the cwd (`# yosys script (cwd=<repo_root>): ...` -- the
+    local header had no cwd), and an empty-output failure raises
+    CheckFailure naming rc and the log path (the local copy's
+    `+ ... if log.strip() else ""` precedence bug made that message "").
+    """
+
+    def test_log_header_records_script_and_cwd(self):
+        with tempfile.TemporaryDirectory() as td:
+            y = _fake_yosys(td, "echo marker-line")
+            logp = os.path.join(td, "yosys_full.log")
+            log = _storage_probe_synth().run_yosys(
+                y, td, "fake.liberty", False, False, logp)
+            self.assertIn("marker-line", log)
+            with open(logp, encoding="utf-8") as f:
+                text = f.read()
+            first = text.splitlines()[0]
+            self.assertTrue(first.startswith(f"# yosys script (cwd={td}): "),
+                            f"shared-tail header wrong: {first!r}")
+            self.assertIn("synth -top storage_probe -nofsm", first)
+            self.assertIn("dfflibmap -liberty fake.liberty", first)
+            self.assertIn("stat -liberty fake.liberty", first)
+            self.assertNotIn("abc", first)  # abc is opt-in below
+            self.assertEqual(text, first + "\n" + log)
+
+    def test_strip_and_abc_options_reach_the_script(self):
+        """Script construction stays this tool's own: -D...STRIP... and the
+        optional abc pass appear in the recorded script when requested."""
+        with tempfile.TemporaryDirectory() as td:
+            y = _fake_yosys(td, "echo marker-line")
+            logp = os.path.join(td, "yosys_strip.log")
+            _storage_probe_synth().run_yosys(
+                y, td, "fake.liberty", True, True, logp)
+            with open(logp, encoding="utf-8") as f:
+                first = f.read().splitlines()[0]
+            self.assertIn("-DSTORAGE_PROBE_STRIP_OBSERVABILITY", first)
+            self.assertIn(" abc -liberty fake.liberty", first)
+
+    def test_failure_with_empty_output_names_rc_and_log(self):
+        """The pre-#296 copy raised CheckFailure("") here: the conditional
+        bound to the whole concatenation, dropping rc and the log path
+        exactly when yosys died silently. The shared tail keeps them."""
+        with tempfile.TemporaryDirectory() as td:
+            y = _fake_yosys(td, "exit 4")
+            logp = os.path.join(td, "yosys_full.log")
+            h = _storage_probe_synth()
+            with self.assertRaises(h.CheckFailure) as cm:
+                h.run_yosys(y, td, "fake.liberty", False, False, logp)
+            self.assertIn("rc=4", str(cm.exception))
+            self.assertIn(logp, str(cm.exception))
+            self.assertTrue(os.path.isfile(logp))  # log kept on failure
 
 
 if __name__ == "__main__":

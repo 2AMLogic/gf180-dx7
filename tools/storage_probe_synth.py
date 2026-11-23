@@ -63,7 +63,8 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
-from yosys_run import yosys_version as _yosys_version  # noqa: E402
+from yosys_run import (  # noqa: E402
+    run_yosys_script, yosys_version as _yosys_version)
 
 
 # ---------------------------------------------------------------------------
@@ -213,16 +214,9 @@ def run_yosys(yosys, repo_root, liberty, strip, abc, log_path):
     script.append(f"stat -liberty {liberty}")
     # -nofsm: the 38k-flop state image is not a protocol FSM and the FSM
     # pass only burns time on it. dfflibmap+abc+stat are the mapped record.
-    proc = subprocess.run([yosys, "-p", "; ".join(script)],
-                          capture_output=True, text=True)
-    log = (proc.stdout or "") + (proc.stderr or "")
-    with open(log_path, "w", encoding="utf-8") as f:
-        f.write(f"# yosys script: {'; '.join(script)}\n" + log)
-    if proc.returncode != 0:
-        raise CheckFailure(
-            f"yosys failed (rc={proc.returncode}); log at {log_path}: "
-            + log.strip().splitlines()[-1][:300] if log.strip() else "")
-    return log
+    # Run/log/failure tail is tools/yosys_run.py's (#146): the log header
+    # records the cwd, and an empty-output failure still names rc + log.
+    return run_yosys_script(yosys, script, log_path, repo_root, CheckFailure)
 
 
 HIER_MARK = "=== design hierarchy ==="

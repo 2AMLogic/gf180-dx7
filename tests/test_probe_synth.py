@@ -464,23 +464,12 @@ class ProbeSynthMockTest(unittest.TestCase):
                     self.set_transcripts(full=stat_transcript(
                         flops=MOCK_FLOPS, cells=MOCK_CELLS,
                         chip_area=chip_area, seq_area=MOCK_SEQ_AREA))
-                    if chip_area is None:
-                        # Line absent: the gate FAILs and the report is
-                        # written, but each tool's stdout summary formats
-                        # the None area with :.1f and raises TypeError
-                        # before main() can return. Bounded finding,
-                        # out of scope here (issue #293 changes no tool
-                        # code); the FAIL verdict itself is still pinned
-                        # from the written report below.
-                        with self.assertRaises(TypeError):
-                            self.run_main(
-                                TOOLS_BY_NAME[name],
-                                self.base_args() + ["--mode", "full"])
-                    else:
-                        rc, _out, _err = self.run_main(
-                            TOOLS_BY_NAME[name],
-                            self.base_args() + ["--mode", "full"])
-                        self.assertEqual(rc, 1)
+                    # Both branches exit 1: an absent area line prints
+                    # "n/a" (fmt_area, issue #295) instead of raising.
+                    rc, _out, _err = self.run_main(
+                        TOOLS_BY_NAME[name],
+                        self.base_args() + ["--mode", "full"])
+                    self.assertEqual(rc, 1)
                     rep = self.report()
                     self.assertEqual(rep["gates"]["full"]["status"],
                                      "FAIL")

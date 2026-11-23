@@ -2209,8 +2209,8 @@
   },
   {
    "path": "tools/functional_verification.py",
-   "sha256": "f0ed3a06afd664dcf173a2bc12be71698deccdf672620e6d958bfd629790252f",
-   "reason": "locally authored runner/checker for the committed klt functional-verification report (issue #150): normalized report-vs-rerun comparison with PASS/FAIL/STALE/NOT_RUN statuses, mutant negative controls; no upstream source, no upstream bytes, stdlib only"
+   "sha256": "b51b6627d8acf6252b84dc2e155dd97fc66f83aa60d790bf7d401045d7434c84",
+   "reason": "locally authored runner/checker for the committed klt functional-verification report (issue #150): normalized report-vs-rerun comparison with PASS/FAIL/STALE/NOT_RUN statuses, mutant negative controls; no upstream source, no upstream bytes, stdlib only; registered as the rtl-exact-v1 capability check with per-case verdict composition (measured mismatch FAIL, unexecuted selected case NOT_RUN, stale pin STALE), the GUARDED_SKIP token for partial runs, a tail-recoverable coverage record and sample-mismatch-required control verdicts (issue #276, catalog-only provenance audited)"
   },
   {
    "path": "tools/fv_cocotb_dx7_core.py",

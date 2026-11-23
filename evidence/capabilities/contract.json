@@ -8,22 +8,22 @@
   ],
   "check": "contract-tests-v1",
   "check_output": {
-    "sha256": "f73f9c6882091011061baa6e4126b50dfcaa3b060a88a9ef6631b2f29c391b5a",
-    "tail": "test_change_control_statement_present (tests.test_contract_v1.TestContractV1.test_change_control_statement_present) ... ok\ntest_effects_policy_states_dry_comparisons (tests.test_contract_v1.TestContractV1.test_effects_policy_states_dry_comparisons) ... ok\ntest_forbidden_omissions_present_in_json_and_markdown (tests.test_contract_v1.TestContractV1.test_forbidden_omissions_present_in_json_and_markdown)\nNegative control: omitting any of these must fail. ... ok\ntest_licensing_recorded_as_owner_ruled (tests.test_contract_v1.TestContractV1.test_licensing_recorded_as_owner_ruled) ... ok\ntest_markdown_contains_every_json_dec_id (tests.test_contract_v1.TestContractV1.test_markdown_contains_every_json_dec_id) ... ok\ntest_markdown_dec_ids_all_present_in_json (tests.test_contract_v1.TestContractV1.test_markdown_dec_ids_all_present_in_json) ... ok\ntest_no_original_hardware_fidelity_claim (tests.test_contract_v1.TestContractV1.test_no_original_hardware_fidelity_claim) ... ok\ntest_performance_controls_present (tests.test_contract_v1.TestContractV1.test_performance_controls_present) ... ok\ntest_preset_bank_counts (tests.test_contract_v1.TestContractV1.test_preset_bank_counts) ... ok\ntest_proposed_owner_may_veto_set (tests.test_contract_v1.TestContractV1.test_proposed_owner_may_veto_set) ... ok\ntest_required_scalar_values (tests.test_contract_v1.TestContractV1.test_required_scalar_values) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.001s\n\nOK\n"
+    "sha256": "22640381d0b5599b9d56db19f30674a0b05db35e7fec310263b22e9fe152a1e0",
+    "tail": "test_change_control_statement_present (tests.test_contract_v1.TestContractV1.test_change_control_statement_present) ... ok\ntest_effects_policy_states_dry_comparisons (tests.test_contract_v1.TestContractV1.test_effects_policy_states_dry_comparisons) ... ok\ntest_forbidden_omissions_present_in_json_and_markdown (tests.test_contract_v1.TestContractV1.test_forbidden_omissions_present_in_json_and_markdown)\nNegative control: omitting any of these must fail. ... ok\ntest_licensing_recorded_as_owner_ruled (tests.test_contract_v1.TestContractV1.test_licensing_recorded_as_owner_ruled) ... ok\ntest_markdown_contains_every_json_dec_id (tests.test_contract_v1.TestContractV1.test_markdown_contains_every_json_dec_id) ... ok\ntest_markdown_dec_ids_all_present_in_json (tests.test_contract_v1.TestContractV1.test_markdown_dec_ids_all_present_in_json) ... ok\ntest_no_original_hardware_fidelity_claim (tests.test_contract_v1.TestContractV1.test_no_original_hardware_fidelity_claim) ... ok\ntest_performance_controls_present (tests.test_contract_v1.TestContractV1.test_performance_controls_present) ... ok\ntest_preset_bank_counts (tests.test_contract_v1.TestContractV1.test_preset_bank_counts) ... ok\ntest_proposed_owner_may_veto_set (tests.test_contract_v1.TestContractV1.test_proposed_owner_may_veto_set) ... ok\ntest_required_scalar_values (tests.test_contract_v1.TestContractV1.test_required_scalar_values) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.018s\n\nOK\n"
   },
   "check_skip_reported": false,
   "controls": [],
   "coverage": {
     "docs/DECISIONS-v1.md": "fcb55f2b5610c5f9109edbc322eda02a3ae70df5a252842652fd66591ec27a79",
-    "spec/capabilities-v1.json": "025e87e3523f7e1bd4cc32ec7166948486470583b9e81752a3eb158044a683ae",
+    "spec/capabilities-v1.json": "2c23121cd9212edab17a65c6a75f50b011cbbd52997d4fc32114d9dfcc17ae20",
     "spec/contract-v1.json": "6106654efb58c731610b602f3d338f53ac106e063c1f4e459acb0d6ae3a1a8d9",
-    "src/gf180_dx7/capabilities.py": "c2abb20c768208a70bc5050068d33b95cdfba9a01502069457edb6810ab50523",
+    "src/gf180_dx7/capabilities.py": "628d2eba0894638ffb6f3b8bbaf1c97be427051ebb683d76a9c8ab3fb81404f6",
     "tests/test_contract_v1.py": "28b537c12fffd89be2c00747ccf30dd5f851cb0034d4749546ef6d1c23db4290",
     "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4"
   },
   "exit_code": 0,
   "node_id": "contract",
-  "recorded_at": "2026-11-21T06:35:55Z",
+  "recorded_at": "2026-11-23T15:22:58Z",
   "recorded_by": "tools/compile_capabilities.py --stamp",
   "result": "PASS",
   "schema": "gf180-dx7.capability-evidence/1"

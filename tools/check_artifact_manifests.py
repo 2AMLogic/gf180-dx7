@@ -11,8 +11,11 @@ manifest per run under manifests/artifacts/ naming each object by sha256
           `s3://` or `arn:aws:` string anywhere in a manifest, duplicate
           entry names, or an entry whose `name` is also a git-tracked path.
   verify  needs the broker ($KLT_ARTIFACT_BROKER) and `klt`; it runs
-          `klt artifact verify` per manifest. Without a broker it is NOT_RUN
-          (exit 2), never a pass. Worker-side only: CI has no broker.
+          `klt artifact verify` per manifest over the same set the schema
+          check measured. Without a broker it is NOT_RUN (exit 2), never
+          a pass; with zero manifest entries it is likewise NOT_RUN — a
+          hash-verification PASS is only reported after verifying a
+          nonempty set of objects. Worker-side only: CI has no broker.
 
 Exit codes: 0 pass, 1 check failure, 2 could-not-run. Stdlib only.
 """
@@ -133,16 +136,21 @@ def run_check(root, paths):
                                      tracked)
     print(f"check_artifact_manifests: PASS (schema-only, NOT hash-verified: "
           f"{len(manifests)} manifest(s), {entries} entr(ies))")
+    return manifests, entries
 
 
 def run_verify(root, paths):
-    run_check(root, paths)
+    manifests, entries = run_check(root, paths)
     if not os.environ.get("KLT_ARTIFACT_BROKER"):
         raise CouldNotRun("KLT_ARTIFACT_BROKER unset; verify is NOT_RUN")
     klt = shutil.which("klt")
     if not klt:
         raise CouldNotRun("klt not on PATH; verify is NOT_RUN")
-    for path in find_manifests(root, paths):
+    if entries == 0:
+        raise CouldNotRun(
+            f"nothing to verify: {len(manifests)} manifest(s), 0 entr(ies); "
+            "verify is NOT_RUN, never a pass for zero checked objects")
+    for path in manifests:
         proc = subprocess.run([klt, "artifact", "verify", path],
                               capture_output=True, text=True)
         sys.stdout.write(proc.stdout)

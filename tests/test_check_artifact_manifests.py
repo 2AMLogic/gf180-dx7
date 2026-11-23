@@ -4,6 +4,7 @@
 import copy
 import json
 import os
+import stat
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,20 @@ CHECKER = os.path.join(TOOLS, "check_artifact_manifests.py")
 
 SHA = "a" * 64
 SHA2 = "b" * 64
+
+# Verifier double (issue #307): logs each invocation, exit code via env.
+FAKE_KLT = r'''#!/usr/bin/env python3
+import os, sys
+log = os.environ.get("FAKE_KLT_LOG")
+if log:
+    with open(log, "a") as fh:
+        fh.write(" ".join(sys.argv[1:]) + "\n")
+code = os.environ.get("FAKE_KLT_EXIT")
+if code:
+    sys.stderr.write("simulated klt artifact verify failure\n")
+    sys.exit(int(code))
+sys.stdout.write("verified ok\n")
+'''
 
 
 def entry(sha=SHA, name="sim/report.json", **over):
@@ -36,6 +51,13 @@ class Case(unittest.TestCase):
         self.root = self.tmp.name
         subprocess.run(["git", "init", "-q", self.root], check=True)
         os.makedirs(os.path.join(self.root, "manifests", "artifacts"))
+        self.bin = os.path.join(self.root, "bin")
+        os.makedirs(self.bin)
+        klt = os.path.join(self.bin, "klt")
+        with open(klt, "w") as fh:
+            fh.write(FAKE_KLT)
+        os.chmod(klt, os.stat(klt).st_mode | stat.S_IXUSR)
+        self.klt_log = os.path.join(self.root, "klt-calls.log")
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -57,6 +79,26 @@ class Case(unittest.TestCase):
     def assertFails(self, proc, needle):
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn(needle, proc.stderr)
+
+    def run_verify(self, klt_exit=None):
+        """verify with broker and verifier double (issue #307)."""
+        env = {k: v for k, v in os.environ.items()
+               if k not in ("KLT_ARTIFACT_BROKER", "FAKE_KLT_EXIT",
+                            "FAKE_KLT_LOG")}
+        env["KLT_ARTIFACT_BROKER"] = "http://broker.invalid"
+        env["PATH"] = self.bin + os.pathsep + env["PATH"]
+        env["FAKE_KLT_LOG"] = self.klt_log
+        if klt_exit is not None:
+            env["FAKE_KLT_EXIT"] = str(klt_exit)
+        return subprocess.run(
+            [sys.executable, CHECKER, "verify", "--root", self.root],
+            capture_output=True, text=True, env=env)
+
+    def klt_calls(self):
+        if not os.path.exists(self.klt_log):
+            return []
+        with open(self.klt_log) as fh:
+            return [l for l in fh.read().splitlines() if l]
 
     def test_good_manifest_passes_and_says_schema_only(self):
         proc = self.run_check(manifest(entry(), entry(SHA2, "sim/b.json")))
@@ -112,6 +154,39 @@ class Case(unittest.TestCase):
         self.assertEqual(proc.returncode, 2, proc.stderr)
         self.assertIn("NOT_RUN", proc.stderr)
         self.assertNotIn("PASS (hash", proc.stdout)
+
+    def test_verify_empty_dir_with_broker_and_klt_is_not_run(self):
+        proc = self.run_verify()
+        self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+        self.assertIn("NOT_RUN", proc.stderr)
+        self.assertNotIn("PASS (hash", proc.stdout)
+        self.assertEqual(self.klt_calls(), [])
+        self.assertIn("PASS (schema-only", proc.stdout)
+
+    def test_verify_empty_entries_with_broker_and_klt_is_not_run(self):
+        self.run_check(manifest())
+        proc = self.run_verify()
+        self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+        self.assertIn("NOT_RUN", proc.stderr)
+        self.assertNotIn("PASS (hash", proc.stdout)
+        self.assertEqual(self.klt_calls(), [])
+
+    def test_verify_populated_manifest_passes_via_broker(self):
+        self.run_check(manifest(entry()))
+        proc = self.run_verify()
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("verify PASS (hash-verified via broker)", proc.stdout)
+        calls = self.klt_calls()
+        self.assertEqual(len(calls), 1, calls)
+        self.assertTrue(calls[0].endswith("b-r1.manifest.json"), calls)
+
+    def test_control_verify_mismatch_fails(self):
+        self.run_check(manifest(entry()))
+        proc = self.run_verify(klt_exit=3)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("missing or mismatched", proc.stderr)
+        self.assertNotIn("PASS (hash", proc.stdout)
+        self.assertEqual(len(self.klt_calls()), 1)
 
     def test_committed_manifests_are_clean(self):
         repo = os.path.dirname(TOOLS)

@@ -82,10 +82,39 @@ class Item6ContractViewTest(unittest.TestCase):
                     derive_status(f"- **Status:** {word} (owner ruling)\n"), "ratified"
                 )
 
+    def test_leading_by_default_qualifier_cannot_ratify(self):
+        for text in (
+            "- **Status:** Accepted by default per D0\n",
+            "- **Status:** ACCEPTED BY DEFAULT per D0\n",
+            "- **Status:** Accepted by-default per D0\n",
+            "- **Status:** Accepted (owner ruling)\n  unless overridden by default per D0\n",
+            "- **Status:** Ratified by default per D0\n",
+            "- **Status:** Accepted\nby default per D0\n- **Date:** today\n",
+            "- **Status:** Accepted\n\n  by default per D0\n- **Date:** today\n",
+            "- **Status:** Ratified\n  - terms apply\n    by default per D0\n",
+        ):
+            with self.subTest(text=text):
+                self.assertNotEqual(derive_status(text), "ratified")
+
+    def test_by_default_outside_status_does_not_qualify_it(self):
+        for following in (
+            "- **Date:** today by default\n",
+            " * A sibling applies by default.\n",
+            "# Terms applied by default\n",
+            "\nA separate paragraph applies by default.\n",
+        ):
+            with self.subTest(following=following):
+                text = "- **Status:** Accepted\n" + following
+                self.assertEqual(derive_status(text), "ratified")
+
     def test_absent_empty_or_ambiguous_status_cannot_ratify(self):
         for text in (
             "Accepted",
             "- **Status:**\n- **Date:** today",
+            "- **Status:**\nAccepted practice is to wait for the owner's ruling; nothing is ratified.\n- **Date:** 2026-11-23\n",
+            "- **Status:**\nRatified only after the owner signs off, which has not happened.\n- **Date:** 2026-11-23\n",
+            "- **Status:**\nAccepted\n",
+            "- **Status:**\n  Accepted practice is to wait.\n",
             PROPOSED + "- **Status:** Ratified",
         ):
             with self.subTest(text=text), self.assertRaises(ValueError):

@@ -457,10 +457,11 @@ def main(argv=None):
     ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
     ap.add_argument("--gen-only", action="store_true",
                     help="write vectors + expected + gen report, no sim")
-    ap.add_argument("--skip-mutants", action="store_true",
-                    help="skip both negative-control mutant builds")
-    ap.add_argument("--mutants-only", action="store_true",
-                    help="run only the negative-control mutant builds")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--skip-mutants", action="store_true",
+                      help="skip both negative-control mutant builds")
+    mode.add_argument("--mutants-only", action="store_true",
+                      help="run only the negative-control mutant builds")
     ap.add_argument("--iverilog", default="iverilog")
     ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)
@@ -588,6 +589,8 @@ def main(argv=None):
                     if met else "NOT MET (mutant passed -- harness has no "
                                 "resolution)",
                 )
+        else:
+            report["negative_controls"] = "skipped (--skip-mutants)"
 
         eq_ok = args.mutants_only or \
             report["equivalence"]["status"] == "PASS"
@@ -627,10 +630,12 @@ def main(argv=None):
               f"(measured {gate['measured_clks']} clk <= "
               f"{gate['bound_clks']} clk H03 budget)")
         print(f"hazard: {eq['hazard_check']}")
-    if "negative_controls" in report:
+    if isinstance(report.get("negative_controls"), dict):
         for tag, nc in report["negative_controls"].items():
             print(f"negative control {tag}: {nc['status']} "
                   f"({nc['mismatches']} mismatches)")
+    elif "negative_controls" in report:
+        print(f"negative controls: {report['negative_controls']}")
     print(f"report: {os.path.join(args.outdir, 'compare_report.json')}")
     return 0 if status == "PASS" else 1
 

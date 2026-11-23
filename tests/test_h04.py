@@ -253,6 +253,10 @@ class TestEquivalence(unittest.TestCase):
         self.assertGreaterEqual(gate["bound_clks"], gate["measured_clks"])
         # H03 hazard rule: the bench read-old/write-new self-check is ok
         self.assertEqual(eq["hazard_check"], "ok")
+        self.assertEqual(rep["negative_controls"],
+                         "skipped (--skip-mutants)",
+                         "--skip-mutants must state explicitly that the "
+                         "negative controls did not run")
 
     def test_negative_control_timing_mutant_fails(self):
         if not self.can_run:
@@ -286,6 +290,32 @@ class TestEquivalence(unittest.TestCase):
         # level trajectory (one-frame update shift)
         fm = rep["negative_controls"]["timing"]["first_mismatch"]
         self.assertIn("level", fm["fields"])
+
+
+class TestFlagContract(unittest.TestCase):
+    """Issue #312: the mode pair that suppresses both the equivalence
+    run and the negative controls must be rejected at parse time -- a
+    run that compared zero frames is never a PASS."""
+
+    def test_mutants_only_with_skip_mutants_rejected(self):
+        outdir = tempfile.mkdtemp(prefix="h04_flags_")
+        try:
+            proc = run_tool(COMPARE_TOOL,
+                            ["--outdir", outdir, "--mutants-only",
+                             "--skip-mutants"],
+                            timeout=120)
+            wrote_report = os.path.exists(
+                os.path.join(outdir, "compare_report.json"))
+        finally:
+            shutil.rmtree(outdir, ignore_errors=True)
+        self.assertEqual(proc.returncode, 2,
+                         "argparse must reject --mutants-only together "
+                         "with --skip-mutants (exit 2) before any work "
+                         "runs")
+        self.assertIn("not allowed with argument", proc.stderr)
+        self.assertFalse(wrote_report,
+                         "a rejected invocation must not write "
+                         "compare_report.json")
 
 
 class TestSynthesis(unittest.TestCase):

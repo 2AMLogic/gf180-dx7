@@ -111,6 +111,10 @@ class Item6ContractViewTest(unittest.TestCase):
         for text in (
             "Accepted",
             "- **Status:**\n- **Date:** today",
+            "- **Status:**\nAccepted practice is to wait for the owner's ruling; nothing is ratified.\n- **Date:** 2026-11-23\n",
+            "- **Status:**\nRatified only after the owner signs off, which has not happened.\n- **Date:** 2026-11-23\n",
+            "- **Status:**\nAccepted\n",
+            "- **Status:**\n  Accepted practice is to wait.\n",
             PROPOSED + "- **Status:** Ratified",
         ):
             with self.subTest(text=text), self.assertRaises(ValueError):

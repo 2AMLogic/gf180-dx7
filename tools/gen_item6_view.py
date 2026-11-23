@@ -39,7 +39,9 @@ def derive_status(dr_text: str) -> str:
                 break
         item.append(line)
     bullet = "\n".join(item).removeprefix(STATUS_MARKER)
-    words = bullet.split()
+    # The disposition must sit on the marker line: prose on a continuation
+    # line is qualification, never the disposition itself.
+    words = item[0].removeprefix(STATUS_MARKER).split()
     if not words:
         raise ValueError("DR-0008 must have exactly one nonempty Status bullet")
     disposition = words[0].lower()

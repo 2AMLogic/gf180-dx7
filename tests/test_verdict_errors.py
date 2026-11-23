@@ -121,6 +121,14 @@ sys.stderr.write("Traceback (most recent call last):\\n")
 sys.exit(2)
 """
 
+# "COULD-NOT-RUN:" and no traceback, but exits rc=1: pins the rc==2 assertion
+# independently of the two stderr assertions.
+_RC1_NOT_RUN_DRIVER = """
+import sys
+sys.stderr.write("COULD-NOT-RUN: stub\\n")
+sys.exit(1)
+"""
+
 
 class MissingIverilogContractTest(unittest.TestCase):
     """A missing --iverilog is NOT_RUN (rc=2), never FAIL (rc=1) (issue #311).
@@ -169,6 +177,10 @@ class MissingIverilogContractTest(unittest.TestCase):
         # rc==2 plus COULD-NOT-RUN: must still fail if a Traceback leaks.
         self._assert_stub_fails_check(
             "traceback_rc2.py", _TRACEBACK_RC2_DRIVER)
+
+    def test_contract_control_rc1_driver_fails_the_check(self):
+        # COULD-NOT-RUN: without a Traceback must still fail if rc != 2.
+        self._assert_stub_fails_check("rc1_not_run.py", _RC1_NOT_RUN_DRIVER)
 
 
 if __name__ == "__main__":

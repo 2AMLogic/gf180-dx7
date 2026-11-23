@@ -19,7 +19,10 @@ Coverage:
   - the mock yosys received the expected six-step script: read_verilog
     [-D<probe>_STRIP_OBSERVABILITY] <rtl>; hierarchy -check -top <top>;
     synth -top <top>; [ltp]; dfflibmap; abc; stat -liberty;
-  - PdkNotFound still exits 2 with a COULD-NOT-RUN message.
+  - PdkNotFound still exits 2 with a COULD-NOT-RUN message;
+  - a FULL transcript with absent chip-area and/or sequential-area
+    lines (issue #295): summary printed with n/a, null areas in the
+    report, gates.full FAIL, exit 1 -- never a TypeError from :.1f.
 
 Live negative controls (must demonstrably fail the check they target):
   - a strip run that fails to reduce flops yields
@@ -108,6 +111,24 @@ Longest topological path in top (length={MOCK_LTP_DEPTH}):
 STRIP_TRANSCRIPT = """Executing MEMORY_MAP pass (converting memories to logic and gates)
 strip build: every output tied off; all state removed
 """
+
+# Issue #295: a FULL transcript can legitimately carry no
+# 'Chip area for module' line and/or no sequential-elements line (the
+# committed strip logs are a real yosys transcript with no area line at
+# all), so chip_area_um2 / seq_area_um2 reach _print_summary as None.
+CHIP_AREA_LINE = f"   Chip area for module '\\top': {MOCK_AREA}\n"
+SEQ_AREA_LINE = (f"     of which used for sequential elements: "
+                 f"{MOCK_SEQ_AREA} (40.00%)\n")
+
+
+def full_transcript_without(chip=False, seq=False):
+    """FULL_TRANSCRIPT minus the chosen area line(s)."""
+    t = FULL_TRANSCRIPT
+    if chip:
+        t = t.replace(CHIP_AREA_LINE, "")
+    if seq:
+        t = t.replace(SEQ_AREA_LINE, "")
+    return t
 
 # Hierarchical transcript (module names generic): the #95 guard must
 # refuse it from every probe's parse_stat.
@@ -504,6 +525,53 @@ class ProbeSynthMockTest(unittest.TestCase):
                 mod = TOOLS_BY_NAME[name]
                 with self.assertRaises(mod.CheckFailure):
                     mod.parse_stat(HIERARCHICAL_TRANSCRIPT)
+
+    # ---- issue #295: absent area lines in a FULL run ----
+
+    def test_full_run_absent_area_lines_exits_1_not_typeerror(self):
+        # A full run whose transcript has no 'Chip area for module' line
+        # and/or no sequential-elements line maps no area: the gate FAILs,
+        # the report keeps null areas, and main() must return the
+        # documented 1 (gate failure) with the summary printed -- not
+        # raise TypeError formatting None with :.1f (issue #295).
+        cases = {
+            "chip-absent": (True, False, None, MOCK_SEQ_AREA),
+            "seq-absent": (False, True, MOCK_AREA, None),
+            "both-absent": (True, True, None, None),
+        }
+        for name in TOOLS_BY_NAME:
+            for case, (drop_chip, drop_seq, want_chip,
+                       want_seq) in cases.items():
+                with self.subTest(probe=name, case=case):
+                    self.set_transcripts(
+                        full=full_transcript_without(chip=drop_chip,
+                                                     seq=drop_seq))
+                    rc, out, _err = self.run_main(
+                        TOOLS_BY_NAME[name], self.base_args() + ["--mode",
+                                                                 "full"])
+                    self.assertEqual(rc, 1, f"{name}/{case}: {out}")
+                    self.assertIn("full mapped:", out)
+                    self.assertIn("report:", out)
+                    rep = self.report()
+                    self.assertEqual(rep["gates"]["full"]["status"], "FAIL")
+                    self.assertEqual(rep["status"], "FAIL")
+                    self.assertEqual(rep["runs"]["full"]["chip_area_um2"],
+                                     want_chip)
+                    self.assertEqual(rep["runs"]["full"]["seq_area_um2"],
+                                     want_seq)
+
+    def test_full_run_present_area_summary_text_unchanged(self):
+        # With both area lines present the summary text is byte-identical
+        # to the pre-#291 'X.X um2 (seq Y.Y)' form (issue #295).
+        for name in TOOLS_BY_NAME:
+            with self.subTest(probe=name):
+                self.set_transcripts()
+                _rc, out, _err = self.run_main(
+                    TOOLS_BY_NAME[name], self.base_args() + ["--mode",
+                                                             "full"])
+                self.assertIn(
+                    f"chip {MOCK_AREA:.1f} um2 "
+                    f"(seq {MOCK_SEQ_AREA:.1f})", out)
 
 
 if __name__ == "__main__":

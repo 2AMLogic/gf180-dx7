@@ -40,6 +40,14 @@ def parse_ltp(log):
             "loop_warnings": loops}
 
 
+def fmt_area(v):
+    """None-safe area formatting for the stdout summaries: 'n/a' when the
+    transcript carried no such line (issue #295 -- a full run that maps
+    nothing must print its summary and exit 1, not raise TypeError from
+    :.1f on None). Report values are untouched; only stdout text."""
+    return "n/a" if v is None else f"{v:.1f}"
+
+
 def run_probe_yosys(yosys, repo_root, rtl_rel, top, strip_define, liberty,
                     strip, ltp, log_path, check_failure):
     """The four probes' one yosys script: read_verilog (with

@@ -105,6 +105,22 @@ from verdict_errors import CouldNotRun
 raise CouldNotRun("iverilog binary not found: stub")
 """
 
+# rc=2 but no "COULD-NOT-RUN:" line (e.g. an argparse-style usage exit): pins
+# the stderr-line assertion independently of the rc assertion.
+_SILENT_RC2_DRIVER = """
+import sys
+sys.exit(2)
+"""
+
+# rc=2 and the "COULD-NOT-RUN:" line, but a traceback leaks too: pins the
+# no-Traceback assertion independently of the other two.
+_TRACEBACK_RC2_DRIVER = """
+import sys
+sys.stderr.write("COULD-NOT-RUN: stub\\n")
+sys.stderr.write("Traceback (most recent call last):\\n")
+sys.exit(2)
+"""
+
 
 class MissingIverilogContractTest(unittest.TestCase):
     """A missing --iverilog is NOT_RUN (rc=2), never FAIL (rc=1) (issue #311).
@@ -137,6 +153,22 @@ class MissingIverilogContractTest(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 self._assert_not_run([
                     sys.executable, "-I", str(stub), str(REPO / "tools")])
+
+    def _assert_stub_fails_check(self, name, source):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / name
+            stub.write_text(source)
+            with self.assertRaises(AssertionError):
+                self._assert_not_run([sys.executable, "-I", str(stub)])
+
+    def test_contract_control_silent_rc2_driver_fails_the_check(self):
+        # rc==2 alone must not pass: COULD-NOT-RUN: must be on stderr.
+        self._assert_stub_fails_check("silent_rc2.py", _SILENT_RC2_DRIVER)
+
+    def test_contract_control_traceback_rc2_driver_fails_the_check(self):
+        # rc==2 plus COULD-NOT-RUN: must still fail if a Traceback leaks.
+        self._assert_stub_fails_check(
+            "traceback_rc2.py", _TRACEBACK_RC2_DRIVER)
 
 
 if __name__ == "__main__":

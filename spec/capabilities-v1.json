@@ -360,16 +360,84 @@
     {
       "id": "rtl-exact",
       "claim": "Integrated RTL is sample-exact (bit-exact) with the frozen integer model end to end at 48 kHz (plan section 7).",
-      "check": null,
-      "engine": "planned: integrated RTL exactness check; no registered check may stamp this node yet",
-      "prereqs": ["rtl-core"],
-      "covered_inputs": [],
-      "required_negative_controls": [],
-      "exclusions": [
-        "Declared, not evidenced: stays NO_VERDICT until integration lands and is stamped",
-        "No FPGA or silicon execution claim"
+      "check": "rtl-exact-v1",
+      "engine": [
+        "python3",
+        "tools/functional_verification.py"
       ],
-      "skip_policy": "pass"
+      "prereqs": ["rtl-core"],
+      "covered_inputs": [
+        "corpus/dev32.json",
+        "docs/decision-records/0012-exp-term-width-core-refreeze.md",
+        "evidence/h07-core/stress/manifest.json",
+        "evidence/h07-core/stress/stress-burst.seg0.i32",
+        "evidence/h07-core/stress/stress-patchcommit.seg0.i32",
+        "evidence/h07-core/stress/stress-reset.seg0.i32",
+        "evidence/h07-core/stress/stress-reset.seg1.i32",
+        "evidence/h07-core/stress/stress-sum16.seg0.i32",
+        "evidence/t1-functional/report.json",
+        "evidence/t1-functional/request.json",
+        "reference/release/manifest.json",
+        "reference/release/vectors/alg4-fb0.f32",
+        "reference/release/vectors/alg4-fb3.f32",
+        "reference/release/vectors/alg4-fb7.f32",
+        "reference/release/vectors/alg6-fb0.f32",
+        "reference/release/vectors/alg6-fb3.f32",
+        "reference/release/vectors/alg6-fb7.f32",
+        "reference/release/vectors/bd-coarse0.f32",
+        "reference/release/vectors/bd-coarse31.f32",
+        "reference/release/vectors/bd-detune0.f32",
+        "reference/release/vectors/bd-detune14.f32",
+        "reference/release/vectors/codec-name-a.f32",
+        "reference/release/vectors/codec-name-b.f32",
+        "reference/release/vectors/dir-base.f32",
+        "reference/release/vectors/ev-modwheel-0.f32",
+        "reference/release/vectors/ev-modwheel-127.f32",
+        "reference/release/vectors/ev-pitch-bend-center.f32",
+        "reference/release/vectors/ev-pitch-bend-down.f32",
+        "reference/release/vectors/ev-pitch-bend-up.f32",
+        "reference/release/vectors/osc-fixed-carrier.f32",
+        "reference/tables/alg_table.hex",
+        "reference/tables/freqlut_table.hex",
+        "reference/tables/sinexp_table.hex",
+        "reference/tables/sinlog_table.hex",
+        "rtl/alg_router.v",
+        "rtl/dx7_core.v",
+        "rtl/env_unit.v",
+        "rtl/tb_dx7_core.v",
+        "spec/compatibility-registry-v1.json",
+        "src/gf180_dx7/__init__.py",
+        "src/gf180_dx7/host.py",
+        "src/gf180_dx7/model/__init__.py",
+        "src/gf180_dx7/model/algorithm.py",
+        "src/gf180_dx7/model/envelope.py",
+        "src/gf180_dx7/model/integrated.py",
+        "src/gf180_dx7/model/operator.py",
+        "src/gf180_dx7/model/pitch.py",
+        "src/gf180_dx7/model/poly.py",
+        "src/gf180_dx7/model/tables.py",
+        "src/gf180_dx7/sysex.py"
+      ],
+      "required_negative_controls": [
+        {
+          "id": "h07-glitch-mutant-detected",
+          "detects": "the H07_MUTATE_GLITCH build reaches the sample comparator on stress-sum16 and fails it with a measured sample divergence (committed: dump index 849, golden 23300, actual 23316); a cocotb failed without a sample mismatch, a surviving mutant, or a missing case does not count as detection",
+          "command": ["python3", "tools/functional_verification.py", "--control", "H07_MUTATE_GLITCH"]
+        },
+        {
+          "id": "h07-sum-order-mutant-detected",
+          "detects": "the H07_MUTATE_SUM_ORDER build reaches the sample comparator on stress-sum16 and fails it with a measured sample divergence (committed: dump index 397, golden 2, actual 1024) under the same sample-mismatch requirement",
+          "command": ["python3", "tools/functional_verification.py", "--control", "H07_MUTATE_SUM_ORDER"]
+        }
+      ],
+      "exclusions": [
+        "Claim 1 only: RTL-vs-frozen-model exactness in simulation; never model-vs-reference agreement (claim 2), original-DX7 fidelity, or a musical claim",
+        "Simulation only (Icarus Verilog + vvp through klt functional-verification with the cocotb driver); no synthesis, timing, FPGA, or silicon claim",
+        "Partial coverage by construction: the 11 dev cases whose events pass block 75 are never graded in this lane and stay NOT_RUN (never passes) with their reason in the stamp, so the local verdict reads NOT_RUN under skip_policy not_run while they remain ungraded; stress-burst compares only silence",
+        "A missing tool (klt, cocotb, iverilog) or a selected case that did not execute reads NOT_RUN, never PASS; a measured mismatch stays FAIL even when other cases were ungraded, and a stale pin keeps the driver's STALE diagnosis",
+        "A mismatch or a surviving mutant is a bounded finding against the integrated core; stimulus, the graded set and thresholds are never retuned here"
+      ],
+      "skip_policy": "not_run"
     },
     {
       "id": "fpga",

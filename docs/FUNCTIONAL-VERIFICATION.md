@@ -14,6 +14,37 @@ report; #202 added the item 5 citation. With it, klt grades the citation
 `detail.missing_kinds: ["sta"]`, and `t1_met_count` stays `2`. See
 [`signoff/README.md`](../signoff/README.md) § "Item 5".
 
+## Capability registration (`rtl-exact`, issue #276)
+
+`python3 tools/functional_verification.py` in check mode is the registered
+`rtl-exact-v1` capability check (`src/gf180_dx7/capabilities.py`). It is
+read-only: it never rewrites `evidence/t1-functional/report.json`, whose
+sha256 is bound into the stamp as the baseline. Because 11 dev cases are
+never graded in this lane (below), a run where every selected window agrees
+is a **guarded skip**, not a pass: the check exits 0, prints the token
+`GUARDED_SKIP`, and `python3 tools/compile_capabilities.py --stamp
+rtl-exact` records **NOT_RUN** (`skip_policy: not_run`). Verdict
+composition, per case:
+
+| situation | reads |
+| --- | --- |
+| 23 selected windows bit-exact, 11 dev cases ungraded | NOT_RUN (guarded skip; exit 0 + token) |
+| a selected case failed at the comparator | FAIL, with the first divergence (dump index, golden, actual) |
+| a selected case did not execute (absent, skipped, or the driver's "could not run") | NOT_RUN, naming the case — zero simulator skips cannot establish coverage |
+| `klt`, cocotb or `iverilog` missing | NOT_RUN (exit 2 + token) |
+| the committed report names other RTL than the tree | STALE (exit 3; recorded FAIL, diagnosis kept in the stamp tail) |
+
+A measured mismatch outranks unexecuted or ungraded work; a stale pin
+outranks both. The check prints its per-case coverage record last — one
+token per selected case (`id:verdict:checked`, the first divergence on
+FAIL), the ungraded ids and their reason — so the stamp's 2,000-character
+output tail in `evidence/capabilities/rtl-exact.json` retains all of it
+(`tests/test_capabilities.py` recovers it with `parse_coverage`). The two
+controls below are the node's required negative controls; each counts as
+detected only when the selected case **fails at the sample comparator**
+with a measured divergence — a cocotb `failed` alone also covers setup
+failures, and a surviving mutant or a missing case is never a detection.
+
 ## Re-run it (cold checkout)
 
 ```
@@ -33,9 +64,9 @@ about 3.5 min.
 
 | status | exit | meaning |
 | --- | --- | --- |
-| PASS | 0 | re-run matches the committed report; every test passed |
-| FAIL | 1 | a verdict, count, per-case output hash or recorded environment differs, or a test failed |
-| NOT_RUN / BLOCKED | 2 | `klt`, `cocotb`, `iverilog` or the committed report is missing; never reported as a pass |
+| PASS | 0 | re-run matches the committed report; every selected test passed (still a guarded skip for the capability stamp while dev cases remain ungraded — see above) |
+| FAIL | 1 | a verdict, count, per-case output hash or recorded environment differs, or a selected test failed at the comparator (first divergence named) |
+| NOT_RUN / BLOCKED | 2 | `klt`, `cocotb`, `iverilog` or the committed report is missing, or a selected case did not execute; never reported as a pass |
 | STALE | 3 | the committed report names RTL hashes different from the tree |
 
 Wall-clock fields and absolute paths are excluded from the comparison.
@@ -76,7 +107,9 @@ pinned version and the recorded version. When it fails:
   count, audible-sample count and sha256 of the captured PCM.
 - `control-H07_MUTATE_GLITCH.json`, `control-H07_MUTATE_SUM_ORDER.json` —
   the same request against the mutant builds, restricted to `stress-sum16`;
-  both report FAIL for it (first mismatch localized).
+  both report FAIL for it at the sample comparator (first mismatch
+  localized: dump index 849, 23300 vs 23316 for the glitch build; index
+  397, 2 vs 1024 for the sum-order build).
 
 ## How it is built
 

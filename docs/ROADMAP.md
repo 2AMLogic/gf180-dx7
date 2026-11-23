@@ -45,10 +45,15 @@ E3 (#3). Done and evidenced in the tree:
 **Capability DAG (`docs/CAPABILITIES.md`): 1 PASS, 1 STALE, 13 BLOCKED.**
 This understates the work above for two mechanical reasons: `reference-pin`
 went STALE when `tools/verify_reference.py` changed (#170), which blocks
-every node downstream of it; and eight nodes (`numeric-profile`,
-`fixed-model`, `rtl-core`, `rtl-exact`, `registry`, `fpga`, `gf180`,
-`instrument`) still declare a `planned:` check with nothing registered in
-`src/gf180_dx7/capabilities.py`.
+every node downstream of it through `oracle-identity` (NOT_RUN where the
+pinned oracle binary is absent); and four nodes (`registry`, `fpga`,
+`gf180`, `instrument`) still declare a `planned:` check with nothing
+registered in `src/gf180_dx7/capabilities.py`. As of #274–#276 the three
+evidence nodes behind "golden functionality locked" are registered and
+stamped with local verdicts that stay BLOCKED on that chain: `fixed-model`
+NOT_RUN (oracle absent), `rtl-core` PASS (four module benches), `rtl-exact`
+NOT_RUN (23 windows bit-exact, 11 dev cases ungraded in the Icarus lane —
+a partial run is never a pass).
 
 **Governing decision.** DR-0013 (fidelity first, area second): the 16-note
 core stays the reference design, and H10's place, CTS and route rows wait
@@ -87,12 +92,18 @@ Every open issue is held; these have no issue yet and can start today.
   PASS, or a guarded NOT_RUN where the pinned oracle binary is absent.
 - **Re-stamp `corpus-dev32`** (STALE on `tools/validate_dev32.py`). Needs the
   pinned archive; `tools/fetch_alltheweb.sh` takes its URL from the caller.
-- **Register checks for `fixed-model`, `rtl-core`, `rtl-exact` and
-  `registry`**, one PR per node, after Now 2 sets the pattern. Candidates
-  already in the tree: `tools/n08_verify_release.py`, the `h0x_compare.py`
-  benches, `tools/functional_verification.py`, `tools/check_registry.py`.
-  Done per node when the spec names a registered command with covered
-  inputs and executed negative controls.
+- **Register a check for the `registry` node**, the last of the four in
+  #273 (`fixed-model`, `rtl-core` and `rtl-exact` are registered).
+  Candidate already in the tree: `tools/check_registry.py`. It waits on
+  `traces`, which waits on the `oracle-identity` chain (`reference-pin`
+  STALE → `oracle-identity` NOT_RUN → `renderer` → `traces`), so a stamp
+  can show only a local verdict until Now 1 lands. Done when the spec
+  names a registered command with covered inputs and executed negative
+  controls. Any edit to the registry or to a node's covered inputs stales
+  its stamp: re-stamp the affected nodes in the same PR (the `rtl-exact`
+  stamp is about 40 minutes of Icarus time: two mutant controls plus the
+  23-case run), and re-stamp `reference-pin` once on an R01-equipped host
+  (#281) rather than overwriting its PASS with an environment NOT_RUN.
 - **#103 then #101 and the H10 re-run**, once a host with at least 12 GB for
   the pinned ORFS image is available. Done when `tools/exp_netlist_census.py`
   reports a nonzero exp() datapath on the DR-0012 pin, the STALE banner

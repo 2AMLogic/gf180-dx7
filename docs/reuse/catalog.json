@@ -1449,13 +1449,13 @@
   },
   {
    "path": "tests/test_capabilities.py",
-   "sha256": "865d0c90121925a7486ad35e660d6462312b3ec033a346309f8927161f3ad730",
-   "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage); re-pinned after the issue #232 revision (skip-token declaration controls, anchored skipped= regex, HarnessNotRun regression, fabricated-flag refusal); re-pinned after the issue #274 revision (fixed-model-challenge-v1 registration coverage, the TestFixedModelControl mutation control, and the absent-oracle / zero-skip-summary token-path tests); re-pinned after the issue #275 revision (rtl-core-v1 registration coverage, the rtl-core node and its negative-control tests)"
+   "sha256": "9cd5ae5eaaedfc515b362bc7a9b12268f742f4617ee42c8abcfbc6238aba2974",
+   "reason": "locally authored C01 capability-DAG test suite (issue #45); tests this repo's fixed-flaw semantics, no upstream test bytes adopted. Re-pinned after the issue #206 guarded-skip evidence revision (check_output / skip-count / skip_policy validator coverage); re-pinned after the issue #232 revision (skip-token declaration controls, anchored skipped= regex, HarnessNotRun regression, fabricated-flag refusal); re-pinned after the issue #274 revision (fixed-model-challenge-v1 registration coverage, the TestFixedModelControl mutation control, and the absent-oracle / zero-skip-summary token-path tests); re-pinned after the issue #275 revision (rtl-core-v1 registration coverage, the rtl-core node and its negative-control tests). Issue #276 adds tests for rtl-exact-v1 verdicts, recovery of per-case coverage from the stamp, and detection of both H07 mutants."
   },
   {
    "path": "spec/capabilities-v1.json",
-   "sha256": "025e87e3523f7e1bd4cc32ec7166948486470583b9e81752a3eb158044a683ae",
-   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data. Re-pinned after the issue #201 revision (numeric-profile-v1 check registered, N01 node stamped); re-pinned after the issue #206 revision (skip_policy declared on every node); re-pinned after the issue #232 revision (note states the guarded-skip declaration contract); re-pinned after the issue #274 revision (fixed-model node registered: fixed-model-challenge-v1 check, GUARDED_SKIP skip_policy not_run, model/fixture/vector/comparison/pin coverage, one-sample-mutation control); re-pinned after the issue #275 revision (rtl-core node registered: rtl-core-v1 check, GUARDED_SKIP skip_policy not_run, four-bench coverage)"
+   "sha256": "2c23121cd9212edab17a65c6a75f50b011cbbd52997d4fc32114d9dfcc17ae20",
+   "reason": "locally authored C01 seeded claim DAG (issue #45); our claim nodes, checks and controls, no upstream data. Re-pinned after the issue #201 revision (numeric-profile-v1 check registered, N01 node stamped); re-pinned after the issue #206 revision (skip_policy declared on every node); re-pinned after the issue #232 revision (note states the guarded-skip declaration contract); re-pinned after the issue #274 revision (fixed-model node registered: fixed-model-challenge-v1 check, GUARDED_SKIP skip_policy not_run, model/fixture/vector/comparison/pin coverage, one-sample-mutation control); re-pinned after the issue #275 revision (rtl-core node registered: rtl-core-v1 check, GUARDED_SKIP skip_policy not_run, four-bench coverage). Issue #276 registers the rtl-exact node with its DR-0012 comparison inputs, two required H07 mutant controls and a not_run skip policy."
   },
   {
    "path": "src/gf180_dx7/model/__init__.py",
@@ -1474,8 +1474,8 @@
   },
   {
    "path": "src/gf180_dx7/capabilities.py",
-   "sha256": "c2abb20c768208a70bc5050068d33b95cdfba9a01502069457edb6810ab50523",
-   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md. Re-pinned after the issue #201 revision (numeric-profile-v1 check registration); re-pinned after the issue #206 revision (guarded-skip record validation: control skip fields, skip_policy, NOT_RUN-with-exit-0 rule); re-pinned after the issue #232 revision (Check.skip_token required declaration, fabricated-skip-flag refusal); re-pinned after the issue #274 revision (fixed-model-challenge-v1 registered with skip_token GUARDED_SKIP over the n08 verify+challenge composition); re-pinned after the issue #275 revision (rtl-core-v1 registered with skip_token GUARDED_SKIP over tools/rtl_core_check.py and the four H01/H04/H05/H06 comparison drivers)"
+   "sha256": "628d2eba0894638ffb6f3b8bbaf1c97be427051ebb683d76a9c8ab3fb81404f6",
+   "reason": "locally authored C01 capability state machine (issue #45, DR-0004); torchsynth compiler used as pattern reference only \u2014 no upstream bytes; fixes per docs/REUSE-RULINGS.md. Re-pinned after the issue #201 revision (numeric-profile-v1 check registration); re-pinned after the issue #206 revision (guarded-skip record validation: control skip fields, skip_policy, NOT_RUN-with-exit-0 rule); re-pinned after the issue #232 revision (Check.skip_token required declaration, fabricated-skip-flag refusal); re-pinned after the issue #274 revision (fixed-model-challenge-v1 registered with skip_token GUARDED_SKIP over the n08 verify+challenge composition); re-pinned after the issue #275 revision (rtl-core-v1 registered with skip_token GUARDED_SKIP over tools/rtl_core_check.py and the four H01/H04/H05/H06 comparison drivers). Issue #276 registers rtl-exact-v1 with the read-only functional verification command, its tool dependencies and the GUARDED_SKIP token."
   },
   {
    "path": "tools/compile_capabilities.py",
@@ -2209,8 +2209,8 @@
   },
   {
    "path": "tools/functional_verification.py",
-   "sha256": "f0ed3a06afd664dcf173a2bc12be71698deccdf672620e6d958bfd629790252f",
-   "reason": "locally authored runner/checker for the committed klt functional-verification report (issue #150): normalized report-vs-rerun comparison with PASS/FAIL/STALE/NOT_RUN statuses, mutant negative controls; no upstream source, no upstream bytes, stdlib only"
+   "sha256": "b51b6627d8acf6252b84dc2e155dd97fc66f83aa60d790bf7d401045d7434c84",
+   "reason": "locally authored runner/checker for the committed klt functional-verification report (issue #150): normalized report-vs-rerun comparison with PASS/FAIL/STALE/NOT_RUN statuses, mutant negative controls; no upstream source, no upstream bytes, stdlib only; registered as the rtl-exact-v1 capability check with per-case verdict composition (measured mismatch FAIL, unexecuted selected case NOT_RUN, stale pin STALE), the GUARDED_SKIP token for partial runs, a tail-recoverable coverage record and sample-mismatch-required control verdicts (issue #276, catalog-only provenance audited)"
   },
   {
    "path": "tools/fv_cocotb_dx7_core.py",

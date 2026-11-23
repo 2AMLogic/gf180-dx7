@@ -29,14 +29,21 @@ zero-skip-summary paths. Issue #275 adds: the rtl-core registration (four
 bench drivers composed by tools/rtl_core_check.py, GUARDED_SKIP token,
 H05 operator-order control), its verdict composition (a measured mismatch
 outranks a skip), and the missing-simulator path through the registered
-command.
+command. Issue #276 adds: the rtl-exact registration (the existing
+read-only comparison path in tools/functional_verification.py, GUARDED_SKIP
+token, two H07 mutant controls that count only a measured sample
+divergence), its verdict composition (a measured mismatch is FAIL and a
+stale pin STALE even when cases stay ungraded; a selected case that did not
+execute is NOT_RUN naming it), the per-case coverage record recovered from
+the stamp's bounded output tail, and the missing-tool path through the
+registered command.
 
 State-machine tests never execute evidence commands. Only --stamp cases run
 commands, and those run only `python3 -c ...` against a temp root with a
 test-local check registry (the production CHECKS registry is patched, never
-mutated). The rtl-core missing-simulator case runs the real registered
-command with a nonexistent iverilog, which every bench driver guards into
-an exit-2 COULD-NOT-RUN before any simulation starts.
+mutated). The rtl-core missing-simulator case and the rtl-exact missing-tool
+case run the real registered commands, which guard before any simulation
+starts.
 """
 
 from __future__ import annotations
@@ -46,6 +53,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -586,6 +594,40 @@ class SkipPolicyTests(FixtureCase):
         results = self.evaluate(node)
         self.assertEqual(results["alpha"].state, cap.NOT_RUN)
 
+    def test_declared_token_never_turns_a_failing_exit_into_not_run(self):
+        # Issue #276: a check that guard-skipped some cases AND measured a
+        # mismatch exits nonzero with the token present; FAIL outranks the
+        # skip. The stamp maps every failing, non-2 exit to FAIL.
+        node = _node(skip_policy="not_run")
+        self.install_registry(node, skip_tokens={"fixture-check": "GUARDED_SKIP"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        for exit_code in (1, 3):
+            self.assertEqual(self.tool._result_for_exit(exit_code), cap.FAIL)
+            path = self.write_record(node, result="FAIL", exit_code=exit_code)
+            record = json.loads(path.read_text())
+            record["check_skip_reported"] = True
+            path.write_text(json.dumps(record, indent=2))
+            result = self.evaluate(node)["alpha"]
+            self.assertEqual((result.local_state, result.state), (cap.FAIL, cap.FAIL))
+
+    def test_stale_pin_exit_is_never_recorded_as_not_run_or_pass(self):
+        # The FV driver's STALE exit (3) is a failing exit: a record that
+        # tried to file it as NOT_RUN (or PASS) is refused, never a verdict.
+        node = _node(skip_policy="not_run")
+        self.install_registry(node, skip_tokens={"fixture-check": "GUARDED_SKIP"})
+        self.write_input("inputs/a.txt", b"payload\n")
+        for result, skip in (("NOT_RUN", True), ("NOT_RUN", False), ("PASS", False)):
+            path = self.write_record(node, result=result, exit_code=3)
+            record = json.loads(path.read_text())
+            if skip:
+                record["check_skip_reported"] = True
+            path.write_text(json.dumps(record, indent=2))
+            refused = self.evaluate(node)["alpha"]
+            self.assertEqual((refused.local_state, refused.state),
+                             (cap.NO_VERDICT, cap.NO_VERDICT))
+            self.assertIn("refused: unusable evidence record",
+                          " ".join(refused.reasons))
+
 
 class SkipTokenDeclarationTests(FixtureCase):
     """Issue #232: guarded-skip detection is declared in the registry.
@@ -1036,6 +1078,7 @@ class RegistryBoundaryTests(unittest.TestCase):
                 "numeric-profile-v1": "NOT_RUN",
                 "fixed-model-challenge-v1": "GUARDED_SKIP",
                 "rtl-core-v1": "GUARDED_SKIP",
+                "rtl-exact-v1": "GUARDED_SKIP",
             },
         )
 
@@ -1380,6 +1423,689 @@ class RtlCoreCheckTests(unittest.TestCase):
             self.assertIn(f"rtl-core {bench_id} ", combined)
             self.assertIn("NOT_RUN reason=COULD-NOT-RUN", combined)
         self.assertIn("rtl-core verdict: NOT_RUN", combined)
+
+
+def _fv_module():
+    spec = importlib.util.spec_from_file_location(
+        "functional_verification", REPO / "tools" / "functional_verification.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class RtlExactCheckTests(unittest.TestCase):
+    """Issue #276: the rtl-exact registration over the existing read-only
+    comparison path (tools/functional_verification.py check mode).
+
+    A partial run -- 23 windows exact, 11 dev cases ungraded -- is a
+    guarded skip: the declared token is emitted, the check exits 0, and
+    the stamp records NOT_RUN under skip_policy not_run.  A measured
+    mismatch is FAIL and a stale pin STALE whatever else did not run; a
+    selected case that did not execute is NOT_RUN naming it.  The controls
+    count only a measured sample divergence, never a cocotb `failed` by
+    itself.  The per-case coverage record must stay recoverable from the
+    stamp's bounded 2,000-character output tail.
+    """
+
+    # evidence/t1-functional/report.json as committed at 69f0464 and named
+    # by the issue; the registration was stamped against exactly these
+    # bytes and the read-only check must never rewrite them.
+    BASELINE_REPORT_SHA256 = (
+        "724f1dbeff16d182bbf772dde3c6c7a7f6d13d8cc9d2281d03a7db1e1a379851"
+    )
+    STAMP = REPO / "evidence" / "capabilities" / "rtl-exact.json"
+    GLITCH = (
+        "stress-sum16: RTL != frozen model; first mismatches "
+        "[{'index': 849, 'golden': 23300, 'actual': 23316, "
+        "'block': 11, 'sample': 17}] overrun=0 overflow=0\nassert False"
+    )
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fv = _fv_module()
+        cls.tool = _tool_module()
+        cls.committed = json.loads(
+            (REPO / "evidence" / "t1-functional" / "report.json").read_text()
+        )
+        cls.selected, cls.ungraded = cls.fv.lane_cases()
+        cls.hashes = cls.fv.rtl_hashes()
+
+    def _fresh(self, **changes):
+        """A deep copy of the committed report standing in for a fresh
+        run: `drop` removes tests by name, `fail` maps a test name to the
+        error_message of a failed test, `skip` maps a test name to a
+        status that is neither passed nor failed."""
+        fresh = json.loads(json.dumps(self.committed))
+        dropped = set(changes.get("drop", ()))
+        fresh["tests"] = [t for t in fresh["tests"] if t["name"] not in dropped]
+        for name, message in changes.get("fail", {}).items():
+            test = next(t for t in fresh["tests"] if t["name"] == name)
+            test["status"] = "failed"
+            test["error_message"] = message
+        for name, status in changes.get("skip", {}).items():
+            test = next(t for t in fresh["tests"] if t["name"] == name)
+            test["status"] = status
+        bad = [t["name"] for t in fresh["tests"] if t["status"] != "passed"]
+        fresh["status"] = "pass" if not bad else "fail"
+        fresh["failed_count"] = len(bad)
+        fresh["passed_count"] = len(fresh["tests"]) - len(bad)
+        fresh["test_count"] = len(fresh["tests"])
+        return fresh
+
+    def _verdict(self, fresh, hashes=None):
+        return self.fv.check_verdict(
+            self.committed, fresh, hashes or self.hashes, self.selected
+        )
+
+    def _committed_counts(self):
+        return {
+            cid: row["checked_samples"]
+            for cid, row in self.committed["provenance"]["cases"].items()
+        }
+
+    def _record_text(self, status, rows, note):
+        lines = self.fv.coverage_lines(
+            status, rows, self.ungraded,
+            self.committed["provenance"]["not_graded"]["reason"],
+        )
+        return "\n".join(lines + [f"GUARDED_SKIP: {note}", status])
+
+    def test_registration_matches_registry(self):
+        nodes = {n["id"]: n for n in cap.load_graph(REPO / GRAPH_PATH)}
+        node = nodes["rtl-exact"]
+        self.assertEqual(node["check"], "rtl-exact-v1")
+        check = cap.CHECKS[node["check"]]
+        # the existing read-only comparison path, exactly as registered
+        self.assertEqual(
+            node["engine"], ["python3", "tools/functional_verification.py"]
+        )
+        self.assertEqual(list(check.command), node["engine"])
+        self.assertNotIn("--write", check.command)
+        self.assertEqual(node["prereqs"], ["rtl-core"])
+        self.assertEqual(node["skip_policy"], "not_run")
+        self.assertEqual(check.skip_token, self.fv.SKIP_TOKEN)
+        for tool in (
+            "tools/functional_verification.py",
+            "tools/fv_cocotb_dx7_core.py",
+            "tools/h07_compare.py",
+            "tools/host_frozen_int.py",
+            "tools/n08_build_release.py",
+            "tools/registry_smoke.py",
+            "tools/sha256_helpers.py",
+            "tools/verdict_errors.py",
+        ):
+            self.assertIn(tool, check.inputs)
+        covered = set(node["covered_inputs"])
+        for pin in (
+            "docs/decision-records/0012-exp-term-width-core-refreeze.md",
+            "evidence/t1-functional/request.json",
+            "evidence/t1-functional/report.json",
+            "rtl/dx7_core.v",
+            "rtl/env_unit.v",
+            "rtl/alg_router.v",
+            "rtl/tb_dx7_core.v",
+            "reference/release/manifest.json",
+            "reference/tables/alg_table.hex",
+            "reference/tables/freqlut_table.hex",
+            "reference/tables/sinexp_table.hex",
+            "reference/tables/sinlog_table.hex",
+            "spec/compatibility-registry-v1.json",
+            "src/gf180_dx7/sysex.py",
+        ):
+            self.assertIn(pin, covered)
+        # every model module the frozen stress golden is pinned against
+        for module in sorted((REPO / "src" / "gf180_dx7" / "model").glob("*.py")):
+            self.assertIn(module.relative_to(REPO).as_posix(), covered)
+        # exactly the graded dev vectors, and every frozen stress segment
+        dev = [c for c in self.selected if not c.startswith("stress-")]
+        self.assertEqual(
+            {p for p in covered if p.startswith("reference/release/vectors/")},
+            {f"reference/release/vectors/{c}.f32" for c in dev},
+        )
+        stress = REPO / "evidence" / "h07-core" / "stress"
+        self.assertEqual(
+            {p for p in covered if p.startswith("evidence/h07-core/stress/")},
+            {p.relative_to(REPO).as_posix() for p in sorted(stress.iterdir())},
+        )
+        controls = {
+            c["id"]: c["command"] for c in node["required_negative_controls"]
+        }
+        self.assertEqual(
+            controls,
+            {
+                "h07-glitch-mutant-detected": [
+                    "python3",
+                    "tools/functional_verification.py",
+                    "--control",
+                    "H07_MUTATE_GLITCH",
+                ],
+                "h07-sum-order-mutant-detected": [
+                    "python3",
+                    "tools/functional_verification.py",
+                    "--control",
+                    "H07_MUTATE_SUM_ORDER",
+                ],
+            },
+        )
+        self.assertEqual(
+            sorted(self.fv.CONTROLS), ["H07_MUTATE_GLITCH", "H07_MUTATE_SUM_ORDER"]
+        )
+        for path in cap.coverage_paths(node):
+            self.assertTrue(
+                (REPO / path).is_file(), f"covered input missing: {path}"
+            )
+
+    def test_baseline_report_matches_lane_selection_and_pin(self):
+        report = REPO / "evidence" / "t1-functional" / "report.json"
+        self.assertEqual(
+            hashlib.sha256(report.read_bytes()).hexdigest(),
+            self.BASELINE_REPORT_SHA256,
+        )
+        provenance = self.committed["provenance"]
+        self.assertEqual((len(self.selected), len(self.ungraded)), (23, 11))
+        self.assertEqual(
+            (
+                sum(not c.startswith("stress-") for c in self.selected),
+                sum(c.startswith("stress-") for c in self.selected),
+            ),
+            (19, 4),
+        )
+        self.assertEqual(set(provenance["cases"]), set(self.selected))
+        self.assertEqual(provenance["not_graded"]["cases"], self.ungraded)
+        self.assertEqual(provenance["not_graded"]["status"], "NOT_RUN")
+        self.assertEqual(self.committed["skipped_count"], 0)
+        self.assertTrue(all(t["status"] == "passed" for t in self.committed["tests"]))
+        # the tree still is the DR-0012 pin the baseline names
+        self.assertEqual(provenance["rtl_sha256"], self.hashes)
+        self.assertTrue(provenance["dr0012_pin_matches"])
+        self.assertEqual(
+            self.fv.dr12_pin(self.fv.DR12.read_text(encoding="utf-8")),
+            {k: self.hashes[k] for k in self.fv.RTL_PIN},
+        )
+
+    def test_partial_run_is_guarded_skip_not_pass(self):
+        status, reasons, rows = self._verdict(self._fresh())
+        self.assertEqual((status, reasons), ("PASS", []))
+        self.assertTrue(all(r["verdict"] == "PASS" for r in rows))
+        self.assertEqual(
+            {r["case"]: r["checked"] for r in rows}, self._committed_counts()
+        )
+        # every selected window agreed, yet 11 dev cases stayed ungraded
+        note = self.fv.skip_note(rows, self.ungraded)
+        self.assertIsNotNone(note)
+        self.assertIn("11 case(s) NOT_RUN", note)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.fv.emit_guarded_skip(note)
+        for cid in self.ungraded:
+            self.assertIn(cid, out.getvalue())
+        self.assertIn("GUARDED_SKIP", out.getvalue())
+        # ... while a run that graded everything emits no token at all
+        self.assertIsNone(self.fv.skip_note(rows, []))
+        self.assertEqual(self.tool._result_for_exit(0), cap.PASS)
+
+    def test_measured_mismatch_is_fail_with_divergence_despite_ungraded(self):
+        fresh = self._fresh(fail={"case_stress_sum16": self.GLITCH})
+        status, reasons, rows = self._verdict(fresh)
+        self.assertEqual(status, "FAIL")
+        self.assertIn(
+            "stress-sum16: first divergence index=849 golden=23300 actual=23316"
+            " block=11 sample=17",
+            reasons,
+        )
+        row = next(r for r in rows if r["case"] == "stress-sum16")
+        self.assertEqual(row["verdict"], "FAIL")
+        self.assertEqual(row["divergence"]["index"], 849)
+        self.assertEqual(
+            (row["divergence"]["golden"], row["divergence"]["actual"]),
+            (23300, 23316),
+        )
+        # the other cases stayed ungraded and the token still names them,
+        # but the failing exit is FAIL at the stamp whatever the token says
+        self.assertIn("11 case(s) NOT_RUN", self.fv.skip_note(rows, self.ungraded))
+        self.assertEqual(self.fv.EXIT[status], 1)
+        self.assertEqual(self.tool._result_for_exit(self.fv.EXIT[status]), cap.FAIL)
+
+    def test_comparator_failure_without_sample_mismatch_is_still_fail(self):
+        # overrun/overflow fail the comparator with an empty mismatch list
+        message = (
+            "stress-burst: RTL != frozen model; first mismatches [] "
+            "overrun=1 overflow=0\nassert False"
+        )
+        status, reasons, rows = self._verdict(
+            self._fresh(fail={"case_stress_burst": message})
+        )
+        self.assertEqual(status, "FAIL")
+        row = next(r for r in rows if r["case"] == "stress-burst")
+        self.assertEqual(
+            (row["verdict"], row["divergence"], row["detail"]),
+            ("FAIL", None, "overrun=1 overflow=0"),
+        )
+
+    def test_stale_pin_keeps_driver_diagnosis_over_any_rerun(self):
+        drifted = dict(self.hashes)
+        drifted["rtl/dx7_core.v"] = "0" * 64
+        status, reasons, _ = self._verdict(
+            self._fresh(fail={"case_stress_sum16": self.GLITCH}), drifted
+        )
+        self.assertEqual(status, "STALE")
+        self.assertEqual(
+            reasons,
+            ["committed report names different RTL: ['rtl/dx7_core.v']"],
+        )
+        # exit 3 is a failing exit at the stamp: never PASS, never NOT_RUN
+        self.assertEqual(self.fv.EXIT["STALE"], 3)
+        self.assertEqual(self.tool._result_for_exit(self.fv.EXIT["STALE"]), cap.FAIL)
+        # the diagnosis holds for a clean re-run too
+        status, reasons, _ = self._verdict(self._fresh(), drifted)
+        self.assertEqual(status, "STALE")
+
+    def test_unexecuted_selected_case_is_not_run_naming_it(self):
+        # zero simulator skips cannot establish coverage: an absent case
+        status, reasons, rows = self._verdict(self._fresh(drop=("case_dir_base",)))
+        self.assertEqual(status, "NOT_RUN")
+        self.assertEqual(
+            reasons,
+            ["selected case(s) did not execute: dir-base (absent from the run)"],
+        )
+        self.assertEqual(
+            [(r["case"], r["verdict"], r["detail"])
+             for r in rows if r["verdict"] != "PASS"],
+            [("dir-base", "NOT_RUN", "absent from the run")],
+        )
+        # the driver's "could not run" (a cocotb failed that never
+        # reached the comparator) is unexecuted work, not a mismatch
+        status, reasons, _ = self._verdict(
+            self._fresh(fail={"case_dir_base":
+                              "dir-base: could not run: simulation failed: x"})
+        )
+        self.assertEqual(status, "NOT_RUN")
+        self.assertIn("dir-base (could not run)", reasons[0])
+        status, reasons, _ = self._verdict(
+            self._fresh(skip={"case_dir_base": "skipped"})
+        )
+        self.assertEqual(status, "NOT_RUN")
+        self.assertIn("dir-base (status skipped)", reasons[0])
+        # ... unless something else measured a mismatch: FAIL outranks it
+        status, _, _ = self._verdict(self._fresh(
+            drop=("case_dir_base",), fail={"case_stress_sum16": self.GLITCH}))
+        self.assertEqual(status, "FAIL")
+
+    def test_control_counts_only_a_measured_sample_mismatch(self):
+        control = json.loads(
+            (REPO / "evidence" / "t1-functional"
+             / "control-H07_MUTATE_GLITCH.json").read_text()
+        )
+        want = ["stress-sum16"]
+        ok, msg = self.fv.control_verdict(control, want)
+        self.assertTrue(ok, msg)
+        self.assertIn(
+            "case_stress_sum16 index=849 golden=23300 actual=23316 block=11"
+            " sample=17",
+            msg,
+        )
+
+        def variant(**change):
+            report = json.loads(json.dumps(control))
+            report["tests"][0].update(change)
+            return report
+
+        # surviving mutant: the selected case passed under -DH07_MUTATE_GLITCH
+        ok, msg = self.fv.control_verdict(variant(status="passed"), want)
+        self.assertEqual(
+            (ok, msg),
+            (False, "mutant did NOT fail: {'case_stress_sum16': 'passed'}"),
+        )
+        # setup failure: cocotb says failed, but nothing reached the comparator
+        ok, msg = self.fv.control_verdict(
+            variant(error_message="stress-sum16: could not run: build failed"),
+            want,
+        )
+        self.assertFalse(ok)
+        self.assertIn(
+            "no sample mismatch, the mutant did not reach the comparator:"
+            " case_stress_sum16",
+            msg,
+        )
+        # a comparator failure without a sample divergence is no detection
+        ok, msg = self.fv.control_verdict(
+            variant(error_message="stress-sum16: RTL != frozen model; first"
+                                  " mismatches [] overrun=1 overflow=0"),
+            want,
+        )
+        self.assertFalse(ok)
+        self.assertIn("no sample mismatch", msg)
+        # missing case: nothing ran, or another case ran instead
+        for tests in ([], [dict(control["tests"][0], name="case_stress_burst")]):
+            report = json.loads(json.dumps(control))
+            report["tests"] = tests
+            ok, msg = self.fv.control_verdict(report, want)
+            self.assertFalse(ok)
+            self.assertIn("but expected ['case_stress_sum16']", msg)
+
+    def test_both_committed_mutant_controls_stay_live_under_the_rule(self):
+        for name, note in (
+            ("H07_MUTATE_GLITCH", "index=849 golden=23300 actual=23316"),
+            ("H07_MUTATE_SUM_ORDER", "index=397 golden=2 actual=1024"),
+        ):
+            with self.subTest(control=name):
+                report = json.loads(
+                    (REPO / "evidence" / "t1-functional"
+                     / f"control-{name}.json").read_text()
+                )
+                self.assertEqual(report["provenance"]["defines"], [name])
+                ok, msg = self.fv.control_verdict(report, self.fv.CONTROLS[name])
+                self.assertTrue(ok, msg)
+                self.assertIn(note, msg)
+                self.assertNotIn(self.fv.SKIP_TOKEN, msg)
+
+    def test_coverage_record_round_trips_through_stamp_tail(self):
+        _, _, rows = self._verdict(self._fresh())
+        text = self._record_text(
+            "PASS", rows, self.fv.skip_note(rows, self.ungraded)
+        )
+        tail = text[-2000:]
+        record = self.fv.parse_coverage(tail)
+        self.assertIsNotNone(record, "coverage record lost to the tail")
+        self.assertEqual(record["verdict"], "PASS")
+        self.assertEqual(
+            (record["graded_count"], record["ungraded_count"]), (23, 11)
+        )
+        self.assertEqual([r["case"] for r in record["rows"]], self.selected)
+        self.assertEqual(
+            {r["case"]: r["checked"] for r in record["rows"]},
+            self._committed_counts(),
+        )
+        self.assertEqual([r["verdict"] for r in record["rows"]], ["PASS"] * 23)
+        self.assertEqual(record["ungraded"], self.ungraded)
+        self.assertEqual(
+            record["ungraded_reason"],
+            self.committed["provenance"]["not_graded"]["reason"],
+        )
+        self.assertEqual(
+            record["checked_samples"], sum(self._committed_counts().values())
+        )
+        # a tail that lost the header reports nothing rather than a
+        # silently partial record
+        self.assertIsNone(self.fv.parse_coverage(text[text.index("\n") + 1:]))
+
+    def test_coverage_record_carries_divergence_and_unexecuted_cases(self):
+        fresh = self._fresh(
+            fail={
+                "case_stress_sum16": self.GLITCH,
+                "case_dir_base": "dir-base: could not run: playback failed",
+            },
+            drop=("case_stress_burst",),
+            skip={"case_stress_reset": "skipped"},
+        )
+        status, _, rows = self._verdict(fresh)
+        text = self._record_text(
+            status, rows, self.fv.skip_note(rows, self.ungraded)
+        )
+        record = self.fv.parse_coverage(text[-2000:])
+        self.assertEqual(record["verdict"], "FAIL")
+        recovered = {r["case"]: r for r in record["rows"]}
+        self.assertEqual(list(recovered), self.selected)
+        self.assertEqual(
+            recovered["stress-sum16"],
+            {
+                "case": "stress-sum16",
+                "verdict": "FAIL",
+                "checked": None,
+                "detail": "index=849 golden=23300 actual=23316 block=11 sample=17",
+            },
+        )
+        self.assertEqual(
+            (recovered["dir-base"]["verdict"], recovered["dir-base"]["detail"]),
+            ("NOT_RUN", "could not run"),
+        )
+        self.assertEqual(
+            (recovered["stress-burst"]["verdict"],
+             recovered["stress-burst"]["detail"]),
+            ("NOT_RUN", "absent from the run"),
+        )
+        self.assertEqual(
+            (recovered["stress-reset"]["verdict"],
+             recovered["stress-reset"]["detail"]),
+            ("NOT_RUN", "status skipped"),
+        )
+        self.assertEqual(
+            (recovered["dir-base"]["checked"], recovered["alg4-fb0"]["checked"]),
+            (None, self._committed_counts()["alg4-fb0"]),
+        )
+        note = self.fv.skip_note(rows, self.ungraded)
+        self.assertIn(
+            "selected but not executed: dir-base, stress-burst, stress-reset",
+            note,
+        )
+        self.assertIn("14 case(s) NOT_RUN", note)
+
+    def test_registered_command_missing_tool_is_not_run(self):
+        """The real registered command with no klt venv: exit 2, the
+        declared token, the committed report untouched."""
+        report = REPO / "evidence" / "t1-functional" / "report.json"
+        before = report.read_bytes()
+        check = cap.CHECKS["rtl-exact-v1"]
+        proc = subprocess.run(
+            list(check.command) + ["--venv", "/nonexistent/venv-fv"],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        combined = proc.stdout + proc.stderr
+        self.assertEqual(proc.returncode, 2, combined)
+        self.assertIn("GUARDED_SKIP: check did not run:", combined)
+        self.assertIn("klt missing", combined)
+        self.assertNotIn(self.fv.COVERAGE_MARK, combined)
+        self.assertEqual(report.read_bytes(), before)
+        # the control path has no token to emit: not detected, never PASS
+        for name in ("H07_MUTATE_GLITCH", "H07_MUTATE_SUM_ORDER"):
+            proc = subprocess.run(
+                list(check.command)
+                + ["--control", name, "--venv", "/nonexistent/venv-fv"],
+                cwd=REPO,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            combined = proc.stdout + proc.stderr
+            self.assertEqual(proc.returncode, 2, combined)
+            self.assertIn("NOT_RUN:", combined)
+            self.assertNotIn(self.fv.SKIP_TOKEN, combined)
+            self.assertNotIn("CONTROL_OK", combined)
+        self.assertEqual(report.read_bytes(), before)
+
+    def test_committed_stamp_reads_not_run_and_retains_coverage(self):
+        record = json.loads(self.STAMP.read_text())
+        self.assertEqual(record["node_id"], "rtl-exact")
+        self.assertEqual(record["check"], "rtl-exact-v1")
+        self.assertEqual(record["argv"], list(cap.CHECKS["rtl-exact-v1"].command))
+        # the 23 windows agreed (exit 0) and the other 11 stayed ungraded:
+        # a guarded skip under skip_policy not_run, never a PASS
+        self.assertEqual(record["result"], cap.NOT_RUN)
+        self.assertEqual(record["exit_code"], 0)
+        self.assertIs(record["check_skip_reported"], True)
+        tail = record["check_output"]["tail"]
+        self.assertIn("GUARDED_SKIP: 11 case(s) NOT_RUN", tail)
+        # the complete coverage record is recoverable from the bounded tail
+        coverage = self.fv.parse_coverage(tail)
+        self.assertIsNotNone(coverage, "coverage record lost to the tail")
+        self.assertEqual(coverage["verdict"], "PASS")
+        self.assertEqual(
+            (coverage["graded_count"], coverage["ungraded_count"]), (23, 11)
+        )
+        self.assertEqual([r["case"] for r in coverage["rows"]], self.selected)
+        self.assertEqual(
+            {r["case"]: r["checked"] for r in coverage["rows"]},
+            self._committed_counts(),
+        )
+        self.assertEqual([r["verdict"] for r in coverage["rows"]], ["PASS"] * 23)
+        self.assertEqual(
+            coverage["ungraded"],
+            self.committed["provenance"]["not_graded"]["cases"],
+        )
+        self.assertEqual(
+            coverage["ungraded_reason"],
+            self.committed["provenance"]["not_graded"]["reason"],
+        )
+        self.assertEqual(
+            coverage["checked_samples"], sum(self._committed_counts().values())
+        )
+        # both mutant controls ran, reached the comparator, and diverged
+        controls = {tuple(c["command"]): c for c in record["controls"]}
+        self.assertEqual(len(controls), 2)
+        for name, note in (
+            ("H07_MUTATE_GLITCH", "index=849 golden=23300 actual=23316"),
+            ("H07_MUTATE_SUM_ORDER", "index=397 golden=2 actual=1024"),
+        ):
+            with self.subTest(control=name):
+                control = controls[
+                    (
+                        "python3",
+                        "tools/functional_verification.py",
+                        "--control",
+                        name,
+                    )
+                ]
+                self.assertTrue(control["detected"])
+                self.assertEqual(control["exit_code"], 0)
+                self.assertIn("CONTROL_OK", control["output"]["tail"])
+                self.assertIn(note, control["output"]["tail"])
+                self.assertIsNone(control["skipped"])
+        # inputs bound by content: the baseline report is byte-identical
+        # before and after stamping and identical to the registered pin
+        self.assertEqual(
+            record["coverage"]["evidence/t1-functional/report.json"],
+            self.BASELINE_REPORT_SHA256,
+        )
+        self.assertEqual(
+            record["coverage"]["evidence/t1-functional/request.json"],
+            hashlib.sha256(
+                (REPO / "evidence" / "t1-functional" / "request.json").read_bytes()
+            ).hexdigest(),
+        )
+        self.assertEqual(
+            record["coverage"]["rtl/dx7_core.v"], self.hashes["rtl/dx7_core.v"]
+        )
+        # local verdict and effective DAG verdict
+        nodes = cap.load_graph(REPO / GRAPH_PATH)
+        results = cap.evaluate(nodes, REPO)
+        self.assertEqual(results["rtl-exact"].local_state, cap.NOT_RUN)
+        self.assertEqual(results["rtl-exact"].state, cap.BLOCKED)
+        self.assertIn(
+            "prerequisite not demonstrated: rtl-core=BLOCKED",
+            results["rtl-exact"].reasons,
+        )
+        self.assertIn(
+            "recorded check reported a guarded skip and did not do all of its"
+            " work (exit_code=0)",
+            results["rtl-exact"].reasons,
+        )
+
+    def test_changed_covered_input_invalidates_the_stamp(self):
+        """A byte change in any covered input (RTL, the baseline report,
+        the driver, a frozen vector) after stamping -> STALE locally and
+        BLOCKED (never PASS/NOT_RUN) in the DAG."""
+        nodes = cap.load_graph(REPO / GRAPH_PATH)
+        node = next(n for n in nodes if n["id"] == "rtl-exact")
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for relative in cap.coverage_paths(node):
+                dest = root / relative
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes((REPO / relative).read_bytes())
+            (root / cap.EVIDENCE_DIR).mkdir(parents=True, exist_ok=True)
+            for path in sorted((REPO / cap.EVIDENCE_DIR).glob("*.json")):
+                shutil.copy(path, root / cap.EVIDENCE_DIR / path.name)
+            results = cap.evaluate(nodes, root)
+            self.assertEqual(
+                (results["rtl-exact"].local_state, results["rtl-exact"].state),
+                (cap.NOT_RUN, cap.BLOCKED),
+            )
+            for relative in (
+                "rtl/dx7_core.v",
+                "evidence/t1-functional/report.json",
+                "tools/fv_cocotb_dx7_core.py",
+                "reference/release/vectors/alg4-fb0.f32",
+                "evidence/h07-core/stress/stress-sum16.seg0.i32",
+                "docs/decision-records/0012-exp-term-width-core-refreeze.md",
+            ):
+                with self.subTest(changed=relative):
+                    path = root / relative
+                    pristine = path.read_bytes()
+                    path.write_bytes(pristine + b"\n")
+                    result = cap.evaluate(nodes, root)["rtl-exact"]
+                    self.assertEqual(result.local_state, cap.STALE)
+                    self.assertEqual(result.state, cap.BLOCKED)
+                    self.assertEqual(
+                        result.reasons[0], "covered bytes changed: " + relative
+                    )
+                    path.write_bytes(pristine)
+
+    def test_three_registrations_visible_and_prerequisites_propagate(self):
+        """fixed-model (#274), rtl-core (#275) and rtl-exact (#276) each
+        carry a registered check and a stamped record in the committed
+        views, and each stays BLOCKED behind an undemonstrated
+        prerequisite, rooted at oracle-identity."""
+        nodes = {n["id"]: n for n in cap.load_graph(REPO / GRAPH_PATH)}
+        results = cap.evaluate(list(nodes.values()), REPO)
+        view = json.loads((REPO / "docs" / "capabilities.json").read_text())
+        view_nodes = {n["id"]: n for n in view["nodes"]}
+        markdown = (REPO / "docs" / "CAPABILITIES.md").read_text()
+        chain = ("fixed-model", "rtl-core", "rtl-exact")
+        for node_id in chain:
+            with self.subTest(node=node_id):
+                node, result = nodes[node_id], results[node_id]
+                self.assertIn(node["check"], cap.CHECKS)
+                self.assertTrue(
+                    (REPO / cap.node_evidence_path(node_id)).is_file()
+                )
+                self.assertIn(result.local_state, (cap.PASS, cap.NOT_RUN))
+                self.assertEqual(result.state, cap.BLOCKED)
+                undemonstrated = [
+                    p for p in node["prereqs"] if results[p].state != cap.PASS
+                ]
+                self.assertTrue(undemonstrated)
+                # evaluate() joins every blocked prerequisite into ONE
+                # reason string, so each undemonstrated prerequisite is
+                # asserted as a "prereq=STATE" fragment of it
+                blocked_reasons = " ".join(
+                    r for r in result.reasons
+                    if r.startswith("prerequisite not demonstrated")
+                )
+                self.assertTrue(blocked_reasons)
+                for prereq in undemonstrated:
+                    self.assertIn(
+                        f"{prereq}={results[prereq].state}", blocked_reasons
+                    )
+                shown = view_nodes[node_id]
+                self.assertEqual(shown["check"], node["check"])
+                self.assertEqual(
+                    (shown["local_state"], shown["state"]),
+                    (result.local_state, result.state),
+                )
+                section = markdown.split(f"## {node_id} ", 1)[1].split("\n## ", 1)[0]
+                self.assertIn(f"- Check: `{node['check']}`", section)
+                self.assertIn(f"- Evidence: `{cap.node_evidence_path(node_id)}`.", section)
+                self.assertNotIn("not registered", section)
+        # the chain in order, rooted at the oracle-dependent nodes: every
+        # registration stays behind oracle-identity until it is demonstrated
+        self.assertEqual(nodes["rtl-core"]["prereqs"], ["fixed-model"])
+        self.assertEqual(nodes["rtl-exact"]["prereqs"], ["rtl-core"])
+        ancestors = set()
+        frontier = ["rtl-exact"]
+        while frontier:
+            for prereq in nodes[frontier.pop()]["prereqs"]:
+                if prereq not in ancestors:
+                    ancestors.add(prereq)
+                    frontier.append(prereq)
+        for root_id in ("oracle-identity", "comparator", "fixed-model", "rtl-core"):
+            self.assertIn(root_id, ancestors)
+            self.assertNotEqual(results[root_id].state, cap.PASS)
+        # the partial-run registration itself reads NOT_RUN, not PASS
+        self.assertEqual(view_nodes["rtl-exact"]["local_state"], cap.NOT_RUN)
 
 
 if __name__ == "__main__":

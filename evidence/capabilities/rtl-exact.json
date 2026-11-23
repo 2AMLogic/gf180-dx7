@@ -1,0 +1,116 @@
+{
+  "argv": [
+    "python3",
+    "tools/functional_verification.py"
+  ],
+  "check": "rtl-exact-v1",
+  "check_output": {
+    "sha256": "4236cfb6e46c81446efde8e558f104839b2ea2ee6a50a8e358d83548cd2609fb",
+    "tail": "rtl-exact coverage: verdict=PASS graded=23 ungraded=11 checked_samples=85952\nrtl-exact coverage graded: dir-base:PASS:3392 osc-fixed-carrier:PASS:3392 bd-coarse0:PASS:3392 bd-coarse31:PASS:3392 bd-detune0:PASS:3392 bd-detune14:PASS:3392 alg4-fb0:PASS:3392 alg4-fb3:PASS:3392 alg4-fb7:PASS:3392 alg6-fb0:PASS:3392 alg6-fb3:PASS:3392 alg6-fb7:PASS:3392 codec-name-a:PASS:3392 codec-name-b:PASS:3392 ev-pitch-bend-up:PASS:5824 ev-pitch-bend-down:PASS:5824 ev-pitch-bend-center:PASS:5824 ev-modwheel-127:PASS:5824 ev-modwheel-0:PASS:5824 stress-sum16:PASS:3584 stress-burst:PASS:1536 stress-reset:PASS:1664 stress-patchcommit:PASS:2560\nrtl-exact coverage ungraded reason: events past block 75: Icarus playback is ~2.4 s per frame, too long for this lane; see evidence/h07-core/ for the Verilator/remote runs\nrtl-exact coverage ungraded: dev32-03 dev32-06 dev32-30 ev-all-notes-off ev-all-sound-off ev-repeated-note ev-retrigger ev-steal-16 ev-sum-15 ev-sustain-no-pedal ev-sustain-pedal\nGUARDED_SKIP: 11 case(s) NOT_RUN in this lane (never passes); never graded, events past block 75: dev32-03, dev32-06, dev32-30, ev-all-notes-off, ev-all-sound-off, ev-repeated-note, ev-retrigger, ev-steal-16, ev-sum-15, ev-sustain-no-pedal, ev-sustain-pedal\nPASS\n"
+  },
+  "check_skip_reported": true,
+  "controls": [
+    {
+      "command": [
+        "python3",
+        "tools/functional_verification.py",
+        "--control",
+        "H07_MUTATE_GLITCH"
+      ],
+      "detected": true,
+      "exit_code": 0,
+      "output": {
+        "sha256": "876a870c10288985927f456298e8aa23fe2a44a978a91132daf5949e320a1d96",
+        "tail": "CONTROL_OK mutant fails every selected case at the sample comparator; first divergence case_stress_sum16 index=849 golden=23300 actual=23316 block=11 sample=17\n"
+      },
+      "skipped": null,
+      "tests_run": null
+    },
+    {
+      "command": [
+        "python3",
+        "tools/functional_verification.py",
+        "--control",
+        "H07_MUTATE_SUM_ORDER"
+      ],
+      "detected": true,
+      "exit_code": 0,
+      "output": {
+        "sha256": "122dd5abad099110729938c3560c97ecde45854e151edc1464f428930f1fe233",
+        "tail": "CONTROL_OK mutant fails every selected case at the sample comparator; first divergence case_stress_sum16 index=397 golden=2 actual=1024 block=4 sample=13\n"
+      },
+      "skipped": null,
+      "tests_run": null
+    }
+  ],
+  "coverage": {
+    "corpus/dev32.json": "ad0a30ac43801af3f86a466c5a8d498c7425d0ac2bfc813e512b480a81a7f3c0",
+    "docs/decision-records/0012-exp-term-width-core-refreeze.md": "4412af392a11cb501a64168860258014ece9f689d72a825c0f0412a4eb31d8f7",
+    "evidence/h07-core/stress/manifest.json": "c4bd9a18ec4e649cf6132207e5eaae3ab6e690c2f96533887c4f2d2afc48a3bc",
+    "evidence/h07-core/stress/stress-burst.seg0.i32": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+    "evidence/h07-core/stress/stress-patchcommit.seg0.i32": "959fc0b6adf87d0077e630fc4df78e0a5fe0deac3c960fa173a8f862fbf98e02",
+    "evidence/h07-core/stress/stress-reset.seg0.i32": "ad673e971ff9dac00974cde65271fb3cdfea50397e74e4dfbbe200e8d2c8e6ed",
+    "evidence/h07-core/stress/stress-reset.seg1.i32": "c4e634d4ed6f3d5849f28733c49a2625a37b8d4bb0ce86154ea62d41b1adb26f",
+    "evidence/h07-core/stress/stress-sum16.seg0.i32": "4dad057ee27b3668b158a8779076aa888365fa9752e6b24fafa86f227e562e6f",
+    "evidence/t1-functional/report.json": "724f1dbeff16d182bbf772dde3c6c7a7f6d13d8cc9d2281d03a7db1e1a379851",
+    "evidence/t1-functional/request.json": "b28d8573b79a3b2a233da979001cde14bc379f79261f4058fde2c8ae7c646720",
+    "reference/release/manifest.json": "4eab072416e75e37a3c9ff328bba625a2f7f11d14dc40949c6b0366f52246d38",
+    "reference/release/vectors/alg4-fb0.f32": "f58ab7e4dbba987884b452bc33f704b6e672eae198cbc15cdf457e60dfe9cd28",
+    "reference/release/vectors/alg4-fb3.f32": "ecdcca478a8e92b4ce3a2f8fac88e377b79c460f69941775b34d08017d6b2e8d",
+    "reference/release/vectors/alg4-fb7.f32": "7bc7bde8641873e46ebcc7ef206303d72c9278d0ac879a2451f82f50198a15ca",
+    "reference/release/vectors/alg6-fb0.f32": "452cc5f39cae2a20648b0f7c39914e5ea514cb1e7a2e30e71a68cb24cfd74cf9",
+    "reference/release/vectors/alg6-fb3.f32": "b32b33c480343d18d29afdb6031a44daeaa80241113413bd921e7ef71ecea251",
+    "reference/release/vectors/alg6-fb7.f32": "be5003661d2e120563e31b3a7a3415b21e22ebd7438550609edd51b5041adabd",
+    "reference/release/vectors/bd-coarse0.f32": "6b54762362e47e4ff80a5ea73d808df7ed3b12f6732e42fde46150bd08878d7f",
+    "reference/release/vectors/bd-coarse31.f32": "9ac3590a8bbe55dd279644390a8d9c097b21ebfbb40c6523fe9c6521c7440f20",
+    "reference/release/vectors/bd-detune0.f32": "acffd154a08fb39b0a5a5bdca99082330bce3cd2c5341d5910eea90f65b8b07c",
+    "reference/release/vectors/bd-detune14.f32": "29896e0c8a59f99f76efa8b336cce1b53a772989d6d885ea98929838c037e69d",
+    "reference/release/vectors/codec-name-a.f32": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+    "reference/release/vectors/codec-name-b.f32": "f6a79b92c38b23dddf771d62515c83cbaf1cdeb8b6afb9809a44b2b3802e758e",
+    "reference/release/vectors/dir-base.f32": "e43ca3fe4de4a3ec2fdfe05d004fdd2273bfd06601faad7cae8f2d7d546ae056",
+    "reference/release/vectors/ev-modwheel-0.f32": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+    "reference/release/vectors/ev-modwheel-127.f32": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+    "reference/release/vectors/ev-pitch-bend-center.f32": "460d3972dd08b77617d28616b119882768f220dbec601c3533bd4d487c88b114",
+    "reference/release/vectors/ev-pitch-bend-down.f32": "ade84a083f80a5f20ad2273bd9579c5776417c0e1ac0fe4e64e947a09c9ce47c",
+    "reference/release/vectors/ev-pitch-bend-up.f32": "ad741f854c824d8ffdeef91663c095613a630bbed986209bf5ec8aaaf89688c9",
+    "reference/release/vectors/osc-fixed-carrier.f32": "88921b5dbd1a2335c0a305369e3307f02c06a15ad195d0d8b75209c6b7e26275",
+    "reference/tables/alg_table.hex": "2d9abc6abcd070fb1fc7f79be425fd8aea8e182e90915653f1b6b7f36b6fcf78",
+    "reference/tables/freqlut_table.hex": "f1b080824a8286e307c8febcacca96c25eb501f0c482296062c3ff22f15d9c7b",
+    "reference/tables/sinexp_table.hex": "dc3b3a93db54df5c7d41ca1ad38e6c67e6ba7b8a891c5c2e0be4cba7856794f7",
+    "reference/tables/sinlog_table.hex": "91182672af773c5df0ba41b76bc89b74b6268cc233f5b2659eb3e3c6ac836ea3",
+    "rtl/alg_router.v": "dda373aa918c0d6b5248b27902b8a127143daea28e69b7b63739779a7b2c467d",
+    "rtl/dx7_core.v": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",
+    "rtl/env_unit.v": "d91090cd473a4764179b87331b028dc2622e7677145e7519200fffca91f2aa28",
+    "rtl/tb_dx7_core.v": "e2f363f3c21f3c95caa1e73c95d066453f348ea48b263f5732c26628ea9c8fea",
+    "spec/capabilities-v1.json": "2c23121cd9212edab17a65c6a75f50b011cbbd52997d4fc32114d9dfcc17ae20",
+    "spec/compatibility-registry-v1.json": "39c79f71618cf7ea32f231d990ce5d4671561b8fe6dc87a52673542c407e6693",
+    "src/gf180_dx7/__init__.py": "5da6bbd19a9693bac8665641be98e6fb71d659efaf98319628b514ca8d28ab78",
+    "src/gf180_dx7/capabilities.py": "628d2eba0894638ffb6f3b8bbaf1c97be427051ebb683d76a9c8ab3fb81404f6",
+    "src/gf180_dx7/host.py": "4e7457a852227afd66f0502bfbe85dd92955144e232274a0063958261d3022fc",
+    "src/gf180_dx7/model/__init__.py": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
+    "src/gf180_dx7/model/algorithm.py": "b0883e664ea36969361dd7ff1fb154f344da5bb3e7288b1105a2dc5bea17f7a1",
+    "src/gf180_dx7/model/envelope.py": "06c3f371d0d13c548689699b8bac674528f976e2346a47e0f33c10dbdd5bbbb4",
+    "src/gf180_dx7/model/integrated.py": "ff69a6ec8cf77430b66f53aa472faa80fa8096dd350a645e311946366061e7f3",
+    "src/gf180_dx7/model/operator.py": "b82a08441905cc6821b90b1f937771992963c8cd7de385400268e9824c53e6ff",
+    "src/gf180_dx7/model/pitch.py": "f5640f54e81ecd8f21b5da7fc02349dbf63082231b9e71b05756dc546f87fa98",
+    "src/gf180_dx7/model/poly.py": "a5b80e887db9c8ef298ef774773a6618041ac4e50fcb6f19031ef14305441a12",
+    "src/gf180_dx7/model/tables.py": "75e7de5d90a04af32c84a8c64c0285567db39f0415bf7b7627348e2019d6d5c7",
+    "src/gf180_dx7/sysex.py": "4c373c7fb9ef5099fa20a7c1daf01685a85868c155c857a1271a0a8b1245ec4e",
+    "tools/compile_capabilities.py": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
+    "tools/functional_verification.py": "b51b6627d8acf6252b84dc2e155dd97fc66f83aa60d790bf7d401045d7434c84",
+    "tools/fv_cocotb_dx7_core.py": "42a20456001832a291f411961fb5abc2be4734ab4a6021edf488686b0cc9e228",
+    "tools/h07_compare.py": "354c9558f7fa2cee7b774f8c1978a0ea5a4ecf74a55716409980fee3333effda",
+    "tools/host_frozen_int.py": "c5236b6a009d6085e43bf2b714ea2893e0af1bae832167e8893285e6db6c20dd",
+    "tools/n08_build_release.py": "2247087bc9c204d62dbafc82c53cbd718fccbc5674d96f6db326c59d728eb0c8",
+    "tools/registry_coverage.py": "1ffec3d675647922851787a009be23493fb2f74a703f8b198f6bc37c452a57eb",
+    "tools/registry_smoke.py": "6759e6c2a5bd45d6672885d0c05a9fb74772cbe37e09d1562644a29b25eb2e2a",
+    "tools/sha256_helpers.py": "3dfd68f8a23ebad463e17856999970e9f587d13a2b158c3484558e4f6017deb1",
+    "tools/verdict_errors.py": "b75ec96d9c4ca4517f0db41d53f737728b9b6516c783e131c30549738f914e8f"
+  },
+  "exit_code": 0,
+  "node_id": "rtl-exact",
+  "recorded_at": "2026-11-23T15:12:27Z",
+  "recorded_by": "tools/compile_capabilities.py --stamp",
+  "result": "NOT_RUN",
+  "schema": "gf180-dx7.capability-evidence/1"
+}

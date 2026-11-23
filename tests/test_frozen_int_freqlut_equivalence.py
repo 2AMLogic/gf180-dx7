@@ -18,11 +18,17 @@ mismatches; Hermit follow-up: 20k negative logfreq plus -2**31, 0
 divergences) but nothing asserted the agreement, so a drift in either
 would silently break claim (1) — "the RTL matches the frozen integer
 model exactly". The operator ruled option C: keep both (the divergence
-in out-of-domain behaviour — declared guard vs. mirrored unguarded shift
-— is deliberate; the comments at both class definitions are deferred to
-#303, so this docstring is the interim record) and pin them with this
-live equivalence test. No ``src/`` logic may depend on
-this module.
+in out-of-domain behaviour — the explicit ``hibits > 20`` guard in
+``operator.Freqlut`` vs. the mirrored unguarded shift in
+``pitch.Freqlut`` — is deliberate) and pin them with this live
+equivalence test. No ``src/`` logic may depend on this module.
+
+Standing record (operator ruling 2026-11-23 on #303, option a): this
+docstring, together with the note in ``docs/N02-OPERATOR-MODEL.md``, is
+the standing record of the deliberate divergence. There is no comment at
+the two class definitions because both modules are byte-pinned by the
+N08 freeze (``reference/release/manifest.json``); even a comment-only
+edit would invalidate the bundle.
 
 Seeded sample (recorded per the acceptance criteria; smaller than the
 issue's 200k measurement but covering the same input classes, so the

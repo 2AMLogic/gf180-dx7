@@ -184,7 +184,11 @@ units, §2) is recorded; it changes no bytes and no frozen rule.
   ties the two lookup implementations together is the seeded
   cross-implementation comparison in
   `tests/test_frozen_int_freqlut_equivalence.py` (104,004 pairs; that is
-  agreement, asserted separately from this coverage). Quadrant mirror symmetry;
+  agreement, asserted separately from this coverage). The out-of-domain
+  divergence between the two (explicit `hibits > 20` guard in
+  `operator.Freqlut` vs. mirrored unguarded shift in `pitch.Freqlut`) is
+  deliberate; the standing record is that test module's docstring, with no
+  at-site comment because both modules are N08-pinned. Quadrant mirror symmetry;
   non-increasing first quadrant; monotone amplitude under monotone env
   gain (closed form); known-value spot checks computed from the
   documented formula in the test; phase wraparound equivalence;

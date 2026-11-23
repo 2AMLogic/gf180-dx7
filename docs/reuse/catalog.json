@@ -1759,8 +1759,8 @@
   },
   {
    "path": "tools/h04_compare.py",
-   "sha256": "054cd135926cd29227861288a43e01f65ed5c58c1f75b13d10e3217daba8c085",
-   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited)"
+   "sha256": "8010bd0143e65626293bb7a424bfaad4431cb77a250230d5d3dc06b4aeb4b297",
+   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited); issue #315: --mutants-only no longer short-circuits the negative-control verdict (the h01/h06 guard) -- a surviving NOT-MET control now yields top-level FAIL and exit 1, keeping the bypass only for explicitly skipped controls and the omitted equivalence run"
   },
   {
    "path": "tools/h04_synth.py",
@@ -1769,8 +1769,8 @@
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "69a12140339ea289af046596c958e62e20a60e37f75bb56437585398435b9aac",
-   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
+   "sha256": "3f6658e25cbce7f3cb30ca14803467c76c4cae259cc9140cbf7e5cdffe8713e2",
+   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; issue #315: adds the --mutants-only surviving-control regression (one compile define dropped by a forwarding iverilog wrapper -> NOT MET control must yield top-level FAIL, exit 1, no equivalence section, the unmodified control still MET) and pins the both-detected case to top-level PASS"
   },
   {
    "path": "docs/H04-ENV-RTL.md",
@@ -1799,8 +1799,8 @@
   },
   {
    "path": "tools/h05_compare.py",
-   "sha256": "c716b01d241233aa02bb3c6c10f8e887f6c6495481728211e3ea893782dd00cd",
-   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited)"
+   "sha256": "ee3768002aa23d5b66dd4bce473baa71b0d662ed1a6d12ccb1fb15c0efff5d2f",
+   "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited); issue #315: --mutate-only and --skip-mutants are now an argparse mutually exclusive pair (parse-time exit 2 usage error naming both flags, no program or report written) instead of an uncaught KeyError after the run"
   },
   {
    "path": "tools/h05_synth.py",
@@ -1809,8 +1809,8 @@
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "bfa89224d0562f178406c99700426c5feeee8107da540320dbd809224097c93f",
-   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
+   "sha256": "a03dfa7e1bf1589f8502eb5fc969df868f78e0266c8ff502e371a7489a2289ba",
+   "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; issue #315: adds the --mutate-only/--skip-mutants parse-conflict regression (both orders exit 2 with a usage error naming both flags, no traceback, no program or report; each flag alone still accepted via --gen-only, no Icarus needed)"
   },
   {
    "path": "docs/H05-ROUTING-RTL.md",

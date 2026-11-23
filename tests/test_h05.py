@@ -177,6 +177,67 @@ class TestTableNegativeControl(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+class TestFlagConflict(unittest.TestCase):
+    """Issue #315: --mutate-only and --skip-mutants are contradictory
+    single-mode selectors (one skips conformance, the other requires it).
+    The pair must be rejected at parse time -- exit 2 with a usage error
+    naming both flags, no traceback, and neither a program nor a report in
+    a fresh output directory -- in either flag order. Each flag alone must
+    stay accepted. Parser-level regression: needs no Icarus/vvp."""
+
+    def _run_fresh(self, extra, timeout=600):
+        tmp = tempfile.mkdtemp(prefix="h05_pair_")
+        fresh = os.path.join(tmp, "out")
+        try:
+            proc = run_tool(COMPARE_TOOL, list(extra) + ["--outdir", fresh],
+                            timeout=timeout)
+            produced = {name: os.path.isfile(os.path.join(fresh, name))
+                        for name in ("program.txt", "compare_report.json")}
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        return proc, produced
+
+    def test_pair_rejected_at_parse_time_both_orders(self):
+        for extra in (["--mutate-only", "oporder", "--skip-mutants"],
+                      ["--skip-mutants", "--mutate-only", "oporder"]):
+            with self.subTest(order=" ".join(extra)):
+                proc, produced = self._run_fresh(extra, timeout=120)
+                # exit 2 alone is ambiguous (a missing tool also exits 2):
+                # require the argparse usage error and its exact shape
+                self.assertEqual(proc.returncode, 2)
+                self.assertNotIn("Traceback", proc.stderr)
+                self.assertNotIn("COULD-NOT-RUN", proc.stderr,
+                                 "must be rejected at parse time, before "
+                                 "any tool probe or run")
+                err_lines = [ln for ln in proc.stderr.splitlines()
+                             if "error:" in ln]
+                self.assertEqual(
+                    len(err_lines), 1,
+                    f"expected exactly one usage error line: "
+                    f"{proc.stderr[-400:]}")
+                line = err_lines[0]
+                self.assertIn("not allowed with argument", line)
+                self.assertIn("--skip-mutants", line)
+                self.assertIn("--mutate-only", line)
+                self.assertTrue(
+                    any(ln.startswith("usage:") for ln
+                        in proc.stderr.splitlines()),
+                    "must be reported as a usage error")
+                # rejected before any output was produced
+                self.assertFalse(produced["program.txt"])
+                self.assertFalse(produced["compare_report.json"])
+
+    def test_each_flag_alone_still_accepted(self):
+        # --gen-only short-circuits before any simulation, so each flag
+        # alone must still parse and drive the driver to exit 0
+        for extra in (["--skip-mutants", "--gen-only"],
+                      ["--mutate-only", "oporder", "--gen-only"]):
+            with self.subTest(flags=" ".join(extra)):
+                proc, produced = self._run_fresh(extra)
+                self.assertEqual(proc.returncode, 0, proc.stderr[-400:])
+                self.assertTrue(produced["program.txt"])
+
+
 class TestConformance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -277,10 +277,64 @@ class TestEquivalence(unittest.TestCase):
             self.assertGreater(nc["mismatches"], 0)
             self.assertIsNotNone(nc["first_mismatch"])
             self.assertIn("fields", nc["first_mismatch"])
+        # issue #315: with both requested controls detected, the same
+        # --mutants-only invocation writes top-level PASS and exits 0
+        self.assertEqual(rep["status"], "PASS")
+        self.assertNotIn("equivalence", rep,
+                         "--mutants-only omits the clean equivalence run")
         # the timing mutant must localize its first divergence in the
         # level trajectory (one-frame update shift)
         fm = rep["negative_controls"]["timing"]["first_mismatch"]
         self.assertIn("level", fm["fields"])
+
+    def test_mutants_only_surviving_control_reports_fail(self):
+        """Regression (issue #315): --mutants-only must judge the controls
+        it requested. With one mutant's compile define suppressed on the
+        way to the real compiler (every other argument forwarded), that
+        control runs, passes equivalence (NOT MET -- the harness failed to
+        resolve a planted defect) and the driver must write status=FAIL and
+        exit 1, never the pre-fix PASS/exit 0. The unmodified control must
+        still be detected in the same run, proving the suppression is
+        isolated to the one define."""
+        if not self.can_run:
+            self.skipTest(self.reason)
+        tmp = tempfile.mkdtemp(prefix="h04_surv_")
+        try:
+            wrapper = os.path.join(tmp, "iverilog-drop-define")
+            with open(wrapper, "w", encoding="ascii") as f:
+                f.write(
+                    "#!/usr/bin/env python3\n"
+                    "import os, sys\n"
+                    f"REAL = {self.iverilog!r}\n"
+                    "DROP = '-DH04_MUTATE_SRM'\n"
+                    "argv = [a for a in sys.argv[1:] if a != DROP]\n"
+                    "os.execv(REAL, [REAL] + argv)\n")
+            os.chmod(wrapper, 0o755)
+            outdir = os.path.join(tmp, "out")
+            proc = run_tool(COMPARE_TOOL,
+                            ["--mutants-only", "--iverilog", wrapper,
+                             "--vvp", self.vvp, "--outdir", outdir],
+                            timeout=1800)
+            rep = read_json(os.path.join(outdir, "compare_report.json"))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        self.assertEqual(proc.returncode, 1,
+                         "a surviving (NOT MET) control must exit 1, not "
+                         f"be reported as PASS: {proc.stdout[-400:]}")
+        self.assertEqual(rep["status"], "FAIL")
+        self.assertNotIn("equivalence", rep,
+                         "--mutants-only omits the clean equivalence run")
+        srm = rep["negative_controls"]["srm"]
+        self.assertTrue(srm["status"].startswith("NOT MET"))
+        self.assertEqual(srm["mismatches"], 0)
+        self.assertIsNone(srm["first_mismatch"])
+        timing = rep["negative_controls"]["timing"]
+        self.assertTrue(timing["status"].startswith("MET"),
+                        "the unmodified control must still be detected in "
+                        "the same run -- the suppression is isolated to "
+                        "the dropped define")
+        self.assertGreater(timing["mismatches"], 0)
+        self.assertIsNotNone(timing["first_mismatch"])
 
 
 class TestSynthesis(unittest.TestCase):

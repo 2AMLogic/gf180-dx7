@@ -1,16 +1,25 @@
-"""Shared iverilog/vvp invocation helpers (issue #152).
+"""Shared iverilog/vvp invocation, result-parsing and CLI/report helpers
+(issue #152, #300).
 
-One owner for the `iverilog -V` probe and the compile / `vvp` run / FAIL and
-PASS-summary check skeleton that used to be copied into the H01/H04/H05/H06
-compare tools. Each caller keeps its own defines, plus-args, summary regex and
-result parsing, and passes its own `CouldNotRun` / `CheckFailure` classes and
-message label, so what a tool raises is unchanged. Stdlib only.
+One owner for the `iverilog -V` probe, the compile / `vvp` run / FAIL and
+PASS-summary check skeleton, the hex result-file parser and the compare
+tools' CLI/report-write skeleton that used to be copied into the
+H01/H04/H05/H06 compare tools. Each caller keeps its own defines,
+plus-args, summary regex and report contents, and passes its own
+`CouldNotRun` / `CheckFailure` classes where a run is invoked, so what a
+tool raises is unchanged. The parser raises the shared
+`verdict_errors.CheckFailure` (every caller imports the same class
+object). Stdlib only.
 """
 
+import argparse
+import json
 import os
 import re
 import shutil
 import subprocess
+
+from verdict_errors import CheckFailure
 
 
 def iverilog_version(iverilog, could_not_run):
@@ -65,3 +74,62 @@ def compile_and_run(iverilog, vvp, vvp_out, sources, defines, plusargs,
         except OSError:
             pass
     return m, out
+
+
+def _hex_width_ok(token, max_width):
+    if max_width is None:
+        return True
+    if isinstance(max_width, int):
+        return len(token) <= max_width
+    return len(token) in max_width
+
+
+def parse_hex_rows(path, ncols, max_width=None):
+    """Parse the shared hex result-file format into a list of int tuples.
+
+    Skips blank lines and `#` comment lines; every other line must split
+    into exactly `ncols` hex tokens. `max_width` optionally constrains the
+    token widths: an int rejects tokens longer than it, a tuple/set rejects
+    tokens whose width is not listed (h01 allows widths 5 and 8, h04 bounds
+    width at 8, h06 does not check). Raises `CheckFailure` with the shared
+    message ``{path}:{lineno}: malformed result line ...`` on a malformed
+    line.
+    """
+    rows = []
+    with open(path, "r", encoding="ascii") as f:
+        for lineno, raw in enumerate(f, 1):
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) != ncols or any(
+                    not _hex_width_ok(p, max_width) or
+                    not re.fullmatch(r"[0-9a-fA-F]+", p) for p in parts):
+                raise CheckFailure(
+                    f"{path}:{lineno}: malformed result line {line!r}")
+            rows.append(tuple(int(p, 16) for p in parts))
+    return rows
+
+
+def add_common_args(ap, outdir_default,
+                    gen_only_help="write vectors + expected + gen report, "
+                                  "no sim"):
+    """Add the CLI flags shared by the H-probe compare tools to `ap`:
+    `--outdir`, `--gen-only`, `--iverilog` and `--vvp`. Per-probe flags
+    stay with each tool's `main()`; `gen_only_help` lets a tool describe
+    its own --gen-only artifacts (h05 writes a program, not vectors)."""
+    ap.add_argument("--outdir", default=outdir_default)
+    ap.add_argument("--gen-only", action="store_true", help=gen_only_help)
+    ap.add_argument("--iverilog", default="iverilog")
+    ap.add_argument("--vvp", default="vvp")
+
+
+def write_json_report(outdir, name, report):
+    """Write `report` as `<outdir>/<name>` with the shared compare-tool
+    JSON convention (indent=1, sort_keys=True, trailing newline) and
+    return the path."""
+    path = os.path.join(outdir, name)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=1, sort_keys=True)
+        f.write("\n")
+    return path

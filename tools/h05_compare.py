@@ -87,7 +87,8 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
-from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
+from iverilog_run import (  # noqa: E402
+    add_common_args, compile_and_run, iverilog_version, write_json_report)
 
 
 # ---------------------------------------------------------------------------
@@ -406,10 +407,6 @@ MUTANTS = {
 }
 
 
-def tool_identity(iverilog):
-    return iverilog_version(iverilog, CouldNotRun)
-
-
 def run_sim(iverilog, vvp, mutate, program_path, workdir):
     """Compile + run the bench; return path of the emitted stream file."""
     vvp_out = os.path.join(workdir, "tb%s.vvp" % (("_" + mutate) if mutate
@@ -438,19 +435,16 @@ def run_sim(iverilog, vvp, mutate, program_path, workdir):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
+    add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL),
+                    gen_only_help="write program + gen report, no simulation")
     ap.add_argument("--gen-tables", action="store_true",
                     help="regenerate the alg table hex + sha-pin manifest")
     ap.add_argument("--check-tables", action="store_true",
                     help="verify the committed table artifact only")
-    ap.add_argument("--gen-only", action="store_true",
-                    help="write program + gen report, no simulation")
     ap.add_argument("--skip-mutants", action="store_true",
                     help="run only the clean conformance build")
     ap.add_argument("--mutate-only", choices=sorted(MUTANTS), default=None,
                     help="run only one negative-control mutant build")
-    ap.add_argument("--iverilog", default="iverilog")
-    ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)
 
     if args.gen_tables:
@@ -504,17 +498,14 @@ def main(argv=None):
             "stream_sha256": hashlib.sha256(
                 "\n".join(stream).encode("ascii")).hexdigest(),
         }
-        with open(os.path.join(args.outdir, "gen_report.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(report, f, indent=1, sort_keys=True)
-            f.write("\n")
+        write_json_report(args.outdir, "gen_report.json", report)
         print(f"h05_compare: generated {stats['runs']} runs "
               f"({stats['evals']} evals, {stats['frames']} frames) "
               f"-> {program_path}")
         return 0
 
     try:
-        ident = tool_identity(args.iverilog)
+        ident = iverilog_version(args.iverilog, CouldNotRun)
     except CouldNotRun as exc:
         print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
         return 2
@@ -593,10 +584,7 @@ def main(argv=None):
     except CheckFailure as exc:
         report["status"] = "FAIL"
         report["error"] = str(exc)
-        with open(os.path.join(args.outdir, "compare_report.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(report, f, indent=1, sort_keys=True)
-            f.write("\n")
+        write_json_report(args.outdir, "compare_report.json", report)
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
 
@@ -604,10 +592,7 @@ def main(argv=None):
         status = "PASS" if report["conformance"]["status"] == "PASS" \
             else "FAIL"
     report["status"] = status
-    with open(os.path.join(args.outdir, "compare_report.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(report, f, indent=1, sort_keys=True)
-        f.write("\n")
+    write_json_report(args.outdir, "compare_report.json", report)
 
     if "conformance" in report:
         cf = report["conformance"]

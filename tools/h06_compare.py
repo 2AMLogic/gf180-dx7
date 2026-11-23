@@ -108,7 +108,9 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
-from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
+from iverilog_run import (  # noqa: E402
+    add_common_args, compile_and_run, iverilog_version, parse_hex_rows,
+    write_json_report)
 from host_frozen_int import (  # noqa: E402,F401
     host_bend_pb, host_detune_delta, host_fine_term, i32)
 
@@ -826,22 +828,6 @@ def expected_text(expected):
     return "\n".join(out) + "\n"
 
 
-def parse_result_text(path):
-    rows = []
-    with open(path, "r", encoding="ascii") as f:
-        for lineno, raw in enumerate(f, 1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            parts = line.split()
-            if len(parts) != 10 or any(
-                    not re.fullmatch(r"[0-9a-fA-F]+", p) for p in parts):
-                raise CheckFailure(
-                    "%s:%d: malformed result line %r" % (path, lineno, line))
-            rows.append(tuple(int(p, 16) for p in parts))
-    return rows
-
-
 # ---------------------------------------------------------------------------
 # simulation
 # ---------------------------------------------------------------------------
@@ -859,10 +845,6 @@ MUTANTS = {
 }
 
 
-def tool_identity(iverilog):
-    return iverilog_version(iverilog, CouldNotRun)
-
-
 def run_sim(iverilog, vvp, mutant, vectors, outdir):
     """Compile + run the bench (real build when mutant is None); return
     (actual_rows, sim_meta)."""
@@ -878,7 +860,7 @@ def run_sim(iverilog, vvp, mutant, vectors, outdir):
         r"PASS tb_pitch_mod \(frames=(\d+) writes=(\d+) "
         r"captured=(\d+) maxcycles=(\d+)\)",
         REPO_ROOT, 1800, CouldNotRun, CheckFailure, label=" (%s)" % (mutant,))
-    rows = parse_result_text(actual_path)
+    rows = parse_hex_rows(actual_path, 10)
     return rows, {
         "bench_frames": int(m.group(1)),
         "bench_writes": int(m.group(2)),
@@ -944,17 +926,13 @@ def compare_bit_exact(expected, actual, snaps):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
-    ap.add_argument("--gen-only", action="store_true",
-                    help="write vectors + expected + gen report, no sim")
+    add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL))
     ap.add_argument("--skip-mutants", action="store_true",
                     help="run only the real build")
     ap.add_argument("--mutant", choices=sorted(MUTANTS), default=None,
                     help="run only one negative-control mutant build")
     ap.add_argument("--write-sin-hex", action="store_true",
                     help="(re)generate reference/tables/lfo_sin_table.hex")
-    ap.add_argument("--iverilog", default="iverilog")
-    ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)
 
     if args.write_sin_hex:
@@ -999,10 +977,7 @@ def main(argv=None):
             "vectors_sha256": sha256_file(vectors_path),
             "expected_sha256": sha256_file(expected_path),
         }
-        with open(os.path.join(args.outdir, "gen_report.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(gen_report, f, indent=1, sort_keys=True)
-            f.write("\n")
+        write_json_report(args.outdir, "gen_report.json", gen_report)
         print(f"h06_compare: generated {stats['frames']} frames "
               f"({stats['writes']} writes) -> {vectors_path}")
         return 0
@@ -1034,7 +1009,7 @@ def main(argv=None):
                          for v in sin_table_values())).hexdigest(),
         },
         "tool_identity": {
-            "iverilog": tool_identity(args.iverilog),
+            "iverilog": iverilog_version(args.iverilog, CouldNotRun),
             "python": sys.version.split()[0],
             "rtl": {p: sha256_file(os.path.join(REPO_ROOT, p))
                     for p in (RTL_REL, TB_REL)},
@@ -1096,10 +1071,7 @@ def main(argv=None):
         report["error"] = str(exc)
         status = "FAIL"
 
-    with open(os.path.join(args.outdir, "compare_report.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(report, f, indent=1, sort_keys=True)
-        f.write("\n")
+    write_json_report(args.outdir, "compare_report.json", report)
 
     if "equivalence" in report:
         eq = report["equivalence"]

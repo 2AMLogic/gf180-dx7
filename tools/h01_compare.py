@@ -29,10 +29,8 @@ Stdlib only.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import random
-import re
 import sys
 import tempfile
 
@@ -61,7 +59,9 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
-from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
+from iverilog_run import (  # noqa: E402
+    add_common_args, compile_and_run, iverilog_version, parse_hex_rows,
+    write_json_report)
 
 
 # ---------------------------------------------------------------------------
@@ -263,30 +263,9 @@ def expected_text(expected):
     return "\n".join(out) + "\n"
 
 
-def parse_result_text(path):
-    rows = []
-    with open(path, "r", encoding="ascii") as f:
-        for lineno, raw in enumerate(f, 1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            parts = line.split()
-            if len(parts) != 2 or any(
-                    len(p) not in (5, 8) or
-                    not re.fullmatch(r"[0-9a-fA-F]+", p) for p in parts):
-                raise CheckFailure(
-                    f"{path}:{lineno}: malformed result line {line!r}")
-            rows.append((int(parts[0], 16), int(parts[1], 16)))
-    return rows
-
-
 # ---------------------------------------------------------------------------
 # simulation
 # ---------------------------------------------------------------------------
-
-def tool_identity(iverilog):
-    return iverilog_version(iverilog, CouldNotRun)
-
 
 def run_sim(iverilog, vvp, mutate, outdir):
     """Compile + run the bench; return (actual_rows, sim_meta)."""
@@ -304,7 +283,7 @@ def run_sim(iverilog, vvp, mutate, outdir):
         r"PASS tb_operator_probe \(evals=(\d+) loads=(\d+) "
         r"captured=(\d+)\)",
         REPO_ROOT, 600, CouldNotRun, CheckFailure)
-    rows = parse_result_text(actual_path)
+    rows = parse_hex_rows(actual_path, 2, max_width=(5, 8))
     return rows, {
         "bench_evals": int(m.group(1)),
         "bench_loads": int(m.group(2)),
@@ -359,15 +338,11 @@ def compare_bit_exact(expected, actual, records, phases):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
-    ap.add_argument("--gen-only", action="store_true",
-                    help="write vectors + expected + gen report, no sim")
+    add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL))
     ap.add_argument("--skip-mutate", action="store_true",
                     help="skip the MUTATE_ADDRWIDTH negative control")
     ap.add_argument("--mutate-only", action="store_true",
                     help="run only the negative-control mutant build")
-    ap.add_argument("--iverilog", default="iverilog")
-    ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)
 
     try:
@@ -402,16 +377,13 @@ def main(argv=None):
             "vectors_sha256": sha256_file(vectors_path),
             "expected_sha256": sha256_file(expected_path),
         }
-        with open(os.path.join(args.outdir, "gen_report.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(report, f, indent=1, sort_keys=True)
-            f.write("\n")
+        write_json_report(args.outdir, "gen_report.json", report)
         print(f"h01_compare: generated {stats['evals']} evals "
               f"({stats['loads']} loads) -> {vectors_path}")
         return 0
 
     try:
-        ident = tool_identity(args.iverilog)
+        ident = iverilog_version(args.iverilog, CouldNotRun)
     except CouldNotRun as exc:
         print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
         return 2
@@ -482,10 +454,7 @@ def main(argv=None):
         report["error"] = str(exc)
         status = "FAIL"
 
-    with open(os.path.join(args.outdir, "compare_report.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(report, f, indent=1, sort_keys=True)
-        f.write("\n")
+    write_json_report(args.outdir, "compare_report.json", report)
 
     if "equivalence" in report:
         eq = report["equivalence"]

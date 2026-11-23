@@ -25,7 +25,13 @@ Covers, per the issue's acceptance:
     the script AND the cwd, and a yosys failure with empty output still
     names rc + the log path (the local copy's precedence bug reduced
     that message to ""). Fake yosys executables only -- no synthesis, no
-    PDK, nothing re-runs H02.
+    PDK, nothing re-runs H02;
+  - tools/storage_probe_synth.py main() driven end-to-end by a fake yosys
+    (issue #299, the #295 shape): a full transcript with an absent chip
+    and/or dff area line reaches the stdout summary as None and must print
+    n/a, keep null areas in the report and return the documented 1 (gate
+    failure) instead of raising TypeError from :.1f; with both lines
+    present the summary text is unchanged.
 
 Stdlib only.
 """
@@ -38,6 +44,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC_PATH = os.path.join(REPO, "spec", "numeric-profile-v1.json")
@@ -603,6 +611,141 @@ class TestRunYosysSharedTail(unittest.TestCase):
             self.assertIn("rc=4", str(cm.exception))
             self.assertIn(logp, str(cm.exception))
             self.assertTrue(os.path.isfile(logp))  # log kept on failure
+
+
+# Issue #299: a FULL transcript shaped like the committed
+# evidence/h02-storage-probe/yosys_full.log tail, minus whichever area line
+# a case drops. parse_stat documents an empty area list as legitimate (the
+# strip-observability control maps nothing), so dff_area_um2 / chip_area_um2
+# reach main()'s summary as None there. Not committed evidence and not a
+# measurement: a hand-built control fixture with mock numbers.
+MOCK_GATE_FLOPS = 38781   # the N01 expected mapped total: the gate PASSes
+MOCK_SHORT_FLOPS = 38780  # one flop short: the gate FAILs (state removed)
+MOCK_CHIP_AREA = 1234.5
+MOCK_DFF_AREA = 500.25
+STATE_BITS_WITH_PATCH = 38780  # 96*325 + 16*446 + 444 (TestN01Accounting)
+
+
+def mock_full_transcript(flops=MOCK_GATE_FLOPS, chip=True, seq=True):
+    """Single-module mapped transcript minus the chosen area line(s)."""
+    return (
+        f"  mapped {flops} $_DFF_P_ cells to "
+        f"\\gf180mcu_fd_sc_mcu7t5v0__dffq_1 cells.\n"
+        f"    {flops + 200} 4.00E+04 cells\n"
+        f"    {flops} 3.00E+04   gf180mcu_fd_sc_mcu7t5v0__dffq_1\n"
+        f"      200 1.00E+04   gf180mcu_fd_sc_mcu7t5v0__and2_1\n"
+        + (f"   Chip area for module '\\storage_probe': {MOCK_CHIP_AREA}\n"
+           if chip else "")
+        + (f"     of which used for sequential elements: {MOCK_DFF_AREA} "
+           "(40.00%)\n" if seq else ""))
+
+
+def fmt_area_text(v):
+    """The expected summary token: one decimal, or n/a for an absent line
+    (an independent statement of the contract, not the tool's helper)."""
+    return "n/a" if v is None else f"{v:.1f}"
+
+
+def _mock_main_yosys(td, transcript_path):
+    """A fake yosys for main(): `-V` reports a fixed version, `-p <script>`
+    cats `transcript_path` whatever the script (the cases drive --mode full,
+    so only the full transcript is ever requested)."""
+    return _fake_yosys(
+        td,
+        'if [ "$1" = "-V" ]; then\n'
+        '  echo "Yosys 0.42.42 (mock storage_probe_synth fixture)"\n'
+        "  exit 0\n"
+        "fi\n"
+        f'cat "{transcript_path}"\n')
+
+
+class TestMainAbsentAreaLines(unittest.TestCase):
+    """main() end-to-end over a fake yosys (issue #299; the same shape as
+    tests/test_probe_synth.py's #295 cases for h01/h04/h05/h06).
+
+    The pre-#299 tool formatted dff_area_um2 and chip_area_um2 with :.1f
+    unguarded, AFTER storage_synth_report.json was written and BEFORE the
+    `report:` line and the `0 if PASS else 1` return -- so a degenerate
+    transcript raised TypeError and the documented exit code never reached
+    the caller. The per-bit quotient in the same print block already
+    guarded that None; the two area tokens must be None-safe too.
+    """
+
+    def setUp(self):
+        self._td = tempfile.TemporaryDirectory(prefix="storage_probe_main_")
+        self.td = self._td.name
+        self.liberty = os.path.join(self.td, "stub.lib")
+        with open(self.liberty, "w", encoding="utf-8") as f:
+            f.write("/* stub liberty: hashed, never parsed */\n")
+        self.transcript = os.path.join(self.td, "full.log")
+        self.yosys = _mock_main_yosys(self.td, self.transcript)
+
+    def tearDown(self):
+        self._td.cleanup()
+
+    def run_full(self, transcript):
+        """main() --mode full over `transcript`: (rc, stdout, report)."""
+        with open(self.transcript, "w", encoding="utf-8") as f:
+            f.write(transcript)
+        outdir = os.path.join(self.td, "out")
+        out = StringIO()
+        with redirect_stdout(out):
+            rc = _storage_probe_synth().main(
+                ["--yosys", self.yosys, "--liberty", self.liberty,
+                 "--outdir", outdir, "--mode", "full", "--skip-smoke",
+                 "--no-macros"])
+        with open(os.path.join(outdir, "storage_synth_report.json"),
+                  "r", encoding="utf-8") as f:
+            return rc, out.getvalue(), json.load(f)
+
+    def test_synthparse_main_absent_area_lines_exits_1_not_typeerror(self):
+        """POSITIVE (regression): with the flop count one short of the gate
+        and the chip and/or dff area line absent, main() returns 1, prints
+        its summary with n/a and keeps null areas in the report."""
+        cases = {
+            "chip-absent": (False, True, None, MOCK_DFF_AREA),
+            "dff-absent": (True, False, MOCK_CHIP_AREA, None),
+            "both-absent": (False, False, None, None),
+        }
+        for case, (chip, seq, want_chip, want_dff) in cases.items():
+            with self.subTest(case=case):
+                rc, out, rep = self.run_full(mock_full_transcript(
+                    MOCK_SHORT_FLOPS, chip=chip, seq=seq))
+                self.assertEqual(rc, 1, out)
+                want_bit = (f"{MOCK_CHIP_AREA / STATE_BITS_WITH_PATCH:.2f}"
+                            if chip else "0.00")
+                self.assertIn(
+                    f"full mapped: dff {MOCK_SHORT_FLOPS} "
+                    f"({fmt_area_text(want_dff)} um2), chip "
+                    f"{fmt_area_text(want_chip)} um2, "
+                    f"{want_bit} um2/state-bit all-in", out)
+                self.assertIn("gate full: FAIL "
+                              f"(mapped flops {MOCK_SHORT_FLOPS})", out)
+                self.assertIn("report:", out)
+                self.assertEqual(rep["status"], "FAIL")
+                self.assertEqual(rep["gates"]["full"]["status"], "FAIL")
+                self.assertEqual(rep["runs"]["full"]["dff_total"],
+                                 MOCK_SHORT_FLOPS)
+                self.assertEqual(rep["runs"]["full"]["chip_area_um2"],
+                                 want_chip)
+                self.assertEqual(rep["runs"]["full"]["dff_area_um2"],
+                                 want_dff)
+
+    def test_synthparse_main_present_area_summary_text_unchanged(self):
+        """With both area lines present and the gate passing, the summary
+        text is the pre-#299 `X.X um2` form byte for byte and the exit code
+        is the documented 0."""
+        rc, out, rep = self.run_full(mock_full_transcript())
+        self.assertEqual(rc, 0, out)
+        self.assertEqual(rep["status"], "PASS")
+        self.assertEqual(rep["runs"]["full"]["chip_area_um2"],
+                         MOCK_CHIP_AREA)
+        self.assertEqual(rep["runs"]["full"]["dff_area_um2"], MOCK_DFF_AREA)
+        self.assertIn(
+            f"full mapped: dff {MOCK_GATE_FLOPS} "
+            f"({MOCK_DFF_AREA:.1f} um2), chip {MOCK_CHIP_AREA:.1f} um2, "
+            f"{MOCK_CHIP_AREA / STATE_BITS_WITH_PATCH:.2f}"
+            " um2/state-bit all-in", out)
 
 
 if __name__ == "__main__":

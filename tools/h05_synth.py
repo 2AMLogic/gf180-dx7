@@ -53,7 +53,8 @@ from yosys_run import (  # noqa: E402
     rom_representation as shared_rom_representation,
     yosys_version as _yosys_version)
 from probe_synth import (  # noqa: E402
-    ProbeSynthSpec, run_probe_synth_cli, run_probe_yosys)
+    ProbeSynthSpec, fmt_area, run_probe_synth_cli,
+    run_probe_yosys)
 
 
 def declared_state_bits(repo_root):
@@ -151,7 +152,8 @@ def _print_summary(gates, runs, declared, declared_extra, out_json):
         rom = st["rom_representation"]["representation"]
         print(f"full mapped: flops {st['flop_total']} (declared state bits "
               f"{declared}), cells {st['cell_total']}, chip "
-              f"{st['chip_area_um2']:.1f} um2 (seq {st['seq_area_um2']:.1f}),"
+              f"{fmt_area(st['chip_area_um2'])} um2 "
+              f"(seq {fmt_area(st['seq_area_um2'])}),"
               f" ROM as {rom}")
     print(f"report: {out_json}")
 

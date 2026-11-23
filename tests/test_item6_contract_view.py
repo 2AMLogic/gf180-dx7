@@ -25,6 +25,25 @@ PROPOSED = """\
 - **Date:** 2026-09-20
 """
 
+# The #302 measurement: ratifying the real wording by editing only the
+# leading word leaves the by-default continuation inside the bullet, so the
+# whole-bullet qualifier rule under-reports it. The ratification edit must
+# reword the bullet itself, as REWORDED does.
+LEADING_WORD_RATIFIED = PROPOSED.replace(
+    "**Status:** Proposed (owner sign-off requested",
+    "**Status:** Ratified (owner sign-off requested",
+    1,
+)
+
+REWORDED = """\
+- **Status:** Ratified (owner sign-off requested on the clock-target choice:
+  24.576 MHz design point with the 12.288 MHz fallback recorded as
+  worst-case-infeasible)
+- **Remaining terms:** Accepted-by-default per D00 section 0 unless the
+  owner rules otherwise
+- **Date:** 2026-09-20
+"""
+
 
 class Item6ContractViewTest(unittest.TestCase):
     def assert_matches_sources(self, view, dr_text):
@@ -74,6 +93,10 @@ class Item6ContractViewTest(unittest.TestCase):
 
     def test_proposed_with_accepted_by_default(self):
         self.assertEqual(derive_status(PROPOSED), "proposed")
+
+    def test_leading_word_ratification_of_real_dr0008_is_under_reported(self):
+        self.assertEqual(derive_status(LEADING_WORD_RATIFIED), "accepted-by-default")
+        self.assertEqual(derive_status(REWORDED), "ratified")
 
     def test_accepted_and_ratified_decisions(self):
         for word in ("Accepted", "Ratified"):

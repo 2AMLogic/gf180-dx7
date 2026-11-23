@@ -982,6 +982,12 @@ def main(argv=None):
               f"({stats['writes']} writes) -> {vectors_path}")
         return 0
 
+    try:
+        ident = iverilog_version(args.iverilog, CouldNotRun)
+    except CouldNotRun as exc:
+        print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
+        return 2
+
     report = {
         "schema": "h06-compare-report/1",
         "issue": 28,
@@ -1009,7 +1015,7 @@ def main(argv=None):
                          for v in sin_table_values())).hexdigest(),
         },
         "tool_identity": {
-            "iverilog": iverilog_version(args.iverilog, CouldNotRun),
+            "iverilog": ident,
             "python": sys.version.split()[0],
             "rtl": {p: sha256_file(os.path.join(REPO_ROOT, p))
                     for p in (RTL_REL, TB_REL)},

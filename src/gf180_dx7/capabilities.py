@@ -224,6 +224,21 @@ CHECKS = {
         ),
         skip_token="GUARDED_SKIP",
     ),
+    "rtl-exact-v1": Check(
+        ("python3", "tools/functional_verification.py"),
+        (
+            "tools/functional_verification.py",
+            "tools/fv_cocotb_dx7_core.py",
+            "tools/h07_compare.py",
+            "tools/host_frozen_int.py",
+            "tools/n08_build_release.py",
+            "tools/registry_coverage.py",
+            "tools/registry_smoke.py",
+            "tools/sha256_helpers.py",
+            "tools/verdict_errors.py",
+        ),
+        skip_token="GUARDED_SKIP",
+    ),
 }
 
 # The judge's own bytes participate in every node's coverage: changing the

@@ -2254,7 +2254,7 @@
   },
   {
    "path": "tools/repin.py",
-   "sha256": "9c48e886c1524fbc5e4cff608abf65a4b239b64fdefbd3a07f5f2ab8be72f893",
+   "sha256": "a07a3762240cac69447721d866d209626c8d989da43d463d6c6be3b2263494bc",
    "reason": "locally authored pin recompute helper (issue #326): rewrites only catalog sha256 digests from the tree and delegates --stamp to compile_capabilities.py; no upstream bytes"
   }
  ]

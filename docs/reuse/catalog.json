@@ -1295,7 +1295,7 @@
   {
    "path": "tools/check_reuse.py",
    "sha256": "7194f486a283b3b59b998ebc4776efdafd102404749373fd9c8f500ad4e71829",
-   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition re-pinned after the indent=1 byte-compatible --union-merge writer (issue #329); re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited)"
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited); re-pinned after the indent=1 byte-compatible --union-merge writer (issue #329)"
   },
   {
    "path": "tools/sha256_helpers.py",

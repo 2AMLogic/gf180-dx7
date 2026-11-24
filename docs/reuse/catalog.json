@@ -1294,8 +1294,8 @@
   },
   {
    "path": "tools/check_reuse.py",
-   "sha256": "11b021d39c7746bda0e6eb9575ad318de8b4fc437a2509255d74ac8ea989cb69",
-   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "873aeefd5d5ef03507fce03444b0b8ebd1a42c2fc8f8099c50199ad94e9fb0b1",
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited)"
   },
   {
    "path": "tools/sha256_helpers.py",
@@ -1855,7 +1855,7 @@
   {
    "path": "tools/verdict_errors.py",
    "sha256": "b75ec96d9c4ca4517f0db41d53f737728b9b6516c783e131c30549738f914e8f",
-   "reason": "locally authored shared verdict exceptions (issue #176): the byte-identical CheckFailure (exit 1) / CouldNotRun (exit 2) class pair copy-pasted into twelve locally authored tool scripts (and CouldNotRun into tools/h10_synth.py) moved verbatim so every tool shares one class object; tools/check_reuse.py keeps its own standalone pair; no upstream source, no upstream bytes, stdlib only"
+   "reason": "locally authored shared verdict exceptions (issue #176): the byte-identical CheckFailure (exit 1) / CouldNotRun (exit 2) class pair copy-pasted into twelve locally authored tool scripts (and CouldNotRun into tools/h10_synth.py) moved verbatim so every tool shares one class object; tools/check_reuse.py's standalone pair folded in here too (issue #324); no upstream source, no upstream bytes, stdlib only"
   },
   {
    "path": "tools/yosys_run.py",

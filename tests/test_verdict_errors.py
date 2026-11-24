@@ -22,6 +22,9 @@ CHECK_AND_RUN = (
     "tools/h06_compare.py", "tools/h06_synth.py", "tools/h07_compare.py",
     "tools/h07_synth.py", "tools/h08_synth.py",
     "tools/storage_probe_synth.py",
+    "tools/check_artifact_manifests.py", "tools/check_fv_pins.py",
+    "tools/check_reuse.py", "tools/check_signoff_hashes.py",
+    "tools/store_evidence.py",
 )
 RUN_ONLY = ("tools/h10_synth.py",)
 

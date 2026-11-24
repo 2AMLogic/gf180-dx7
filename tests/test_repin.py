@@ -126,6 +126,18 @@ class RepinTest(unittest.TestCase):
             f.write("<<<<<<< HEAD\n{}\n=======\n{}\n>>>>>>> x\n")
         self.assertEqual(self.run_tool("repin.py").returncode, 2)
 
+    def test_conflicted_stamp_record_could_not_run_catalog_untouched(self):
+        self.write("tools/a.py", b"print(2)\n")  # drift a pin: catalog would be rewritten
+        rec = os.path.join(self.d, "evidence", "capabilities", "rtl-core.json")
+        os.makedirs(os.path.dirname(rec), exist_ok=True)
+        with open(rec, "w") as f:
+            f.write("<<<<<<< HEAD\n{}\n=======\n{}\n>>>>>>> x\n")
+        before = open(self.cat_path, "rb").read()
+        proc = self.run_tool("repin.py")
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("COULD-NOT-RUN", proc.stderr)
+        self.assertEqual(before, open(self.cat_path, "rb").read())
+
 
 if __name__ == "__main__":
     unittest.main()

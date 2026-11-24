@@ -35,10 +35,12 @@ the same tool both sides are right for their own tree and neither for the
 merged one, so the only correct resolution is to recompute.
 
 1. Resolve the code hunks in `tools/` by hand as usual.
-2. For `docs/reuse/catalog.json` and `evidence/capabilities/rtl-core.json`
-   take either side (`git checkout --ours|--theirs <file>`); for the catalog,
-   keep any new entries from both sides (`tools/check_reuse.py --union-merge`
-   does the union).
+2. For `evidence/capabilities/rtl-core.json` take either side
+   (`git checkout --ours|--theirs <file>`). Leave `docs/reuse/catalog.json`
+   **conflicted**: `tools/check_reuse.py --union-merge` reads the markers (and
+   `HEAD` / `MERGE_HEAD`) to keep new entries from both sides, and reports
+   `no conflict` without doing anything once they are gone, so never
+   `checkout --ours|--theirs` the catalog.
 3. Run `python3 tools/repin.py --stamp`. It rewrites only the drifted
    `sha256` digests in the catalog (never `reason`), lists stale `rtl-core`
    coverage entries, then runs

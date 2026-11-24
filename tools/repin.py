@@ -86,8 +86,12 @@ def stale_coverage(root):
     path = os.path.join(root, STAMP_RECORD)
     if not os.path.isfile(path):
         return []
-    with open(path, "r", encoding="utf-8") as f:
-        coverage = json.load(f).get("coverage", {})
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            coverage = json.load(f).get("coverage", {})
+    except json.JSONDecodeError as exc:
+        raise CouldNotRun(f"{STAMP_RECORD} unreadable "
+                          f"(unresolved conflict?): {exc}")
     stale = []
     for rel, digest in sorted(coverage.items()):
         full = os.path.join(root, rel)
@@ -104,8 +108,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     root = os.path.abspath(args.root)
     try:
-        changed = repin_catalog(root)
+        # Read-only check first: a failure here must not leave the catalog
+        # half-written with no record of what changed.
         stale = stale_coverage(root)
+        changed = repin_catalog(root)
     except CouldNotRun as exc:
         print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
         return 2

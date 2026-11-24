@@ -563,9 +563,10 @@ def main(argv=None):
 
         eq_ok = args.mutants_only or \
             report["equivalence"]["status"] == "PASS"
-        nc_ok = args.skip_mutants or args.mutants_only or all(
-            v["status"].startswith("MET")
-            for v in report.get("negative_controls", {}).values())
+        nc_ok = args.skip_mutants or (
+            bool(report.get("negative_controls")) and all(
+                v["status"].startswith("MET")
+                for v in report["negative_controls"].values()))
         status = "PASS" if (eq_ok and nc_ok) else "FAIL"
         report["status"] = status
     except CouldNotRun as exc:

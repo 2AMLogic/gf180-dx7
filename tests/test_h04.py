@@ -281,6 +281,11 @@ class TestEquivalence(unittest.TestCase):
             self.assertGreater(nc["mismatches"], 0)
             self.assertIsNotNone(nc["first_mismatch"])
             self.assertIn("fields", nc["first_mismatch"])
+        # issue #315: with both requested controls detected, the same
+        # --mutants-only invocation writes top-level PASS and exits 0
+        self.assertEqual(rep["status"], "PASS")
+        self.assertNotIn("equivalence", rep,
+                         "--mutants-only omits the clean equivalence run")
         # the timing mutant must localize its first divergence in the
         # level trajectory (one-frame update shift)
         fm = rep["negative_controls"]["timing"]["first_mismatch"]
@@ -430,6 +435,56 @@ class TestCommittedEvidence(unittest.TestCase):
                     f"regeneration (STALE)")
         finally:
             shutil.rmtree(outdir, ignore_errors=True)
+
+
+class TestMutantsOnlyVerdict(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.iverilog = shutil.which("iverilog")
+        cls.vvp = shutil.which("vvp")
+        missing = []
+        if cls.iverilog is None:
+            missing.append("iverilog not on PATH")
+        if cls.vvp is None:
+            missing.append("vvp not on PATH")
+        cls.reason = ("NOT_RUN (guarded skip): "
+                      + "; ".join(missing) if missing else "")
+        cls.can_run = not missing
+
+    def test_mutants_only_surviving_control_reports_fail(self):
+        """Suppress each mutation in turn. Either survivor must fail the run."""
+        if not self.can_run:
+            self.skipTest(self.reason)
+        cases = (("srm", "-DH04_MUTATE_SRM", "timing"),
+                 ("timing", "-DH04_MUTATE_STEP_SKEW", "srm"))
+        for survivor, drop, other in cases:
+            with self.subTest(survivor=survivor), tempfile.TemporaryDirectory() as tmp:
+                wrapper = os.path.join(tmp, "iverilog-drop-define")
+                with open(wrapper, "w", encoding="utf-8") as f:
+                    f.write(
+                        f"#!{sys.executable}\n"
+                        "import os, sys\n"
+                        f"compiler = {self.iverilog!r}\n"
+                        f"args = [a for a in sys.argv[1:] if a != {drop!r}]\n"
+                        "os.execv(compiler, [compiler] + args)\n")
+                os.chmod(wrapper, 0o755)
+                proc = run_tool(
+                    COMPARE_TOOL,
+                    ["--mutants-only", "--iverilog", wrapper,
+                     "--vvp", self.vvp, "--outdir", tmp],
+                    timeout=1800)
+                self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+                rep = read_json(os.path.join(tmp, "compare_report.json"))
+                self.assertEqual(rep["status"], "FAIL")
+                self.assertNotIn("equivalence", rep)
+                undetected = rep["negative_controls"][survivor]
+                self.assertTrue(undetected["status"].startswith("NOT MET"))
+                self.assertEqual(undetected["mismatches"], 0)
+                self.assertIsNone(undetected["first_mismatch"])
+                detected = rep["negative_controls"][other]
+                self.assertTrue(detected["status"].startswith("MET"))
+                self.assertGreater(detected["mismatches"], 0)
+                self.assertIsNotNone(detected["first_mismatch"])
 
 
 class TestRtlHygiene(unittest.TestCase):

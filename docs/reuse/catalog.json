@@ -1294,8 +1294,8 @@
   },
   {
    "path": "tools/check_reuse.py",
-   "sha256": "7194f486a283b3b59b998ebc4776efdafd102404749373fd9c8f500ad4e71829",
-   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited); re-pinned after the indent=1 byte-compatible --union-merge writer (issue #329)"
+   "sha256": "5ab6cb75d1ce2371ddf69f983bd6da08193f2da2ef5cbcbdb4d41956945e0665",
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited); re-pinned after the indent=1 byte-compatible --union-merge writer (issue #329); re-pinned after the duplicate local_originals path rejection was added to check_originals (issue #328, catalog-only provenance audited); re-pinned at merge"
   },
   {
    "path": "tools/sha256_helpers.py",
@@ -1460,7 +1460,7 @@
   {
    "path": "src/gf180_dx7/model/__init__.py",
    "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
-   "reason": "locally authored N03 model package marker (issue #17); empty docstring only, not a reuse import; re-pinned to the N02 package-marker bytes (same file, later entry records the same hash)"
+   "reason": "locally authored model package marker (issues #16, #17); docstring-only package marker, not a reuse import; duplicate N02/N03 entries merged into one (issue #328); conflict-marker regression repaired after #57 squash (orchestrator)"
   },
   {
    "path": "src/gf180_dx7/model/envelope.py",
@@ -1481,11 +1481,6 @@
    "path": "tools/compile_capabilities.py",
    "sha256": "b88853bd23ddf0ca08f6f598402313e5d7129951d3f09e745354dc99c0d246e4",
    "reason": "locally authored C01 view compiler (issue #45, DR-0004); pattern re-implementation, no upstream bytes. Re-pinned after the issue #206 guarded-skip evidence revision (_run() captures check output and skip counts; records re-stamped); re-pinned after the issue #232 revision (detection consults the declared skip token; _SKIPPED_RE anchored)"
-  },
-  {
-   "path": "src/gf180_dx7/model/__init__.py",
-   "sha256": "d2e5917c35482aa5b6e69c8e1b5907e531456914c7ee3a422c6c24e00060c132",
-   "reason": "locally authored N02 package marker (issue #16); one docstring line, not a reuse import; re-pinned at merge; conflict-marker regression repaired after #57 squash (orchestrator)"
   },
   {
    "path": "src/gf180_dx7/model/tables.py",

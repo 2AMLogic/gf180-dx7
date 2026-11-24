@@ -193,6 +193,43 @@ class CheckReuseTestCase(unittest.TestCase):
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("missing from the tree", proc.stdout)
 
+    def test_duplicate_original_path_fails(self):
+        # issue #328: two local_originals entries for one path are latent
+        # catalog corruption. Both digests match the file on disk, so the
+        # pre-fix checker returned rc 0 here (live negative control).
+        entry = {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
+                 "reason": "local package marker"}
+        catalog = make_catalog(originals=[entry, dict(entry)])
+        tmp = tempfile.mkdtemp(prefix="reuse-check-")
+        write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+              json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
+        write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("src/gf180_dx7/__init__.py", proc.stdout)
+        self.assertIn("duplicate", proc.stdout)
+
+    def test_duplicate_original_path_reports_duplicate_not_drift(self):
+        # differing digests must still surface the duplicate: the duplicate
+        # pin is the catalog defect, not the drift of one of its entries.
+        entry = {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),
+                 "reason": "local package marker"}
+        stale = {"path": "src/gf180_dx7/__init__.py",
+                 "sha256": sha(b"# stale bytes\n"), "reason": "stale pin"}
+        catalog = make_catalog(originals=[stale, entry])
+        tmp = tempfile.mkdtemp(prefix="reuse-check-")
+        write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+              json.dumps(catalog).encode())
+        write(os.path.join(tmp, "src", "comp.py"), UPSTREAM_BYTES)
+        write(os.path.join(tmp, "docs", "dec.md"), b"local prose\n")
+        write(os.path.join(tmp, "src", "gf180_dx7", "__init__.py"), b"")
+        proc = self.run_check(tmp)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("duplicate", proc.stdout)
+        self.assertNotIn("drifted", proc.stdout)
+
     def _compliant_tree(self):
         catalog = make_catalog(originals=[
             {"path": "src/gf180_dx7/__init__.py", "sha256": sha(b""),

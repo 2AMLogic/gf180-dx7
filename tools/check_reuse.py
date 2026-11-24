@@ -10,6 +10,7 @@ Fails when:
     SHA-256 (adopt) or the recorded adapted SHA-256 (adapt);
   - an adapt destination exists without a recorded adapted SHA-256 (a
     landed import must carry its provenance record in the same PR);
+  - a local_originals path is listed more than once (issue #328);
   - a reject/reference-only/external-oracle-only entry declares a
     destination, or the catalog's hashes disagree with its path lists;
   - (with --verify-upstream) a recorded hash disagrees with the bytes at the
@@ -216,8 +217,21 @@ def check_originals(repo_root, originals):
 
     Exemptions alone would pass any file once listed; originals carry a
     recorded sha256 that must keep matching, so local code stays inside the
-    drift-detection coverage set.
+    drift-detection coverage set. A path listed more than once is rejected
+    before any digest is compared (issue #328): duplicate entries are latent
+    catalog corruption even when both digests match, and they break the
+    exactly-one-pin assumption other tooling makes.
     """
+    counts = {}
+    for entry in originals:
+        rel = entry["path"]
+        counts[rel] = counts.get(rel, 0) + 1
+    for rel in sorted(counts):
+        if counts[rel] > 1:
+            raise CheckFailure(
+                f"duplicate local_originals entry: {rel} is listed "
+                f"{counts[rel]} times in docs/reuse/catalog.json; merge the "
+                f"entries into one")
     for entry in originals:
         rel = entry["path"]
         path = os.path.join(repo_root, rel)

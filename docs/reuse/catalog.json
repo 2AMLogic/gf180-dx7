@@ -1759,8 +1759,8 @@
   },
   {
    "path": "tools/h04_compare.py",
-   "sha256": "7d443eb3d5de68e9c66cedab36212d7234805844263a8d3bbba581e799f60b08",
-   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited); contradictory mode-flag pairs rejected via argparse mutually-exclusive groups (issue #312, locally authored, no upstream bytes)"
+   "sha256": "0ef699a0cc565cd9db45bbf095d801819b2ef4144cd6c7ebdd614b16741abc6e",
+   "reason": "locally authored H04 conformance harness (issue #26): golden vectors from the frozen envelope model over the directed battery (>= 3,000 frame steps incl. worst-rate updates), iverilog run, BIT-EXACT compare with first-mismatch localization (command, field), measured step-cycle gate vs the H03 budget, and both mutant negative controls; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited); contradictory mode-flag pairs rejected via argparse mutually-exclusive groups (issue #312, locally authored, no upstream bytes); issue #315: --mutants-only no longer short-circuits the negative-control verdict (the h01/h06 guard) -- a surviving NOT-MET control now yields top-level FAIL and exit 1, keeping the bypass only for explicitly skipped controls and the omitted equivalence run"
   },
   {
    "path": "tools/h04_synth.py",
@@ -1769,8 +1769,8 @@
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "77a3a4df1a5b477e709b348332322daa6d2919b7f11becee3407d7f8f38334cc",
-   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; mutually-exclusive mode-flag rejection test added (issue #312, locally authored, no upstream bytes)"
+   "sha256": "615834e330bdb1ec7c197c6475453cce62f15d8595583fc88bb2be784ea48869",
+   "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; mutually-exclusive mode-flag rejection test added (issue #312, locally authored, no upstream bytes); issue #315: tests --mutants-only with timing and SRM suppressed individually, checking both control results and the overall verdict for each survivor and for both mutations detected"
   },
   {
    "path": "docs/H04-ENV-RTL.md",
@@ -1799,7 +1799,7 @@
   },
   {
    "path": "tools/h05_compare.py",
-   "sha256": "c716b01d241233aa02bb3c6c10f8e887f6c6495481728211e3ea893782dd00cd",
+   "sha256": "ee3768002aa23d5b66dd4bce473baa71b0d662ed1a6d12ccb1fb15c0efff5d2f",
    "reason": "locally authored H05 conformance harness (issue #27); table generator + sha-pin checker, golden generation from the frozen model, bit-exact comparison with first-mismatch localization, oporder/fbsign/fbdelay mutant controls, 0/1/2 exit convention, stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); iverilog -V probe and the compile / vvp run / FAIL and PASS-summary skeleton moved to the locally authored tools/iverilog_run.py (this tool keeps its own CouldNotRun/CheckFailure, defines, plus-args and summary regex) (issue #152, catalog-only provenance audited); CheckFailure/CouldNotRun moved to the locally authored tools/verdict_errors.py and imported (issue #176, catalog-only provenance audited)"
   },
   {
@@ -1809,7 +1809,7 @@
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "bfa89224d0562f178406c99700426c5feeee8107da540320dbd809224097c93f",
+   "sha256": "0d26851ed9f27f939349c70f1426575e1a64fae772ad0b3820f4f1dc2ae811cf",
    "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
   },
   {

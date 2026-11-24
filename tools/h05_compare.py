@@ -445,10 +445,14 @@ def main(argv=None):
                     help="verify the committed table artifact only")
     ap.add_argument("--gen-only", action="store_true",
                     help="write program + gen report, no simulation")
-    ap.add_argument("--skip-mutants", action="store_true",
-                    help="run only the clean conformance build")
-    ap.add_argument("--mutate-only", choices=sorted(MUTANTS), default=None,
-                    help="run only one negative-control mutant build")
+    # issue #315: contradictory single-mode selectors (one skips the
+    # conformance run, the other's verdict reads it) -- reject the pair at
+    # parse time instead of dying on a missing report key after the run
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--skip-mutants", action="store_true",
+                      help="run only the clean conformance build")
+    mode.add_argument("--mutate-only", choices=sorted(MUTANTS), default=None,
+                      help="run only one negative-control mutant build")
     ap.add_argument("--iverilog", default="iverilog")
     ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)

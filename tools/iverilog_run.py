@@ -12,7 +12,6 @@ tool raises is unchanged. The parser raises the shared
 object). Stdlib only.
 """
 
-import argparse
 import json
 import os
 import re

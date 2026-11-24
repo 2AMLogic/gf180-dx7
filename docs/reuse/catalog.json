@@ -1874,7 +1874,7 @@
   },
   {
    "path": "tools/iverilog_run.py",
-   "sha256": "e0011f115bbf2b66fa0be4c9dc9f3700ba0ac6c93effe12adb330e3889125a51",
+   "sha256": "256c69090e53ec6f525238d8d48ed84a09ad576fef8aca0919aca4ab1f9fbb49",
    "reason": "locally authored shared iverilog invocation helper (issue #152): the iverilog -V probe and the compile / vvp run / FAIL and PASS-summary check skeleton moved verbatim out of the locally authored tools/h01_compare.py, h04_compare.py, h05_compare.py and h06_compare.py, with the CouldNotRun/CheckFailure classes passed in by each caller; no upstream source, no upstream bytes, stdlib only; parse_hex_rows (the h01/h04/h06 result-file parser, parameterised by column count and width rule; CheckFailure message unchanged), add_common_args (--outdir/--gen-only/--iverilog/--vvp) and write_json_report (indent=1, sort_keys, trailing newline) added so the four compare tools share the result parser and CLI/report-write skeleton; each tool keeps its per-probe flags, report contents and stdout summary (issue #300, catalog-only provenance audited)"
   },
   {

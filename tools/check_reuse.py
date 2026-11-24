@@ -16,8 +16,8 @@ Fails when:
     pinned upstream commit in a local sibling checkout.
 
 Hash equality establishes byte identity only -- it never qualifies a
-component. Exit codes: 0 pass, 1 check failure, 2 could-not-run.
-Stdlib only.
+component. Exit codes: 0 pass, 1 check failure, 2 could-not-run
+(tools/verdict_errors.py). Stdlib only.
 """
 
 import argparse
@@ -38,18 +38,11 @@ VALID_RULINGS = ("adopt", "adapt", "reject", "reference-only",
                  "external-oracle-only")
 
 
-class CheckFailure(Exception):
-    pass
-
-
-class CouldNotRun(Exception):
-    pass
-
-
 _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from sha256_helpers import sha256_file  # noqa: E402,F401
+from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402
 
 
 def load_catalog(repo_root, catalog_path):

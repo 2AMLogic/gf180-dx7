@@ -35,9 +35,7 @@ iverilog/vvp; the message names what is missing). Stdlib only.
 from __future__ import annotations
 
 import argparse
-import json
 import os
-import re
 import sys
 import tempfile
 
@@ -63,7 +61,9 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from verdict_errors import CheckFailure, CouldNotRun  # noqa: E402,F401
 from sha256_helpers import sha256_file  # noqa: E402,F401
-from iverilog_run import compile_and_run, iverilog_version  # noqa: E402
+from iverilog_run import (  # noqa: E402
+    add_common_args, compile_and_run, iverilog_version, parse_hex_rows,
+    write_json_report)
 
 
 def golden_target(level_99: int, outlevel: int) -> int:
@@ -364,33 +364,9 @@ def expected_text(expected):
     return "\n".join(out) + "\n"
 
 
-def parse_result_text(path):
-    rows = []
-    with open(path, "r", encoding="ascii") as f:
-        for lineno, raw in enumerate(f, 1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            parts = line.split()
-            if len(parts) != 7 or any(
-                    len(p) > 8 or
-                    not re.fullmatch(r"[0-9a-fA-F]+", p) for p in parts):
-                raise CheckFailure(
-                    f"{path}:{lineno}: malformed result line {line!r}")
-            rows.append((int(parts[0], 16), int(parts[1], 16),
-                         int(parts[2], 16), int(parts[3], 16),
-                         int(parts[4], 16), int(parts[5], 16),
-                         int(parts[6], 16)))
-    return rows
-
-
 # ---------------------------------------------------------------------------
 # simulation
 # ---------------------------------------------------------------------------
-
-def tool_identity(iverilog):
-    return iverilog_version(iverilog, CouldNotRun)
-
 
 def run_sim(iverilog, vvp, define, tag, outdir):
     """Compile + run the bench; return (actual_rows, meta)."""
@@ -408,7 +384,7 @@ def run_sim(iverilog, vvp, define, tag, outdir):
         r"max_step_cycles=(\d+) max_cmd_cycles=(\d+) "
         r"hazard=(\w+)\)",
         REPO_ROOT, 1800, CouldNotRun, CheckFailure, label=f" ({tag})")
-    rows = parse_result_text(actual_path)
+    rows = parse_hex_rows(actual_path, 7, max_width=8)
     return rows, {
         "bench_cmds": int(m.group(1)),
         "bench_steps": int(m.group(2)),
@@ -454,16 +430,12 @@ def compare_bit_exact(expected, actual, cmds):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--outdir", default=os.path.join(REPO_ROOT, OUTDIR_REL))
-    ap.add_argument("--gen-only", action="store_true",
-                    help="write vectors + expected + gen report, no sim")
+    add_common_args(ap, os.path.join(REPO_ROOT, OUTDIR_REL))
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--skip-mutants", action="store_true",
                       help="skip both negative-control mutant builds")
     mode.add_argument("--mutants-only", action="store_true",
                       help="run only the negative-control mutant builds")
-    ap.add_argument("--iverilog", default="iverilog")
-    ap.add_argument("--vvp", default="vvp")
     args = ap.parse_args(argv)
 
     cmds = build_commands()
@@ -500,16 +472,13 @@ def main(argv=None):
             "vectors_sha256": sha256_file(vectors_path),
             "expected_sha256": sha256_file(expected_path),
         }
-        with open(os.path.join(args.outdir, "gen_report.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(report, f, indent=1, sort_keys=True)
-            f.write("\n")
+        write_json_report(args.outdir, "gen_report.json", report)
         print(f"h04_compare: generated {stats['commands']} commands "
               f"({stats['steps']} frame steps) -> {vectors_path}")
         return 0
 
     try:
-        ident = tool_identity(args.iverilog)
+        ident = iverilog_version(args.iverilog, CouldNotRun)
     except CouldNotRun as exc:
         print(f"COULD-NOT-RUN: {exc}", file=sys.stderr)
         return 2
@@ -608,10 +577,7 @@ def main(argv=None):
         report["error"] = str(exc)
         status = "FAIL"
 
-    with open(os.path.join(args.outdir, "compare_report.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(report, f, indent=1, sort_keys=True)
-        f.write("\n")
+    write_json_report(args.outdir, "compare_report.json", report)
 
     if "equivalence" in report:
         eq = report["equivalence"]

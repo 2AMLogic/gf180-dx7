@@ -310,5 +310,25 @@ class UnionMergeTestCase(unittest.TestCase):
                 "union_merge must write the committed indent=1 format")
 
 
+class CommittedCatalogFormatTestCase(unittest.TestCase):
+    """The committed catalog must stay in the form --union-merge writes
+    (issue #333), so a pin-conflict resolution diffs only changed entries.
+    Serialization-format guard only; it makes no verification claim.
+    """
+
+    CATALOG = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "docs", "reuse", "catalog.json")
+
+    def test_committed_catalog_is_indent1_canonical(self):
+        with open(self.CATALOG, "rb") as f:
+            raw = f.read()
+        canonical = (json.dumps(json.loads(raw), indent=1) + "\n").encode()
+        self.assertEqual(
+            raw, canonical,
+            "docs/reuse/catalog.json must round-trip byte-identically "
+            "through json.dumps(indent=1) + newline")
+
+
 if __name__ == "__main__":
     unittest.main()

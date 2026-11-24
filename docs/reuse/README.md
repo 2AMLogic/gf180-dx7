@@ -25,3 +25,28 @@ byte pin (`sha256`): an exemption alone would pass any file once listed, so
 originals stay inside the drift-detection coverage set — editing a pinned
 original fails the check until the catalog is updated in the same PR
 (judge follow-up on PR #44).
+
+## Resolving pin conflicts (Doctor / Judge recipe)
+
+Pins in `docs/reuse/catalog.json` (`local_originals[].sha256`,
+`adapted_sha256`) and the `coverage` map of
+`evidence/capabilities/rtl-core.json` are *derived* values: when two PRs touch
+the same tool both sides are right for their own tree and neither for the
+merged one, so the only correct resolution is to recompute.
+
+1. Resolve the code hunks in `tools/` by hand as usual.
+2. For `docs/reuse/catalog.json` and `evidence/capabilities/rtl-core.json`
+   take either side (`git checkout --ours|--theirs <file>`); for the catalog,
+   keep any new entries from both sides (`tools/check_reuse.py --union-merge`
+   does the union).
+3. Run `python3 tools/repin.py --stamp`. It rewrites only the drifted
+   `sha256` digests in the catalog (never `reason`), lists stale `rtl-core`
+   coverage entries, then runs
+   `tools/compile_capabilities.py --stamp rtl-core`.
+4. Commit both files.
+
+The stamp costs about 2 minutes (it re-runs the H-probe benches and the
+mutant negative controls); that cost is intrinsic and is not removed.
+`tools/repin.py` without `--stamp` is only the catalog half. A fast-lane
+result, or `--stamp` returning non-PASS, is **not** a stamp; `repin.py`
+propagates the non-zero exit and never reports PASS in that case.

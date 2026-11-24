@@ -2251,6 +2251,11 @@
    "path": "tools/rtl_core_check.py",
    "sha256": "59f40eba206e2405b84d126eb50a0895abf090c4987d0470e163b6ada89b6100",
    "reason": "locally authored rtl-core capability check (issue #275): runs the four H01/H04/H05/H06 comparison drivers into separate scratch directories with every bench negative control live, reads each fresh compare_report.json back and prints one summary line per module; verdict composition FAIL on any measured mismatch, else NOT_RUN (GUARDED_SKIP) when a bench could not run, else exit 0; no upstream bytes, stdlib only"
+  },
+  {
+   "path": "tools/repin.py",
+   "sha256": "f09b767678b04426d80995a79c9c28a429a5ca8a0e5e773191bea93b122f1f1e",
+   "reason": "locally authored pin recompute helper (issue #326): rewrites only catalog sha256 digests from the tree and delegates --stamp to compile_capabilities.py; no upstream bytes"
   }
  ]
 }

@@ -272,5 +272,100 @@ class CheckReuseTestCase(unittest.TestCase):
         self.assertIn("asic/orfs/results/x.v", proc.stdout)
 
 
+class UnionMergeTestCase(unittest.TestCase):
+    """--union-merge output contract (issue #329).
+
+    The resolver must write the committed catalog format (indent=1, one
+    trailing newline) so a pin-conflict resolution diffs only the entries
+    that actually changed, never the whole governance record; and it must
+    annotate the reason of every entry it re-pins, the behaviour step 2 of
+    docs/reuse/README.md states.
+    """
+
+    def git(self, repo, *args, expect=0):
+        proc = subprocess.run(["git", "-C", repo] + list(args),
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, expect, proc.stdout + proc.stderr)
+        return proc
+
+    def test_union_merge_writes_committed_format_and_annotates_repins(self):
+        pinned, probe_a, probe_b = ("src/pinned_tool.py", "src/probe_a.py",
+                                    "src/probe_b.py")
+        old_bytes, new_bytes = b"old bytes\n", b"old bytes\n# merged edit\n"
+        tmp = tempfile.mkdtemp(prefix="reuse-union-")
+        self.git(tmp, "init", "-q")
+        self.git(tmp, "config", "user.email", "t@example.com")
+        self.git(tmp, "config", "user.name", "t")
+        self.git(tmp, "config", "commit.gpgsign", "false")
+        self.git(tmp, "config", "merge.gpgsign", "false")
+
+        def commit_catalog(catalog):
+            write(os.path.join(tmp, "docs", "reuse", "catalog.json"),
+                  (json.dumps(catalog, indent=1) + "\n").encode())
+            self.git(tmp, "add", "-A")
+            self.git(tmp, "commit", "-q", "-m", "catalog")
+
+        def originals(*entries):
+            return {"schema_version": 1, "local_originals": list(entries),
+                    "components": []}
+
+        x_old = {"path": pinned, "sha256": sha(old_bytes), "reason": "pin me"}
+        x_new = dict(x_old, sha256=sha(new_bytes))
+        entry_a = {"path": probe_a, "sha256": sha(b"# probe a\n"),
+                   "reason": "side a adds a pin"}
+        entry_b = {"path": probe_b, "sha256": sha(b"# probe b\n"),
+                   "reason": "side b adds a pin"}
+
+        self.git(tmp, "symbolic-ref", "HEAD", "refs/heads/main")
+        write(os.path.join(tmp, pinned), old_bytes)
+        commit_catalog(originals(x_old))
+        self.git(tmp, "checkout", "-q", "-b", "side-a")
+        write(os.path.join(tmp, pinned), new_bytes)
+        write(os.path.join(tmp, probe_a), b"# probe a\n")
+        commit_catalog(originals(x_new, entry_a))
+        self.git(tmp, "checkout", "-q", "-b", "side-b", "main")
+        write(os.path.join(tmp, probe_b), b"# probe b\n")
+        commit_catalog(originals(x_old, entry_b))
+        self.git(tmp, "checkout", "-q", "side-a")
+        self.git(tmp, "merge", "--no-edit", "side-b", expect=1)
+
+        cat = os.path.join(tmp, "docs", "reuse", "catalog.json")
+        with open(cat) as f:
+            self.assertIn("<<<<<<<", f.read())  # recipe: leave conflicted
+        proc = subprocess.run(
+            [sys.executable, CHECKER, "--union-merge", "--catalog", cat],
+            capture_output=True, text=True, cwd=tmp)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("re-pinned: " + pinned, proc.stdout)
+
+        x_merged = {"path": pinned, "sha256": sha(new_bytes),
+                    "reason": "pin me; re-pinned at merge"}
+        expected = originals(x_merged, entry_b, entry_a)
+        with open(cat, "rb") as f:
+            self.assertEqual(
+                f.read(), (json.dumps(expected, indent=1) + "\n").encode(),
+                "union_merge must write the committed indent=1 format")
+
+
+class CommittedCatalogFormatTestCase(unittest.TestCase):
+    """The committed catalog must stay in the form --union-merge writes
+    (issue #333), so a pin-conflict resolution diffs only changed entries.
+    Serialization-format guard only; it makes no verification claim.
+    """
+
+    CATALOG = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "docs", "reuse", "catalog.json")
+
+    def test_committed_catalog_is_indent1_canonical(self):
+        with open(self.CATALOG, "rb") as f:
+            raw = f.read()
+        canonical = (json.dumps(json.loads(raw), indent=1) + "\n").encode()
+        self.assertEqual(
+            raw, canonical,
+            "docs/reuse/catalog.json must round-trip byte-identically "
+            "through json.dumps(indent=1) + newline")
+
+
 if __name__ == "__main__":
     unittest.main()

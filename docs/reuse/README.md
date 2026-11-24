@@ -40,7 +40,12 @@ merged one, so the only correct resolution is to recompute.
    **conflicted**: `tools/check_reuse.py --union-merge` reads the markers (and
    `HEAD` / `MERGE_HEAD`) to keep new entries from both sides, and reports
    `no conflict` without doing anything once they are gone, so never
-   `checkout --ours|--theirs` the catalog.
+   `checkout --ours|--theirs` the catalog. `--union-merge` re-pins any
+   `local_originals` entry whose file drifted during the merge and appends
+   `; re-pinned at merge` to that entry's `reason` — the only step that ever
+   touches `reason` — and rewrites the catalog in the committed one-space
+   indent, so the merge diff stays proportional to the entries that actually
+   changed.
 3. Run `python3 tools/repin.py --stamp`. It rewrites only the drifted
    `sha256` digests in the catalog (never `reason`), lists stale `rtl-core`
    coverage entries, then runs

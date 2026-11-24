@@ -4,7 +4,8 @@
 Usage:
   tools/repin.py            re-pin docs/reuse/catalog.json sha256 values from the
                             tree; report stale evidence/capabilities/rtl-core.json
-                            coverage entries (report only, never edited here)
+                            coverage entries (report only, never edited here);
+                            an absent record reports NOT_RUN, never "0 stale"
   tools/repin.py --stamp    additionally run
                             `tools/compile_capabilities.py --stamp rtl-core`
                             (~2 min: re-runs the benches and negative controls)
@@ -82,10 +83,14 @@ def repin_catalog(root):
 
 
 def stale_coverage(root):
-    """Paths whose rtl-core coverage digest no longer matches the tree."""
+    """Paths whose rtl-core coverage digest no longer matches the tree.
+
+    Returns None when the stamp record is absent: a check that did not
+    run is NOT_RUN, never "0 stale entries" (CLAUDE.md reporting rule).
+    """
     path = os.path.join(root, STAMP_RECORD)
     if not os.path.isfile(path):
-        return []
+        return None
     try:
         with open(path, "r", encoding="utf-8") as f:
             coverage = json.load(f).get("coverage", {})
@@ -118,11 +123,15 @@ def main(argv=None):
     for rel, old, new in changed:
         print(f"repinned {rel}: {old[:12]} -> {new[:12]}")
     print(f"catalog: {len(changed)} pin(s) updated")
-    print(f"rtl-core coverage: {len(stale)} stale entr"
-          f"{'y' if len(stale) == 1 else 'ies'}"
-          + ("" if not stale else " (stamp required)"))
-    for rel in stale:
-        print(f"  stale: {rel}")
+    if stale is None:
+        print(f"rtl-core coverage: NOT_RUN "
+              f"(no {STAMP_RECORD} record; coverage not checked)")
+    else:
+        print(f"rtl-core coverage: {len(stale)} stale entr"
+              f"{'y' if len(stale) == 1 else 'ies'}"
+              + ("" if not stale else " (stamp required)"))
+        for rel in stale:
+            print(f"  stale: {rel}")
     if not args.stamp:
         return 0
     cmd = [sys.executable, os.path.join(root, "tools", "compile_capabilities.py"),

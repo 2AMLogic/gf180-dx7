@@ -1294,8 +1294,8 @@
   },
   {
    "path": "tools/check_reuse.py",
-   "sha256": "529e783272474cedd06e10ed23b83ffbcac280555c02c71ffecc0a60a1ed80c4",
-   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited); re-pinned after the duplicate local_originals path rejection was added to check_originals (issue #328, catalog-only provenance audited)"
+   "sha256": "5ab6cb75d1ce2371ddf69f983bd6da08193f2da2ef5cbcbdb4d41956945e0665",
+   "reason": "locally authored governance checker (this catalog's negative control); re-pinned after --union-merge addition; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned after the local CheckFailure/CouldNotRun pair was replaced by the shared import from tools/verdict_errors.py (issue #324, catalog-only provenance audited); re-pinned after the indent=1 byte-compatible --union-merge writer (issue #329); re-pinned after the duplicate local_originals path rejection was added to check_originals (issue #328, catalog-only provenance audited); re-pinned at merge"
   },
   {
    "path": "tools/sha256_helpers.py",
@@ -2249,7 +2249,7 @@
   },
   {
    "path": "tools/repin.py",
-   "sha256": "9c48e886c1524fbc5e4cff608abf65a4b239b64fdefbd3a07f5f2ab8be72f893",
+   "sha256": "a07a3762240cac69447721d866d209626c8d989da43d463d6c6be3b2263494bc",
    "reason": "locally authored pin recompute helper (issue #326): rewrites only catalog sha256 digests from the tree and delegates --stamp to compile_capabilities.py; no upstream bytes"
   }
  ]

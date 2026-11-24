@@ -299,6 +299,10 @@ def union_merge(catalog_path):
     Originals: union by path; re-pin any entry whose file content changed.
     Components: union by name; the merged-HEAD side (ours) wins its own rows,
     destination/adapted-hash maps union. Replaces the ad-hoc per-merge script.
+
+    Writes the committed catalog format (indent=1, one trailing newline) so
+    the resolved file diffs only the entries that changed; a re-pinned entry
+    gets "; re-pinned at merge" appended to its reason (issue #329).
     """
     import subprocess as _sp
     raw = open(catalog_path).read()
@@ -344,7 +348,7 @@ def union_merge(catalog_path):
         out.append(b)
     m["components"] = out
     with open(catalog_path, "w") as f:
-        json.dump(m, f, indent=2)
+        json.dump(m, f, indent=1)
         f.write("\n")
     print("union-resolved:", len(m["components"]), "components,",
           len(m["local_originals"]), "originals")

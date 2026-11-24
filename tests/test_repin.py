@@ -84,6 +84,15 @@ class RepinTest(unittest.TestCase):
         old, new = self.originals["tools/a.py"], sha(b"print(2)\n")
         self.assertEqual(before.replace(old, new), after)
 
+    def test_absent_stamp_record_reports_not_run(self):
+        # no evidence/capabilities/rtl-core.json in the tree: the coverage
+        # check did not run and must not read as "0 stale entries" (a pass)
+        r = self.run_tool("repin.py")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("NOT_RUN", r.stdout)
+        self.assertIn("rtl-core.json", r.stdout)
+        self.assertNotIn("0 stale entries", r.stdout)
+
     def test_stale_coverage_reported_not_edited(self):
         rec = os.path.join(self.d, "evidence", "capabilities", "rtl-core.json")
         os.makedirs(os.path.dirname(rec))
@@ -110,6 +119,37 @@ class RepinTest(unittest.TestCase):
         r = self.run_tool("repin.py", "--stamp")
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual(self.read("stamped"), b"--stamp rtl-core")
+
+    def test_adapted_pin_drift_repin_passes_check_reuse(self):
+        # components[].adapted_sha256 path: a drifted adapted file is re-pinned
+        # through the adapted regex, every other byte stays, check_reuse passes
+        os.makedirs(os.path.join(self.d, "rtl"), exist_ok=True)
+        self.write("rtl/mod.v", b"module mod;\nendmodule\n")
+        drifted = sha(b"original adapted bytes\n")
+        cat = json.load(open(self.cat_path))
+        cat["components"].append({
+            "component": "mod-ip", "ruling": "adapt",
+            "upstream": {"repo": "example/ip", "commit": "0" * 40,
+                         "path": ["src/mod.v"]},
+            "sha256": {"src/mod.v": "a" * 64},
+            "destination": ["rtl/mod.v"],
+            "adapted_sha256": {"rtl/mod.v": drifted},
+            "reason": "adapted; every other byte must stay",
+        })
+        with open(self.cat_path, "w") as f:
+            json.dump(cat, f, indent=1)
+        # control: the drifted adapted pin fails check_reuse before repin
+        self.assertEqual(self.run_tool("check_reuse.py").returncode, 1)
+        before = open(self.cat_path).read()
+        r = self.run_tool("repin.py")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("repinned rtl/mod.v", r.stdout)
+        self.assertEqual(self.run_tool("check_reuse.py").returncode, 0)
+        after = open(self.cat_path).read()
+        # exactly the drifted digest changed; all other bytes identical
+        new = sha(b"module mod;\nendmodule\n")
+        self.assertIn(drifted, before)
+        self.assertEqual(before.replace(drifted, new), after)
 
     def test_missing_file_entry_left_alone(self):
         cat = json.load(open(self.cat_path))

@@ -2269,8 +2269,8 @@
   },
   {
    "path": "evidence/h03-event-admission/run_probe.py",
-   "sha256": "d78c930be12a7908f257ec1f4e3433a3d4f56a06df8f9cc7a7f43eacfe17e68b",
-   "reason": "locally authored Verilator 5.050 runner/checker for the H03 SPI event-admission probe (issue #339); stdlib only, no upstream bytes"
+   "sha256": "be916a4ffacc3363609c56984e2b6c11d49290bfebe9e0b5e85656a6a2ece548",
+   "reason": "locally authored Verilator 5.050 runner/checker for the H03 SPI event-admission probe (issue #339); stdlib only, no upstream bytes; issue #349: a failed bench build is raised as a distinct BuildFailure and reported as exit 3 so the live test can tell an unusable C++ toolchain (NOT_RUN) from a project regression (FAIL)"
   },
   {
    "path": "evidence/h03-event-admission/results.json",
@@ -2279,8 +2279,8 @@
   },
   {
    "path": "tests/test_h03_admission_probe.py",
-   "sha256": "670da90f3b3eb1cac6c4e7439abc6dde5a33ebcd89d96073ff89a24f7dcceb2c",
-   "reason": "locally authored wave-lane live Verilator reproduction test for evidence/h03-event-admission/results.json (issue #339); guarded-skips NOT_RUN without verilator; no upstream bytes"
+   "sha256": "d214d881e44e559b1cd8738996b20d0d7a140096fd47e01665480aca36921ca3",
+   "reason": "locally authored wave-lane live Verilator reproduction test for evidence/h03-event-admission/results.json (issue #339); guarded-skips NOT_RUN without verilator; no upstream bytes; issue #349: a failed bench build is diagnosed through the locally authored tests/vlt_toolchain.py (toolchain failure -> NOT_RUN naming the host and compiler fix, project or inconclusive -> FAIL with the runner's diagnostic), with Verilator-independent verdict-mapping regression cases"
   },
   {
    "path": "tests/oracle_harness.py",

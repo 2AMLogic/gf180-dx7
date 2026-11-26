@@ -7,7 +7,9 @@ Modes:
             options, source hashes and frame-by-frame results. Build parallelism
             (-j) may vary by host. The recorded Verilator version describes the
             original capture so other versions can also check the same results.
-            Exits 2 on missing verilator.
+            Exits 2 on missing verilator and 3 on a failed bench build (before
+            any probe case runs), so the caller can tell a bench that could
+            not run from one that ran and disagreed.
 
 Stdlib only.
 """
@@ -29,6 +31,13 @@ EVIDENCE_DIR = Path(__file__).resolve().parent
 TB_PATH = EVIDENCE_DIR / "tb_event_admission.sv"
 RESULTS_PATH = EVIDENCE_DIR / "results.json"
 BUILD_DIR = Path("build/h03-admission")
+
+
+class BuildFailure(RuntimeError):
+    """The Verilator bench build failed, so no probe case has run."""
+
+    EXIT_CODE = 3
+
 
 SOURCES = (
     "rtl/dx7_core.v",
@@ -181,7 +190,7 @@ def build_and_run(jobs: int = 2) -> dict:
         build_cmd, cwd=str(REPO_ROOT), capture_output=True, text=True, check=False
     )
     if proc.returncode != 0:
-        raise RuntimeError(
+        raise BuildFailure(
             f"verilator build failed (exit {proc.returncode}):\n"
             f"{proc.stdout[-2000:]}\n{proc.stderr[-2000:]}"
         )
@@ -256,7 +265,16 @@ def main(argv: list[str] | None = None) -> int:
         print("NOT_RUN: verilator not found on PATH", file=sys.stderr)
         return 2
 
-    fresh = build_and_run(jobs=args.jobs)
+    try:
+        fresh = build_and_run(jobs=args.jobs)
+    except BuildFailure as exc:
+        print(f"BUILD FAILURE: {exc}", file=sys.stderr)
+        print(
+            "no probe case ran; the toolchain-vs-project diagnosis is in "
+            "tests/test_h03_admission_probe.py",
+            file=sys.stderr,
+        )
+        return BuildFailure.EXIT_CODE
     rendered = json.dumps(fresh, indent=2) + "\n"
     if args.write:
         RESULTS_PATH.write_text(rendered, encoding="utf-8")

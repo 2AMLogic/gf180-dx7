@@ -40,7 +40,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
+sys.path.insert(0, str(REPO / "tests"))
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import compare, sysex  # noqa: E402
 from gf180_dx7.model.poly import (  # noqa: E402
     PolyManager, StealPolicyError, parse_events, render_poly)
@@ -701,20 +703,7 @@ class TestCommittedEvidence(_Base):
 # ---------------------------------------------------------------------------
 
 
-def _oracle():
-    try:
-        from render_reference import check_oracle_binary, load_identity
-        identity = load_identity(REPO / "reference" / "oracle-identity.json")
-        path = Path(identity["binary"]["path"])
-        check_oracle_binary(identity, path)
-        return path
-    except Exception:  # noqa: BLE001 - guarded skip -> NOT_RUN
-        return None
-
-
-ORACLE = _oracle()
-ORACLE_ABSENT = ("pinned oracle binary absent or unpinned; live checks "
-                 "NOT_RUN")
+ORACLE, ORACLE_ABSENT = probe_oracle()
 
 
 @unittest.skipUnless(ORACLE is not None, ORACLE_ABSENT)
@@ -725,25 +714,10 @@ class TestLiveOracle(_Base):
     def setUpClass(cls):
         super().setUpClass()
         from registry_coverage import load_registry
-        from registry_smoke import build_voice
+        cls.renderer = cls.enterClassContext(OracleRenderer(ORACLE, prefix="n07-live-"))
         cls.reg = load_registry(REPO / "spec" /
                                 "compatibility-registry-v1.json")
         cls.cases = {c["id"]: c for c in cls.reg["cases"]}
-
-    def _oracle_render(self, voice_bytes, events, seconds):
-        import subprocess
-        import tempfile
-        with tempfile.TemporaryDirectory(prefix="n07-live-") as td:
-            tmp = Path(td)
-            vp, ep, op = tmp / "v.syx", tmp / "e.txt", tmp / "o.f32"
-            vp.write_bytes(voice_bytes)
-            ep.write_text(events)
-            proc = subprocess.run(
-                [str(ORACLE), "--voice", str(vp), "--events", str(ep),
-                 "--out", str(op), "--rate", "48000",
-                 "--seconds", str(seconds)], capture_output=True, text=True)
-            self.assertEqual(proc.returncode, 0, proc.stderr)
-            return op.read_bytes()
 
     def _case_render(self, cid):
         from registry_smoke import build_voice
@@ -751,8 +725,7 @@ class TestLiveOracle(_Base):
         voice = build_voice(self.reg, case)
         events = "\n".join(case["events"]) + "\n"
         seconds = float(case.get("render_seconds", 1.5))
-        ora = self._oracle_render(sysex.encode_voice(voice), events,
-                                  seconds)
+        ora = self.renderer.render_bytes(sysex.encode_voice(voice), events, seconds)
         model = PolyManager([voice]).render(events, seconds)
         return ora, model
 

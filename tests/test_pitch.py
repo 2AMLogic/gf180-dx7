@@ -30,33 +30,27 @@ bytes are copied.
 from __future__ import annotations
 
 import array
-import hashlib
 import json
 import math
 import os
 import re
-import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-for _p in ("src", "tools"):
+for _p in ("src", "tests", "tools"):
     _q = _REPO / _p
     if str(_q) not in sys.path:
         sys.path.insert(0, str(_q))
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import sysex  # noqa: E402
 from gf180_dx7.model import pitch as P  # noqa: E402
 
 DEXED_ROOT = Path(os.environ.get("DEXED_ROOT", _REPO / ".oracle" / "dexed"))
-ORACLE_ROOT = Path(os.environ.get("DX7_ORACLE_ROOT",
-                                  _REPO / ".oracle" / "dx7-oracle-marki"))
-ORACLE_IDENTITY = json.loads(
-    (_REPO / "reference" / "oracle-identity.json").read_text())
+ORACLE, ORACLE_ABSENT = probe_oracle()
 REGISTRY_EVIDENCE = _REPO / "reference" / "evidence" / "registry-smoke.json"
-TMP_ROOT = "/var/folders/fb/l4j31ymn3bn0mc6v1qbvvl8c0000gn/T/opencode"
 
 SAMPLE_RATE = 48000
 F0_C4 = 261.6255653  # midinote 60, standard tuning A4=440
@@ -160,50 +154,13 @@ def patch_to_syx(p: bytearray) -> bytes:
 # Oracle harness (guarded NOT_RUN: absent/unpinned binary -> skipTest)
 # ---------------------------------------------------------------------------
 
-_ORACLE_BIN = ORACLE_ROOT / "dx7-oracle"
-_ORACLE_OK = None
-
-
-def oracle_ok() -> bool:
-    global _ORACLE_OK
-    if _ORACLE_OK is None:
-        try:
-            digest = hashlib.sha256(_ORACLE_BIN.read_bytes()).hexdigest()
-            _ORACLE_OK = digest == ORACLE_IDENTITY["binary"]["sha256"]
-        except OSError:
-            _ORACLE_OK = False
-    return _ORACLE_OK
-
-
 def render_oracle(tc: unittest.TestCase, patch: bytearray, events: str,
                   seconds: float) -> array.array:
     """One dry f32le render from the pinned oracle (no fidelity claim)."""
-    binary = require_oracle(tc)
-    d = tempfile.mkdtemp(prefix="n05-test", dir=TMP_ROOT)
-    vpath = Path(d, "v.syx")
-    vpath.write_bytes(patch_to_syx(patch))
-    epath = Path(d, "e.txt")
-    epath.write_text(events)
-    opath = Path(d, "o.f32")
-    proc = subprocess.run(
-        [str(binary), "--voice", str(vpath), "--events", str(epath),
-         "--out", str(opath), "--rate", str(SAMPLE_RATE),
-         "--seconds", str(seconds)],
-        capture_output=True, text=True)
-    if proc.returncode != 0:
-        raise AssertionError(f"oracle render failed: {proc.stderr.strip()}")
-    pcm = array.array("f", opath.read_bytes())
-    if len(pcm) != int(SAMPLE_RATE * seconds):
-        raise AssertionError("oracle produced wrong sample count")
-    return pcm
-
-
-def require_oracle(tc: unittest.TestCase) -> Path:
-    if not oracle_ok():
-        tc.skipTest(
-            "NOT_RUN: pinned oracle binary unavailable or hash-drifted at "
-            f"{_ORACLE_BIN}")
-    return _ORACLE_BIN
+    if ORACLE is None:
+        tc.skipTest(ORACLE_ABSENT)
+    with OracleRenderer(ORACLE, prefix="n05-pitch-", rate=SAMPLE_RATE) as renderer:
+        return renderer.render_f32(patch_to_syx(patch), events, seconds)
 
 
 # ---------------------------------------------------------------------------

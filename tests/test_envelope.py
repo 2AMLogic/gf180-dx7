@@ -26,53 +26,28 @@ No fidelity claim: oracle agreement is software-reference agreement only
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import os
-import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-for p in (str(REPO / "src"), str(REPO / "tools")):
+for p in (str(REPO / "src"), str(REPO / "tools"), str(REPO / "tests")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import sysex  # noqa: E402
 from gf180_dx7.model import envelope as E  # noqa: E402
-from render_reference import (  # noqa: E402
-    RENDER_RATE,
-    HarnessFail,
-    HarnessNotRun,
-    check_oracle_binary,
-    load_identity,
-    read_f32,
-)
+from render_reference import RENDER_RATE  # noqa: E402
 
 BLOCK = 64
 DB_PER_DOUBLING = 20.0 * math.log10(2.0)
-ORACLE_ABSENT = "pinned oracle binary absent or unpinned; directed cases NOT_RUN"
-
-IDENTITY_PATH = REPO / "reference" / "oracle-identity.json"
+ORACLE, ORACLE_ABSENT = probe_oracle()
 EVIDENCE_PATH = REPO / "reference" / "evidence" / "n03-envelope" / \
     "directed-results.json"
-
-
-def _oracle():
-    """Return the pinned oracle path after re-hashing it, or None."""
-    try:
-        identity = load_identity(IDENTITY_PATH)
-        path = Path(identity["binary"]["path"])
-        check_oracle_binary(identity, path)
-        return path
-    except (HarnessFail, HarnessNotRun):
-        return None
-
-
-ORACLE = _oracle()
 
 
 # ---------------------------------------------------------------------------
@@ -119,52 +94,13 @@ def target_for(level_99: int, outlevel: int) -> int:
     return (actual if actual >= 16 else 16) << 16
 
 
-class OracleRenderer:
-    """Renders (voice, events) pairs with the pinned oracle; caches by input
-    hash inside one process."""
-
-    def __init__(self, oracle_path):
-        self.oracle = oracle_path
-        self.tmp = tempfile.TemporaryDirectory(prefix="n03-env-")
-        self.cache = {}
-        self.runs = []
-
-    def close(self):
-        self.tmp.cleanup()
-
+class EnvelopeRenderer(OracleRenderer):
     def render(self, voice: sysex.Voice, events, seconds: float):
         voice_bytes = sysex.encode_voice(voice)
         events_text = "".join(
             f"{pos} {cmd} " + " ".join(str(a) for a in args) + "\n"
             for pos, cmd, *args in events)
-        key = (hashlib.sha256(voice_bytes).hexdigest(),
-               hashlib.sha256(events_text.encode()).hexdigest(), seconds)
-        if key in self.cache:
-            return self.cache[key]
-        vpath = Path(self.tmp.name) / f"v-{key[0][:12]}.syx"
-        epath = Path(self.tmp.name) / f"e-{key[1][:12]}.txt"
-        opath = Path(self.tmp.name) / f"o-{key[0][:12]}-{key[1][:12]}.f32"
-        vpath.write_bytes(voice_bytes)
-        epath.write_text(events_text, encoding="utf-8")
-        proc = subprocess.run(
-            [str(self.oracle), "--voice", str(vpath), "--events", str(epath),
-             "--out", str(opath), "--rate", str(RENDER_RATE),
-             "--seconds", str(seconds)], capture_output=True, text=True)
-        if proc.returncode != 0:
-            raise AssertionError(
-                f"oracle failed (exit {proc.returncode}): {proc.stderr}")
-        pcm = read_f32(opath)
-        want = int(RENDER_RATE * seconds)
-        if len(pcm) != want:
-            raise AssertionError(
-                f"oracle produced {len(pcm)} samples, expected {want}")
-        self.runs.append({
-            "voice_sha256": key[0], "events_sha256": key[1],
-            "seconds": seconds,
-            "pcm_sha256": hashlib.sha256(pcm.tobytes()).hexdigest(),
-        })
-        self.cache[key] = pcm
-        return pcm
+        return self.render_f32(voice_bytes, events_text, seconds)
 
 
 # ---------------------------------------------------------------------------
@@ -899,12 +835,11 @@ class TestDirectedOracle(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.renderer = OracleRenderer(ORACLE)
+        cls.renderer = cls.enterClassContext(EnvelopeRenderer(ORACLE, prefix="n03-env-"))
 
     @classmethod
     def tearDownClass(cls):
         DIRECTED_RESULTS["renders"] = cls.renderer.runs
-        cls.renderer.close()
 
     def _finish(self, checker, name, notes=None):
         checker.assert_all()
@@ -1162,12 +1097,9 @@ class TestNegativeControls(unittest.TestCase):
         """The mandated control: substituting a plain 4-stage linear ADSR for
         the DX envelope must fail the directed trace comparison, naming the
         divergent stage."""
-        renderer = OracleRenderer(ORACLE)
-        try:
+        with EnvelopeRenderer(ORACLE, prefix="n03-env-") as renderer:
             pcm = renderer.render(make_voice(self.BASE_CARRIER),
                                   self.BASE_EVENTS, 1.5)
-        finally:
-            renderer.close()
         dx, boundaries, targets, rates, levels, ol, rs = self._base_model()
         lin = LinearAdsr(boundaries, targets, self.B0, self.B1,
                          len(dx)).trace(len(dx))
@@ -1245,12 +1177,9 @@ class TestNegativeControls(unittest.TestCase):
 
     @ORACLE_SKIP
     def test_swapped_rate_level_arrays_fail_trace_comparison(self):
-        renderer = OracleRenderer(ORACLE)
-        try:
+        with EnvelopeRenderer(ORACLE, prefix="n03-env-") as renderer:
             pcm = renderer.render(make_voice(self.BASE_CARRIER),
                                   self.BASE_EVENTS, 1.5)
-        finally:
-            renderer.close()
         rates, levels, ol, rs = E.derive_op_envelope_params(
             self.BASE_CARRIER, 108, 100)
         n = int(1.5 * RENDER_RATE) // BLOCK

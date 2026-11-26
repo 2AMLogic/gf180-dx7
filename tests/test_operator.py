@@ -37,17 +37,17 @@ import json
 import math
 import shutil
 import struct
-import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-_SRC = REPO / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
+for p in (str(REPO / "src"), str(REPO / "tests")):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import compare, sysex  # noqa: E402
 from gf180_dx7.model import operator as op  # noqa: E402
 from gf180_dx7.model import tables as tmod  # noqa: E402
@@ -55,7 +55,7 @@ from gf180_dx7.model import tables as tmod  # noqa: E402
 TABLES_DIR = REPO / "reference" / "tables"
 EVIDENCE_PATH = REPO / "reference" / "evidence" / "n02-operator" / \
     "reference-probe.json"
-ORACLE_IDENTITY = REPO / "reference" / "oracle-identity.json"
+ORACLE, ORACLE_ABSENT = probe_oracle()
 
 RATE = 48000
 SECONDS = 4
@@ -213,40 +213,10 @@ def model_render_f32(logt, expt, lut) -> bytes:
 # --- oracle harness (guarded) --------------------------------------------
 
 
-class _Oracle:
-    def __init__(self) -> None:
-        self.available = False
-        self.skip_reason = ""
-        self.path: Path | None = None
-        try:
-            identity = json.loads(ORACLE_IDENTITY.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            self.skip_reason = f"oracle identity unreadable: {exc}"
-            return
-        path = Path(identity["binary"]["path"])
-        pinned = identity["binary"]["sha256"]
-        if not path.is_file():
-            self.skip_reason = (f"oracle binary absent at {path} (pinned "
-                                f"{pinned[:12]}...)")
-            return
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
-        if actual != pinned:
-            self.skip_reason = (f"oracle identity mismatch: {actual} != "
-                                f"pinned {pinned}")
-            return
-        self.available = True
-        self.path = path
-
-    def render(self, voice_syx: bytes, events_text: str, out: Path) -> None:
-        proc = subprocess.run(
-            [str(self.path), "--voice", str(voice_syx),
-             "--events", str(events_text), "--out", str(out),
-             "--rate", str(RATE), "--seconds", str(SECONDS)],
-            capture_output=True, text=True)
-        if proc.returncode != 0:
-            raise AssertionError(
-                f"oracle render failed (exit {proc.returncode}): "
-                f"{proc.stderr.strip()}")
+def render_probe() -> bytes:
+    with OracleRenderer(ORACLE, prefix="n02-operator-", rate=RATE) as renderer:
+        return renderer.render_bytes(
+            sysex.encode_voice(probe_voice()), PROBE_EVENTS, SECONDS)
 
 
 def _mutated_tables(direction: int) -> tuple[list[int], list[int]]:
@@ -582,24 +552,14 @@ class TestNegativeControls(unittest.TestCase):
             with self.assertRaises(tmod.TableDrift):
                 tmod.load_pinned(td)
 
+    @unittest.skipUnless(ORACLE is not None, ORACLE_ABSENT)
     def test_control_perturbed_table_breaks_reference_probe(self):
         """End-to-end control: a one-entry sinlog mutation must change the
         model render, so the byte-identical reference comparison fails —
         proving the reference probe can detect table drift."""
-        oracle = _Oracle()
-        if not oracle.available:
-            self.skipTest(f"NOT_RUN: {oracle.skip_reason}")
         logt_bad, expt_bad = _mutated_tables(+1)
         lut = op.Freqlut(tmod.freqlut_table())
-        with tempfile.TemporaryDirectory() as td:
-            td = Path(td)
-            voice = td / "voice.syx"
-            voice.write_bytes(sysex.encode_voice(probe_voice()))
-            events = td / "events.txt"
-            events.write_text(PROBE_EVENTS, encoding="utf-8")
-            out = td / "render.f32"
-            oracle.render(voice, events, out)
-            oracle_bytes = out.read_bytes()
+        oracle_bytes = render_probe()
         model_clean = model_render_f32(tmod.sin_log_table(),
                                        tmod.sin_exp_table(), lut)
         model_bad = model_render_f32(logt_bad, expt_bad, lut)
@@ -613,23 +573,12 @@ class TestNegativeControls(unittest.TestCase):
             "perturbed-table render NOT caught: negative control ineffective")
 
 
+@unittest.skipUnless(ORACLE is not None, ORACLE_ABSENT)
 class TestReferenceProbe(unittest.TestCase):
     """Pinned-oracle vs model, single-operator voice, dry f32le, exact."""
 
-    def setUp(self):
-        self.oracle = _Oracle()
-        if not self.oracle.available:
-            self.skipTest(f"NOT_RUN: {self.oracle.skip_reason}")
-
-    def _oracle_render(self, td: Path) -> bytes:
-        voice = td / "voice.syx"
-        voice.write_bytes(sysex.encode_voice(probe_voice()))
-        events = td / "events.txt"
-        events.write_text(PROBE_EVENTS, encoding="utf-8")
-        out = td / "render.f32"
-        self.oracle.render(voice, events, out)
-        data = out.read_bytes()
-        self.assertEqual(len(data), 4 * RATE * SECONDS)
+    def _oracle_render(self) -> bytes:
+        data = render_probe()
         samples = struct.unpack("<%df" % (len(data) // 4), data)
         peak = max((abs(s) for s in samples), default=0.0)
         self.assertGreater(peak, 1e-6,
@@ -643,9 +592,7 @@ class TestReferenceProbe(unittest.TestCase):
         docstring and docs/N02-OPERATOR-MODEL.md section 6); a nonzero
         error is a model defect, never an accepted budget."""
         lut = op.Freqlut(tmod.freqlut_table())
-        with tempfile.TemporaryDirectory() as td:
-            td = Path(td)
-            oracle_bytes = self._oracle_render(td)
+        oracle_bytes = self._oracle_render()
         model_bytes = model_render_f32(tmod.sin_log_table(),
                                        tmod.sin_exp_table(), lut)
         report = compare.compare_streams(oracle_bytes, model_bytes)
@@ -666,9 +613,7 @@ class TestReferenceProbe(unittest.TestCase):
         model_bytes = model_render_f32(tmod.sin_log_table(),
                                        tmod.sin_exp_table(), lut)
         voice_bytes = sysex.encode_voice(probe_voice())
-        with tempfile.TemporaryDirectory() as td:
-            td = Path(td)
-            oracle_bytes = self._oracle_render(td)
+        oracle_bytes = self._oracle_render()
         sinlog_sha = hashlib.sha256(
             struct.pack("<1024H", *tmod.sin_log_table())).hexdigest()
         self.assertEqual(evidence["tables"]["sinlog_table"], sinlog_sha)

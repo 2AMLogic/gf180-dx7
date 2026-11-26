@@ -32,9 +32,8 @@ def _tail(text, n=1500):
     return (text or "")[-n:]
 
 
-def diagnose(vlt, project_output, timeout=600, run=subprocess.run):
-    """Return (verdict, message). `project_output` is the project build's
-    diagnostic text."""
+def diagnose(vlt, timeout=600, run=subprocess.run):
+    """Return (verdict, message) from the independent Verilator smoke probe."""
     tmp = tempfile.mkdtemp(prefix="vlt-smoke-")
     try:
         src = os.path.join(tmp, "smoke_top.v")

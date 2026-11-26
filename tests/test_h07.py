@@ -210,7 +210,7 @@ class SimBinary:
                                   text=True, timeout=1800)
             if proc.returncode != 0:
                 diag = proc.stderr[-2000:]
-                verdict, why = VT.diagnose(vlt, diag)
+                verdict, why = VT.diagnose(vlt)
                 if verdict == VT.TOOLCHAIN:
                     shutil.rmtree(out, ignore_errors=True)
                     raise unittest.SkipTest(

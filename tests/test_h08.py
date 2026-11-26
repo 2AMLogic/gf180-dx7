@@ -263,7 +263,7 @@ class TestH08LiveControls(unittest.TestCase):
             if r.returncode != 0 or not os.path.exists(BIN):
                 # Verilator reports to stderr; surface the real cause.
                 diag = (r.stderr or r.stdout)[-2000:]
-                verdict, why = VT.diagnose("verilator", diag)
+                verdict, why = VT.diagnose("verilator")
                 if verdict == VT.TOOLCHAIN:
                     self.skipTest("NOT_RUN (toolchain): " + why
                                   + "\nproject build diagnostic: " + diag)

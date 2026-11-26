@@ -17,7 +17,11 @@ Sections:
    model-identity check (bundle invalid for the changed tree).
 7. Mutation battery: the committed results are bound to this bundle and
    every mutation is detected; the fast mutations are re-run LIVE and must
-   be caught by the verifier naming the cases.
+   be caught by the verifier naming the cases. The battery CLI resolves its
+   --mutations selector against the registry before anything renders or is
+   written (unknown ids and an explicitly empty selection are rejected with
+   exit 2 and no report), and its exit status, console verdict and report
+   share one result (issue #351).
 8. Challenge record: bound to the bundle, evaluated at the frozen
    thresholds (byte-identical), every preregistered challenge case present
    with AGREE_EXACT at this freeze.
@@ -60,6 +64,18 @@ FAST_CASES = ["dir-base", "ev-repeated-note", "alg4-fb3"]
 # battery covers it; the live control here keeps the fast seams live).
 FAST_MUTATIONS = ["param_shuffle", "wrong_gain", "broken_feedback",
                   "silent_stub"]
+MUTATION_TOOL = REPO / "tools" / "n08_mutations.py"
+
+# --mutations selectors the battery CLI must reject before anything renders
+# (issue #351), each with the fragments its diagnostic must carry: the bad
+# selection is named, and a known id beside a typo is not reported as bad.
+REJECTED_SELECTORS = {
+    "typo_alone": ("silent_stbu", ["'silent_stbu'"]),
+    "typo_beside_known": ("silent_stub,silent_stbu", ["['silent_stbu']"]),
+    "trailing_comma": ("silent_stub,", ["['']"]),
+    "explicitly_empty": ("", ["empty"]),
+    "whitespace_only": (" ", ["empty"]),
+}
 
 
 def _load(path: Path) -> dict:
@@ -271,6 +287,107 @@ class TestMutationBattery(unittest.TestCase):
             self.assertTrue(row["detected"], row["id"])
             self.assertEqual(sorted(row["mismatching_cases"]),
                              sorted(row["cases_rendered"]), row["id"])
+
+
+@unittest.skipUnless(MANIFEST.is_file(),
+                     "reference/release/manifest.json not committed")
+class TestMutationCliSelection(unittest.TestCase):
+    """Battery CLI regression (issue #351): the --mutations selector is
+    resolved against the registry before anything renders or is written,
+    and the exit status, console verdict and report share one result."""
+
+    def _run_cli(self, *argv: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [sys.executable, str(MUTATION_TOOL), *argv],
+            capture_output=True, text=True)
+
+    def _write_valid_report(self, out: Path) -> bytes:
+        """Run the known-only control into `out`; return the valid report."""
+        proc = self._run_cli("--mutations", "silent_stub", "--out", str(out))
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        return out.read_bytes()
+
+    def _assert_rejected(self, selector: str, fragments: list[str],
+                         out: Path) -> None:
+        proc = self._run_cli("--mutations", selector, "--out", str(out))
+        console = proc.stdout + proc.stderr
+        self.assertEqual(proc.returncode, 2, console)
+        self.assertIn("n08_mutations: NOT_RUN", proc.stderr, console)
+        self.assertIn(repr(selector), proc.stderr, console)
+        for fragment in fragments:
+            self.assertIn(fragment, proc.stderr, console)
+        self.assertNotIn("n08_mutations: PASS", console)
+        self.assertNotIn("n08_mutations: FAIL", console)
+
+    def test_rejected_selector_writes_no_report(self):
+        for label, (selector, fragments) in REJECTED_SELECTORS.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as td:
+                out = Path(td) / "report.json"
+                self._assert_rejected(selector, fragments, out)
+                self.assertFalse(out.exists())
+
+    def test_rejected_selector_leaves_a_prior_valid_report_untouched(self):
+        for label, (selector, fragments) in REJECTED_SELECTORS.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as td:
+                out = Path(td) / "report.json"
+                valid = self._write_valid_report(out)
+                self._assert_rejected(selector, fragments, out)
+                self.assertEqual(out.read_bytes(), valid)
+
+    def test_known_only_control_records_both_cases_and_exits_zero(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "known.json"
+            proc = self._run_cli("--mutations", "silent_stub",
+                                 "--out", str(out))
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertIn("n08_mutations: PASS — 1/1 mutation(s) detected",
+                          proc.stdout)
+            record = _load(out)
+            self.assertTrue(record["all_detected"])
+            self.assertEqual([r["id"] for r in record["results"]],
+                             ["silent_stub"])
+            self.assertEqual(record["results"][0]["mismatching_cases"],
+                             ["dir-base", "ev-sustain-pedal"])
+            self.assertEqual(record["bundle_sha256"],
+                             _load(MANIFEST)["bundle_sha256"])
+
+    def test_omitted_selector_runs_the_whole_battery(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "all.json"
+            proc = self._run_cli("--out", str(out))
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            total = len(MUTATIONS)
+            self.assertIn(f"n08_mutations: PASS — {total}/{total} mutation(s) "
+                          "detected", proc.stdout)
+            record = _load(out)
+            self.assertTrue(record["all_detected"])
+            self.assertEqual([r["id"] for r in record["results"]],
+                             [m["id"] for m in MUTATIONS])
+
+    def test_mutation_not_detected_fails_every_verdict_together(self):
+        """A requested mutation that is not shown detected fails the exit
+        status, the console and the report alike. Vehicle: a bundle whose
+        cases exclude the requested mutation's cases, so nothing renders."""
+        with tempfile.TemporaryDirectory() as td:
+            bundle = Path(td) / "bundle"
+            bundle.mkdir()
+            (bundle / "manifest.json").write_text(json.dumps(
+                {"bundle_sha256": "0" * 64, "covered": {"cases": []}}),
+                encoding="utf-8")
+            out = Path(td) / "report.json"
+            proc = self._run_cli("--release-dir", str(bundle),
+                                 "--mutations", "silent_stub",
+                                 "--out", str(out))
+            console = proc.stdout + proc.stderr
+            self.assertEqual(proc.returncode, 1, console)
+            self.assertIn("n08_mutations: FAIL — silent_stub: cases outside "
+                          "the bundle", proc.stdout)
+            self.assertIn("n08_mutations: FAIL — 1 of 1 requested "
+                          "mutation(s) not detected", proc.stdout)
+            self.assertNotIn("n08_mutations: PASS", console)
+            record = _load(out)
+            self.assertEqual(record["results"], [])
+            self.assertFalse(record["all_detected"])
 
 
 @unittest.skipUnless(CHALLENGE.is_file(),

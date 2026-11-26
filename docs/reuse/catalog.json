@@ -1679,8 +1679,8 @@
   },
   {
    "path": "tools/n08_mutations.py",
-   "sha256": "8a299d854c4d753f9f4d23508f883d4ad464574c7d3ad51e960a9ae9e62ceee6",
-   "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle"
+   "sha256": "817ace9c8acadbfc14033e03feba257f159754e4a59ee76a21603bce6265c3cb",
+   "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle; re-pinned after the issue #351 revision (the --mutations selector is resolved against the registry before anything renders or is written: unknown ids and an explicitly empty selection are rejected with exit 2 and no report; the report's all_detected, the console verdict and the exit status derive from one success result)"
   },
   {
    "path": "tools/n08_challenge.py",
@@ -1689,8 +1689,8 @@
   },
   {
    "path": "tests/test_n08_release.py",
-   "sha256": "0d29ef3bae35b2b309c65911e969849a979160fac8df329ecd93b57eab16e3f1",
-   "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation"
+   "sha256": "42015f8ccdefc55c6e5c8532d208a0623b52334f69855cc22a9f53f0a27dcc5e",
+   "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation; re-pinned for issue #351 (battery CLI selector regressions: rejected unknown and empty --mutations selections write no report and leave a prior valid report untouched; known-only control, omitted-selector whole battery, and not-detected verdict agreement cases)"
   },
   {
    "path": "docs/decision-records/0007-release-freeze-v1.md",

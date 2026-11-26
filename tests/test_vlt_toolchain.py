@@ -30,23 +30,23 @@ def fake(build_rc, build_creates=True, run_rc=0, run_out="SMOKE_OK\n",
 
 class TestDiagnose(unittest.TestCase):
     def test_toolchain_failure(self):
-        v, why = VT.diagnose("vlt", "proj", run=fake(1))
+        v, why = VT.diagnose("vlt", run=fake(1))
         self.assertEqual(v, VT.TOOLCHAIN)
         self.assertIn("unrecognized option", why)
         self.assertIn("CXX=", why)
 
     def test_project_failure(self):
-        v, _ = VT.diagnose("vlt", "proj", run=fake(0))
+        v, _ = VT.diagnose("vlt", run=fake(0))
         self.assertEqual(v, VT.PROJECT)
 
     def test_smoke_run_bad_is_inconclusive(self):
-        v, _ = VT.diagnose("vlt", "proj", run=fake(0, run_out="nope"))
+        v, _ = VT.diagnose("vlt", run=fake(0, run_out="nope"))
         self.assertEqual(v, VT.INCONCLUSIVE)
 
     def test_probe_exception_is_inconclusive(self):
-        v, _ = VT.diagnose("vlt", "proj", run=fake(0, raises=OSError("x")))
+        v, _ = VT.diagnose("vlt", run=fake(0, raises=OSError("x")))
         self.assertEqual(v, VT.INCONCLUSIVE)
-        v, _ = VT.diagnose("vlt", "proj", run=fake(
+        v, _ = VT.diagnose("vlt", run=fake(
             0, raises=subprocess.TimeoutExpired("c", 1)))
         self.assertEqual(v, VT.INCONCLUSIVE)
 

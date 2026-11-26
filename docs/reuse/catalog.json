@@ -1739,8 +1739,8 @@
   },
   {
    "path": "docs/decision-records/0008-core-schedule-contract.md",
-   "sha256": "eb39be0783c3eacb2862445d2416dbadf288be47c5d64d4e0d0bde2e9bf5604e",
-   "reason": "Locally authored H03 adoption record (issue #25). On 2026-11-26 the operator ratified the core contract at the 24.576 MHz design point (issue #264) and recorded that the 12.288 MHz fallback exceeds the worst-case schedule budget."
+   "sha256": "4561355df900a96e6b013a5a5d438f9d1da71be33ee567149611641784e64433",
+   "reason": "Locally authored H03 adoption record (issue #25). The operator selected the 24.576 MHz design point (issue #264). The 12.288 MHz fallback fails the specified burst budget. The ratification review records the SPI admission counterexample to the all-frame margin (issue #339)."
   },
   {
    "path": "rtl/env_unit.v",

@@ -3,8 +3,8 @@
 - **DR number:** 0008
 - **Status:** Ratified 2026-11-26 by the operator (attended `/fleet:decide`
   r20, on #264): the 24.576 MHz design point, with the 12.288 MHz fallback
-  recorded as worst-case-infeasible. This record makes no timing-closure
-  claim; H10 owns timing, and DR-0013 defers the physical rows.
+  recorded as worst-case-infeasible under the H03 planning costs. H10 owns
+  timing, and DR-0013 defers the physical rows.
 - **Prior disposition:** before ratification, the contract terms other than
   the clock target were in force under D00 section 0's default acceptance.
 - **Date:** 2026-09-20 (ratified 2026-11-26)
@@ -35,21 +35,15 @@ average — before RTL modules are written. The measured inputs:
 `docs/CONTRACT-CORE-v1.md` + `spec/core-contract-v1.json` are adopted as the
 normative core interface/schedule contract:
 
-1. **Worst-case budget verdict (headline).** The line-by-line per-frame
-   budget demands **17,260 clocks @12.288 MHz against 16,384 available
-   (105.35%, shortfall 876) — 12.288 MHz does NOT close the worst case** —
-   and **17,344 @24.576 MHz against 32,768 (52.93%, margin 15,424) — the
-   design point closes**. The budget accounts every consumer at worst case:
-   6,144 measured-cost op evals, 96 envelope steps with worst-case segment
-   advance, frequency updates, LFO/pitch-EG, mod application, control-tail
-   commits, the worst admissible event burst (16 note-ons + 16 note-offs +
-   16 controller events), patch commit, 1,024 convert+mix operations, I2S
-   loads, link drain, and controller overhead. An idle frame would cost
-   12,332 clocks (75.3%) — closing 12.288 MHz on that number is precisely
-   the average-case argument issue #25 forbids. `tools/h03_budget_check.py`
-   recomputes every row and enforces the recorded verdicts; the negative
-   controls (mutated 2 clk/eval row, burst-stripped budget, fake PASS
-   verdict, drifted evidence hash) demonstrably fail it.
+1. **Schedule budget.** At 16 active voices, the recorded H03 vector has
+   16 note-ons, 16 note-offs and 16 controller events. Its 16 rows sum to
+   **17,260 of 16,384 clocks at 12.288 MHz** (105.35%, shortfall 876) and
+   **17,344 of 32,768 at 24.576 MHz** (52.93%, margin 15,424). The
+   fallback therefore fails the planning budget on the specified burst
+   alone. The margin at the design point applies only to the listed rows
+   and counts. The SPI interface also admits more expensive bursts, as the
+   review probe below demonstrates. The requirement to service every
+   admissible frame at 16 voices and 48 kHz remains open.
 2. **Clock target:** **24.576 MHz design point** (the one owner sign-off
    item of this DR). The 12.288 MHz fallback is recorded as
    worst-case-infeasible; reopening it requires an architecture change or an
@@ -86,6 +80,71 @@ normative core interface/schedule contract:
   (DEC-013, DEC-024); the H02 area finding stays open for owner decision.
 
 ## Evidence
+
+### Event admission at the design point
+
+The H03 checker reproduces the listed vector. Voice count limits how many
+notes can sound together. The RTL also dispatches raw `EA_NOTEON` commands
+to the allocator when all voices are occupied. With the other H03 rows
+fixed, replacing the 4,864 event-application clocks with 100 note-ons at
+224 clocks each gives **34,880 clocks**, 2,112 over the frame budget.
+Charging exactly the 100 drains and omitting the 64-clock patch commit
+for the probe below still gives **34,748 clocks**. The corresponding
+168-note-on case costs **50,048 clocks**. This is a planning-budget
+**FAIL** for the all-admissible-frame claim.
+
+At 194 core clocks per SPI transaction, a transaction already in flight
+can complete at the start of a frame. A window of `F` clocks can contain
+`1 + floor((F − 1) / 194)` completions. That gives **169** at 24.576 MHz
+and **85** at 12.288 MHz. H03's drain row counts 168 and 84 whole periods.
+Correcting that row alone would add one clock to each listed total.
+
+The pin-driven Verilator 5.050 probe starts with 16 live voices and sends
+back-to-back raw note-ons across the opening frame boundary. It checks the
+arrival frame and spacing, subsequent queue pops, full-voice allocations,
+and sticky status bits. Note-on is the most expensive event in the H03
+table. The burst of 168 fills the RTL event queue. The 169th arrival tests
+the difference between link capacity and event admission.
+
+| SPI note-ons arriving in one frame | Applied with all voices occupied | Rejected | OVERFLOW | OVERRUN |
+| ---: | ---: | ---: | ---: | ---: |
+| 100 | 100 | 0 | 0 | 0 |
+| 168 | 168 | 0 | 0 | 0 |
+| 169 | 168 | 1 | 1 | 0 |
+
+Run from the repository root. Each invocation exits nonzero if its row
+differs. The all-input RTL deadline has **NO_VERDICT**. A new decision
+record must reconcile the H03 contract, machine-readable rows and checker
+with the admission rules. [H03 correction #339](https://github.com/2AMLogic/gf180-dx7/issues/339)
+
+```sh
+mkdir -p build
+verilator --binary --timing -j 4 -Wno-fatal --timescale-override 1ns/1ps \
+  --Mdir build/h03-admission --top-module tb_event_admission \
+  rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v \
+  evidence/h03-event-admission/tb_event_admission.sv
+for burst in 100 168 169; do
+  build/h03-admission/Vtb_event_admission "+burst=$burst" || exit 1
+done
+```
+
+### Board integration
+
+A board supplying only 12.288 MHz needs an additional clock source or a
+multiplier for this core's 24.576 MHz design point. The VS1053b, a MIDI
+synthesizer and audio codec, accepts 12.288 MHz at XTALI for 48 kHz
+playback in its standard clock range. That gives the VS1053b a clocking
+advantage on such a board. A like-for-like comparison of the 16-voice,
+six-operator workload remains open for the operator's market decision.
+[VS1053b datasheet, pp. 1 and 7](https://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf)
+
+TI lists both system clocks for the PCM5102A at 48 kHz. That DAC samples
+serial data on rising BCK edges. The core emits successive payload bits
+in half-BCLK cells, so a direct connection loses alternate bits. An
+adapter must recover the 22-bit word and serialize it in a format the
+DAC accepts. [H08 pin evidence](../H08-PIN.md#i2s-format-contract-vs-as-built-the-finding-record) · [TI PCM5102A datasheet, pp. 14 and 24](https://www.ti.com/lit/ds/symlink/pcm5102a.pdf)
+
+### H03 inputs and checks
 
 - `docs/CONTRACT-CORE-v1.md` (§2 line-by-line budget, §3 port schedule,
   §4 interface, §5 modules, §6 STALE rules)

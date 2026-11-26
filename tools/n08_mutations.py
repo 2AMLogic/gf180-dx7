@@ -27,9 +27,15 @@ is modified, patches are restored after each mutation):
 Results are committed to reference/release/mutation-results.json, bound to
 the exact bundle (bundle_sha256).
 
-Exit codes: 0 = every requested mutation detected; 1 = any mutation
-UNDETECTED (a freeze hole) or bundle/verify problem; 2 = could not run.
-Stdlib-only.
+The --mutations selector is resolved against the registry before anything
+renders or is written: an omitted selector runs the whole battery, while an
+unknown id or an explicitly empty selection is rejected with a diagnostic
+naming the bad selection. The report's all_detected, the console verdict and
+the exit status all come from one result.
+
+Exit codes: 0 = every requested mutation detected; 1 = a requested mutation
+not detected (a freeze hole) or bundle/verify problem; 2 = could not run
+(no bundle, or a rejected --mutations selection). Stdlib-only.
 """
 
 from __future__ import annotations
@@ -99,6 +105,7 @@ MUTATIONS = [
         "slow": True,
     },
 ]
+_MUTATION_IDS = [m["id"] for m in MUTATIONS]
 
 
 # ---------------------------------------------------------------------------
@@ -205,6 +212,38 @@ _APPLY = {
 
 
 # ---------------------------------------------------------------------------
+# Selection and verdict
+
+
+def resolve_mutations(selector: str | None) -> list[str]:
+    """Resolve a --mutations selector to registered mutation ids.
+
+    None selects the whole battery. A selector must name at least one
+    registered id: an explicitly empty selection or an unknown id raises
+    ValueError naming the bad selection. Returns the registry order.
+    """
+    if selector is None:
+        return list(_MUTATION_IDS)
+    requested = [tok.strip() for tok in selector.split(",")]
+    if not any(requested):
+        raise ValueError("explicitly empty selection; omit --mutations to "
+                         "run the whole battery")
+    unknown = [tok for tok in requested if tok not in _MUTATION_IDS]
+    if unknown:
+        raise ValueError(f"unknown mutation id(s) {unknown}; registered "
+                         f"ids: {', '.join(_MUTATION_IDS)}")
+    return [mid for mid in _MUTATION_IDS if mid in requested]
+
+
+def all_requested_detected(results: list[dict],
+                           mutation_ids: list[str]) -> bool:
+    """The battery's one success condition: a nonempty selection in which
+    every requested mutation has a detected result."""
+    detected = {r["id"] for r in results if r["detected"]}
+    return bool(mutation_ids) and set(mutation_ids) <= detected
+
+
+# ---------------------------------------------------------------------------
 # Battery
 
 
@@ -216,6 +255,10 @@ def run_battery(release_dir: Path, mutation_ids: list[str]) -> tuple[
     known = {c["id"] for c in manifest["covered"]["cases"]}
     results: list[dict] = []
     problems: list[str] = []
+    for requested in mutation_ids:
+        if requested not in _MUTATION_IDS:
+            problems.append(f"{requested}: unknown mutation id (registered: "
+                            f"{_MUTATION_IDS})")
     for mutation in MUTATIONS:
         mid = mutation["id"]
         if mid not in mutation_ids:
@@ -267,14 +310,20 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--release-dir", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--mutations", default=None,
-                        help="comma-separated subset (default: all)")
+                        help="comma-separated registered mutation ids "
+                             "(default: all); unknown ids and an empty "
+                             "selection are rejected")
     parser.add_argument("--out", type=Path, default=None,
                         help="results path (default <release-dir>/"
                              "mutation-results.json)")
     args = parser.parse_args(argv)
+    try:
+        ids = resolve_mutations(args.mutations)
+    except ValueError as exc:
+        print(f"n08_mutations: NOT_RUN — bad --mutations selection "
+              f"{args.mutations!r}: {exc}", file=sys.stderr)
+        return 2
     release_dir = Path(args.release_dir)
-    ids = ([s.strip() for s in args.mutations.split(",")]
-           if args.mutations else [m["id"] for m in MUTATIONS])
     if not (release_dir / "manifest.json").is_file():
         print(f"n08_mutations: NOT_RUN — no bundle at {release_dir}",
               file=sys.stderr)
@@ -282,11 +331,12 @@ def main(argv=None) -> int:
     bundle = json.loads((release_dir / "manifest.json").read_text(
         encoding="utf-8"))["bundle_sha256"]
     results, problems = run_battery(release_dir, ids)
+    all_detected = all_requested_detected(results, ids)
     record = {
         "schema": SCHEMA,
         "bundle_sha256": bundle,
         "results": results,
-        "all_detected": bool(results) and all(r["detected"] for r in results),
+        "all_detected": all_detected,
         "negative_control_note": (
             "each mutation is applied to the frozen model at runtime and "
             "must be caught by tools/n08_verify_release.py's re-render pass "
@@ -297,13 +347,14 @@ def main(argv=None) -> int:
     out_path = args.out or (release_dir / "mutation-results.json")
     out_path.write_text(json.dumps(record, indent=2) + "\n",
                         encoding="utf-8")
-    if problems:
+    if not all_detected:
         for p in problems:
             print(f"n08_mutations: FAIL — {p}")
-        print(f"n08_mutations: FAIL — {sum(1 for r in results if not r['detected'])}"
-              f" undetected mutation(s) of {len(results)}; results: {out_path}")
+        undetected = len(ids) - sum(1 for r in results if r["detected"])
+        print(f"n08_mutations: FAIL — {undetected} of {len(ids)} requested "
+              f"mutation(s) not detected; results: {out_path}")
         return 1
-    print(f"n08_mutations: PASS — {len(results)}/{len(results)} mutation(s) "
+    print(f"n08_mutations: PASS — {len(ids)}/{len(ids)} mutation(s) "
           f"detected by the release verification; results: {out_path}")
     return 0
 

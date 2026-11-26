@@ -5,11 +5,12 @@
   24.576 MHz design point with the 12.288 MHz fallback recorded as
   worst-case-infeasible); the remaining contract terms are
   Accepted-by-default per D00 section 0 unless the owner rules otherwise
-- **Date:** 2026-09-20
-- **Deciders:** loom-builder (agent), pending owner review
-- **Related issues:** #25 (H03); grounds #2 epic H-series RTL (H04–H07);
-  builds on #24 (N08 freeze, DR-0007), #20 (H01), #21 (H02), #15 (N01),
-  #4 (D00)
+- **Date:** 2026-09-20 (amended 2026-11-26 by DR-0015 on SPI event admission)
+- **Deciders:** loom-builder (agent), pending owner review (#264 / #336)
+- **Related issues:** #25 (H03), #339 (DR-0015 schedule-budget amendment),
+  #264 (ratification and item 6 binding); grounds #2 epic H-series RTL
+  (H04–H07); builds on #24 (N08 freeze, DR-0007), #20 (H01), #21 (H02),
+  #15 (N01), #4 (D00)
 
 ## Context
 
@@ -31,32 +32,35 @@ average — before RTL modules are written. The measured inputs:
 ## Decision
 
 `docs/CONTRACT-CORE-v1.md` + `spec/core-contract-v1.json` are adopted as the
-normative core interface/schedule contract:
+normative core interface/schedule contract, as amended post-implementation by
+[DR-0015](0015-h03-admission-budget-reconciliation.md) (#339):
 
-1. **Worst-case budget verdict (headline).** The line-by-line per-frame
-   budget demands **17,260 clocks @12.288 MHz against 16,384 available
-   (105.35%, shortfall 876) — 12.288 MHz does NOT close the worst case** —
-   and **17,344 @24.576 MHz against 32,768 (52.93%, margin 15,424) — the
-   design point closes**. The budget accounts every consumer at worst case:
-   6,144 measured-cost op evals, 96 envelope steps with worst-case segment
-   advance, frequency updates, LFO/pitch-EG, mod application, control-tail
-   commits, the worst admissible event burst (16 note-ons + 16 note-offs +
-   16 controller events), patch commit, 1,024 convert+mix operations, I2S
-   loads, link drain, and controller overhead. An idle frame would cost
-   12,332 clocks (75.3%) — closing 12.288 MHz on that number is precisely
-   the average-case argument issue #25 forbids. `tools/h03_budget_check.py`
-   recomputes every row and enforces the recorded verdicts; the negative
-   controls (mutated 2 clk/eval row, burst-stripped budget, fake PASS
-   verdict, drifted evidence hash) demonstrably fail it.
+1. **Schedule budget (scoped by DR-0015).** At 16 active voices, the original
+   H03 regression vector (`16` note-ons, `16` note-offs, `16` controller
+   events) sums to **17,260 of 16,384 clocks at 12.288 MHz** (105.35%,
+   shortfall 876 under whole-period drain; **17,261** / shortfall **877**
+   under DR-0015's arbitrary-phase 85-completion bound) and **17,344 of
+   32,768 clocks at 24.576 MHz** (52.93%, margin 15,424 under whole-period
+   drain; **17,345** / margin **15,423** under the 169-completion bound). The
+   12.288 MHz fallback therefore fails the planning budget on that vector
+   alone, and an idle frame (12,332 whole-period / 12,333 arbitrary-phase
+   clocks) remains the forbidden average-case framing. The +15,424 / +15,423
+   margin at 24.576 MHz prices the historical vector. DR-0015 records a raw
+   frame with 194 occupied strikes and one CC123 (43,488 event clocks alone).
+   **All-admissible-frame planning at 24.576 MHz is FAIL**. The tight mixed
+   maximum is unresolved and the all-input RTL deadline is **NO_VERDICT**.
+   The +11,503 margin in DR-0015 assumes translation of the host note-offs
+   to RTL commands. Direct supplied-host timing has **NO_VERDICT**.
 2. **Clock target:** **24.576 MHz design point** (the one owner sign-off
-   item of this DR). The 12.288 MHz fallback is recorded as
-   worst-case-infeasible; reopening it requires an architecture change or an
-   explicit owner polyphony ruling — never a silent weakening (DEC-003).
-   No timing claim is made for either clock (H10 owns ss-corner closure).
+   item of this DR, tracked in #264 / #336). The 12.288 MHz fallback is
+   recorded as worst-case-infeasible; reopening it requires an architecture
+   change or an explicit owner polyphony ruling — never a silent weakening
+   (DEC-003). No timing claim is made for either clock (H10 owns ss-corner
+   closure; DR-0013 defers physical rows).
 3. **Interface terms** (each cites its D00 decision id in the contract):
    events commit at 64-sample frame boundaries (DEC-014/NUM-011) through a
-   depth-8 skid FIFO continuously drained into a shadow image (depth derived
-   from the SCK ≤ f_core/4 bound, never guessed), overflow = explicit
+   depth-8 skid FIFO continuously drained into a shadow image (`SEC=1`) and
+   168-entry event queue (`SEC=0`, reconciled in DR-0015), overflow = explicit
    rejection/backpressure (DEC-014); patch load commits atomically into a
    4-entry generation ring with held notes keeping their starting patch
    (DEC-019 — with the declared >3-commits bound recorded for owner ruling);
@@ -73,23 +77,27 @@ normative core interface/schedule contract:
 ## Consequences and STALE rules
 
 - Any change to the contract **after H04–H07 implementation starts** needs a
-  new DR and marks the affected RTL evidence **STALE**.
+  new DR and marks the affected RTL evidence **STALE** (invoked by DR-0015
+  for the H07/H08 burst-completeness claims).
 - Drift of any pinned artifact (N08 bundle, numeric profile, H01/H02
-  evidence) fails the budget checker and marks every H03-derived budget
-  STALE (DR-0007's rules cascade).
+  evidence, H03 SPI admission probe) fails the budget checker and marks every
+  H03-derived budget STALE (DR-0007's rules cascade).
 - The `derived_estimate` unit costs are planning upper bounds: H04–H06 must
   measure them and the budget must be re-run against measured values before
-  H07 integration claims the schedule.
+  an all-admissible-frame schedule guarantee is claimed.
 - This DR makes **no** synthesis/timing/fit/fidelity/audibility claim
   (DEC-013, DEC-024); the H02 area finding stays open for owner decision.
 
 ## Evidence
 
-- `docs/CONTRACT-CORE-v1.md` (§2 line-by-line budget, §3 port schedule,
-  §4 interface, §5 modules, §6 STALE rules)
-- `spec/core-contract-v1.json` (machine-readable rows/verdicts/queues)
-- `tools/h03_budget_check.py` (recomputation + hash gates; PASS)
-- `tests/test_h03_contract.py` (24 cases incl. four live negative controls)
+- `docs/CONTRACT-CORE-v1.md` (§2 reconciled budget, §3 port schedule,
+  §4 interface, §5 modules, §6 STALE rules and disposition)
+- `spec/core-contract-v1.json` (machine-readable rows, regression vectors,
+  raw-wire vs supplied-host pricing, STALE disposition)
+- `docs/decision-records/0015-h03-admission-budget-reconciliation.md` +
+  `evidence/h03-event-admission/` (SPI admission probe, Verilator 5.050)
+- `tools/h03_budget_check.py` (independent recomputation + hash and negative-control gates)
+- `tests/test_h03_contract.py` (independent arithmetic, conservation, and negative controls)
 - Measured anchors: `evidence/h01-operator-probe/` (1 clk/eval),
   `evidence/h02-storage-probe/` (38,781 flops, 2R+1W),
   `reference/release/manifest.json` (bundle `81bcc43c…`)

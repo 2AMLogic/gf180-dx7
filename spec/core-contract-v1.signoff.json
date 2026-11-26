@@ -1,6 +1,6 @@
 {
   "status": "proposed",
-  "contract_sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
+  "contract_sha256": "fee6b7ea5ac08cede9547216f5b9edc074b21f54095277aa667e1114aaab65c1",
   "rows": [
     {
       "id": "op_evals",
@@ -116,9 +116,11 @@
       "unit_clks": 224,
       "unit_class": "derived_estimate",
       "unit_basis": "16-clk steal scan + 6 ops x ~14 clk derivation + 6 x 8 clk basepitch + 12 clk init, rounded up to 224; host-side float math is off-frame per NUM-008 (DEC-010 boundary)",
-      "count": 16,
-      "count_basis": "worst admissible burst: a 16-note chord change in one frame (polyphony bound, DEC-003)",
-      "clocks": 3584,
+      "count_12m288": 98,
+      "count_24m576": 194,
+      "count_basis": "98 occupied strikes in the 12.288 MHz paper window. At 24.576 MHz frame 4 of carry_cc123_337 completes 194 strikes plus the CC123 priced below. Both are witnesses. The tight mixed-event maximum is unresolved.",
+      "clocks_12m288": 21952,
+      "clocks_24m576": 43456,
       "dec_ids": [
         "DEC-003",
         "DEC-010",
@@ -135,9 +137,9 @@
       "unit_clks": 48,
       "unit_class": "derived_estimate",
       "unit_basis": "16-note scan + sustain branch + 6-op predicate test",
-      "count": 16,
-      "count_basis": "worst admissible burst: full chord release in one frame",
-      "clocks": 768,
+      "count": 0,
+      "count_basis": "Neither selected raw-wire witness contains a note-off. The historical vector and the conditional translated-host scenario in supplied_host_pricing use this row.",
+      "clocks": 0,
       "dec_ids": [
         "DEC-014",
         "DEC-018",
@@ -150,9 +152,11 @@
       "unit_clks": 32,
       "unit_class": "derived_estimate",
       "unit_basis": "chip receives frozen integer scale factors (float-gated math stays host-side, NUM-008); per-note dirty marking",
-      "count": 16,
-      "count_basis": "one controller per voice in the worst admissible frame alongside the chord change",
-      "clocks": 512,
+      "count_12m288": 0,
+      "count_24m576": 1,
+      "count_basis": "One CC123 in frame 4 of carry_cc123_337 extends service long enough for an additional pop. The 12.288 MHz paper witness uses only note-ons.",
+      "clocks_12m288": 0,
+      "clocks_24m576": 32,
       "dec_ids": [
         "DEC-006",
         "DEC-014"
@@ -165,7 +169,7 @@
       "unit_class": "derived_estimate",
       "unit_basis": "shadow image swap is 1 clk; the budget carries ring bookkeeping + a held-note tag sweep",
       "count": 1,
-      "count_basis": "at most one commit per frame (events commit at the boundary; DEC-019)",
+      "count_basis": "H03 reserves one commit per frame (DEC-019). Both carry probes measured zero commits in frame 4.",
       "clocks": 64,
       "dec_ids": [
         "DEC-014",
@@ -203,15 +207,15 @@
     },
     {
       "id": "write_queue_drain",
-      "consumer": "SPI write-queue drain into the shadow image (1 write/clk, oldest first)",
+      "consumer": "SPI write-queue drain from skid FIFO into patch shadow / event queue (1 write/clk, oldest first)",
       "unit_clks": 1,
       "unit_class": "structural",
-      "unit_basis": "one shadow-image write per clock; count = worst admissible writes/frame at SCK = f_core/4 with a 48-bit frame + 2-cycle CS gap = 194 core clk per transaction",
-      "count_12m288": 84,
-      "count_24m576": 168,
-      "count_basis": "floor(16384/194) = 84; floor(32768/194) = 168",
-      "clocks_12m288": 84,
-      "clocks_24m576": 168,
+      "unit_basis": "one drain per clock; arbitrary-phase half-open frame [0, W) bound = 1 + floor((W - 1) / 194) at 194 core clk minimum spacing (completion at offset W belongs to [W, 2W); DR-0015)",
+      "count_12m288": 85,
+      "count_24m576": 169,
+      "count_basis": "1 + floor((16384 - 1)/194) = 85 (offsets 0..16296); 1 + floor((32768 - 1)/194) = 169 (offsets 0..32592)",
+      "clocks_12m288": 85,
+      "clocks_24m576": 169,
       "dec_ids": [
         "DEC-006",
         "DEC-010",

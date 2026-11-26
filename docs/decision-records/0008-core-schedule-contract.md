@@ -1,12 +1,14 @@
 # DR-0008: The core interface/schedule contract v1 — worst-case budget verdict, design point, and H03 STALE rules
 
 - **DR number:** 0008
-- **Status:** Proposed (owner sign-off requested on the clock-target choice:
-  24.576 MHz design point with the 12.288 MHz fallback recorded as
-  worst-case-infeasible); the remaining contract terms are
-  Accepted-by-default per D00 section 0 unless the owner rules otherwise
-- **Date:** 2026-09-20
-- **Deciders:** loom-builder (agent), pending owner review
+- **Status:** Ratified 2026-11-26 by the operator (attended `/fleet:decide`
+  r20, on #264): the 24.576 MHz design point, with the 12.288 MHz fallback
+  recorded as worst-case-infeasible under the H03 planning costs. H10 owns
+  timing, and DR-0013 defers the physical rows.
+- **Prior disposition:** before ratification, the contract terms other than
+  the clock target were in force under D00 section 0's default acceptance.
+- **Date:** 2026-09-20 (ratified 2026-11-26)
+- **Deciders:** loom-builder (agent); ratified by the operator (rjwalters)
 - **Related issues:** #25 (H03); grounds #2 epic H-series RTL (H04–H07);
   builds on #24 (N08 freeze, DR-0007), #20 (H01), #21 (H02), #15 (N01),
   #4 (D00)
@@ -33,21 +35,15 @@ average — before RTL modules are written. The measured inputs:
 `docs/CONTRACT-CORE-v1.md` + `spec/core-contract-v1.json` are adopted as the
 normative core interface/schedule contract:
 
-1. **Worst-case budget verdict (headline).** The line-by-line per-frame
-   budget demands **17,260 clocks @12.288 MHz against 16,384 available
-   (105.35%, shortfall 876) — 12.288 MHz does NOT close the worst case** —
-   and **17,344 @24.576 MHz against 32,768 (52.93%, margin 15,424) — the
-   design point closes**. The budget accounts every consumer at worst case:
-   6,144 measured-cost op evals, 96 envelope steps with worst-case segment
-   advance, frequency updates, LFO/pitch-EG, mod application, control-tail
-   commits, the worst admissible event burst (16 note-ons + 16 note-offs +
-   16 controller events), patch commit, 1,024 convert+mix operations, I2S
-   loads, link drain, and controller overhead. An idle frame would cost
-   12,332 clocks (75.3%) — closing 12.288 MHz on that number is precisely
-   the average-case argument issue #25 forbids. `tools/h03_budget_check.py`
-   recomputes every row and enforces the recorded verdicts; the negative
-   controls (mutated 2 clk/eval row, burst-stripped budget, fake PASS
-   verdict, drifted evidence hash) demonstrably fail it.
+1. **Schedule budget.** At 16 active voices, the recorded H03 vector has
+   16 note-ons, 16 note-offs and 16 controller events. Its 16 rows sum to
+   **17,260 of 16,384 clocks at 12.288 MHz** (105.35%, shortfall 876) and
+   **17,344 of 32,768 at 24.576 MHz** (52.93%, margin 15,424). The
+   fallback therefore fails the planning budget on the specified burst
+   alone. The margin at the design point applies only to the listed rows
+   and counts. The SPI interface also admits more expensive bursts, as the
+   review probe below demonstrates. The requirement to service every
+   admissible frame at 16 voices and 48 kHz remains open.
 2. **Clock target:** **24.576 MHz design point** (the one owner sign-off
    item of this DR). The 12.288 MHz fallback is recorded as
    worst-case-infeasible; reopening it requires an architecture change or an
@@ -70,6 +66,34 @@ normative core interface/schedule contract:
    i2s_tx), each with clocking, reset, handshake, and its N08 conformance
    vector subset.
 
+### Item 6 disposition
+
+```json
+{
+  "ratification_scope": {
+    "decision": "clock_target",
+    "design_point_hz": 24576000,
+    "fallback_hz": 12288000,
+    "fallback_planning_verdict": "FAIL"
+  },
+  "schedule_assessment": {
+    "historical_vector_event_counts": {
+      "note_on_application": 16,
+      "note_off_application": 16,
+      "controller_events": 16
+    },
+    "vector_margin_clocks_24m576": 15424,
+    "all_admissible_frames_planning_24m576": "FAIL",
+    "all_admissible_frames_rtl_deadline": "NO_VERDICT"
+  }
+}
+```
+
+The signoff generator copies this disposition with the 16 original H03 rows.
+Their counts and rationales describe the historical vector. The source
+contract and checker still call that vector the worst case. #339 owns their
+amendment.
+
 ## Consequences and STALE rules
 
 - Any change to the contract **after H04–H07 implementation starts** needs a
@@ -85,10 +109,80 @@ normative core interface/schedule contract:
 
 ## Evidence
 
+### Event admission at the design point
+
+The H03 checker reproduces the listed vector. The SPI probe below exercises
+a different workload. Frame 3 drains the entire burst and pops no events.
+Frame 4 drains no writes and processes the queued note-ons. Neither frame
+commits a patch. Removing the original event applications (4,864 clocks),
+write drains (168) and patch commit (64) from 17,344 leaves **12,248
+planning clocks** for the other H03 rows. At the H03 estimate of 224 clocks
+per completed strike, the application frame costs **34,648** for 100
+strikes (margin **−1,880**) or **49,880** for 168 (margin **−17,112**).
+Either workload gives **FAIL** for the all-admissible-frame planning
+budget at 24.576 MHz. These costs are estimates. The probe measures
+event counts and the RTL status bits.
+
+At 194 core clocks per SPI transaction, a transaction already in flight
+can complete at the start of a frame. A window of `F` clocks can contain
+`1 + floor((F − 1) / 194)` completions. That gives **169** at 24.576 MHz
+and **85** at 12.288 MHz. H03's drain row counts 168 and 84 whole periods.
+Correcting that row alone would add one clock to each listed total.
+
+The pin-driven Verilator 5.050 probe programs a sustained envelope on one
+operator, occupies all 16 voices, then sends back-to-back raw note-ons
+across the opening frame boundary. Each accepted event reaches the
+allocator with no free slot. The probe counts a completed strike at
+`F_NN_BOOK`, where the RTL records the pitch and advances the sequence
+number. Repeating the 100-write run with the silent reset patch exercises
+the distinction between dequeue and strike.
+
+| Patch | Frame 3 drains | Queue rejections | Frame 4 pops | Frame 4 completed strikes | OVERFLOW | OVERRUN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Sustained | 100 | 0 | 100 | 100 | 0 | 0 |
+| Sustained | 168 | 0 | 168 | 168 | 0 | 0 |
+| Sustained | 169 | 1 | 168 | 168 | 1 | 0 |
+| Silent reset | 100 | 0 | 100 | 0 | 0 | 0 |
+
+Run from the repository root. Each invocation exits nonzero if its row
+differs. The all-input RTL deadline has **NO_VERDICT**. A new decision
+record must reconcile the H03 contract, machine-readable rows and checker
+with the admission rules. [H03 correction #339](https://github.com/2AMLogic/gf180-dx7/issues/339)
+
+```sh
+mkdir -p build
+verilator --binary --timing -j 4 -Wno-fatal --timescale-override 1ns/1ps \
+  --Mdir build/h03-admission --top-module tb_event_admission \
+  rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v \
+  evidence/h03-event-admission/tb_event_admission.sv
+for burst in 100 168 169; do
+  build/h03-admission/Vtb_event_admission "+burst=$burst" || exit 1
+done
+build/h03-admission/Vtb_event_admission +burst=100 +reset_patch
+```
+
+### Board integration
+
+A board supplying only 12.288 MHz needs an additional clock source or a
+multiplier for this core's 24.576 MHz design point. The VS1053b, a MIDI
+synthesizer and audio codec, accepts 12.288 MHz at XTALI for 48 kHz
+playback in its standard clock range. That gives the VS1053b a clocking
+advantage on such a board. A like-for-like comparison of the 16-voice,
+six-operator workload remains open for the operator's market decision.
+[VS1053b datasheet, pp. 1 and 7](https://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf)
+
+TI lists both system clocks for the PCM5102A at 48 kHz. That DAC samples
+serial data on rising BCK edges. The core emits successive payload bits
+in half-BCLK cells, so a direct connection loses alternate bits. An
+adapter must recover the 22-bit word and serialize it in a format the
+DAC accepts. [H08 pin evidence](../H08-PIN.md#i2s-format-contract-vs-as-built-the-finding-record) · [TI PCM5102A datasheet, pp. 14 and 24](https://www.ti.com/lit/ds/symlink/pcm5102a.pdf)
+
+### H03 inputs and checks
+
 - `docs/CONTRACT-CORE-v1.md` (§2 line-by-line budget, §3 port schedule,
   §4 interface, §5 modules, §6 STALE rules)
 - `spec/core-contract-v1.json` (machine-readable rows/verdicts/queues)
-- `tools/h03_budget_check.py` (recomputation + hash gates; PASS)
+- `tools/h03_budget_check.py` (historical vector recomputation and hash gates)
 - `tests/test_h03_contract.py` (24 cases incl. four live negative controls)
 - Measured anchors: `evidence/h01-operator-probe/` (1 clk/eval),
   `evidence/h02-storage-probe/` (38,781 flops, 2R+1W),

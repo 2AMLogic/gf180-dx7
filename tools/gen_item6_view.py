@@ -15,6 +15,10 @@ DECISION = ROOT / "docs/decision-records/0008-core-schedule-contract.md"
 VIEW = ROOT / "spec/core-contract-v1.signoff.json"
 
 STATUS_MARKER = "- **Status:**"
+# DR-0008 owns the scope and verdicts paired with its ratified status.
+ITEM6_DISPOSITION = re.compile(
+    r"^### Item 6 disposition\n\n```json\n(.*?)^```$", re.MULTILINE | re.DOTALL
+)
 # These Markdown blocks can end a metadata paragraph without a blank line.
 BLOCK_START = re.compile(
     r"(?:[-*+]|[0-9]{1,9}[.)]|#{1,6})(?:[ \t]|$)"  # list or heading
@@ -53,11 +57,16 @@ def derive_status(dr_text: str) -> str:
 
 
 def render_view(contract_bytes: bytes, dr_text: str) -> bytes:
-    view = {
-        "status": derive_status(dr_text),
-        "contract_sha256": sha256_bytes(contract_bytes),
-        "rows": json.loads(contract_bytes)["budget_worst_case"]["rows"],
-    }
+    view = {"status": derive_status(dr_text)}
+    if view["status"] == "ratified":
+        blocks = ITEM6_DISPOSITION.findall(dr_text)
+        if len(blocks) != 1:
+            raise ValueError("ratified DR-0008 requires one Item 6 disposition block")
+        disposition = json.loads(blocks[0])
+        view["ratification_scope"] = disposition["ratification_scope"]
+        view["schedule_assessment"] = disposition["schedule_assessment"]
+    view["contract_sha256"] = sha256_bytes(contract_bytes)
+    view["rows"] = json.loads(contract_bytes)["budget_worst_case"]["rows"]
     return (json.dumps(view, indent=2) + "\n").encode("utf-8")
 
 

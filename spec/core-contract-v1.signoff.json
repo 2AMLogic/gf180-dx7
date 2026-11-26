@@ -1,6 +1,6 @@
 {
   "status": "proposed",
-  "contract_sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
+  "contract_sha256": "0109fb3ce678a4c91c4944cb32ac1348e42d4dfa9742dcce4b98da9e7657abba",
   "rows": [
     {
       "id": "op_evals",
@@ -116,9 +116,11 @@
       "unit_clks": 224,
       "unit_class": "derived_estimate",
       "unit_basis": "16-clk steal scan + 6 ops x ~14 clk derivation + 6 x 8 clk basepitch + 12 clk init, rounded up to 224; host-side float math is off-frame per NUM-008 (DEC-010 boundary)",
-      "count": 16,
-      "count_basis": "worst admissible burst: a 16-note chord change in one frame (polyphony bound, DEC-003)",
-      "clocks": 3584,
+      "count_12m288": 98,
+      "count_24m576": 194,
+      "count_basis": "largest RTL-reachable occupied-polyphony raw-wire EA_NOTEON pops from a non-overrunning prior frame (DR-0015): EVQ_DEPTH=168 opening carry-over (85 @12.288 / 168 @24.576) plus mid-F_EVPOP admissions freed by 26-clk strikes (13 @12.288 -> 98; 26 @24.576 -> 194, closing occupancy 71 / 143); see raw_wire_witnesses for the 337-event paper conservation bound",
+      "clocks_12m288": 21952,
+      "clocks_24m576": 43456,
       "dec_ids": [
         "DEC-003",
         "DEC-010",
@@ -135,9 +137,9 @@
       "unit_clks": 48,
       "unit_class": "derived_estimate",
       "unit_basis": "16-note scan + sustain branch + 6-op predicate test",
-      "count": 16,
-      "count_basis": "worst admissible burst: full chord release in one frame",
-      "clocks": 768,
+      "count": 0,
+      "count_basis": "0 in the cost-maximizing raw-wire mix because every EVQ/SPI slot is strictly costlier as a 224-clk EA_NOTEON than a 48-clk EA_NOTEOFF; unit cost 48 is active in historical_regression_vector (16) and supplied_host_pricing (91 / 183)",
+      "clocks": 0,
       "dec_ids": [
         "DEC-014",
         "DEC-018",
@@ -150,9 +152,9 @@
       "unit_clks": 32,
       "unit_class": "derived_estimate",
       "unit_basis": "chip receives frozen integer scale factors (float-gated math stays host-side, NUM-008); per-note dirty marking",
-      "count": 16,
-      "count_basis": "one controller per voice in the worst admissible frame alongside the chord change",
-      "clocks": 512,
+      "count": 0,
+      "count_basis": "0 in the cost-maximizing raw-wire mix because every EVQ/SPI slot is strictly costlier as a 224-clk EA_NOTEON than a 32-clk controller write; unit cost 32 is active in historical_regression_vector (16) and supplied_host_pricing",
+      "clocks": 0,
       "dec_ids": [
         "DEC-006",
         "DEC-014"
@@ -165,7 +167,7 @@
       "unit_class": "derived_estimate",
       "unit_basis": "shadow image swap is 1 clk; the budget carries ring bookkeeping + a held-note tag sweep",
       "count": 1,
-      "count_basis": "at most one commit per frame (events commit at the boundary; DEC-019)",
+      "count_basis": "at most one commit per frame (SEC=1 0x42 bypasses EVQ so shd_commit=1 can coincide with full EVQ carry-over; DEC-019)",
       "clocks": 64,
       "dec_ids": [
         "DEC-014",
@@ -203,15 +205,15 @@
     },
     {
       "id": "write_queue_drain",
-      "consumer": "SPI write-queue drain into the shadow image (1 write/clk, oldest first)",
+      "consumer": "SPI write-queue drain from skid FIFO into patch shadow / event queue (1 write/clk, oldest first)",
       "unit_clks": 1,
       "unit_class": "structural",
-      "unit_basis": "one shadow-image write per clock; count = worst admissible writes/frame at SCK = f_core/4 with a 48-bit frame + 2-cycle CS gap = 194 core clk per transaction",
-      "count_12m288": 84,
-      "count_24m576": 168,
-      "count_basis": "floor(16384/194) = 84; floor(32768/194) = 168",
-      "clocks_12m288": 84,
-      "clocks_24m576": 168,
+      "unit_basis": "one drain per clock; arbitrary-phase half-open frame [0, W) bound = 1 + floor((W - 1) / 194) at 194 core clk minimum spacing (completion at offset W belongs to [W, 2W); DR-0015)",
+      "count_12m288": 85,
+      "count_24m576": 169,
+      "count_basis": "1 + floor((16384 - 1)/194) = 85 (offsets 0..16296); 1 + floor((32768 - 1)/194) = 169 (offsets 0..32592)",
+      "clocks_12m288": 85,
+      "clocks_24m576": 169,
       "dec_ids": [
         "DEC-006",
         "DEC-010",

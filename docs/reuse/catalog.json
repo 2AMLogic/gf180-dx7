@@ -1679,8 +1679,8 @@
   },
   {
    "path": "tools/n08_mutations.py",
-   "sha256": "8a299d854c4d753f9f4d23508f883d4ad464574c7d3ad51e960a9ae9e62ceee6",
-   "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle"
+   "sha256": "817ace9c8acadbfc14033e03feba257f159754e4a59ee76a21603bce6265c3cb",
+   "reason": "locally authored N08 mutation battery (issue #24): five model mutations that the release verification must catch, results bound to the bundle; re-pinned after the issue #351 revision (the --mutations selector is resolved against the registry before anything renders or is written: unknown ids and an explicitly empty selection are rejected with exit 2 and no report; the report's all_detected, the console verdict and the exit status derive from one success result)"
   },
   {
    "path": "tools/n08_challenge.py",
@@ -1689,8 +1689,8 @@
   },
   {
    "path": "tests/test_n08_release.py",
-   "sha256": "0d29ef3bae35b2b309c65911e969849a979160fac8df329ecd93b57eab16e3f1",
-   "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation"
+   "sha256": "42015f8ccdefc55c6e5c8532d208a0623b52334f69855cc22a9f53f0a27dcc5e",
+   "reason": "locally authored N08 test suite (issue #24): determinism, committed-bundle integrity, tamper/STALE negative controls, live mutation controls, challenge/mutation record validation; re-pinned for issue #351 (battery CLI selector regressions: rejected unknown and empty --mutations selections write no report and leave a prior valid report untouched; known-only control, omitted-selector whole battery, and not-detected verdict agreement cases)"
   },
   {
    "path": "docs/decision-records/0007-release-freeze-v1.md",
@@ -1719,28 +1719,28 @@
   },
   {
    "path": "docs/CONTRACT-CORE-v1.md",
-   "sha256": "6dbbea405ab8241019612082b26f369bac2d2aaca46b5e37dee535a734b329d5",
-   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget (12.288 MHz FAIL headline / 24.576 MHz design point), storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned after judge errata; re-pinned for issue #78: I2S TX front-end contract amended to the as-built geometry; binding table corrected per judge review (one sample per LRCLK period in the high half, low half zeros; first_bit_delay is in bench clk ticks, not BCLKs) Re-pinned for issue #118: one cross-link sentence in the I2S TX section pointing at the known-stale dx7_core.v I2S comments record in docs/H08-PIN.md; no contract value changed; no upstream bytes."
+   "sha256": "b896f3784270eaa2e4dff820809e1b8cee4d765c35315eb2de018b69f77ce303",
+   "reason": "locally authored H03 core interface/schedule contract (issue #25): worst-case per-frame budget, storage port schedule, interface terms citing D00 DEC ids, RTL module boundaries with N08 conformance subsets, STALE rules; re-pinned for issues #78 and #118 (I2S TX as-built geometry and stale-comment cross-link); amended under DR-0015 (issue #339): arbitrary-phase 85/169 SPI completion bounds, 168-entry EVQ carry-over and mid-pop replenishment (98/194 raw-wire strikes plus one CC123 at the design point, planning FAIL at both clocks; 16/16/16 regression and supplied-host pricing separated), and section 6 STALE/NO_VERDICT/NOT_RUN dispositions; no upstream bytes"
   },
   {
    "path": "spec/core-contract-v1.json",
-   "sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
-   "reason": "locally authored H03 machine-readable contract (issue #25): budget rows with measured/structural/derived_estimate classes, clock targets, queue/latency constants, module conformance subsets pointing at N08 case ids, depends_on hash pins"
+   "sha256": "fee6b7ea5ac08cede9547216f5b9edc074b21f54095277aa667e1114aaab65c1",
+   "reason": "locally authored H03 machine-readable contract (issue #25), amended under DR-0015 (issue #339): arbitrary-phase 85/169 drain bounds, reachable raw-wire rows (98 strikes in the paper window and 194 strikes plus one CC123 in the design-point witness, planning FAIL at both clocks), historical 16/16/16 regression vector, raw-wire witnesses and 337-event paper conservation bound, supplied-host pricing, section 6 STALE/NO_VERDICT/NOT_RUN dispositions, and H01/H02/N08/H03-probe sha256 pins"
   },
   {
    "path": "tools/h03_budget_check.py",
-   "sha256": "8e1e747c8f09ff1919de133027cc38af12aa551f21a7e5fa5bac68ed5fa820f8",
-   "reason": "locally authored H03 budget checker (issue #25): recomputes the worst-case budget from premises + the H01/H02/N08 measured anchors, enforces recorded verdicts and required worst-burst rows, hash-gates cited artifacts, validates DEC citations; stdlib only, no upstream bytes; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited)"
+   "sha256": "8e4fad615a293565fab37a34069e732f4d20481d0d2ab6f6248b51aa5733918a",
+   "reason": "locally authored H03 budget checker (issues #25, #141, #339): recomputes premises, arbitrary-phase 85/169 completion bounds, reachable queue/allocator strike bounds, historical 16/16/16 regression, raw-wire vs supplied-host pricing, probe frame conservation, and sha256/DEC gates, accepting negative planning margins with FAIL while rejecting restored 84/168 whole-period bounds and restored 24.576 MHz all-mixes PASS; stdlib only, no upstream bytes"
   },
   {
    "path": "tests/test_h03_contract.py",
-   "sha256": "c93c5c7cecbade3b8417a9142edea3543fc8846f64d452e128d4b458d3fb26fc",
-   "reason": "locally authored H03 test suite (issue #25): independent budget recomputation, DEC-citation existence, queue/latency constants, live tool gate, and four negative controls (mutated 2 clk/eval row, burst-stripped average-case budget, fake PASS verdict, drifted evidence hash); no upstream bytes"
+   "sha256": "82db187b326937848078715975650799e1e05f2e4a94a4eca0a4f9f91931da4a",
+   "reason": "locally authored H03 test suite (issues #25, #339): independent first-principles recomputation of frame/SPI/EVQ/allocator bounds, 16/16/16 regression, raw-wire vs host pricing, probe conservation, STALE/NO_VERDICT/NOT_RUN dispositions, and live negative controls (mutated op_evals, burst-stripped average case, restored 84/168 whole-period drain, restored 24.576 MHz all-mixes PASS, fake 12.288 MHz PASS, drifted hashes); no upstream bytes"
   },
   {
    "path": "docs/decision-records/0008-core-schedule-contract.md",
-   "sha256": "369c909074326f379068ddcd55c7386c9b9db4ef3241f63a7a745ee60f7ec435",
-   "reason": "locally authored H03 adoption record (issue #25): Proposed on the 24.576 MHz design-point choice (owner sign-off), rest Accepted-by-default per D00; records the 12.288 MHz worst-case failure as the headline"
+   "sha256": "5eb71b501c1a82c3cca351b933e37f3ef1e8c5839304a36145a8025265cd555a",
+   "reason": "locally authored H03 adoption record (issue #25), coordinated with #336 and DR-0015 (issue #339): Proposed on the 24.576 MHz design-point choice (owner sign-off in #336), 12.288 MHz fallback worst-case-infeasible, 17,260/17,344 figures scoped to the historical 16/16/16 vector with DR-0015 owning the SPI admission amendment"
   },
   {
    "path": "rtl/env_unit.v",
@@ -1944,8 +1944,8 @@
   },
   {
    "path": "tests/test_h07.py",
-   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd\u2026 (91,019 flops / 1,149,746 cells / 25,829,182.0 \u00b5m\u00b2 chip / 5,794,342.4 \u00b5m\u00b2 sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes. Issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #82 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes.; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance",
-   "sha256": "4d7e7f16a4a686d895635372f0ea23b21686b0e6a613a73e08f99215e220aecb"
+   "reason": "locally authored H07 tests (issue #29): harness machinery, committed-evidence freshness, four live negative controls (glitch localization, sum-order, tick-skew, strip-obs), determinism double-run, interface guards, doc anchors; re-pinned for issue #82: offline stat-parser cases (committed-transcript replay + three parser-refusal negative controls) and the report-vs-hierarchy-totals STALE/NOT_RUN check; no upstream bytes Issue #98 (DR-0012): conformance RESULTS reads the newest-pin battery (freshness assertion unchanged), and the synth-report core-pin drift is reported STALE/NOT_RUN on a host that cannot regenerate it, FAIL on one that can. Issue #93 (DR-0012 regen): TestSynthStatParser's HIER expectations and the gf180mcu_fd_sc_mcu7t5v0__dffq_1 cell-count assertion updated to the regenerated yosys_full.log transcript on the current frozen core pin f33cecbd\u2026 (91,019 flops / 1,149,746 cells / 25,829,182.0 \u00b5m\u00b2 chip / 5,794,342.4 \u00b5m\u00b2 sequential); the superseded DR-0011-pin numbers remain asserted absent; no upstream bytes. Issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #82 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes.; re-pinned after sha256_file consolidation onto tools/sha256_helpers.py (issue #141, catalog-only provenance audited); re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; issue #343: a failed cold bench build is diagnosed through the locally authored tests/vlt_toolchain.py (toolchain failure -> NOT_RUN, project failure -> FAIL); catalog-only provenance, no upstream bytes",
+   "sha256": "ee6cc90d0274498eb1c22b6d82cf6620ae0d31850d399a7a442f5bcdbb192cde"
   },
   {
    "path": "rtl/tb_synth_top.v",
@@ -1959,8 +1959,8 @@
   },
   {
    "path": "tests/test_h08.py",
-   "sha256": "22656ae520b80f3cce30d0883032f9c6afe3ba4216597729d774aa4036380955",
-   "reason": "CORE_SHA re-pinned to the DR-0012 refrozen core (issue #98); previously re-pinned to the DR-0011 refrozen core and for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks; issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #94 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes"
+   "sha256": "09768e715d462ad2c4548be9fcdaca989edeeec7f013b6dcea5450cb518dcb00",
+   "reason": "CORE_SHA re-pinned to the DR-0012 refrozen core (issue #98); previously re-pinned to the DR-0011 refrozen core and for issue #94: h08_synth parse_stat hierarchy-total replay tests, negative controls, guarded relative-gate and STALE-report checks; issue #124: adds a hierarchy-section-without-cells-total negative control asserting this tool's CheckFailure and #94 diagnostic after the parsing moved into tools/hierarchy_stat.py; no upstream bytes; issue #343: a failed cold bench build is diagnosed through the locally authored tests/vlt_toolchain.py (toolchain failure -> NOT_RUN, project failure -> FAIL); catalog-only provenance, no upstream bytes"
   },
   {
    "path": "docs/H08-PIN.md",
@@ -2251,6 +2251,31 @@
    "path": "tools/repin.py",
    "sha256": "a07a3762240cac69447721d866d209626c8d989da43d463d6c6be3b2263494bc",
    "reason": "locally authored pin recompute helper (issue #326): rewrites only catalog sha256 digests from the tree and delegates --stamp to compile_capabilities.py; no upstream bytes"
+  },
+  {
+   "path": "docs/decision-records/0015-h03-admission-budget-reconciliation.md",
+   "sha256": "b702ed1b8b277b4435d78a3d2e8661f1bf41b8b63d6570822df457f8969c4ee9",
+   "reason": "locally authored H03 post-implementation contract amendment (issue #339): arbitrary-phase 85/169 SPI completion bounds, skid/EVQ/allocator carry-over and replenishment derivation, raw-wire vs supplied-host pricing, section 6 STALE disposition, and Verilator 5.050 probe summary; no upstream bytes"
+  },
+  {
+   "path": "evidence/h03-event-admission/tb_event_admission.sv",
+   "sha256": "3171607fc0a8795780ce67cfd43ac521fcdc11a58654492c0c8ca5dd92e9d0e9",
+   "reason": "locally authored SystemVerilog SPI event-admission and frame-boundary probe bench for dx7_core (issue #339): exercises 100/168/169 raw-write bursts, silent-reset allocator control, extremal phase [0..32592], skid boundary straddle, simultaneous pop+push rejection at EVQ=168, and 194-strike carry+replenish conservation with and without CC123; no upstream bytes"
+  },
+  {
+   "path": "evidence/h03-event-admission/run_probe.py",
+   "sha256": "d78c930be12a7908f257ec1f4e3433a3d4f56a06df8f9cc7a7f43eacfe17e68b",
+   "reason": "locally authored Verilator 5.050 runner/checker for the H03 SPI event-admission probe (issue #339); stdlib only, no upstream bytes"
+  },
+  {
+   "path": "evidence/h03-event-admission/results.json",
+   "sha256": "5821c5a6422e3111afb399a6df5a57216055e9f30a05a117f2627fe4609b30a6",
+   "reason": "committed Verilator 5.050 H03 SPI event-admission probe results across 9 exercised 24.576 MHz cases plus NOT_RUN / NO_VERDICT records (issue #339); locally generated, no upstream bytes"
+  },
+  {
+   "path": "tests/test_h03_admission_probe.py",
+   "sha256": "670da90f3b3eb1cac6c4e7439abc6dde5a33ebcd89d96073ff89a24f7dcceb2c",
+   "reason": "locally authored wave-lane live Verilator reproduction test for evidence/h03-event-admission/results.json (issue #339); guarded-skips NOT_RUN without verilator; no upstream bytes"
   },
   {
    "path": "tests/oracle_harness.py",

@@ -3,9 +3,11 @@
 Modes:
   --write   compile tb_event_admission.sv, run all 8 probe scenarios, and write
             evidence/h03-event-admission/results.json
-  --check   compile and re-run all 8 probe scenarios, verifying source hashes
-            and frame-by-frame counts match committed results.json (exits 2 on
-            missing verilator)
+  --check   compile and re-run all 8 probe scenarios, comparing the build
+            options, source hashes and frame-by-frame results. Build parallelism
+            (-j) may vary by host. The recorded Verilator version describes the
+            original capture so other versions can also check the same results.
+            Exits 2 on missing verilator.
 
 Stdlib only.
 """
@@ -16,6 +18,7 @@ import argparse
 import hashlib
 import json
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,7 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_DIR = Path(__file__).resolve().parent
 TB_PATH = EVIDENCE_DIR / "tb_event_admission.sv"
 RESULTS_PATH = EVIDENCE_DIR / "results.json"
-BUILD_DIR = REPO_ROOT / "build" / "h03-admission"
+BUILD_DIR = Path("build/h03-admission")
 
 SOURCES = (
     "rtl/dx7_core.v",
@@ -141,28 +144,21 @@ def parse_frames(stdout: str) -> list[dict]:
 
 
 def build_and_run(jobs: int = 2) -> dict:
-    verilator = shutil.which("verilator")
-    if not verilator:
-        raise FileNotFoundError("verilator not found on PATH")
     ver_out = (
         subprocess.run(
-            [verilator, "--version"], capture_output=True, text=True, check=True
+            ["verilator", "--version"], capture_output=True, text=True, check=True
         )
         .stdout.strip()
         .splitlines()[0]
     )
 
-    BUILD_DIR.mkdir(parents=True, exist_ok=True)
-    makeflags = []
-    if shutil.which("clang++"):
-        makeflags = ["-MAKEFLAGS", "CXX=clang++"]
+    (REPO_ROOT / BUILD_DIR).mkdir(parents=True, exist_ok=True)
     build_cmd = [
-        verilator,
+        "verilator",
         "--binary",
         "--timing",
         "-j",
         str(jobs),
-        *makeflags,
         "-Wno-fatal",
         "--timescale-override",
         "1ns/1ps",
@@ -170,10 +166,10 @@ def build_and_run(jobs: int = 2) -> dict:
         str(BUILD_DIR),
         "--top-module",
         "tb_event_admission",
-        str(REPO_ROOT / "rtl/dx7_core.v"),
-        str(REPO_ROOT / "rtl/env_unit.v"),
-        str(REPO_ROOT / "rtl/alg_router.v"),
-        str(TB_PATH),
+        "rtl/dx7_core.v",
+        "rtl/env_unit.v",
+        "rtl/alg_router.v",
+        str(TB_PATH.relative_to(REPO_ROOT)),
     ]
     proc = subprocess.run(
         build_cmd, cwd=str(REPO_ROOT), capture_output=True, text=True, check=False
@@ -204,9 +200,7 @@ def build_and_run(jobs: int = 2) -> dict:
                 "frame_clks": 32768,
                 "patch": case["patch"],
                 "plusargs": case["plusargs"],
-                "reproduce_cmd": " ".join(
-                    ["build/h03-admission/Vtb_event_admission", *case["plusargs"]]
-                ),
+                "reproduce_cmd": shlex.join(cmd),
                 "stimulus": case["stimulus"],
                 "max_busy_clks": max(int(f["busy_clks"]) for f in frames),
                 "min_deadline_slack_clks": min(
@@ -225,13 +219,7 @@ def build_and_run(jobs: int = 2) -> dict:
         "simulator": {
             "tool": "verilator",
             "version": ver_out,
-            "build_command": (
-                "verilator --binary --timing -j 2 -MAKEFLAGS CXX=clang++ "
-                "-Wno-fatal --timescale-override 1ns/1ps "
-                "--Mdir build/h03-admission --top-module tb_event_admission "
-                "rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v "
-                "evidence/h03-event-admission/tb_event_admission.sv"
-            ),
+            "build_command": shlex.join(build_cmd),
         },
         "source_sha256": {rel: sha256_file(REPO_ROOT / rel) for rel in SOURCES},
         "verdicts": {
@@ -243,6 +231,11 @@ def build_and_run(jobs: int = 2) -> dict:
         "exercised_runs": runs,
         "not_run_cases": list(NOT_RUN_CASES),
     }
+
+
+def build_options(command: str) -> list[str]:
+    """Keep the command fragments on either side of the numeric job count."""
+    return re.split(r" -j [0-9]+ ", command, maxsplit=1)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -274,8 +267,14 @@ def main(argv: list[str] | None = None) -> int:
         if committed.get(key) != fresh.get(key):
             print(f"FAIL: results.json mismatch in {key}", file=sys.stderr)
             return 1
-    if committed.get("simulator", {}).get("tool") != "verilator":
+    simulator = committed.get("simulator", {})
+    if simulator.get("tool") != "verilator":
         print("FAIL: simulator.tool mismatch", file=sys.stderr)
+        return 1
+    if build_options(simulator.get("build_command", "")) != build_options(
+        fresh["simulator"]["build_command"]
+    ):
+        print("FAIL: simulator.build_command mismatch", file=sys.stderr)
         return 1
     print(
         f"h03 admission probe check PASS ({len(fresh['exercised_runs'])} runs reproduced)"

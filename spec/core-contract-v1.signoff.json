@@ -1,6 +1,6 @@
 {
   "status": "proposed",
-  "contract_sha256": "0109fb3ce678a4c91c4944cb32ac1348e42d4dfa9742dcce4b98da9e7657abba",
+  "contract_sha256": "3664e9d81c8a2b9875c7cdba3a1e55aec79df121477daf72ef166d82c9eb748f",
   "rows": [
     {
       "id": "op_evals",

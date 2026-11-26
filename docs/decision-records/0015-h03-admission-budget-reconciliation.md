@@ -50,8 +50,8 @@
 ## Evidence
 
 - `evidence/h03-event-admission/tb_event_admission.sv` (`sha256: 47a35c25a32b7a4cf915e20e692bb4c7c5a18a400a81e7564d9aab2d1fffbf94`)
-- `evidence/h03-event-admission/run_probe.py` (`sha256: e2978f455aa8434aa1a1dcab37bac00c9f6d7edbe16bef0bde38706a3b38a2c1`)
-- `evidence/h03-event-admission/results.json` (`sha256: f75b8248e9c976e58b6c9ec7b1ed9cf6239f7bc8d5824504f1e8116e468b11a9`, Verilator 5.050 against `rtl/dx7_core.v` `f33cecbd…`)
+- `evidence/h03-event-admission/run_probe.py` (`sha256: 793f9b3e4a5ba9448e92956c90f6a1ab208b96b09519b90b9047c4bf6f0c6bb4`)
+- `evidence/h03-event-admission/results.json` (`sha256: 5050d25aa1b3cc9b7389cdcc96a0dc4c99c20c9f40de1406d95c8021ae527f75`, Verilator 5.050 against `rtl/dx7_core.v` `f33cecbd…`)
 
 | Run ID | Patch | Frame `N-1` completions / admits / `evq` rej | Frame `N` `evq_open` / admits / `evq` rej (`sim_pop`) | Frame `N` pops / strikes / `evq_close` | Max `busy_clks` (of 32,768) | Sticky `OVERFLOW` / `OVERRUN` |
 |---|---|---:|---:|---:|---:|---:|

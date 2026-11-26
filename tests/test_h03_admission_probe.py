@@ -1,17 +1,47 @@
-"""Wave-lane live Verilator reproduction test for H03 SPI admission probe (#339).
+"""Build command and live reproduction tests for the H03 SPI probe (#339).
 
-Not matched by tools/test_fast.sh `-k` filters (keeps make test-fast sub-second
-per DR-0009); runs in `make test` and guarded-skips (NOT_RUN) when verilator is
-not on PATH.
+These run in `make test`. The live reproduction guarded-skips (NOT_RUN)
+when Verilator is absent. The build command test runs on every host.
 """
 
 import os
+import shlex
 import shutil
 import subprocess
 import unittest
+from importlib.util import module_from_spec, spec_from_file_location
+from unittest.mock import patch
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNNER = os.path.join(REPO, "evidence", "h03-event-admission", "run_probe.py")
+
+
+class TestH03AdmissionProbeBuild(unittest.TestCase):
+    def test_records_executed_command_with_clang_present(self):
+        spec = spec_from_file_location("h03_probe", RUNNER)
+        probe = module_from_spec(spec)
+        spec.loader.exec_module(probe)
+        with (
+            patch.object(
+                probe.shutil, "which", side_effect=lambda name: f"/bin/{name}"
+            ),
+            patch.object(probe, "CASES", ()),
+            patch.object(
+                probe.subprocess,
+                "run",
+                side_effect=lambda cmd, **kw: subprocess.CompletedProcess(
+                    cmd, 0, stdout="Verilator test version\n"
+                ),
+            ) as run,
+        ):
+            report = probe.build_and_run(jobs=3)
+
+        argv = run.call_args.args[0]
+        self.assertEqual(run.call_args.kwargs["cwd"], REPO)
+        self.assertFalse(any(arg.startswith("CXX=") for arg in argv), argv)
+        self.assertFalse(any(os.path.isabs(arg) for arg in argv), argv)
+        self.assertEqual(argv[argv.index("-j") + 1], "3")
+        self.assertEqual(shlex.split(report["simulator"]["build_command"]), argv)
 
 
 class TestH03AdmissionProbeLive(unittest.TestCase):

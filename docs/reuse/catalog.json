@@ -1724,7 +1724,7 @@
   },
   {
    "path": "spec/core-contract-v1.json",
-   "sha256": "0109fb3ce678a4c91c4944cb32ac1348e42d4dfa9742dcce4b98da9e7657abba",
+   "sha256": "3664e9d81c8a2b9875c7cdba3a1e55aec79df121477daf72ef166d82c9eb748f",
    "reason": "locally authored H03 machine-readable contract (issue #25), amended under DR-0015 (issue #339): arbitrary-phase 85/169 drain bounds, reachable raw-wire rows (98/194 note-ons, planning FAIL at both clocks), historical 16/16/16 regression vector, raw-wire witnesses and 337-event paper conservation bound, supplied-host pricing, section 6 STALE/NO_VERDICT/NOT_RUN dispositions, and H01/H02/N08/H03-probe sha256 pins"
   },
   {
@@ -2254,7 +2254,7 @@
   },
   {
    "path": "docs/decision-records/0015-h03-admission-budget-reconciliation.md",
-   "sha256": "ee70616fe8cfab78d1146e495f57b2a6194867ef7d92e4dfa2bb726087e42ea1",
+   "sha256": "42903c0322e0716cb4c95651903ecf40df3769c3d902be6f7bf9bfbc59144483",
    "reason": "locally authored H03 post-implementation contract amendment (issue #339): arbitrary-phase 85/169 SPI completion bounds, skid/EVQ/allocator carry-over and replenishment derivation, raw-wire vs supplied-host pricing, section 6 STALE disposition, and Verilator 5.050 probe summary; no upstream bytes"
   },
   {
@@ -2264,17 +2264,17 @@
   },
   {
    "path": "evidence/h03-event-admission/run_probe.py",
-   "sha256": "e2978f455aa8434aa1a1dcab37bac00c9f6d7edbe16bef0bde38706a3b38a2c1",
+   "sha256": "793f9b3e4a5ba9448e92956c90f6a1ab208b96b09519b90b9047c4bf6f0c6bb4",
    "reason": "locally authored Verilator 5.050 runner/checker for the H03 SPI event-admission probe (issue #339); stdlib only, no upstream bytes"
   },
   {
    "path": "evidence/h03-event-admission/results.json",
-   "sha256": "f75b8248e9c976e58b6c9ec7b1ed9cf6239f7bc8d5824504f1e8116e468b11a9",
+   "sha256": "5050d25aa1b3cc9b7389cdcc96a0dc4c99c20c9f40de1406d95c8021ae527f75",
    "reason": "committed Verilator 5.050 H03 SPI event-admission probe results across 8 exercised 24.576 MHz cases plus NOT_RUN / NO_VERDICT records (issue #339); locally generated, no upstream bytes"
   },
   {
    "path": "tests/test_h03_admission_probe.py",
-   "sha256": "d0f182698a9c10634ecab74c1a2179620dcd73eaf10fbbf2a50379e32a473239",
+   "sha256": "670da90f3b3eb1cac6c4e7439abc6dde5a33ebcd89d96073ff89a24f7dcceb2c",
    "reason": "locally authored wave-lane live Verilator reproduction test for evidence/h03-event-admission/results.json (issue #339); guarded-skips NOT_RUN without verilator; no upstream bytes"
   }
  ]

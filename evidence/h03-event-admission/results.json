@@ -5,7 +5,7 @@
   "simulator": {
     "tool": "verilator",
     "version": "Verilator 5.050 2026-07-01 rev vUNKNOWN-built20261119",
-    "build_command": "verilator --binary --timing -j 2 -MAKEFLAGS CXX=clang++ -Wno-fatal --timescale-override 1ns/1ps --Mdir build/h03-admission --top-module tb_event_admission rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v evidence/h03-event-admission/tb_event_admission.sv"
+    "build_command": "verilator --binary --timing -j 2 -Wno-fatal --timescale-override 1ns/1ps --Mdir build/h03-admission --top-module tb_event_admission rtl/dx7_core.v rtl/env_unit.v rtl/alg_router.v evidence/h03-event-admission/tb_event_admission.sv"
   },
   "source_sha256": {
     "rtl/dx7_core.v": "f33cecbd138aea2a869cb502dca9273b342c8f97be51c9a1e587f2eb4aba89fa",

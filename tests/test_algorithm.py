@@ -42,24 +42,21 @@ from __future__ import annotations
 
 import hashlib
 import json
-import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-for p in (str(REPO / "src"), str(REPO / "tools")):
+for p in (str(REPO / "src"), str(REPO / "tests")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import compare, sysex  # noqa: E402
 from gf180_dx7.model import algorithm as A  # noqa: E402
 from gf180_dx7.model import tables as tmod  # noqa: E402
 from gf180_dx7.model.algorithm import (  # noqa: E402
     ALGORITHMS, AlgorithmRouter, FmParams, decode_op, fb_shift_for)
-from render_reference import (  # noqa: E402
-    HarnessFail, HarnessNotRun, check_oracle_binary, load_identity, read_f32)
 
 N_FRAMES = 3
 PARKED_LEVEL = 15360 << 14      # frame gain2 = ENV_MAX - 15360 = 1024
@@ -69,7 +66,7 @@ RATE = 48000
 SWEEP_SECONDS = 2.0
 EVIDENCE_PATH = REPO / "reference" / "evidence" / "n04-algorithm" / \
     "algorithm-sweep.json"
-ORACLE_ABSENT = "pinned oracle binary absent or unpinned; sweep NOT_RUN"
+ORACLE, ORACLE_ABSENT = probe_oracle()
 
 # Scripted source: op k's output at global sample t with modulation term m.
 BASE = [110 * (k + 1) for k in range(6)]
@@ -303,67 +300,6 @@ def scripted_case_ok(alg: int, feedback: int, n_frames: int = N_FRAMES,
         if p.phase != ((p.freq << 6) * n_frames) % (1 << 32):
             return False
     return True
-
-
-# ---------------------------------------------------------------------------
-# Pinned oracle harness (guarded)
-#------------------------------------------------------------------------------
-
-
-def _oracle():
-    try:
-        identity = load_identity(REPO / "reference" / "oracle-identity.json")
-        path = Path(identity["binary"]["path"])
-        check_oracle_binary(identity, path)
-        return path
-    except (HarnessFail, HarnessNotRun):
-        return None
-
-
-ORACLE = _oracle()
-
-
-class OracleRenderer:
-    """Renders (voice, events) with the pinned oracle; caches by input hash
-    inside one process (the sweep + directed cases share renders)."""
-
-    def __init__(self, oracle_path):
-        self.oracle = oracle_path
-        self.tmp = tempfile.TemporaryDirectory(prefix="n04-alg-")
-        self.cache = {}
-        self.runs = []
-
-    def close(self):
-        self.tmp.cleanup()
-
-    def render(self, voice: sysex.Voice, events: str, seconds: float) -> bytes:
-        voice_bytes = sysex.encode_voice(voice)
-        key = (hashlib.sha256(voice_bytes).hexdigest(),
-               hashlib.sha256(events.encode()).hexdigest(), seconds)
-        if key in self.cache:
-            return self.cache[key]
-        vpath = Path(self.tmp.name) / f"v-{key[0][:12]}.syx"
-        epath = Path(self.tmp.name) / f"e-{key[1][:12]}.txt"
-        opath = Path(self.tmp.name) / f"o-{key[0][:12]}-{key[1][:12]}.f32"
-        vpath.write_bytes(voice_bytes)
-        epath.write_text(events, encoding="utf-8")
-        proc = subprocess.run(
-            [str(self.oracle), "--voice", str(vpath), "--events", str(epath),
-             "--out", str(opath), "--rate", str(RATE),
-             "--seconds", str(seconds)], capture_output=True, text=True)
-        if proc.returncode != 0:
-            raise AssertionError(
-                f"oracle failed (exit {proc.returncode}): {proc.stderr}")
-        data = opath.read_bytes()
-        if len(data) != 4 * int(RATE * seconds):
-            raise AssertionError("oracle produced an unexpected length")
-        self.runs.append({
-            "voice_sha256": key[0], "events_sha256": key[1],
-            "seconds": seconds,
-            "pcm_sha256": hashlib.sha256(data).hexdigest(),
-        })
-        self.cache[key] = data
-        return data
 
 
 def sweep_op(tl: int) -> sysex.Operator:
@@ -801,18 +737,19 @@ class TestReferenceSweep(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.renderer = OracleRenderer(ORACLE)
+        cls.renderer = cls.enterClassContext(
+            OracleRenderer(ORACLE, prefix="n04-alg-", rate=RATE))
 
     @classmethod
     def tearDownClass(cls):
         SWEEP_RESULTS["renders"] = cls.renderer.runs
-        cls.renderer.close()
 
     def _check_case(self, name, algorithm, feedback, events=None,
                     seconds=SWEEP_SECONDS, **voice_kw):
         events = events or "0 note_on 60 100\n"
         voice = sweep_voice(algorithm, feedback, **voice_kw)
-        oracle_pcm = self.renderer.render(voice, events, seconds)
+        voice_bytes = sysex.encode_voice(voice)
+        oracle_pcm = self.renderer.render_bytes(voice_bytes, events, seconds)
         model_pcm = model_render(voice, events, seconds)
         report = compare.compare_streams(oracle_pcm, model_pcm)
         row = {
@@ -821,8 +758,7 @@ class TestReferenceSweep(unittest.TestCase):
             "feedback": feedback,
             "seconds": seconds,
             "events": events.strip(),
-            "voice_syx_sha256": hashlib.sha256(
-                sysex.encode_voice(voice)).hexdigest(),
+            "voice_syx_sha256": hashlib.sha256(voice_bytes).hexdigest(),
             "oracle_render_sha256": hashlib.sha256(oracle_pcm).hexdigest(),
             "model_render_sha256": hashlib.sha256(model_pcm).hexdigest(),
             "byte_identical": report.byte_identical,

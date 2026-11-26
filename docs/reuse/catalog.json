@@ -1469,7 +1469,7 @@
   },
   {
    "path": "tests/test_envelope.py",
-   "sha256": "ab3bc3181a2a38e7e80c62e38650befa316d84e7d6e9e7272052bd3c0fa16ce8",
+   "sha256": "b339a24e30efc1a8c3d7a8c688a5523441184281cab706c72f644088e7e50b9a",
    "reason": "locally authored N03 directed/unit/negative-control suite (issue #17); drives the external GPL oracle per reference/oracle-protocol.md, no upstream test bytes. Re-pinned after the PR #58 judge-fix revision (sr_multiplier control documentation corrected to the measured flip locations; committed scan-statistics test added)"
   },
   {
@@ -1504,7 +1504,7 @@
   },
   {
    "path": "tests/test_operator.py",
-   "sha256": "5a7bb873383fe2ba0fe408730b2ef7762757443e4959cd9f28dfe26b996aafd4",
+   "sha256": "5b587903a0b48911bd69ab7b99147ab461e0cdb6d6f6797b4f0b8fabc4bc89fe",
    "reason": "locally authored N02 probe suite (issue #16); analytic probes, negative controls, and the pinned-oracle reference probe"
   },
   {
@@ -1539,7 +1539,7 @@
   },
   {
    "path": "tests/test_pitch.py",
-   "sha256": "4ec9ac1501e51c1471c1f0fffca450f2418f49317a4021210a867eef3159ca64",
+   "sha256": "a14e0dd1a593636ff575d18d6c922579a63a8bc904d66db1abafd9ccf33e1dc6",
    "reason": "locally authored N05 directed test suite (issue #19); analytic ratio math re-derived in-test, pinned-tree constant checks, pinned-oracle PCM probes via a documented zero-crossing estimator, and live negative controls; no upstream bytes; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
   },
   {
@@ -1594,7 +1594,7 @@
   },
   {
    "path": "tests/test_algorithm.py",
-   "sha256": "733f778ba5ef7fc7ab605fe6da92ee42a5316204cb12cf6ac01843e87439ac0a",
+   "sha256": "172cbb8ed410865173fa2663e857a9f6650cf6c0b5e41bfb2076f48d88f417b9",
    "reason": "locally authored N04 test suite (issue #18); hand-derived wiring table re-derived from the citation, scripted-source battery, oracle sweep, three negative controls"
   },
   {
@@ -1614,7 +1614,7 @@
   },
   {
    "path": "tests/test_integrated.py",
-   "sha256": "77d0c6f385ce80d837593a6329bdbca76d723e4a39d03c4a99cc2db94ae661e9",
+   "sha256": "ee84917d628bd7efee7c027a35f7f70460cabd5faac269d3671909ba9c947da2",
    "reason": "locally authored N06 test suite (issue #22); wrapper bookkeeping, composition semantics (bend/LFO/scope guard), stub seams, committed-evidence validation, guarded live oracle checks"
   },
   {
@@ -1649,7 +1649,7 @@
   },
   {
    "path": "tests/test_poly.py",
-   "sha256": "35bd7b96857a93316c9da450fb636b9f31181a1fce114e24174876aa2198bac1",
+   "sha256": "a705611da0c5606b9798236a4a9152bce4544fcd75a6286cc67dc2188ba61a17",
    "reason": "N07 test suite (issue #23): D00 policy battery, isolation additivity, live negative controls, committed-evidence validation, guarded live-oracle checks"
   },
   {
@@ -1904,7 +1904,7 @@
   },
   {
    "path": "tools/test_fast.sh",
-   "sha256": "af06c6b5f12c2447e9b74f2aac14fb1cd8fce922462975f3b352a42e3a6cfa14",
+   "sha256": "ef26c725ae42e5e3837064c4d01ee89bca76204a8286e9a6870fcb9f0ae5abea",
    "reason": "locally authored fast-lane gate (DR-0009 test tiering); re-pinned for U05: fast token u05_demo added (issue #38); re-pinned for U03 scaffold: fast token bank128 added (issue #36); re-pinned for H10: fast token h10 added (issue #32); re-pinned for the H07 stat-parser fix: fast token synthparse added (issue #82); re-pinned after issue #86 added the exp_range fast-lane token; `synthparse` selection documented to cover the #95 single-module assertion cases as well as #82's h07 cases; re-pinned after issue #96 added the ams_audit fast-lane token; re-pinned for issue #211: fast token hierarchy added (tests/test_hierarchy_stat.py flop-predicate regression suite); re-pinned for issue #226: fast token fv_pins added (tests/test_check_fv_pins.py, the FV pin/provenance gate suite); re-pinned for issue #234: fast token frozen_int added (tests/test_host_frozen_int.py, the host_frozen_int consolidation suite); re-pinned for issue #256: fast token merge_group added (tests/test_ci_merge_group.py, the ci.yml merge-group contract suite); re-pinned for issue #260: fast token signoff_hashes added (tests/test_check_signoff_hashes.py, the item-9/10 hash-drift gate suite); re-pinned for issue #291: fast token probe_synth added (tests/test_probe_synth.py mock-yosys driver suite)"
   },
   {
@@ -2281,6 +2281,16 @@
    "path": "tests/test_h03_admission_probe.py",
    "sha256": "670da90f3b3eb1cac6c4e7439abc6dde5a33ebcd89d96073ff89a24f7dcceb2c",
    "reason": "locally authored wave-lane live Verilator reproduction test for evidence/h03-event-admission/results.json (issue #339); guarded-skips NOT_RUN without verilator; no upstream bytes"
+  },
+  {
+   "path": "tests/oracle_harness.py",
+   "sha256": "eec7413b946de7065bdf6233c2ffbec10ba1c67ec5dc1304d60093339fa6a93d",
+   "reason": "Locally authored shared pinned-oracle discovery and PCM renderer for N02 through N07 model tests (issue #344)."
+  },
+  {
+   "path": "tests/test_oracle_harness.py",
+   "sha256": "c9b06771e9f31131e8c1194329fceea880a9b47aea3d4334b3aa19b9f24c8b68",
+   "reason": "Locally authored tests for pinned-oracle discovery, render validation, caching and cleanup using a temporary stub executable (issue #344)."
   }
  ]
 }

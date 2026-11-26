@@ -34,7 +34,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
+sys.path.insert(0, str(REPO / "tests"))
 
+from oracle_harness import OracleRenderer, probe_oracle  # noqa: E402
 from gf180_dx7 import compare, sysex  # noqa: E402
 from gf180_dx7.model import integrated as IG  # noqa: E402
 from gf180_dx7.model.integrated import (  # noqa: E402
@@ -427,20 +429,7 @@ class TestCommittedEvidence(_Base):
 # 5. Live pinned-oracle checks (guarded; NOT_RUN when absent)
 
 
-def _oracle():
-    try:
-        from render_reference import (check_oracle_binary, load_identity)
-        identity = load_identity(REPO / "reference" / "oracle-identity.json")
-        path = Path(identity["binary"]["path"])
-        check_oracle_binary(identity, path)
-        return path
-    except Exception:  # noqa: BLE001 - guarded skip -> NOT_RUN
-        return None
-
-
-ORACLE = _oracle()
-ORACLE_ABSENT = ("pinned oracle binary absent or unpinned; live checks "
-                 "NOT_RUN")
+ORACLE, ORACLE_ABSENT = probe_oracle()
 
 
 def registry_voice(cid):
@@ -454,21 +443,10 @@ def registry_voice(cid):
 @unittest.skipUnless(ORACLE is not None, ORACLE_ABSENT)
 class TestLiveOracle(_Base):
     def _render_both(self, cid, seconds, events=None, stubs=None):
-        import subprocess
-        import tempfile
         voice, case = registry_voice(cid)
         events = events or "\n".join(case["events"]) + "\n"
-        with tempfile.TemporaryDirectory(prefix="n06-live-") as td:
-            tmp = Path(td)
-            vp, ep, op = tmp / "v.syx", tmp / "e.txt", tmp / "o.f32"
-            vp.write_bytes(sysex.encode_voice(voice))
-            ep.write_text(events)
-            proc = subprocess.run(
-                [str(ORACLE), "--voice", str(vp), "--events", str(ep),
-                 "--out", str(op), "--rate", "48000",
-                 "--seconds", str(seconds)], capture_output=True, text=True)
-            self.assertEqual(proc.returncode, 0, proc.stderr)
-            oracle_pcm = op.read_bytes()
+        with OracleRenderer(ORACLE, prefix="n06-live-") as renderer:
+            oracle_pcm = renderer.render_bytes(sysex.encode_voice(voice), events, seconds)
         model_pcm = render_integrated(voice, events, seconds=seconds,
                                       stubs=stubs)
         return oracle_pcm, model_pcm

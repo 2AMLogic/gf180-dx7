@@ -20,6 +20,16 @@ Covers, per the issue's acceptance:
     committed yosys_full.log replay still yields 4,115,369.9776 um^2, and
     a synthetic multi-module transcript must make the parser FAIL rather
     than return a per-module block (the #82/#94 bug pattern);
+  - that assertion is the guard shared with H01/H04/H05/H06,
+    tools/single_module_stat.py, not a second copy in the H02 tool
+    (issue #357): all four non-flat inputs (a hierarchy marker alone, a
+    top-module area line alone, the hierarchical and the two-block
+    fixtures) fail through the public parser and the
+    assert_single_module_stat entry point with this tool's CheckFailure
+    and a diagnostic naming storage_probe; both committed transcripts
+    replay field-for-field; a sentinel substituted into the SHARED
+    module's hierarchy marker is refused, where a local copy of the guard
+    would accept it;
   - tools/storage_probe_synth.py run_yosys routes through the shared
     tools/yosys_run.py tail (#146, issue #296): the log header records
     the script AND the cwd, and a yosys failure with empty output still
@@ -46,6 +56,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from io import StringIO
+from unittest import mock
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC_PATH = os.path.join(REPO, "spec", "numeric-profile-v1.json")
@@ -464,6 +475,13 @@ TWO_BLOCK_TRANSCRIPT = """
      of which used for sequential elements: 2468829.484800 (59.99%)
 """
 
+# The two remaining non-flat shapes at their smallest: a hierarchy marker
+# with no module block and no top total, and a top-module area line with no
+# hierarchy header. Hand-built controls, like the two above.
+HIER_MARKER_ONLY_TRANSCRIPT = "=== design hierarchy ===\n"
+TOP_AREA_ONLY_TRANSCRIPT = (
+    "Chip area for top module '\\storage_probe': 4213802.087600\n")
+
 
 class TestSynthStatSingleModuleGuard(unittest.TestCase):
     """tools/storage_probe_synth.py parse_stat must ASSERT the single-module
@@ -488,12 +506,35 @@ class TestSynthStatSingleModuleGuard(unittest.TestCase):
     # the per-module block a guard-less parser would hand back from the
     # synthetic multi-module transcript below
     SUBMODULE_LOCAL_AREA = 98432.11
+    # every non-flat input, with the guard branch that must refuse it
+    NON_FLAT_INPUTS = (
+        ("hierarchy marker alone", HIER_MARKER_ONLY_TRANSCRIPT,
+         "HIERARCHICAL"),
+        ("top-module area line alone", TOP_AREA_ONLY_TRANSCRIPT,
+         "HIERARCHICAL"),
+        ("hierarchical fixture", MULTI_MODULE_TRANSCRIPT, "HIERARCHICAL"),
+        ("two-block fixture", TWO_BLOCK_TRANSCRIPT,
+         "2 'Chip area for module' blocks"),
+    )
 
     def _log(self, path):
         if not os.path.isfile(path):
             self.skipTest(f"NOT_RUN: {path} absent")
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
+
+    def _assert_refused(self, call):
+        """`call(log)` must raise this tool's exact CheckFailure, carrying
+        its branch's diagnostic and the module name, for each non-flat
+        input."""
+        h = _storage_probe_synth()
+        for label, transcript, branch in self.NON_FLAT_INPUTS:
+            with self.subTest(transcript=label):
+                with self.assertRaises(h.CheckFailure) as ctx:
+                    call(transcript)
+                self.assertIs(type(ctx.exception), h.CheckFailure)
+                self.assertIn(branch, str(ctx.exception))
+                self.assertIn("storage_probe", str(ctx.exception))
 
     def test_synthparse_committed_log_single_module_keeps_area(self):
         """POSITIVE: the committed transcript is still single-module, and
@@ -543,6 +584,70 @@ class TestSynthStatSingleModuleGuard(unittest.TestCase):
         self.assertEqual(st["dff_total"], 0)
         self.assertIsNone(st["chip_area_um2"])
         self.assertIsNone(st["dff_area_um2"])
+
+    def test_synthparse_each_non_flat_input_fails_naming_the_module(self):
+        """All four non-flat inputs fail through the public parser with
+        this tool's CheckFailure and a diagnostic naming storage_probe
+        (issue #357: the guard is tools/single_module_stat.py's, told the
+        module name and failure type by this tool)."""
+        self._assert_refused(_storage_probe_synth().parse_stat)
+
+    def test_synthparse_entry_point_refuses_each_non_flat_input(self):
+        """assert_single_module_stat(log) stays this tool's public entry
+        point to the shared guard (issue #357): the same four refusals as
+        the parser."""
+        self._assert_refused(
+            _storage_probe_synth().assert_single_module_stat)
+
+    def test_synthparse_entry_point_returns_zero_or_one_area_strings(self):
+        """The entry point hands back the per-module area strings: one for
+        the committed full transcript, none for the strip control."""
+        h = _storage_probe_synth()
+        self.assertEqual(
+            h.assert_single_module_stat(self._log(self.FULL_LOG)),
+            ["4115369.977600"])
+        self.assertEqual(
+            h.assert_single_module_stat(self._log(self.STRIP_LOG)), [])
+
+    def test_synthparse_committed_reports_replay_field_for_field(self):
+        """The whole five-field report from both committed transcripts is
+        the one recorded before the guard moved to the shared module
+        (issue #357): the DFF matching, the mapped count and the report
+        stay this tool's own."""
+        h = _storage_probe_synth()
+        self.assertEqual(h.parse_stat(self._log(self.FULL_LOG)), {
+            "dff_cells": {"gf180mcu_fd_sc_mcu7t5v0__dffq_1": 38781},
+            "dff_total": 38781,
+            "dff_area_um2": 2468829.4848,
+            "chip_area_um2": 4115369.9776,
+            "dfflibmap_mapped": 38781,
+        })
+        self.assertEqual(h.parse_stat(self._log(self.STRIP_LOG)), {
+            "dff_cells": {},
+            "dff_total": 0,
+            "dff_area_um2": None,
+            "chip_area_um2": None,
+            "dfflibmap_mapped": None,
+        })
+
+    def test_synthparse_guard_comes_from_the_shared_module(self):
+        """The guard behind both entry points is the one in
+        tools/single_module_stat.py that H01/H04/H05/H06 use (issue #357).
+        A sentinel substituted for the SHARED module's hierarchy marker
+        must make THIS tool's parser refuse a transcript carrying only it;
+        the pre-#357 local copy of the guard kept its own marker and
+        accepted that transcript."""
+        h = _storage_probe_synth()
+        import single_module_stat
+        sentinel = "SENTINEL-HIERARCHY-MARK (issue #357 wiring probe)"
+        log = sentinel + "\n"
+        # resolution: the sentinel is inert while the shared marker stands
+        self.assertIsNone(h.parse_stat(log)["chip_area_um2"])
+        with mock.patch.object(single_module_stat, "HIER_MARK", sentinel):
+            with self.assertRaises(h.CheckFailure) as ctx:
+                h.parse_stat(log)
+        self.assertIn("HIERARCHICAL", str(ctx.exception))
+        self.assertIn("storage_probe", str(ctx.exception))
 
 
 def _fake_yosys(td, body):

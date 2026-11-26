@@ -49,6 +49,8 @@ sys.path.insert(0, os.path.join(REPO, "src"))
 sys.path.insert(0, os.path.join(REPO, "tools"))
 
 from sha256_helpers import sha256_file  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import vlt_toolchain as VT  # noqa: E402
 
 COMPARE_TOOL = os.path.join(REPO, "tools", "h07_compare.py")
 SYNTH_TOOL = os.path.join(REPO, "tools", "h07_synth.py")
@@ -207,9 +209,16 @@ class SimBinary:
             proc = subprocess.run(cmd, cwd=REPO, capture_output=True,
                                   text=True, timeout=1800)
             if proc.returncode != 0:
+                diag = proc.stderr[-2000:]
+                verdict, why = VT.diagnose(vlt, diag)
+                if verdict == VT.TOOLCHAIN:
+                    shutil.rmtree(out, ignore_errors=True)
+                    raise unittest.SkipTest(
+                        f"NOT_RUN (toolchain): {why}\n"
+                        f"project build diagnostic ({name}): {diag}")
                 raise AssertionError(
-                    f"verilator build failed for {name}: "
-                    f"{proc.stderr[-2000:]}")
+                    f"verilator build failed for {name} "
+                    f"[{verdict}: {why}]: {diag}")
             open(marker, "w").write(fp)
         return os.path.join(out, "simtb")
 

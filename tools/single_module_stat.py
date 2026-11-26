@@ -4,8 +4,13 @@ Used by h01/h04/h05/h06_synth.py. Each caller keeps its own public
 `parse_stat(log)` and its own `CheckFailure`; this module only owns the
 guard and the cell/area parsing that used to be copied four times.
 
-Excluded on purpose: the hierarchical H07/H08 parsers and the storage-probe
-parser (their returned fields differ).
+The guard alone, `assert_single_module_stat`, is shared with
+tools/storage_probe_synth.py too (issue #357), where it replaces a second
+copy.
+
+Excluded on purpose: the hierarchical H07/H08 parsers and the
+storage-probe report parser (their returned fields differ); the H02 tool
+keeps that parser around the shared guard.
 """
 
 import re
@@ -15,8 +20,8 @@ MODULE_AREA_RE = r"Chip area for module .*?: ([\d.]+)"
 TOP_AREA_RE = r"Chip area for top module"
 
 
-def parse_single_module_stat(log, module, failure):
-    """Mapped cell/area facts from a single-module `stat -liberty` transcript.
+def assert_single_module_stat(log, module, failure):
+    """Per-module `Chip area for module` strings (0 or 1), or raise `failure`.
 
     The transcript's ONE `Chip area for module` block is reported as the
     design total. That is correct only while `module` is a flat,
@@ -29,8 +34,8 @@ def parse_single_module_stat(log, module, failure):
     fires is #94's hierarchy-total parser, never a looser regex or a relaxed
     guard.
 
-    An EMPTY area list is legitimate: the strip-observability control maps
-    nothing, so yosys prints no area line (chip_area_um2 stays None).
+    An EMPTY list is legitimate: the strip-observability control maps
+    nothing, so yosys prints no area line.
     """
     if HIER_MARK in log or re.search(TOP_AREA_RE, log):
         raise failure(
@@ -47,6 +52,18 @@ def parse_single_module_stat(log, module, failure):
             f"{module} is expected to be a single-module design "
             "(exactly one). Refusing to report the first block as the design "
             "area (issues #82/#94/#95).")
+    return areas
+
+
+def parse_single_module_stat(log, module, failure):
+    """Mapped cell/area facts from a single-module `stat -liberty` transcript.
+
+    The single-module shape is asserted first
+    (`assert_single_module_stat`). An EMPTY area list is legitimate: the
+    strip-observability control maps nothing, so yosys prints no area line
+    (chip_area_um2 stays None).
+    """
+    areas = assert_single_module_stat(log, module, failure)
     cells = {}
     for m in re.finditer(r"^\s+(\d+)\s+([\d.]+E\+\d+|[\d.]+)\s+"
                          r"(gf180mcu\S+)\s*$", log, re.M):

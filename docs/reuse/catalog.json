@@ -1584,7 +1584,7 @@
   },
   {
    "path": "tests/test_h01.py",
-   "sha256": "45bf1135f6c481a7f38825b72d11bc563dcefadd107778edf116a795a87a1e2d",
+   "sha256": "31e9a4d856c1a617a04d3915362f5a78c872cf46cf742eeca90c70d325691e69",
    "reason": "locally authored H01 test suite (issue #20); vector determinism, live bit-exact equivalence, mutant + strip negative controls, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; mutually-exclusive mode-flag rejection test added (issue #312, locally authored, no upstream bytes)"
   },
   {
@@ -1764,7 +1764,7 @@
   },
   {
    "path": "tests/test_h04.py",
-   "sha256": "615834e330bdb1ec7c197c6475453cce62f15d8595583fc88bb2be784ea48869",
+   "sha256": "85e1ea86c08bae664652f299e2e0cf88122c28adc8bf3dfbd5a402112c6c672e",
    "reason": "locally authored H04 test suite (issue #26): deterministic vector generation, battery coverage recomputation, sr_multiplier formula re-derivation + profile cross-check, exhaustive //20 identity check, live equivalence/budget/hazard gate, three negative controls, committed-evidence freshness (STALE detection), RTL hygiene and doc anchors; no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; mutually-exclusive mode-flag rejection test added (issue #312, locally authored, no upstream bytes); issue #315: tests --mutants-only with timing and SRM suppressed individually, checking both control results and the overall verdict for each survivor and for both mutations detected"
   },
   {
@@ -1804,7 +1804,7 @@
   },
   {
    "path": "tests/test_h05.py",
-   "sha256": "0d26851ed9f27f939349c70f1426575e1a64fae772ad0b3820f4f1dc2ae811cf",
+   "sha256": "156b29262957b4327bbe34edb98856a59668bd56108b735f57bfe053c620f4bc",
    "reason": "locally authored H05 test suite (issue #27); table regeneration identity + decode guard, live bit-exact conformance, four negative controls (oporder >= 28 algorithms, fbsign, fbdelay, mutated hex sha-pin), synthesis + strip gates, committed-evidence freshness, no upstream bytes; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance"
   },
   {
@@ -1834,7 +1834,7 @@
   },
   {
    "path": "tests/test_h06.py",
-   "sha256": "6a681cea43b81aee21f0119d30f463ed2726b9b569358091a39a841aaac9ed0d",
+   "sha256": "677a42fead3bcf4a047b1c8601dedd2090a4617f2cc1cc6a287ac30bdcb03c42",
    "reason": "locally authored H06 test suite (issue #28): determinism, issue-requirement coverage, live equivalence + negative controls, static per-sample-host interface guard with resolution proof, link-budget math, committed-evidence freshness, doc anchors; stdlib only; single-module stat-parser assertion cases: committed yosys_full.log replay + synthetic multi-module negative controls (issue #95); issue #119: adds a top-module-area-only transcript negative control asserting this tool's CheckFailure and module name after the guard moved into tools/single_module_stat.py; re-pinned for PR #171 repo-relative path defaults (issue #170), catalog-only provenance; mutually-exclusive mode-flag rejection test added (issue #312, locally authored, no upstream bytes)"
   },
   {
@@ -2291,6 +2291,16 @@
    "path": "tests/test_oracle_harness.py",
    "sha256": "c9b06771e9f31131e8c1194329fceea880a9b47aea3d4334b3aa19b9f24c8b68",
    "reason": "Locally authored tests for pinned-oracle discovery, render validation, caching and cleanup using a temporary stub executable (issue #344)."
+  },
+  {
+   "path": "tests/tool_prereqs.py",
+   "sha256": "3df5b667e05c70220782301c9b5ef4f99fa990099cb27e83f67220d3babff8d7",
+   "reason": "Locally authored shared Icarus and Yosys prerequisite checks for the H01, H04, H05 and H06 suites, replacing nine duplicated setUpClass bodies with unchanged skip reasons and resolved binary paths; the Liberty is located through tools/pdk_resolve.py (issue #354). No upstream bytes."
+  },
+  {
+   "path": "tests/test_tool_prereqs.py",
+   "sha256": "a8bc96877b6fdead2b8a3f3cc0ae5511ff4e2600b47c4cdcaf77c9e02dd61e62",
+   "reason": "Locally authored hermetic tests for the shared prerequisite checks: exact NOT_RUN reasons, each suite binding the shared check, a single implementation, and the missing-binary skip control replayed against the suites' own cases (issue #354). No upstream bytes."
   }
  ]
 }

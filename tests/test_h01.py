@@ -51,13 +51,11 @@ REPORT_PATH = os.path.join(REPO, "docs", "H01-OPERATOR-PROBE.md")
 EVIDENCE = os.path.join(REPO, "evidence", "h01-operator-probe")
 TABLES_DIR = os.path.join(REPO, "reference", "tables")
 
-# gf180mcuD PDK root: sha256-pinned search (tools/pdk_resolve.py)
+# Icarus / Yosys prerequisite checks: tests/tool_prereqs.py
 if os.path.join(REPO, "tools") not in sys.path:
     sys.path.insert(0, os.path.join(REPO, "tools"))
-import pdk_resolve  # noqa: E402
-
-CIEL_ROOT = pdk_resolve.find_pdk_root() or pdk_resolve.NO_PDK_PLACEHOLDER
-SC_LIB_REL = pdk_resolve.SC_LIB_REL
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tool_prereqs  # noqa: E402
 
 MIN_EVALS = 2000
 
@@ -131,16 +129,8 @@ class TestVectorSet(unittest.TestCase):
 class TestEquivalence(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.iverilog = shutil.which("iverilog")
-        cls.vvp = shutil.which("vvp")
-        missing = []
-        if cls.iverilog is None:
-            missing.append("iverilog not on PATH")
-        if cls.vvp is None:
-            missing.append("vvp not on PATH")
-        cls.reason = ("NOT_RUN (guarded skip): "
-                      + "; ".join(missing) if missing else "")
-        cls.can_run = not missing
+        cls.iverilog, cls.vvp, cls.reason = tool_prereqs.icarus()
+        cls.can_run = not cls.reason
 
     def test_equivalence_bit_exact_live(self):
         if not self.can_run:
@@ -218,17 +208,8 @@ class TestFlagContract(unittest.TestCase):
 class TestSynthesis(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.yosys = shutil.which("yosys")
-        cls.lib = os.path.join(CIEL_ROOT, SC_LIB_REL)
-        missing = []
-        if cls.yosys is None:
-            missing.append("yosys binary not on PATH")
-        if not os.path.isfile(cls.lib):
-            missing.append(f"ciel 7t liberty not found: "
-                           f"{pdk_resolve.missing_reason() or cls.lib}")
-        cls.reason = ("NOT_RUN (guarded skip): "
-                      + "; ".join(missing) if missing else "")
-        cls.can_run = not missing
+        cls.yosys, cls.lib, cls.reason = tool_prereqs.yosys()
+        cls.can_run = not cls.reason
 
     def test_synth_gates_live(self):
         if not self.can_run:

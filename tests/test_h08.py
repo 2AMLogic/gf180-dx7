@@ -39,6 +39,8 @@ import shutil
 import subprocess
 import sys
 import unittest
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import vlt_toolchain as VT  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS = os.path.join(REPO, "evidence", "h08-pin", "runs")
@@ -260,8 +262,13 @@ class TestH08LiveControls(unittest.TestCase):
                                text=True)
             if r.returncode != 0 or not os.path.exists(BIN):
                 # Verilator reports to stderr; surface the real cause.
-                self.skipTest("verilator bench build failed: "
-                              + ((r.stderr or r.stdout)[-500:]))
+                diag = (r.stderr or r.stdout)[-2000:]
+                verdict, why = VT.diagnose("verilator", diag)
+                if verdict == VT.TOOLCHAIN:
+                    self.skipTest("NOT_RUN (toolchain): " + why
+                                  + "\nproject build diagnostic: " + diag)
+                self.fail("verilator bench build failed [%s: %s]: %s"
+                          % (verdict, why, diag))
 
     def runvec(self, vecfile, outdir, tag):
         # keep every plusarg short and relative (absolute long paths get

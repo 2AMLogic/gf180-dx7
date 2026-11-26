@@ -140,6 +140,28 @@ audible samples; the pitch-bend/mod-wheel cases ~3.6k. **`stress-burst`
 compares only silence** (`audible_samples` 0 — its notes begin and end
 inside one window), so its PASS says nothing about audio.
 
+## Verilator C++ compiler override (H07 / H08 live tests, issue #343)
+
+Scope: the H07 negative controls (`tests/test_h07.py`), the H08 live controls
+(`tests/test_h08.py`) and `tools/h08_pin_check.py`, which all build a bench
+with `verilator --binary`. The installed Verilator's `verilated.mk` selects the
+C++ compiler; on a host where that pairing is unusable (e.g. clang-only flags
+with `c++` resolving to g++) pick a compatible compiler with the existing GNU
+Make override, which reaches Verilator through the environment:
+
+```
+make test CXX=clang++
+verilator --binary --timing -MAKEFLAGS "CXX=clang++" ...   # direct invocation
+```
+
+Compatible installations keep the platform default. After a failed cold bench
+build both harnesses build an independent timed module with the same
+Verilator/compiler settings (`tests/vlt_toolchain.py`): if that also fails the
+live case is **NOT_RUN** with the compiler diagnostic; if it succeeds the
+project failure is a **FAIL** with the original diagnostic; an inconclusive
+probe stays a FAIL. A missing Verilator is NOT_RUN. This does not change what
+the live controls assert.
+
 ## Bounded findings
 
 - `H07_MUTATE_TICK_SKEW` is not detected by any graded case (measured:

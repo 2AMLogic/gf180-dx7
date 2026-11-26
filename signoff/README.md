@@ -75,13 +75,15 @@ Its top-level `rows` contains every contract row in order, and
 `python3 tools/gen_item6_view.py` and check its bytes with
 `python3 tools/gen_item6_view.py --check`.
 
-The view takes its status from the leading word of the **Status** bullet in
-[DR-0008](../docs/decision-records/0008-core-schedule-contract.md).
-`Accepted` and `Ratified` yield `ratified`. The current bullet begins with
-`Proposed`, so the view reports `proposed` even though a continuation says
-“Accepted-by-default”. After the owner ratifies DR-0008, #264 can bind the
-regenerated view and the coverage statement in the manifest, regenerate the
-grade and exercise the byte-drift controls.
+The view reports `ratified` for the operator's 24.576 MHz clock choice and
+the 12.288 MHz fallback planning FAIL. Its `ratification_scope` and
+`schedule_assessment` come from the Item 6 disposition in DR-0008. The
+15,424-clock margin applies to the historical 16/16/16 vector. At the
+same planning costs the admitted 100-strike frame exceeds its budget by
+1,880 clocks, so all-frame planning is FAIL and the all-input RTL deadline
+is NO_VERDICT. After this ratification merges, #264 binds the view and
+coverage statement in the manifest and regenerates the grade.
+[DR-0008](../docs/decision-records/0008-core-schedule-contract.md)
 
 ## What items 9 and 10 do and do not establish
 

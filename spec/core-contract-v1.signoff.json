@@ -1,5 +1,21 @@
 {
   "status": "ratified",
+  "ratification_scope": {
+    "decision": "clock_target",
+    "design_point_hz": 24576000,
+    "fallback_hz": 12288000,
+    "fallback_planning_verdict": "FAIL"
+  },
+  "schedule_assessment": {
+    "historical_vector_event_counts": {
+      "note_on_application": 16,
+      "note_off_application": 16,
+      "controller_events": 16
+    },
+    "vector_margin_clocks_24m576": 15424,
+    "all_admissible_frames_planning_24m576": "FAIL",
+    "all_admissible_frames_rtl_deadline": "NO_VERDICT"
+  },
   "contract_sha256": "658636438597c7be5f5a5668620223729f795416b07837c7a043abeead183d24",
   "rows": [
     {

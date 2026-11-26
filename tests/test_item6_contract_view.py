@@ -64,6 +64,58 @@ class Item6ContractViewTest(unittest.TestCase):
             view["status"], derive_status(dr_text), "DR-0008 status differs"
         )
 
+    def assert_ratification_scope(self, view):
+        self.assertEqual(
+            view["ratification_scope"],
+            {
+                "decision": "clock_target",
+                "design_point_hz": 24_576_000,
+                "fallback_hz": 12_288_000,
+                "fallback_planning_verdict": "FAIL",
+            },
+        )
+        assessment = view["schedule_assessment"]
+        rows = {row["id"]: row for row in view["rows"]}
+        events = ("note_on_application", "note_off_application", "controller_events")
+        counts = {key: rows[key]["count"] for key in events}
+        self.assertEqual(list(counts.values()), [16, 16, 16])
+        self.assertEqual(assessment["historical_vector_event_counts"], counts)
+        design_frame = 32_768
+        historical_cost = sum(
+            row["clocks"] if "clocks" in row else row["clocks_24m576"]
+            for row in rows.values()
+        )
+        self.assertEqual(assessment["vector_margin_clocks_24m576"], 15_424)
+        self.assertEqual(design_frame - historical_cost, 15_424)
+
+        # Probe frame 4 completes 100 strikes after all drains in frame 3.
+        # All other H03 costs stay fixed. Frame 4 has no patch commit.
+        replaced = {*events, "write_queue_drain", "patch_commit"}
+        fixed_clocks = sum(
+            row["clocks"] for key, row in rows.items() if key not in replaced
+        )
+        application_cost = fixed_clocks + 100 * rows["note_on_application"]["unit_clks"]
+        self.assertEqual(design_frame - application_cost, -1_880)
+        self.assertEqual(
+            assessment["all_admissible_frames_planning_24m576"],
+            "FAIL",
+            "100 completed strikes exceed the planning budget",
+        )
+        self.assertEqual(assessment["all_admissible_frames_rtl_deadline"], "NO_VERDICT")
+
+    def test_committed_ratification_scope(self):
+        self.assert_ratification_scope(json.loads(VIEW.read_bytes()))
+
+    def test_ratified_all_frame_planning_pass_is_rejected(self):
+        view = json.loads(VIEW.read_bytes())
+        view["schedule_assessment"]["all_admissible_frames_planning_24m576"] = "PASS"
+        with self.assertRaisesRegex(AssertionError, "100 completed strikes exceed"):
+            self.assert_ratification_scope(view)
+
+    def test_ratified_decision_without_scope_fails_closed(self):
+        with self.assertRaisesRegex(ValueError, "requires one Item 6 disposition"):
+            render_view(CONTRACT.read_bytes(), REWORDED)
+
     def test_committed_view_matches_sources(self):
         self.assert_matches_sources(json.loads(VIEW.read_bytes()), DECISION.read_text())
 

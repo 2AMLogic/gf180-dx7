@@ -33,25 +33,33 @@ module tb_event_admission;
 
     logic [15:0] arrival_frame;
     int burst, cycle, last_arrival;
-    int arrivals, rejections, pops, full_allocations;
-    bit observing;
+    int drains, rejections, pops, occupied_attempts, strikes;
+    bit observing, reset_patch;
     always @(posedge clk) begin
         cycle++;
-        if (observing && dut.skid_pop && !dut.dr_sec) begin
-            if (dut.frame_ctr != arrival_frame ||
-                (arrivals > 0 && cycle - last_arrival != 194))
+        if (observing && dut.skid_pop) begin
+            if (dut.dr_sec || dut.frame_ctr != arrival_frame ||
+                (drains > 0 && cycle - last_arrival != 194))
                 $fatal(1, "Unexpected SPI arrival frame or spacing");
-            arrivals++;
+            drains++;
             last_arrival = cycle;
             if (dut.evq_full) rejections++;
         end
+        if (observing && dut.fc_commit && dut.shd_commit)
+            $fatal(1, "Unexpected patch commit during the burst observation");
         if (observing && dut.wc_pop_fire) begin
             if (dut.frame_ctr != arrival_frame + 16'd1 || dut.ev_a != dut.EA_NOTEON)
                 $fatal(1, "Unexpected event or application frame");
             pops++;
         end
         if (observing && dut.fc_state == dut.F_ALLOC && !dut.free_found)
-            full_allocations++;
+            occupied_attempts++;
+        // F_NN_BOOK records the struck pitch and advances the sequence number.
+        if (observing && dut.fc_state == dut.F_NN_BOOK) begin
+            if (dut.frame_ctr != arrival_frame + 16'd1)
+                $fatal(1, "Strike outside the application frame");
+            strikes++;
+        end
     end
 
     initial begin
@@ -60,7 +68,15 @@ module tb_event_admission;
         repeat (10) @(negedge clk);
         rst_n = 1;
         repeat (10) @(negedge clk);
-        write_spi(1, 8'h42, 0);  // commit reset patch
+        // Keep one operator out of exact silence so the full-voice allocator
+        // has a sounding victim. +reset_patch repeats the old silent setup.
+        reset_patch = $test$plusargs("reset_patch");
+        if (!reset_patch) begin
+            write_spi(1, 8'h20, 32'h63636363);  // envelope rates
+            write_spi(1, 8'h28, 32'h00636363);  // sustain at level 99
+            write_spi(1, 8'h38, 32'd99);        // output level
+        end
+        write_spi(1, 8'h42, 0);
         for (int note = 40; note < 56; note++)
             write_spi(0, 0, 'h6400 + note);
 
@@ -75,10 +91,13 @@ module tb_event_admission;
         for (int i = 0; i < burst; i++)
             write_spi(0, 0, 'h6400 + ((60 + i) % 128));
         while (dut.frame_ctr != arrival_frame + 16'd2) @(negedge clk);
-        $display("arrivals=%0d rejected=%0d pops=%0d full_allocations=%0d overflow=%0d overrun=%0d",
-                 arrivals, rejections, pops, full_allocations, overflow, overrun);
-        if (arrivals != burst || rejections != int'(burst == 169) ||
-            pops != burst - rejections || full_allocations != pops ||
+        $display("frame=%0d drains=%0d queue_rejections=%0d pops=0 commits=0",
+                 arrival_frame, drains, rejections);
+        $display("frame=%0d drains=0 pops=%0d occupied_attempts=%0d strikes=%0d commits=0 overflow=%0d overrun=%0d",
+                 arrival_frame + 1, pops, occupied_attempts, strikes, overflow, overrun);
+        if (drains != burst || rejections != int'(burst == 169) ||
+            pops != burst - rejections || occupied_attempts != pops ||
+            strikes != (reset_patch ? 0 : pops) ||
             overflow !== (burst == 169) || overrun !== 0)
             $fatal(1, "DR-0008 review observation did not reproduce");
         $finish;

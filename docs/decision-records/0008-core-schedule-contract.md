@@ -66,6 +66,34 @@ normative core interface/schedule contract:
    i2s_tx), each with clocking, reset, handshake, and its N08 conformance
    vector subset.
 
+### Item 6 disposition
+
+```json
+{
+  "ratification_scope": {
+    "decision": "clock_target",
+    "design_point_hz": 24576000,
+    "fallback_hz": 12288000,
+    "fallback_planning_verdict": "FAIL"
+  },
+  "schedule_assessment": {
+    "historical_vector_event_counts": {
+      "note_on_application": 16,
+      "note_off_application": 16,
+      "controller_events": 16
+    },
+    "vector_margin_clocks_24m576": 15424,
+    "all_admissible_frames_planning_24m576": "FAIL",
+    "all_admissible_frames_rtl_deadline": "NO_VERDICT"
+  }
+}
+```
+
+The signoff generator copies this disposition with the 16 original H03 rows.
+Their counts and rationales describe the historical vector. The source
+contract and checker still call that vector the worst case. #339 owns their
+amendment.
+
 ## Consequences and STALE rules
 
 - Any change to the contract **after H04–H07 implementation starts** needs a
@@ -83,15 +111,17 @@ normative core interface/schedule contract:
 
 ### Event admission at the design point
 
-The H03 checker reproduces the listed vector. Voice count limits how many
-notes can sound together. The RTL also dispatches raw `EA_NOTEON` commands
-to the allocator when all voices are occupied. With the other H03 rows
-fixed, replacing the 4,864 event-application clocks with 100 note-ons at
-224 clocks each gives **34,880 clocks**, 2,112 over the frame budget.
-Charging exactly the 100 drains and omitting the 64-clock patch commit
-for the probe below still gives **34,748 clocks**. The corresponding
-168-note-on case costs **50,048 clocks**. This is a planning-budget
-**FAIL** for the all-admissible-frame claim.
+The H03 checker reproduces the listed vector. The SPI probe below exercises
+a different workload. Frame 3 drains the entire burst and pops no events.
+Frame 4 drains no writes and processes the queued note-ons. Neither frame
+commits a patch. Removing the original event applications (4,864 clocks),
+write drains (168) and patch commit (64) from 17,344 leaves **12,248
+planning clocks** for the other H03 rows. At the H03 estimate of 224 clocks
+per completed strike, the application frame costs **34,648** for 100
+strikes (margin **−1,880**) or **49,880** for 168 (margin **−17,112**).
+Either workload gives **FAIL** for the all-admissible-frame planning
+budget at 24.576 MHz. These costs are estimates. The probe measures
+event counts and the RTL status bits.
 
 At 194 core clocks per SPI transaction, a transaction already in flight
 can complete at the start of a frame. A window of `F` clocks can contain
@@ -99,18 +129,20 @@ can complete at the start of a frame. A window of `F` clocks can contain
 and **85** at 12.288 MHz. H03's drain row counts 168 and 84 whole periods.
 Correcting that row alone would add one clock to each listed total.
 
-The pin-driven Verilator 5.050 probe starts with 16 live voices and sends
-back-to-back raw note-ons across the opening frame boundary. It checks the
-arrival frame and spacing, subsequent queue pops, full-voice allocations,
-and sticky status bits. Note-on is the most expensive event in the H03
-table. The burst of 168 fills the RTL event queue. The 169th arrival tests
-the difference between link capacity and event admission.
+The pin-driven Verilator 5.050 probe programs a sustained envelope on one
+operator, occupies all 16 voices, then sends back-to-back raw note-ons
+across the opening frame boundary. Each accepted event reaches the
+allocator with no free slot. The probe counts a completed strike at
+`F_NN_BOOK`, where the RTL records the pitch and advances the sequence
+number. Repeating the 100-write run with the silent reset patch exercises
+the distinction between dequeue and strike.
 
-| SPI note-ons arriving in one frame | Applied with all voices occupied | Rejected | OVERFLOW | OVERRUN |
-| ---: | ---: | ---: | ---: | ---: |
-| 100 | 100 | 0 | 0 | 0 |
-| 168 | 168 | 0 | 0 | 0 |
-| 169 | 168 | 1 | 1 | 0 |
+| Patch | Frame 3 drains | Queue rejections | Frame 4 pops | Frame 4 completed strikes | OVERFLOW | OVERRUN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Sustained | 100 | 0 | 100 | 100 | 0 | 0 |
+| Sustained | 168 | 0 | 168 | 168 | 0 | 0 |
+| Sustained | 169 | 1 | 168 | 168 | 1 | 0 |
+| Silent reset | 100 | 0 | 100 | 0 | 0 | 0 |
 
 Run from the repository root. Each invocation exits nonzero if its row
 differs. The all-input RTL deadline has **NO_VERDICT**. A new decision
@@ -126,6 +158,7 @@ verilator --binary --timing -j 4 -Wno-fatal --timescale-override 1ns/1ps \
 for burst in 100 168 169; do
   build/h03-admission/Vtb_event_admission "+burst=$burst" || exit 1
 done
+build/h03-admission/Vtb_event_admission +burst=100 +reset_patch
 ```
 
 ### Board integration
@@ -149,7 +182,7 @@ DAC accepts. [H08 pin evidence](../H08-PIN.md#i2s-format-contract-vs-as-built-th
 - `docs/CONTRACT-CORE-v1.md` (§2 line-by-line budget, §3 port schedule,
   §4 interface, §5 modules, §6 STALE rules)
 - `spec/core-contract-v1.json` (machine-readable rows/verdicts/queues)
-- `tools/h03_budget_check.py` (recomputation + hash gates; PASS)
+- `tools/h03_budget_check.py` (historical vector recomputation and hash gates)
 - `tests/test_h03_contract.py` (24 cases incl. four live negative controls)
 - Measured anchors: `evidence/h01-operator-probe/` (1 clk/eval),
   `evidence/h02-storage-probe/` (38,781 flops, 2R+1W),

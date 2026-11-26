@@ -1,12 +1,14 @@
 # DR-0008: The core interface/schedule contract v1 — worst-case budget verdict, design point, and H03 STALE rules
 
 - **DR number:** 0008
-- **Status:** Proposed (owner sign-off requested on the clock-target choice:
-  24.576 MHz design point with the 12.288 MHz fallback recorded as
-  worst-case-infeasible); the remaining contract terms are
-  Accepted-by-default per D00 section 0 unless the owner rules otherwise
-- **Date:** 2026-09-20
-- **Deciders:** loom-builder (agent), pending owner review
+- **Status:** Ratified 2026-11-26 by the operator (attended `/fleet:decide`
+  r20, on #264): the 24.576 MHz design point, with the 12.288 MHz fallback
+  recorded as worst-case-infeasible. This record makes no timing-closure
+  claim; H10 owns timing, and DR-0013 defers the physical rows.
+- **Prior disposition:** before ratification, the contract terms other than
+  the clock target were in force under D00 section 0's default acceptance.
+- **Date:** 2026-09-20 (ratified 2026-11-26)
+- **Deciders:** loom-builder (agent); ratified by the operator (rjwalters)
 - **Related issues:** #25 (H03); grounds #2 epic H-series RTL (H04–H07);
   builds on #24 (N08 freeze, DR-0007), #20 (H01), #21 (H02), #15 (N01),
   #4 (D00)

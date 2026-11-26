@@ -45,13 +45,12 @@ normative core interface/schedule contract, as amended post-implementation by
    12.288 MHz fallback therefore fails the planning budget on that vector
    alone, and an idle frame (12,332 whole-period / 12,333 arbitrary-phase
    clocks) remains the forbidden average-case framing. The +15,424 / +15,423
-   margin at 24.576 MHz applies only to the 16/16/16 vector (and to the
-   8-write-per-note-on `EmbeddedHost` sequence, margin +11,503): as amended
-   by DR-0015, the wire interface admits raw single-write `EA_NOTEON` bursts
-   up to 194 completed strikes in a frame (55,937 planning clocks, margin
-   −23,169; 34,880 clocks / −2,112 already at 100 note-ons), so
-   **all-admissible-frame planning at 24.576 MHz is FAIL** and the all-input
-   RTL deadline is **NO_VERDICT**.
+   margin at 24.576 MHz prices the historical vector. DR-0015 records a raw
+   frame with 194 occupied strikes and one CC123 (43,488 event clocks alone).
+   **All-admissible-frame planning at 24.576 MHz is FAIL**. The tight mixed
+   maximum is unresolved and the all-input RTL deadline is **NO_VERDICT**.
+   The +11,503 margin in DR-0015 assumes translation of the host note-offs
+   to RTL commands. Direct supplied-host timing has **NO_VERDICT**.
 2. **Clock target:** **24.576 MHz design point** (the one owner sign-off
    item of this DR, tracked in #264 / #336). The 12.288 MHz fallback is
    recorded as worst-case-infeasible; reopening it requires an architecture

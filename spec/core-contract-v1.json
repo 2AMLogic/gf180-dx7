@@ -48,11 +48,11 @@
       },
       "testbench": {
         "path": "evidence/h03-event-admission/tb_event_admission.sv",
-        "sha256": "47a35c25a32b7a4cf915e20e692bb4c7c5a18a400a81e7564d9aab2d1fffbf94"
+        "sha256": "3171607fc0a8795780ce67cfd43ac521fcdc11a58654492c0c8ca5dd92e9d0e9"
       },
       "probe_results": {
         "path": "evidence/h03-event-admission/results.json",
-        "sha256": "5050d25aa1b3cc9b7389cdcc96a0dc4c99c20c9f40de1406d95c8021ae527f75"
+        "sha256": "5821c5a6422e3111afb399a6df5a57216055e9f30a05a117f2627fe4609b30a6"
       }
     }
   },
@@ -74,7 +74,7 @@
       "clks_per_sample": 512,
       "clks_per_frame": 32768,
       "op_loop_floor_share": 0.1875,
-      "status": "design point (DR-0008); closes the historical 16/16/16 vector (+15,423/+15,424 clk) and supplied-host sequences (+11,503 clk), but FAILS all-admissible raw-wire planning under H03 unit-cost estimates (DR-0015)"
+      "status": "design point (DR-0008). Historical 16/16/16 planning PASS. All-admissible raw-wire planning FAIL (DR-0015)."
     },
     "fallback": {
       "name": "clk_12m288",
@@ -82,7 +82,7 @@
       "clks_per_sample": 256,
       "clks_per_frame": 16384,
       "op_loop_floor_share": 0.375,
-      "status": "fails the worst-case planning budget on both historical 16/16/16 (-877/-876 clk), supplied-host (-381 clk), and raw-wire (-17,965 clk) mixes; see budget_worst_case.totals"
+      "status": "historical 16/16/16 and raw-wire witnesses exceed the planning budget (DR-0015)"
     },
     "op_loop_only_minimum_clock_hz": 4608000,
     "design_point_justification": "N01 section 7 named 24.576 MHz the design point with 12.288 MHz viable only if the shared core sustains <= 2 clk/eval all-in; H01 measured 1 clk/eval kernel-only, leaving 1.67 clk/eval at 12.288 MHz for storage+control+output, which even the 16/16/16 vector refutes; DR-0015 preserves 24.576 MHz as the selected design point while recording the raw-wire admission planning FAIL",
@@ -90,7 +90,7 @@
   },
 
   "budget_worst_case": {
-    "policy": "worst_case_never_average: every consumer is accounted at its worst wire-admissible per-frame value across arbitrary frame-boundary phase and reachable skid/event-queue/allocator carry-over states (DR-0015); a schedule that closes only when event bursts are restricted below wire admission or envelope transitions are rare fails the planning budget (issues #25, #339)",
+    "policy": "Worst-case planning requires every admissible frame to close. The rows price specific raw-wire event mixes with the H03 non-event reserves. A reachable counterexample establishes FAIL. The tight maximum event-application cost across mixed service times is unresolved at both clocks (DR-0015).",
     "rows": [
       {
         "id": "op_evals",
@@ -188,7 +188,7 @@
         "unit_basis": "16-clk steal scan + 6 ops x ~14 clk derivation + 6 x 8 clk basepitch + 12 clk init, rounded up to 224; host-side float math is off-frame per NUM-008 (DEC-010 boundary)",
         "count_12m288": 98,
         "count_24m576": 194,
-        "count_basis": "largest RTL-reachable occupied-polyphony raw-wire EA_NOTEON pops from a non-overrunning prior frame (DR-0015): EVQ_DEPTH=168 opening carry-over (85 @12.288 / 168 @24.576) plus mid-F_EVPOP admissions freed by 26-clk strikes (13 @12.288 -> 98; 26 @24.576 -> 194, closing occupancy 71 / 143); see raw_wire_witnesses for the 337-event paper conservation bound",
+        "count_basis": "98 occupied strikes in the 12.288 MHz paper window. At 24.576 MHz frame 4 of carry_cc123_337 completes 194 strikes plus the CC123 priced below. Both are witnesses. The tight mixed-event maximum is unresolved.",
         "clocks_12m288": 21952,
         "clocks_24m576": 43456,
         "dec_ids": ["DEC-003", "DEC-010", "DEC-014", "DEC-015", "DEC-016", "DEC-017", "DEC-023"]
@@ -200,7 +200,7 @@
         "unit_class": "derived_estimate",
         "unit_basis": "16-note scan + sustain branch + 6-op predicate test",
         "count": 0,
-        "count_basis": "0 in the cost-maximizing raw-wire mix because every EVQ/SPI slot is strictly costlier as a 224-clk EA_NOTEON than a 48-clk EA_NOTEOFF; unit cost 48 is active in historical_regression_vector (16) and supplied_host_pricing (91 / 183)",
+        "count_basis": "Neither selected raw-wire witness contains a note-off. The historical vector and the conditional translated-host scenario in supplied_host_pricing use this row.",
         "clocks": 0,
         "dec_ids": ["DEC-014", "DEC-018", "DEC-021"]
       },
@@ -210,9 +210,11 @@
         "unit_clks": 32,
         "unit_class": "derived_estimate",
         "unit_basis": "chip receives frozen integer scale factors (float-gated math stays host-side, NUM-008); per-note dirty marking",
-        "count": 0,
-        "count_basis": "0 in the cost-maximizing raw-wire mix because every EVQ/SPI slot is strictly costlier as a 224-clk EA_NOTEON than a 32-clk controller write; unit cost 32 is active in historical_regression_vector (16) and supplied_host_pricing",
-        "clocks": 0,
+        "count_12m288": 0,
+        "count_24m576": 1,
+        "count_basis": "One CC123 in frame 4 of carry_cc123_337 extends service long enough for an additional pop. The 12.288 MHz paper witness uses only note-ons.",
+        "clocks_12m288": 0,
+        "clocks_24m576": 32,
         "dec_ids": ["DEC-006", "DEC-014"]
       },
       {
@@ -222,7 +224,7 @@
         "unit_class": "derived_estimate",
         "unit_basis": "shadow image swap is 1 clk; the budget carries ring bookkeeping + a held-note tag sweep",
         "count": 1,
-        "count_basis": "at most one commit per frame (SEC=1 0x42 bypasses EVQ so shd_commit=1 can coincide with full EVQ carry-over; DEC-019)",
+        "count_basis": "H03 reserves one commit per frame (DEC-019). Both carry probes measured zero commits in frame 4.",
         "clocks": 64,
         "dec_ids": ["DEC-014", "DEC-019", "DEC-022"]
       },
@@ -286,12 +288,12 @@
       "utilization_12m288": 2.09649658203125,
       "margin_12m288": -17965,
       "verdict_12m288": "FAIL",
-      "clocks_24m576": 55937,
+      "clocks_24m576": 55969,
       "frame_clks_24m576": 32768,
-      "utilization_24m576": 1.707061767578125,
-      "margin_24m576": -23169,
+      "utilization_24m576": 1.708038330078125,
+      "margin_24m576": -23201,
       "verdict_24m576": "FAIL",
-      "headline": "12.288 MHz DOES NOT close the worst case: 34,349 clocks demanded on the reachable raw-wire mix against 16,384 available (209.65%, margin -17,965; 17,260/-876 whole-period and 17,261/-877 arbitrary-phase on the historical 16/16/16 vector; an idle frame is 12,333 clocks = 75.27%, the forbidden average-case framing). 24.576 MHz remains the selected design point (closing the 16/16/16 vector at 17,345/32,768 = 52.93%, margin +15,423, and supplied-host sequences at +11,503), but FAILS all-admissible raw-wire planning under H03 unit costs: 55,937/32,768 clocks (170.71%, margin -23,169) at 194 reachable strikes, and 34,880 clocks (margin -2,112) already on the 100-note-on EE witness (DR-0015).",
+      "headline": "12.288 MHz DOES NOT close the worst case. The 98-strike paper witness with H03 reserves needs 34,349 clocks against 16,384. The 24.576 MHz design point FAILS all-admissible raw-wire planning. The 194 strikes and one CC123 need 43,488 event clocks alone, or 55,969 with the non-event reserves (margin -23,201). The tight mixed-event maximum is unresolved at both clocks.",
       "family_calibration": "parasynth monosynth ~154/256 clk/frame (~60%, average-case measured; its worst-case bursts are why average arguments fail), ladder filter 24 cycles/channel x 8 = 192/256 (75%, practical ceiling datapoint); quoted as family calibration, never transferred as a budget (D01 section 2)"
     },
     "historical_regression_vector": {
@@ -358,7 +360,8 @@
         "margin_24m576": -17345,
         "verdict_24m576": "FAIL"
       },
-      "rtl_carry_and_replenish_max": {
+      "all_note_on_carry_witness": {
+        "basis": "26-clock occupied strikes only, with one reserved commit and arbitrary-phase drain allowance in the planning totals. The 12.288 MHz window is analytical.",
         "12m288": {
           "skid_open": 0,
           "evq_open": 85,
@@ -386,6 +389,17 @@
           "verdict": "FAIL"
         }
       },
+      "mixed_cc123_frame_4": {
+        "run_id": "carry_cc123_337",
+        "frame": 4,
+        "pops_noteon": 194,
+        "pops_cc123": 1,
+        "event_clks": 43488,
+        "drains": 169,
+        "commits": 0,
+        "clocks_24m576": 55905,
+        "margin_24m576": -23137
+      },
       "unresolved_paper_conservation_upper_bound": {
         "basis": "under H03's derived_estimate 224 clk/note-on (> 194 clk SPI spacing), service is slower than arrival so EVQ does not empty mid-frame; queue conservation Q_open + E_admitted bounds queued note-ons without assuming RTL's 26-clk strike time",
         "max_queued_note_ons_12m288_clean_prior": 169,
@@ -403,6 +417,7 @@
     },
     "supplied_host_pricing": {
       "source": "src/gf180_dx7/host.py",
+      "wire_encoding": "U04 serializes note-off 60 as 00000002003c and its status poll as 800000000000. The RTL uses bit 47 for writes and address 1 for note-offs. Applying the following RTL event costs assumes translation of the write flag, address and payload with the stated window counts.",
       "note_on_writes": 8,
       "note_off_writes": 1,
       "controller_writes": 1,
@@ -425,7 +440,7 @@
         "clocks_24m576": 20497,
         "margin_24m576": 12271
       },
-      "carry_and_replenish_cost_maximizing": {
+      "translated_note_off_carry_scenario": {
         "basis": "two consecutive host write_cap note-off frames with 17-clk unmatched F_OFFFIND scan (83+8=91 pops @12.288; 167+16=183 pops @24.576)",
         "pops_note_off_12m288": 91,
         "evq_close_12m288": 75,
@@ -441,8 +456,10 @@
           "margin": 4255
         }
       },
-      "verdict_12m288": "FAIL",
-      "verdict_24m576": "PASS"
+      "translated_note_off_verdict_12m288": "FAIL",
+      "translated_note_off_verdict_24m576": "PASS",
+      "verdict_12m288": "NO_VERDICT",
+      "verdict_24m576": "NO_VERDICT"
     }
   },
 
@@ -454,19 +471,19 @@
       "same-slot read-modify-write (feedback history) is impossible on one W port: resolved by the staged delayed writeback (H02 section 4 conflict 1)",
       "1RW SRAM macros cannot serve 2R+1W per eval cycle: resolved by the flop verdict (H02 section 4 conflict 2, section 5)",
       "eval-read vs env-write: control-tail writes occupy slots after the eval pass (slot-disjoint windows); frame-boundary commit writes occupy the tick cycle (slot 0), never an eval slot",
-      "same-cycle dual write never occurs: write traffic is bounded below the port supply (see write_traffic_bound)"
+      "same-cycle dual write never occurs: the write_traffic_bound example prices the all-note-on witness"
     ],
     "write_traffic_bound": {
       "op_bank_writes": 6144,
       "note_bank_writes": 1024,
       "control_tail_writes": 112,
       "event_application_writes": 1358,
-      "total_worst_case": 8638,
+      "total_all_note_on_witness": 8638,
       "historical_16_16_16_event_writes": 48,
       "historical_16_16_16_total": 7328,
       "supply_24m576": 32768,
       "supply_12m288": 16384,
-      "verdict": "feasible at both clocks with the single W port even at 194 strikes x 7 slot writes = 1,358 event writes (total 8,638 < 16,384 < 32,768)"
+      "verdict": "the all-note-on witness fits the single W port at 194 strikes x 7 slot writes = 1,358 event writes (total 8,638 < 16,384 < 32,768)"
     },
     "measured_anchor": "H02 mapped 38,781 flops = 38,336 replicated + 444 patch + 1 obs, 4.115 mm2 all-in on the probe structure; bounded finding: the 16-note state cannot be all-register in a quarter slot (owner architecture decision pending, H02 section 6) - this contract assumes the flop organization and does not resolve the area finding"
   },
@@ -501,9 +518,13 @@
     "simultaneous_pop_on_full_evq_rejected": true,
     "rtl_occupied_strike_clks": 26,
     "queue_depth_derivation": "worst admissible arrival = 1 write per 194 core clocks (SCK = f_core/4, 48-bit frame + 2-cycle CS gap); skid drain = 1 write/clk keeps skid_cnt <= 1 (skid overflow impossible at compliant SCK), carrying at most 1 write across a frame boundary; however, half-open frame [0, W) admits up to 1 + floor((W - 1)/194) = 85 / 169 completions, so a 169th SEC=0 write into an unpopped 168-entry evq sets OVERFLOW at the evq stage (DR-0015)",
-    "overflow_policy": "explicit rejection per DEC-014: sticky OVERFLOW flag sets on skid_full (unreachable at SCK <= f_core/4) or evq_full on a SEC=0 drain (including simultaneous wc_pop_fire when evq_cnt == 168; cleared on pad reset as built, H08 F-OVF-1); silent drops and silent deferral are forbidden (DEC-014)",
-    "commit_boundary": "events queued in evq are popped at frame_tick in F_EVPOP until evq_empty (DEC-014 + NUM-011); events draining into evq while F_EVPOP is still active are popped in the same frame, whereas events draining after F_EVPOP exits carry over into the next frame",
-    "worst_burst": "wire-admissible raw burst reaches 98 (@12.288) / 194 (@24.576) occupied EA_NOTEON strikes from a non-overrunning prior frame (337 paper conservation bound); historical 16/16/16 vector (48 raw writes / 160 host writes) and supplied-host sequences (91 / 183 note-offs) are priced separately in budget_worst_case",
+    "overflow_policy": "explicit rejection per DEC-014: the overflow flag is sticky, reported in the status word, cleared on read; a dropped write is a contract defect (the host retries); silent drops and silent deferral are forbidden (DEC-014)",
+    "commit_boundary": "an event received during frame N is applied before the first sample of frame N+1 (DEC-014 + NUM-011; identical to the pinned oracle's event_to_block_policy)",
+    "rtl_conformance_gaps": {
+      "commit_boundary": "FAIL. F_EVPOP drains until empty. Frame 4 of carry_replenish_337 pops 194 strikes from 168 opening entries, applying 26 same-frame arrivals early.",
+      "overflow_policy": "FAIL (H08 F-OVF-1). The RTL rejects a full-queue write and holds OVERFLOW through status reads until pad reset."
+    },
+    "worst_burst": "Tight mixed-event maximum unresolved at both clocks. See raw_wire_witnesses for the 98-strike paper example and the 24.576 MHz frame with 194 strikes and one CC123.",
     "never_silent": "every accepted event appears in the block-level event-application trace (N08 manifest traces); a stolen/rejected event is surfaced in status/trace metadata (DEC-017)",
     "dec_ids": ["DEC-006", "DEC-010", "DEC-014", "DEC-015", "DEC-016", "DEC-017", "DEC-018", "DEC-023"]
   },
@@ -632,15 +653,17 @@
     "planning_verdicts": {
       "12m288_all_admissible_raw_wire": "FAIL",
       "24m576_all_admissible_raw_wire": "FAIL",
-      "12m288_supplied_host": "FAIL",
-      "24m576_supplied_host": "PASS",
+      "12m288_supplied_host": "NO_VERDICT",
+      "24m576_supplied_host": "NO_VERDICT",
+      "12m288_translated_note_off_scenario": "FAIL",
+      "24m576_translated_note_off_scenario": "PASS",
       "12m288_historical_16_16_16": "FAIL",
       "24m576_historical_16_16_16": "PASS"
     },
     "rtl_measured": {
       "probe_results_path": "evidence/h03-event-admission/results.json",
       "24m576_exercised_probes": "PASS",
-      "24m576_max_busy_clks_exercised": 8257,
+      "24m576_max_busy_clks_exercised": 8290,
       "24m576_overrun_exercised": 0,
       "24m576_overflow_stage": "event_queue",
       "24m576_all_admissible_deadline": "NO_VERDICT",

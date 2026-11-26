@@ -4,7 +4,7 @@ Covers, per issue #25 and issue #339 acceptance:
   - independent first-principles recomputation of:
       * half-open frame SPI completions 1 + floor((W - 1) / 194) -> 85 and 169
         (a completion at offset W belongs to the next frame);
-      * worst reachable raw-wire event-application mix across adjacent frames
+      * reachable raw-wire event-application witnesses across adjacent frames
         (opening occupancy, admissions, pops by event type, closing occupancy,
         simultaneous pop+push rejection at full occupancy, skid stage in-flight);
       * separate pricing of raw wire commands vs supplied host (host.py: 8
@@ -190,7 +190,7 @@ class TestBudgetArithmetic(unittest.TestCase):
         self.assertEqual(drain["clocks_12m288"], 85)
         self.assertEqual(drain["clocks_24m576"], 169)
 
-    def test_reachable_queue_and_allocator_worst_mix(self):
+    def test_reachable_all_note_on_witnesses(self):
         ev = self.spec["event_interface"]
         self.assertEqual(ev["queue_depth_evq"], 168)
         self.assertEqual(ev["rtl_occupied_strike_clks"], 26)
@@ -213,7 +213,8 @@ class TestBudgetArithmetic(unittest.TestCase):
         self.assertEqual(rows["note_on_application"]["count_12m288"], 98)
         self.assertEqual(rows["note_on_application"]["count_24m576"], 194)
         self.assertEqual(rows["note_off_application"]["count"], 0)
-        self.assertEqual(rows["controller_events"]["count"], 0)
+        self.assertEqual(rows["controller_events"]["count_12m288"], 0)
+        self.assertEqual(rows["controller_events"]["count_24m576"], 1)
 
     def test_row_arithmetic_totals_and_planning_verdicts(self):
         rc = recompute(self.spec)
@@ -221,11 +222,11 @@ class TestBudgetArithmetic(unittest.TestCase):
         self.assertEqual(t["clocks_12m288"], rc["totals"]["12m288"])
         self.assertEqual(t["clocks_24m576"], rc["totals"]["24m576"])
         self.assertEqual(t["clocks_12m288"], 34349)
-        self.assertEqual(t["clocks_24m576"], 55937)
+        self.assertEqual(t["clocks_24m576"], 55969)
         self.assertAlmostEqual(t["utilization_12m288"], 34349 / 16384)
-        self.assertAlmostEqual(t["utilization_24m576"], 55937 / 32768)
+        self.assertAlmostEqual(t["utilization_24m576"], 55969 / 32768)
         self.assertEqual(t["margin_12m288"], -17965)
-        self.assertEqual(t["margin_24m576"], -23169)
+        self.assertEqual(t["margin_24m576"], -23201)
         self.assertEqual(t["verdict_12m288"], "FAIL")
         self.assertEqual(t["verdict_24m576"], "FAIL")
 
@@ -330,21 +331,23 @@ class TestBudgetArithmetic(unittest.TestCase):
         self.assertEqual(host["single_frame_cost_maximizing"]["margin_24m576"], 12271)
         # Two-frame carry-over + mid-pop replenishment of host note-offs:
         self.assertEqual(
-            host["carry_and_replenish_cost_maximizing"]["clocks_12m288"],
+            host["translated_note_off_carry_scenario"]["clocks_12m288"],
             12312 + 85 + 91 * 48,
         )
         self.assertEqual(
-            host["carry_and_replenish_cost_maximizing"]["margin_12m288"], -381
+            host["translated_note_off_carry_scenario"]["margin_12m288"], -381
         )
         self.assertEqual(
-            host["carry_and_replenish_cost_maximizing"]["clocks_24m576"],
+            host["translated_note_off_carry_scenario"]["clocks_24m576"],
             12312 + 169 + 183 * 48,
         )
         self.assertEqual(
-            host["carry_and_replenish_cost_maximizing"]["margin_24m576"], 11503
+            host["translated_note_off_carry_scenario"]["margin_24m576"], 11503
         )
-        self.assertEqual(host["verdict_12m288"], "FAIL")
-        self.assertEqual(host["verdict_24m576"], "PASS")
+        self.assertEqual(host["translated_note_off_verdict_12m288"], "FAIL")
+        self.assertEqual(host["translated_note_off_verdict_24m576"], "PASS")
+        self.assertEqual(host["verdict_12m288"], "NO_VERDICT")
+        self.assertEqual(host["verdict_24m576"], "NO_VERDICT")
 
     def test_measured_anchor_h01(self):
         rows = {r["id"]: r for r in self.spec["budget_worst_case"]["rows"]}
@@ -376,6 +379,7 @@ class TestAdmissionProbeEvidenceAndStaleDisposition(unittest.TestCase):
             "skid_straddle_169",
             "sim_pop_reject_170",
             "carry_replenish_337",
+            "carry_cc123_337",
         ):
             self.assertIn(required_id, runs)
             run = runs[required_id]
@@ -427,6 +431,33 @@ class TestAdmissionProbeEvidenceAndStaleDisposition(unittest.TestCase):
         self.assertEqual(crep[4]["strikes"], 194)
         self.assertEqual(crep[4]["evq_close"], 143)
         self.assertEqual(runs["carry_replenish_337"]["final_sticky_overflow"], 0)
+
+    def test_mixed_frame_exceeds_all_note_on_event_cost(self):
+        runs = {r["id"]: r for r in self.probe["exercised_runs"]}
+        pure, mixed = (
+            next(f for f in runs[name]["frames"] if f["frame"] == 4)
+            for name in ("carry_replenish_337", "carry_cc123_337")
+        )
+        for fr in (pure, mixed):
+            self.assertEqual(
+                (fr["evq_open"], fr["evq_admit"], fr["strikes"]), (168, 169, 194)
+            )
+            self.assertEqual((fr["commits"], fr["overrun"], fr["overflow"]), (0, 0, 0))
+        self.assertEqual(
+            (mixed["pops_cc123"], mixed["evq_close"], mixed["busy_clks"]),
+            (1, 142, 8290),
+        )
+        rows = {r["id"]: r["unit_clks"] for r in self.spec["budget_worst_case"]["rows"]}
+
+        def event_cost(fr):
+            return (
+                fr["strikes"] * rows["note_on_application"]
+                + fr["pops_cc123"] * rows["controller_events"]
+            )
+
+        self.assertEqual(event_cost(pure), 43456)
+        self.assertEqual(event_cost(mixed), 43488)
+        self.assertGreater(event_cost(mixed), event_cost(pure))
 
     def test_stale_and_not_run_dispositions_recorded(self):
         disp = self.spec["evidence_disposition"]
@@ -491,6 +522,9 @@ class TestQueueLatencyConstants(unittest.TestCase):
         self.assertEqual(ev["queue_depth_evq"], 168)
         self.assertEqual(ev["drain_rate_writes_per_clk"], 1)
         self.assertEqual(ev["min_transaction_period_clks"], 194)
+        self.assertIn("before the first sample of frame N+1", ev["commit_boundary"])
+        self.assertIn("cleared on read", ev["overflow_policy"])
+        self.assertIn("host retries", ev["overflow_policy"])
         lat = spec["latency"]
         self.assertEqual(lat["commit_bound_frames"], 1)
         self.assertEqual(lat["worst_case_to_sdata_samples"], 128)
@@ -587,6 +621,9 @@ class TestToolAndControls(unittest.TestCase):
                 row["count"] = 16
                 row["clocks"] = 16 * 48
             elif row["id"] == "controller_events":
+                for key in ("12m288", "24m576"):
+                    row.pop(f"count_{key}")
+                    row.pop(f"clocks_{key}")
                 row["count"] = 16
                 row["clocks"] = 16 * 32
         bad_rows["budget_worst_case"]["totals"].update(
@@ -610,6 +647,26 @@ class TestToolAndControls(unittest.TestCase):
             ),
             fails_b,
         )
+
+    def test_disposition_rejects_false_planning_and_measurement_claims(self):
+        for section, key, value in (
+            ("planning_verdicts", "24m576_all_admissible_raw_wire", "PASS"),
+            ("planning_verdicts", "24m576_supplied_host", "PASS"),
+            ("planning_verdicts", "12m288_translated_note_off_scenario", "PASS"),
+            ("planning_verdicts", "12m288_historical_16_16_16", "PASS"),
+            ("rtl_measured", "12m288_all_admissible_deadline", "PASS"),
+            ("rtl_measured", "24m576_overrun_exercised", 1),
+            ("rtl_measured", "24m576_max_busy_clks_exercised", 0),
+            ("rtl_measured", "24m576_overflow_stage", "none"),
+        ):
+            with self.subTest(field=key):
+                bad = copy.deepcopy(self.spec)
+                bad["evidence_disposition"][section][key] = value
+                fails = h03_budget_check.check_spec(bad)
+                self.assertTrue(
+                    any(f"evidence_disposition.{section}.{key}" in f for f in fails),
+                    fails,
+                )
 
     def test_negative_control_fake_pass_verdict_12m288_fails(self):
         bad = copy.deepcopy(self.spec)

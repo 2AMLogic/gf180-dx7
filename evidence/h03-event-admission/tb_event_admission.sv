@@ -63,6 +63,7 @@ module tb_event_admission;
     int f_evq_rejects   [0:15]; // skid_pop && !dr_sec && evq_full
     int f_sim_pop_rej   [0:15]; // skid_pop && !dr_sec && evq_full && wc_pop_fire
     int f_pops_noteon   [0:15];
+    int f_pops_cc123    [0:15]; // subset of non-note-on pops
     int f_pops_other    [0:15];
     int f_occ_attempts  [0:15];
     int f_strikes       [0:15];
@@ -150,8 +151,11 @@ module tb_event_admission;
             if (dut.wc_pop_fire) begin
                 if (dut.ev_a == dut.EA_NOTEON)
                     f_pops_noteon[fn]++;
-                else
+                else begin
                     f_pops_other[fn]++;
+                    if (dut.ev_a == dut.EA_CC && dut.ev_d[7:0] == 8'd123)
+                        f_pops_cc123[fn]++;
+                end
             end
 
             if (dut.fc_state == dut.F_ALLOC && !dut.free_found)
@@ -195,11 +199,11 @@ module tb_event_admission;
         if (f_evq_open[fn] + f_evq_admits[fn] - pops_tot != f_evq_close[fn])
             $fatal(1, "EVQ conservation failed in frame %0d", fn);
 
-        $display("FRAME %0d skid_open=%0d completions=%0d skid_rej=%0d drains_sec0=%0d drains_sec1=%0d skid_close=%0d evq_open=%0d evq_admit=%0d evq_rej=%0d sim_pop_rej=%0d pops_noteon=%0d pops_other=%0d evq_close=%0d occ_attempts=%0d strikes=%0d commits=%0d busy_clks=%0d first_push=%0d last_push=%0d first_drain=%0d last_drain=%0d evpop_last=%0d overflow=%0d overrun=%0d",
+        $display("FRAME %0d skid_open=%0d completions=%0d skid_rej=%0d drains_sec0=%0d drains_sec1=%0d skid_close=%0d evq_open=%0d evq_admit=%0d evq_rej=%0d sim_pop_rej=%0d pops_noteon=%0d pops_other=%0d pops_cc123=%0d evq_close=%0d occ_attempts=%0d strikes=%0d commits=%0d busy_clks=%0d first_push=%0d last_push=%0d first_drain=%0d last_drain=%0d evpop_last=%0d overflow=%0d overrun=%0d",
                  fn, f_skid_open[fn], f_completions[fn], f_skid_rejects[fn],
                  f_drains_sec0[fn], f_drains_sec1[fn], f_skid_close[fn],
                  f_evq_open[fn], f_evq_admits[fn], f_evq_rejects[fn],
-                 f_sim_pop_rej[fn], f_pops_noteon[fn], f_pops_other[fn],
+                 f_sim_pop_rej[fn], f_pops_noteon[fn], f_pops_other[fn], f_pops_cc123[fn],
                  f_evq_close[fn], f_occ_attempts[fn], f_strikes[fn],
                  f_commits[fn], f_busy_clks[fn], f_first_push[fn],
                  f_last_push[fn], f_first_drain[fn], f_last_drain[fn],
@@ -331,15 +335,23 @@ module tb_event_admission;
                 f_strikes[4] != 169 || f_overflow_end[4] != 1 ||
                 f_overrun_end[4] != 0)
                 $fatal(1, "sim_pop_reject probe assertion failed");
-        end else if (mode == "carry_replenish") begin
+        end else if (mode == "carry_replenish" || mode == "carry_cc123") begin
+            bit mixed;
+            int carry;
+            mixed = mode == "carry_cc123";
+            carry = mixed ? 142 : 143;
             wait_frame_off(2, 32752);
             if (live !== 16'hffff || dut.evq_cnt !== 0 || overrun || overflow)
                 $fatal(1, "Invalid setup before carry_replenish");
             check_spacing = 1;
             last_push_cycle = -1;
             last_drain_cycle = -1;
-            for (int i = 0; i < 337; i++)
-                write_spi(0, 0, 32'h6400 + ((60 + i) % 128));
+            for (int i = 0; i < 337; i++) begin
+                if (mixed && i == 0)
+                    write_spi(0, 2, 32'd123);
+                else
+                    write_spi(0, 0, 32'h6400 + ((60 + i) % 128));
+            end
             check_spacing = 0;
             wait_frame_off(6, 16);
             print_and_check_frame(3);
@@ -352,10 +364,12 @@ module tb_event_admission;
                 f_first_push[4] != 1 || f_last_push[4] != 32593 ||
                 f_first_drain[4] != 2 || f_last_drain[4] != 32594 ||
                 f_pops_noteon[4] != 194 || f_strikes[4] != 194 ||
-                f_evq_close[4] != 143 || f_evpop_last[4] != 5045 ||
+                f_pops_cc123[4] != int'(mixed) || f_pops_other[4] != int'(mixed) ||
+                f_commits[4] != 0 || f_evq_close[4] != carry ||
+                (!mixed && f_evpop_last[4] != 5045) ||
                 f_overflow_end[4] != 0 || f_overrun_end[4] != 0 ||
-                f_evq_open[5] != 143 || f_pops_noteon[5] != 143 ||
-                f_strikes[5] != 143 || f_evq_close[5] != 0 ||
+                f_evq_open[5] != carry || f_pops_noteon[5] != carry ||
+                f_strikes[5] != carry || f_evq_close[5] != 0 ||
                 f_overflow_end[5] != 0 || f_overrun_end[5] != 0)
                 $fatal(1, "carry_replenish probe assertion failed");
         end else begin

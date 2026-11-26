@@ -1,9 +1,9 @@
 """Build and run the H03 SPI event-admission Verilator probe (issue #339).
 
 Modes:
-  --write   compile tb_event_admission.sv, run all 8 probe scenarios, and write
+  --write   compile tb_event_admission.sv, run all probe scenarios, and write
             evidence/h03-event-admission/results.json
-  --check   compile and re-run all 8 probe scenarios, comparing the build
+  --check   compile and re-run all probe scenarios, comparing the build
             options, source hashes and frame-by-frame results. Build parallelism
             (-j) may vary by host. The recorded Verilator version describes the
             original capture so other versions can also check the same results.
@@ -87,6 +87,12 @@ CASES = (
         "patch": "sustained_op6_l99",
         "stimulus": "337 back-to-back raw EA_NOTEON writes starting at Frame 2 offset 32752: 168 writes fill EVQ in Frame 3; 169 writes complete in Frame 4 (offsets 1..32593, drains 2..32594) with zero rejections because wc_pop_fire at offset 1 freed space first; Frame 4 pops and completes 194 strikes (168 opening + 26 mid-pop admissions) and carries 143 into Frame 5",
     },
+    {
+        "id": "carry_cc123_337",
+        "plusargs": ["+mode=carry_cc123"],
+        "patch": "sustained_op6_l99",
+        "stimulus": "Same 337-write carry_replenish sequence and timing, with the first raw note-on replaced by CC123 (all notes off). With slot 15 held the release scan wraps, allowing one additional admission to be popped in Frame 4.",
+    },
 )
 
 NOT_RUN_CASES = (
@@ -106,7 +112,7 @@ NOT_RUN_CASES = (
         "id": "all_patch_and_event_mix_rtl_wcet_24m576",
         "clock_hz": 24576000,
         "status": "NOT_RUN",
-        "reason": "The probe exercises sustained and silent-reset patches up to 194 occupied strikes/frame (max busy_clks = 8,257 of 32,768, OVERRUN = 0); an exhaustive worst-case RTL cycle proof across all 32 algorithms, 96-op AM-sensitivity exp() paths, refresh_pending, and controller/note-off interleavings was not run, so all_admissible_frames_rtl_deadline remains NO_VERDICT.",
+        "reason": "The probe exercises sustained and silent-reset patches up to 194 occupied strikes/frame; an exhaustive worst-case RTL cycle proof across all 32 algorithms, 96-op AM-sensitivity exp() paths, refresh_pending, and controller/note-off interleavings was not run, so all_admissible_frames_rtl_deadline remains NO_VERDICT.",
     },
 )
 

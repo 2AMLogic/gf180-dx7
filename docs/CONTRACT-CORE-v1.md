@@ -29,29 +29,25 @@
 
 ## HEADLINE FINDING (reconciled worst-case planning verdict, DR-0015)
 
-> **12.288 MHz does NOT close the worst-case frame under any framing: the
-> reachable raw-wire mix demands 34,349 clocks against 16,384 available
-> (209.65%, margin −17,965 clocks), the supplied host sequence demands up to
-> 16,765 clocks (margin −381), and the historical 16/16/16 vector demands
-> 17,261 clocks at arbitrary phase (105.35%, shortfall 877; 17,260 / shortfall
-> 876 under whole-period drain).**
+> **12.288 MHz does NOT close the planning budget.** The 98-strike paper
+> witness costs 34,349 clocks with the H03 reserves against 16,384 available
+> (margin −17,965). The historical 16/16/16 vector also exceeds the budget
+> by 877 clocks with arbitrary-phase drain, or 876 with whole-period drain.
 >
-> **24.576 MHz remains the selected design point (DR-0008): it closes the
-> historical 16/16/16 vector with +15,423 clocks of margin (17,345 / 32,768 =
-> 52.93%; 17,344 / +15,424 under whole-period drain) and closes supplied-host
-> (`src/gf180_dx7/host.py`) traffic with +11,503 clocks of margin (21,265 /
-> 32,768), but FAILS the all-admissible raw-wire planning budget under H03
-> unit-cost estimates: 55,937 / 32,768 clocks (170.71%, margin −23,169) on the
-> 194-strike reachable witness, and 34,880 clocks (margin −2,112) already on
-> the 100-note-on EE witness (DR-0015).**
+> **24.576 MHz remains the design point. All-admissible raw-wire planning is
+> FAIL.** In one exercised frame, 194 occupied strikes and one CC123 cost
+> 43,488 event clocks alone, exceeding the 32,768-clock window. With all H03
+> rows and a reserved patch commit the demand is 55,969 (margin −23,201).
+> The tight event-cost maximum across mixed service times is unresolved at
+> both clocks. The historical 16/16/16 vector fits at 24.576 MHz (+15,423).
 >
 > The idle-frame arithmetic (12,333 clocks at arbitrary phase / 12,332
 > whole-period = 75.27%) would "close" 12.288 MHz only by dropping the event
 > rows — the forbidden average-case argument issue #25's negative control
 > rejects. Polyphony (16 voices, DEC-003), six operators (DEC-002), and 48 kHz
 > (DEC-009) remain fixed. Measured RTL probes on `rtl/dx7_core.v` at 24.576 MHz
-> observe `OVERRUN = 0` across all 8 exercised boundary/burst cases (up to 194
-> completed strikes in 8,257 active clocks), while the all-input RTL deadline
+> observe `OVERRUN = 0` across all 9 exercised boundary/burst cases (peak 8,290
+> busy clocks on the mixed CC123 frame), while the all-input RTL deadline
 > remains **NO_VERDICT** and ss-corner physical timing closure belongs to H10
 > (deferred under DR-0013).
 
@@ -142,14 +138,21 @@ In `rtl/dx7_core.v`:
   each raw `EA_NOTEON` enters `F_ALLOC` (`!free_found`, `match_found ||
   steal_found`, `kind = 1`) and completes a strike in **26 core clocks** (under
   a completely silent patch where `sounding == 0 && in_rel == 0`, `F_ALLOC`
-  exits in 2 clocks with 0 strikes). Because `26 < 194` and `224 > 48 > 32`,
-  raw `EA_NOTEON`s uniquely maximize per-slot planning cost, and pops during
-  `F_EVPOP` admit additional mid-frame arrivals before `evq` empties:
+  exits in 2 clocks with 0 strikes). Pops free queue slots for later arrivals. The 26-clock strike
+  derivation applies to the all-note-on sequences below. A longer service
+  time for a different event can keep the queue active for another arrival.
 
 | Clock (`W`) | Frame `N−1` (`evq_open` → admits → pops → `evq_close`) | Frame `N` `skid_open` / `evq_open` | Frame `N` completions / `evq` admits / `evq` rej | Frame `N` pops (`note_on` / `note_off` / `ctrl`) | Frame `N` `evq_close` / `skid_close` |
 |---|---|---:|---:|---:|---:|
 | 12.288 MHz (`16,384`, clean prior) | `0 → 85 → 0 → 85` | `0 / 85` | `84 / 84 / 0` (`d_1 = 108`) | **`98` (`98 / 0 / 0`)** | `71 / 0` |
 | 24.576 MHz (`32,768`, clean prior) | `0 → 168 → 0 → 168` | `0 / 168` | `169 / 169 / 0` (`d_1 = 2`) | **`194` (`194 / 0 / 0`)** | `143 / 0` |
+
+In the mixed `carry_cc123_337` run, only the first of the 337 writes changes
+to CC123 (all notes off). The release scan wraps with slot 15 held. Frame 4
+opens with 168 entries, admits 169, pops 194 strikes and one controller,
+and closes with 142. Frame 5 pops those 142 strikes and closes empty.
+Both carry runs record zero patch commits in frame 4. The extra controller
+raises event demand from 43,456 to 43,488 clocks.
 
 **Unresolved paper conservation upper bound:** Under H03's `derived_estimate`
 `224` clk/note-on (`> 194` clk/arrival), service would be slower than arrival
@@ -160,7 +163,7 @@ a clean prior frame at 12.288 MHz (`50,253` clocks, margin **`−33,869`**; or
 `168 + 85 = 253` from an already-full `evq`, `69,069` clocks, margin
 **`−52,685`**).
 
-### 2.3 Normative worst-case raw-wire line-by-line table
+### 2.3 Planning rows for the raw-wire witnesses
 
 | # | Consumer | Unit clk (class) | × Count | Clk/frame | Basis |
 |---:|---|---|---:|---:|---|
@@ -172,15 +175,15 @@ a clean prior frame at 12.288 MHz (`50,253` clocks, margin **`−33,869`**; or
 | 6 | Pitch-mod application (`pitch_mod_application`) | 8 (`derived_estimate`) | 16 | **128** | log-domain add, all notes |
 | 7 | Amp-mod application (`amp_mod_application`) | 4 (`derived_estimate`) | 96 | **384** | per-op gain modification once per frame |
 | 8 | Control-tail state commits (`control_tail_commits`) | 1 (`structural`) | 112 | **112** | 96 env + 16 pitch-EG register writes |
-| 9 | Note-on application (`note_on_application`) | 224 (`derived_estimate`) | 98 @12.288 / 194 @24.576 | **21,952 / 43,456** | largest RTL-reachable raw `EA_NOTEON` pops with 16 occupied voices (§2.2, DR-0015) |
-| 10 | Note-off application (`note_off_application`) | 48 (`derived_estimate`) | 0 (16 in reg.; 91/183 host) | **0** | dominated by 224-clk `EA_NOTEON` in raw `evq` mix; priced in §2.4 |
-| 11 | Controller events (`controller_events`) | 32 (`derived_estimate`) | 0 (16 in reg.) | **0** | dominated by 224-clk `EA_NOTEON` in raw `evq` mix; priced in §2.4 |
+| 9 | Note-on application (`note_on_application`) | 224 (`derived_estimate`) | 98 @12.288 / 194 @24.576 | **21,952 / 43,456** | occupied strikes in the 12.288 MHz paper witness and the 24.576 MHz mixed probe (§2.2, DR-0015) |
+| 10 | Note-off application (`note_off_application`) | 48 (`derived_estimate`) | 0 | **0** | Both selected witnesses contain zero note-offs. |
+| 11 | Controller events (`controller_events`) | 32 (`derived_estimate`) | 0 / 1 | **0 / 32** | CC123 popped in the mixed 24.576 MHz frame |
 | 12 | Patch-commit bookkeeping (`patch_commit`) | 64 (`derived_estimate`) | 1 | **64** | atomic generation swap (`SEC=1` `0x42` bypasses `evq`, DEC-019) |
 | 13 | Per-note convert + mix (`mix_convert`) | 2 (`derived_estimate`) | 1,024 | **2,048** | 16 notes × 64 samples, serialized (NUM-010) |
 | 14 | I2S sample loads (`i2s_loads`) | 1 (`structural`) | 64 | **64** | one registered load per sample |
 | 15 | SPI write-queue drain (`write_queue_drain`) | 1 (`structural`) | 85 @12.288 / 169 @24.576 | **85 / 169** | `1 + floor((W − 1) / 194)` arbitrary-phase half-open bound (§2.1) |
 | 16 | Frame controller overhead (`frame_controller_overhead`) | 4 (`structural`) | 1 | **4** | 1 tick + 3-stage H01 latency, once per frame |
-| | **Total (reachable raw-wire witness)** | | | **34,349 @12.288 / 55,937 @24.576** | |
+| | **Total including one reserved commit and maximum drains** | | | **34,349 @12.288 / 55,969 @24.576** | |
 
 ### 2.4 Separate pricing: raw wire witnesses, supplied host (`host.py`), and 16/16/16 regression
 
@@ -191,23 +194,33 @@ emits **8** writes per note-on (`1` velocity + `6` detune deltas + `1` command =
 controller (`32` clk/write), giving **160** writes (`161` windows incl. poll)
 for the historical 16/16/16 vector.
 
+The host figures below assume translation of U04 commands into RTL writes
+with the same transaction counts. U04 serializes note-off 60 as
+`00000002003c` and the status poll as `800000000000`. The RTL accepts a
+write when bit 47 is set and selects note-off by address 1. On the RTL the
+host note-off word therefore produces no write, and the poll has the note-on
+address. The 91/183 pops assume translated, unmatched RTL note-offs with
+17-clock service. Direct supplied-host timing has **NO_VERDICT** at both clocks.
+
 | Workload / witness | Clock | Frame clocks | Demand | Utilization | Signed margin | Planning verdict |
 |---|---|---:|---:|---:|---:|---|
 | Historical 16/16/16 (original 84-drain, 48 raw writes) | 12.288 MHz | 16,384 | 17,260 | 105.35% | **−876** | **FAIL** |
 | Historical 16/16/16 (arbitrary-phase 85-drain, 48 raw writes; host 160 > 83 refused) | 12.288 MHz | 16,384 | 17,261 | 105.35% | **−877** | **FAIL** |
 | Historical 16/16/16 (original 168-drain, 48 raw / 160 host writes) | 24.576 MHz | 32,768 | 17,344 | 52.93% | **+15,424** | **PASS** (vector only) |
 | Historical 16/16/16 (arbitrary-phase 169-drain, 48 raw / 160 host writes) | 24.576 MHz | 32,768 | 17,345 | 52.93% | **+15,423** | **PASS** (vector only) |
-| Supplied host (`host.py`) single-frame note-on mix (`10` on + `3` off = `83` writes) | 12.288 MHz | 16,384 | 14,781 | 90.22% | +1,603 | single-frame subset |
-| Supplied host (`host.py`) single-frame max (`83` note-offs = `83` writes) | 12.288 MHz | 16,384 | 16,381 | 99.98% | +3 | single-frame subset |
-| Supplied host (`host.py`) carry + replenish max (`91` note-offs, `evq_close = 75`) | 12.288 MHz | 16,384 | 16,765 | 102.33% | **−381** | **FAIL** |
-| Supplied host (`host.py`) single-frame note-on mix (`20` on + `7` off = `167` writes) | 24.576 MHz | 32,768 | 17,297 | 52.79% | +15,471 | **PASS** (host only) |
-| Supplied host (`host.py`) single-frame max (`167` note-offs = `167` writes) | 24.576 MHz | 32,768 | 20,497 | 62.55% | +12,271 | **PASS** (host only) |
-| Supplied host (`host.py`) carry + replenish max (`183` note-offs; 334-bound = 28,513 / +4,255) | 24.576 MHz | 32,768 | 21,265 | 64.90% | **+11,503** | **PASS** (host only) |
+| Translated host single-frame note-on mix (`10` on + `3` off = `83` writes) | 12.288 MHz | 16,384 | 14,781 | 90.22% | +1,603 | single-frame subset |
+| Translated host single-frame max (`83` note-offs = `83` writes) | 12.288 MHz | 16,384 | 16,381 | 99.98% | +3 | single-frame subset |
+| Translated host note-off carry scenario (`91` note-offs, `evq_close = 75`) | 12.288 MHz | 16,384 | 16,765 | 102.33% | **−381** | **FAIL** |
+| Translated host single-frame note-on mix (`20` on + `7` off = `167` writes) | 24.576 MHz | 32,768 | 17,297 | 52.79% | +15,471 | **PASS** (translated scenario) |
+| Translated host single-frame max (`167` note-offs = `167` writes) | 24.576 MHz | 32,768 | 20,497 | 62.55% | +12,271 | **PASS** (translated scenario) |
+| Translated host note-off carry scenario (`183` note-offs; 334-bound = 28,513 / +4,255) | 24.576 MHz | 32,768 | 21,265 | 64.90% | **+11,503** | **PASS** (translated scenario) |
 | EE 100 raw note-ons + original non-event rows (`17,344 − 4,864 + 100 × 224`) | 24.576 MHz | 32,768 | 34,880 | 106.45% | **−2,112** | **FAIL** |
 | Probe Frame 4 isolated 100 raw note-ons (`0` drains, `0` commit) | 24.576 MHz | 32,768 | 34,648 | 105.74% | **−1,880** | **FAIL** |
 | Probe Frame 4 isolated 168 raw note-ons (`0` drains, `0` commit) | 24.576 MHz | 32,768 | 49,880 | 152.22% | **−17,112** | **FAIL** |
 | Raw wire full opening queue (`85` / `168` note-ons + commit + drain) | 12.288 / 24.576 | 16,384 / 32,768 | 31,437 / 50,113 | 191.88% / 152.93% | **−15,053 / −17,345** | **FAIL** |
-| **Raw wire carry + replenish reachable max (`98` / `194` note-ons, §2.3)** | **12.288 / 24.576** | **16,384 / 32,768** | **34,349 / 55,937** | **209.65% / 170.71%** | **−17,965 / −23,169** | **FAIL** |
+| **All-note-on carry witnesses with planning reserves (`98` / `194` strikes)** | **12.288 / 24.576** | **16,384 / 32,768** | **34,349 / 55,937** | **209.65% / 170.71%** | **−17,965 / −23,169** | **FAIL** |
+| Mixed CC123 frame 4 (194 strikes, 1 controller, 169 drains, 0 commits) | 24.576 MHz | 32,768 | 55,905 | 170.61% | **−23,137** | **FAIL** |
+| Mixed CC123 frame with the §2.3 patch-commit reserve | 24.576 MHz | 32,768 | 55,969 | 170.80% | **−23,201** | **FAIL** |
 | Raw wire unresolved paper conservation bound (`169` clean [`253` full] / `337` note-ons) | 12.288 / 24.576 | 16,384 / 32,768 | 50,253 / 87,969 | 306.72% / 268.46% | **−33,869 / −55,201** | **FAIL** |
 
 **Family calibration (issue #25 acceptance):** the sibling parasynth monosynth
@@ -239,7 +252,7 @@ resolutions:
 4. **No same-cycle dual write** — even at 194 strikes × 7 bank writes = 1,358
    event writes, `6,144 + 1,024 + 112 + 1,358 = 8,638` writes (7,328 on the
    historical 48-event vector) stay well below 16,384 / 32,768 available slots;
-   the schedule fails on **planning cycle demand** (§2), not W-port bandwidth.
+   this write count covers the all-note-on witness.
 
 ## 4. Interface contract
 
@@ -260,11 +273,11 @@ adapted from gf180-parasynth `rtl-sketch/spi_ctl.v` (DR-0007; Apache-2.0,
 provenance + requalification per DR-0002). **SCK ≤ f_core/4**: 6.144 MHz at
 24.576 MHz, 3.072 MHz at 12.288 MHz.
 
-- **Application timing:** events queued in `evq` are popped at `frame_tick` in
-  `F_EVPOP` before sample 0 of the new frame (DEC-014 + NUM-011). Because
-  `F_EVPOP` drains until `evq_empty`, events draining into `evq` while
-  `F_EVPOP` is still active are applied in that same frame; events draining
-  after `F_EVPOP` exits carry over into the next frame.
+- **Application timing (DEC-014, NUM-011).** An event received in frame *N*
+  must first affect sample 0 of frame *N+1*, as specified in §4.5.
+  **RTL conformance FAIL.** `F_EVPOP` drains until empty. Frame 4 of
+  `carry_replenish_337` pops 194 events from an opening queue of 168, so 26
+  same-frame admissions enter application one frame early.
 - **Two-stage buffering (`skid` + `evq`):** writes land in a **skid FIFO
   (depth 8 × 49 bits)** and drain at 1 write/clk. At `>= 194` core clocks per
   transaction, `skid_cnt <= 1` (skid overflow is unreachable at compliant SCK).
@@ -273,9 +286,11 @@ provenance + requalification per DR-0002). **SCK ≤ f_core/4**: 6.144 MHz at
   phase (or carry over from the previous frame), a `SEC=0` write presented when
   `evq_cnt == 168` is rejected at `evq` — including on a simultaneous
   `wc_pop_fire` cycle — setting sticky `OVERFLOW` (DR-0015).
-- **Overflow policy (DEC-014):** explicit rejection via sticky `OVERFLOW` flag
-  (cleared on pad reset as built, documented in `docs/H08-PIN.md` F-OVF-1);
-  silent drops and silent deferral are forbidden.
+- **Overflow policy (DEC-014).** Report explicit rejection in the sticky
+  `OVERFLOW` status bit, clear it on read, and have the host retry the dropped
+  write. Silent drops and deferral are forbidden. **RTL conformance FAIL.**
+  H08 F-OVF-1 observes `OVERFLOW` on two successive reads. Pad reset clears
+  the bit. Changing either interface rule requires an operator decision.
 - **Determinism & performance controls:** every accepted event appears in the
   ordered application trace (DEC-017); note on/off, velocity, sustain
   (DEC-018), pitch bend, mod wheel, aftertouch, volume, all-sound-off
@@ -411,15 +426,16 @@ python3 evidence/h03-event-admission/run_probe.py --check
 | `spec/core-contract-v1.signoff.json` | generated signoff item 6 view (`tools/gen_item6_view.py`) |
 | `docs/decision-records/0008-core-schedule-contract.md` | original adoption record and clock-target scope |
 | `docs/decision-records/0015-h03-admission-budget-reconciliation.md` | §6 post-implementation admission/budget amendment |
-| `evidence/h03-event-admission/tb_event_admission.sv` + `results.json` | Verilator 5.050 SPI admission/carry-over probe (8 exercised 24.576 MHz runs) |
+| `evidence/h03-event-admission/tb_event_admission.sv` + `results.json` | Verilator 5.050 SPI admission/carry-over probe (9 exercised 24.576 MHz runs) |
 | `evidence/h01-operator-probe/synth_report.json` | measured 1 clk/eval anchor (sha256-pinned) |
 | `evidence/h02-storage-probe/storage_synth_report.json` | measured storage/port anchor (sha256-pinned) |
 | `reference/release/manifest.json` | frozen conformance oracle binding (bundle sha256-pinned) |
 
 Statuses: budget & conservation recomputation **PASS**; all-admissible raw-wire
 planning **FAIL** at 12.288 MHz and **FAIL** at 24.576 MHz; historical 16/16/16
-vector **FAIL** at 12.288 MHz / **PASS** at 24.576 MHz; supplied-host (`host.py`)
-planning **FAIL** at 12.288 MHz / **PASS** at 24.576 MHz; exercised 24.576 MHz
+vector **FAIL** at 12.288 MHz / **PASS** at 24.576 MHz; translated host note-off scenario
+**FAIL** at 12.288 MHz / **PASS** at 24.576 MHz, with direct supplied-host
+planning **NO_VERDICT** at both clocks; exercised 24.576 MHz
 SPI probes **PASS** (`OVERRUN = 0`, `OVERFLOW` at `evq` stage only when hit at
 occupancy 168); all-input RTL deadline **NO_VERDICT**; 12.288 MHz RTL execution
 **NOT_RUN**; H07/H08 worst-burst completeness claims **STALE**.

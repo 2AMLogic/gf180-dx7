@@ -91,8 +91,9 @@ def max_completions_arbitrary_phase(window_clks, period_clks):
 
 
 def derive_reachable_noteon_pops(window_clks, period_clks, evq_depth, strike_clks):
-    """Derive tight max occupied-polyphony raw-wire EA_NOTEON pops in [0, W)
-    from a non-overrunning prior frame [-W, 0)."""
+    """Enumerate the all-note-on witness from a non-overrunning prior frame.
+    Every strike here has the same service time. Mixed traffic can keep
+    F_EVPOP active longer, as demonstrated by carry_cc123_337."""
     w = int(window_clks)
     p = int(period_clks)
     qmax = min(int(evq_depth), 1 + (w - 3) // p)
@@ -143,6 +144,12 @@ def row_clocks(row, key):
 
 def row_count_for(row, key):
     return row[f"count_{key}"] if f"count_{key}" in row else row.get("count", 0)
+
+
+def check_fields(record, expected, name, fails):
+    for field, want in expected.items():
+        if record.get(field) != want:
+            fails.append(f"{name}.{field} = {record.get(field)!r}, expected {want!r}")
 
 
 def check_budget(spec, fails):
@@ -197,12 +204,34 @@ def check_budget(spec, fails):
 
     facts = recomputed_premises(spec["premises"])
     rec_totals = policy.get("totals", {})
+    planning = spec["evidence_disposition"].get("planning_verdicts", {})
     for key, _ in CLOCKS:
         frame_clks = facts["clocks"][key]["clks_per_frame"]
         total = totals[key]
         util = total / frame_clks
         margin = frame_clks - total
         want_verdict = "PASS" if margin >= 0 else "FAIL"
+        # Event work alone is a reachable lower bound. The patch-commit
+        # and drain reserves need not coincide with the witnessed mix.
+        event_work = sum(
+            row_clocks(by_id[rid], key)[0] or 0
+            for rid in (
+                "note_on_application",
+                "note_off_application",
+                "controller_events",
+            )
+            if rid in by_id
+        )
+        check_fields(
+            planning,
+            {
+                f"{key}_all_admissible_raw_wire": "FAIL"
+                if event_work > frame_clks
+                else "NO_VERDICT"
+            },
+            "evidence_disposition.planning_verdicts",
+            fails,
+        )
         pairs = (
             (f"clocks_{key}", total),
             (f"frame_clks_{key}", frame_clks),
@@ -303,6 +332,8 @@ def check_workloads_and_pricing(spec, fails):
     )
     fixed_with_commit = fixed_ex_commit + u_commit
 
+    planning = spec["evidence_disposition"].get("planning_verdicts", {})
+
     # 1. Historical 16/16/16 regression vector
     reg = bw.get("historical_regression_vector")
     if not isinstance(reg, dict):
@@ -331,6 +362,15 @@ def check_workloads_and_pricing(spec, fails):
                 fails.append(
                     f"historical_regression_vector.{subkey} arithmetic mismatch"
                 )
+
+        for key, frame, drain in (("12m288", 16384, 85), ("24m576", 32768, 169)):
+            demand = fixed_with_commit + drain + hist_ev
+            check_fields(
+                planning,
+                {f"{key}_historical_16_16_16": "FAIL" if demand > frame else "PASS"},
+                "evidence_disposition.planning_verdicts",
+                fails,
+            )
 
     # 2. Raw-wire witnesses & unresolved paper conservation bound
     raw = bw.get("raw_wire_witnesses")
@@ -397,18 +437,40 @@ def check_workloads_and_pricing(spec, fails):
             or sf.get("clocks_24m576") != fixed_with_commit + 169 + 167 * u_off
         ):
             fails.append("supplied_host_pricing.single_frame_cost_maximizing mismatch")
-        cr = host.get("carry_and_replenish_cost_maximizing", {})
-        if (
-            cr.get("clocks_12m288") != fixed_with_commit + 85 + 91 * u_off
-            or cr.get("margin_12m288") != 16384 - (fixed_with_commit + 85 + 91 * u_off)
-            or cr.get("clocks_24m576") != fixed_with_commit + 169 + 183 * u_off
-            or cr.get("margin_24m576")
-            != 32768 - (fixed_with_commit + 169 + 183 * u_off)
-            or host.get("verdict_12m288") != "FAIL"
-            or host.get("verdict_24m576") != "PASS"
+        cr = host.get("translated_note_off_carry_scenario", {})
+        for key, frame, drain, pops in (
+            ("12m288", 16384, 85, 91),
+            ("24m576", 32768, 169, 183),
         ):
-            fails.append(
-                "supplied_host_pricing.carry_and_replenish_cost_maximizing mismatch"
+            demand = fixed_with_commit + drain + pops * u_off
+            verdict = "FAIL" if demand > frame else "PASS"
+            check_fields(
+                cr,
+                {
+                    f"pops_note_off_{key}": pops,
+                    f"clocks_{key}": demand,
+                    f"margin_{key}": frame - demand,
+                },
+                "supplied_host_pricing.translated_note_off_carry_scenario",
+                fails,
+            )
+            check_fields(
+                host,
+                {
+                    f"translated_note_off_verdict_{key}": verdict,
+                    f"verdict_{key}": "NO_VERDICT",
+                },
+                "supplied_host_pricing",
+                fails,
+            )
+            check_fields(
+                planning,
+                {
+                    f"{key}_translated_note_off_scenario": verdict,
+                    f"{key}_supplied_host": "NO_VERDICT",
+                },
+                "evidence_disposition.planning_verdicts",
+                fails,
             )
 
 
@@ -526,8 +588,14 @@ def check_probe_and_disposition(spec, pdata, fails):
         full = os.path.join(REPO_ROOT, rel)
         if not os.path.isfile(full) or sha256_file(full) != digest:
             fails.append(f"probe results source_sha256 drifted for {rel}")
-    for run in pdata.get("exercised_runs", []):
-        for fr in run.get("frames", []):
+    runs = pdata.get("exercised_runs", [])
+    frames = []
+    for run in runs:
+        if run["clock_hz"] != 24576000 or not run["frames"]:
+            fails.append(f"unexpected clock or missing frame evidence for {run['id']}")
+            continue
+        frames.extend(run["frames"])
+        for fr in run["frames"]:
             drains = fr["drains_sec0"] + fr["drains_sec1"]
             if (
                 fr["skid_open"] + (fr["completions"] - fr["skid_rej"]) - drains
@@ -546,20 +614,122 @@ def check_probe_and_disposition(spec, pdata, fails):
                     f"probe {run['id']} frame {fr['frame']}: EVQ conservation failed"
                 )
     disp = spec.get("evidence_disposition", {})
-    rtl_m = disp.get("rtl_measured", {})
-    if rtl_m.get("24m576_all_admissible_deadline") != "NO_VERDICT":
-        fails.append(
-            "evidence_disposition: 24m576_all_admissible_deadline must be NO_VERDICT"
-        )
-    if rtl_m.get("12m288_rtl_deadline_and_overflow") != "NOT_RUN":
-        fails.append(
-            "evidence_disposition: 12m288_rtl_deadline_and_overflow must be NOT_RUN"
-        )
+    if not frames:
+        fails.append("missing exercised 24.576 MHz probe frames")
+        return
+
+    not_run = {
+        (r["id"], r["clock_hz"])
+        for r in pdata["not_run_cases"]
+        if r["status"] == "NOT_RUN"
+    }
+    required_not_run = {
+        ("clk_12m288_rtl_probe", 12288000),
+        ("all_patch_and_event_mix_rtl_wcet_24m576", 24576000),
+    }
+    if not required_not_run.issubset(not_run):
+        fails.append("missing NOT_RUN coverage for 12.288 MHz or all-input RTL WCET")
+    overrun = max(fr["overrun"] for fr in frames)
+    exercised = (
+        "PASS" if all(r["status"] == "PASS" for r in runs) and not overrun else "FAIL"
+    )
+    stages = [
+        name
+        for count, name in (("evq_rej", "event_queue"), ("skid_rej", "skid_fifo"))
+        if any(fr[count] for fr in frames)
+    ]
+    check_fields(
+        disp.get("rtl_measured", {}),
+        {
+            "probe_results_path": spec["depends_on"]["h03_admission_probe"][
+                "probe_results"
+            ]["path"],
+            "24m576_exercised_probes": exercised,
+            "24m576_overrun_exercised": overrun,
+            "24m576_max_busy_clks_exercised": max(fr["busy_clks"] for fr in frames),
+            "24m576_overflow_stage": ", ".join(stages) or "none",
+            "24m576_all_admissible_deadline": "FAIL" if overrun else "NO_VERDICT",
+            "12m288_rtl_deadline_and_overflow": "NOT_RUN",
+            "12m288_all_admissible_deadline": "NO_VERDICT",
+        },
+        "evidence_disposition.rtl_measured",
+        fails,
+    )
+    check_fields(
+        pdata["verdicts"],
+        {
+            "exercised_cases_24m576": exercised,
+            "all_admissible_frames_rtl_deadline_24m576": "FAIL"
+            if overrun
+            else "NO_VERDICT",
+            "all_admissible_frames_rtl_deadline_12m288": "NO_VERDICT",
+            "clk_12m288_rtl_execution": "NOT_RUN",
+        },
+        "probe.verdicts",
+        fails,
+    )
+    check_mixed_witness(spec["budget_worst_case"], runs, fails)
     stale_list = disp.get("stale_evidence", [])
     if not stale_list or any(s.get("status") != "STALE" for s in stale_list):
         fails.append(
             "evidence_disposition.stale_evidence must record STALE affected items"
         )
+
+
+def check_mixed_witness(budget, runs, fails):
+    """Price the measured frame with its actual drains and patch commits."""
+    run_id = "carry_cc123_337"
+    frame = next(
+        (
+            fr
+            for run in runs
+            if run["id"] == run_id
+            for fr in run["frames"]
+            if fr["frame"] == 4
+        ),
+        None,
+    )
+    if frame is None:
+        fails.append("missing frame 4 of carry_cc123_337")
+        return
+    rows = {r["id"]: r for r in budget["rows"]}
+    counts = {
+        "note_on_application": frame["strikes"],
+        "note_off_application": 0,
+        "controller_events": frame["pops_cc123"],
+    }
+    if (
+        frame["pops_other"] != frame["pops_cc123"]
+        or frame["pops_noteon"] != frame["strikes"]
+    ):
+        fails.append("mixed frame contains unpriced pops")
+    for rid, count in counts.items():
+        if rid not in rows or row_count_for(rows[rid], "24m576") != count:
+            fails.append(f"{rid} count disagrees with mixed frame 4")
+            return
+    event_clks = sum(count * rows[rid]["unit_clks"] for rid, count in counts.items())
+    drains = frame["drains_sec0"] + frame["drains_sec1"]
+    counts.update(write_queue_drain=drains, patch_commit=frame["commits"])
+    demand = sum(
+        r["unit_clks"] * counts.get(rid, row_count_for(r, "24m576"))
+        for rid, r in rows.items()
+    )
+    check_fields(
+        budget["raw_wire_witnesses"].get("mixed_cc123_frame_4", {}),
+        {
+            "run_id": run_id,
+            "frame": 4,
+            "pops_noteon": frame["pops_noteon"],
+            "pops_cc123": frame["pops_cc123"],
+            "event_clks": event_clks,
+            "drains": drains,
+            "commits": frame["commits"],
+            "clocks_24m576": demand,
+            "margin_24m576": 32768 - demand,
+        },
+        "raw_wire_witnesses.mixed_cc123_frame_4",
+        fails,
+    )
 
 
 def check_env_constant(spec, fails):
@@ -721,13 +891,13 @@ def main(argv=None):
     idle = idle_frame_clocks(spec)
     print("h03 core-contract check PASS")
     print(
-        f"  raw-wire worst case @12.288 MHz: {totals['clocks_12m288']}/"
+        f"  raw-wire witness with H03 reserves @12.288 MHz: {totals['clocks_12m288']}/"
         f"{totals['frame_clks_12m288']:.0f} clk = "
         f"{totals['utilization_12m288'] * 100:.2f}% "
         f"(margin {totals['margin_12m288']:+d}) -> {totals['verdict_12m288']}"
     )
     print(
-        f"  raw-wire worst case @24.576 MHz: {totals['clocks_24m576']}/"
+        f"  raw-wire witness with H03 reserves @24.576 MHz: {totals['clocks_24m576']}/"
         f"{totals['frame_clks_24m576']:.0f} clk = "
         f"{totals['utilization_24m576'] * 100:.2f}% "
         f"(margin {totals['margin_24m576']:+d}) -> {totals['verdict_24m576']}"
@@ -736,6 +906,15 @@ def main(argv=None):
         f"  historical 16/16/16 (arbitrary-phase drain): "
         f"12.288 MHz {hist['clocks_12m288']} clk ({hist['margin_12m288']:+d}) -> {hist['verdict_12m288']}; "
         f"24.576 MHz {hist['clocks_24m576']} clk ({hist['margin_24m576']:+d}) -> {hist['verdict_24m576']}"
+    )
+    mixed = spec["budget_worst_case"]["raw_wire_witnesses"]["mixed_cc123_frame_4"]
+    print(
+        f"  CC123 and 194 strikes: {mixed['event_clks']} event clocks; "
+        f"tight mixed-event maximum unresolved at both clocks"
+    )
+    print(
+        f"  translated note-off scenario: 12.288 MHz -> {host['translated_note_off_verdict_12m288']}; "
+        f"24.576 MHz -> {host['translated_note_off_verdict_24m576']}"
     )
     print(
         f"  supplied host (host.py): 12.288 MHz -> {host['verdict_12m288']}; "
